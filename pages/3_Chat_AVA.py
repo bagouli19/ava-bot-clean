@@ -53,7 +53,6 @@ try:
 except Exception as e:
     print(f"Erreur lors de la lecture de base_de_langage.txt : {e}")
 
-base_connaissances = charger_base_connaissances()
 # 1) Lecture de la clé depuis st.secrets
 if "OPENAI_API_KEY" not in st.secrets:
     st.error("⚠️ OPENAI_API_KEY introuvable dans les secrets ! Vérifie tes Settings.")
