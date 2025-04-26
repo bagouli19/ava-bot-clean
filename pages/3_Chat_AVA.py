@@ -9,6 +9,8 @@ from typing import Optional
 import urllib.parse
 from typing import Union, List, Tuple
 import pandas as pd
+from PIL import Image
+import difflib
 
 
 # — Librairies tierces
