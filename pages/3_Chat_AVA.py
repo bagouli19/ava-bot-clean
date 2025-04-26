@@ -42,41 +42,12 @@ try:
 except Exception as e:
     print(f"Erreur chargement base_connaissances.json : {e}")
     base_connaissances = {}
-    
+
 # Repère le dossier pages/ et remonte d’un cran jusqu’à la racine du projet
 SCRIPT_DIR   = os.path.dirname(__file__)                          # .../ava-bot-ultimate/pages
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))  # .../ava-bot-ultimate
 
-# Indique le dossier knowledge_base et le nom du fichier
-KB_DIR  = os.path.join(PROJECT_ROOT, "knowledge_base")
-KB_PATH = os.path.join(KB_DIR, "base_de_langage.txt")
-# Chargement du fichier base_de_langage.txt
-try:
-    with open("base_de_langage.txt", "r", encoding="utf-8") as f:
-        for ligne in f:
-            if ":" in ligne:
-                question, reponse = ligne.strip().split(":", 1)
-                SALUTATIONS_COURANTES[question.strip().lower()] = reponse.strip()
-except Exception as e:
-    print(f"Erreur lors de la lecture de base_de_langage.txt : {e}")
 
-# 1) Lecture de la clé depuis st.secrets
-if "OPENAI_API_KEY" not in st.secrets:
-    st.error("⚠️ OPENAI_API_KEY introuvable dans les secrets ! Vérifie tes Settings.")
-else:
-    openai.api_key = st.secrets["OPENAI_API_KEY"]
-    st.sidebar.success("🔑 Clé OpenAI chargée depuis les Secrets.")
-# 2) Si le dossier/fichier n’existe pas, on affiche un message d’erreur
-if not os.path.isdir(KB_DIR):
-    st.error(f"📂 Le dossier knowledge_base/ est introuvable. Crée-le à : `{KB_DIR}`")
-    base_de_langage = ""
-elif not os.path.isfile(KB_PATH):
-    st.error(f"📄 Le fichier base_de_langage.txt est introuvable dans : `{KB_PATH}`")
-    base_de_langage = ""
-else:
-    # 3) Sinon on le charge en mémoire
-    with open(KB_PATH, "r", encoding="utf-8") as f:
-        base_de_langage = f.read()
 # ───────────────────────────────────────────────────────────────────────
 # Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
@@ -879,9 +850,6 @@ def trouver_reponse(question: str) -> str:
     best, score = max(zip(keys, sims), key=lambda x: x[1])
     if score > 0.7:
         return base_culture_nettoyee[best]
-    # — Bloc : fallback vers OpenAI si le modèle local est présent —
-    reponse_openai = repondre_openai(question_clean)
-    return reponse_openai
     # Si on n'a rien trouvé
     reponses_ava = [
         "Je n'ai pas compris, peux-tu reformuler ?",
@@ -1294,18 +1262,6 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     actus_repondu     = False
     analyse_complete  = False
 
-    if base_connaissances:
-        question_clean = question_clean.lower()
-
-        if "salut" in question_clean or "bonjour" in question_clean:
-            if "comment tu vas" in question_clean or "comment ça va" in question_clean:
-                return "Salut ! Je vais super bien, merci 😄 Et vous ?"
-
-        if "motivation" in question_clean or "encouragement" in question_clean:
-            return "N'abandonne jamais tes rêves, tu es plus fort que tu ne le crois ! 🚀"
-
-        if "phrase motivante" in question_clean or "boost" in question_clean:
-            return "Crois en toi, chaque pas te rapproche de ta réussite ! 🌟"
 
     # --- Bloc Culture générale simple ---
     if any(keyword in question_clean for keyword in [
