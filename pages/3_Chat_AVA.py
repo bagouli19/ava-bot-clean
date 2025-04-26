@@ -279,8 +279,8 @@ def nettoyer_texte(txt: str) -> str:
     return t
 
  # --- Bloc Salutations courantes --- 
-    SALUTATIONS_COURANTES = {
-    # SALUTATIONS
+SALUTATIONS_COURANTES = {
+# SALUTATIONS
         "salut": "Salut ! Comment puis-je vous aider aujourd'hui ?",
         "salut !": "Salut ! Toujours fidèle au poste 😊",
         "salut ava": "Salut ! Heureuse de vous revoir 💫",
@@ -563,8 +563,8 @@ def nettoyer_texte(txt: str) -> str:
         "ava tu peux danser": "🕺 Si je pouvais bouger, je serais déjà en train de faire un moonwalk virtuel.",
 
     }
-    # On normalise les clés une seule fois
-    SALUTATIONS_CLEAN = {nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()}
+# On normalise les clés une seule fois
+SALUTATIONS_CLEAN = {nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()}
 
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
