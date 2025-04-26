@@ -263,14 +263,21 @@ def generer_phrase_autonome(theme: str, infos: dict) -> str:
 # ───────────────────────────────────────────────────────────────────────
 def nettoyer_texte(txt: str) -> str:
     """
-    Normalise et nettoie une chaîne pour comparaison :
-    - passe en NFKC, minuscules, enlève ponctuation superflue,
-    - ne conserve que lettres, chiffres, accents et apostrophes.
+    Nettoie une chaîne de texte pour comparaison :
+    - Normalisation NFKC,
+    - Passage en minuscules,
+    - Suppression de toute ponctuation,
+    - Conservation uniquement des lettres, chiffres, espaces, apostrophes et accents français.
     """
+    # Normalise les caractères Unicode
     t = unicodedata.normalize("NFKC", txt)
-    t = t.replace("’", "'").replace("“", '"').lower().strip()
-    t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç'-]", "", t)
-    return re.sub(r"\s+", " ", t)
+    # Remplacements courants
+    t = t.replace("’", "'").replace("“", '"').replace("”", '"').lower().strip()
+    # Retire toute ponctuation sauf apostrophe
+    t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç']", " ", t)
+    # Remplace plusieurs espaces par un seul
+    t = re.sub(r"\s+", " ", t)
+    return t.strip()
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
