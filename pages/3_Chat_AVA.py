@@ -806,24 +806,26 @@ st.markdown(
     "Posez-moi vos questions sur la bourse, la météo, les actualités... ou juste pour discuter !"
 )
 
-KB_PATH = os.path.join(os.path.dirname(__file__), "..", "knowledge_base", "base_de_langage.txt")
-with open(KB_PATH, encoding="utf-8") as f:
-    base_de_langage = f.read()
+KB_PATH = "knowledge_base.txt"  # ou "data/knowledge_base.txt"
 
-def obtenir_reponse_openai(prompt_utilisateur):
-    try:
-        reponse = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Tu es une assistante virtuelle intelligente et amicale."},
-                {"role": "user", "content": prompt_utilisateur}
-            ],
-            max_tokens=200,
-            temperature=0.7
-        )
-        return reponse['choices'][0]['message']['content'].strip()
-    except Exception as e:
-        return f"⚠️ Erreur OpenAI : {e}"
+# Charger la base de connaissances
+with open(KB_PATH, encoding="utf-8") as f:
+    knowledge = f.read()
+
+def repondre_openai(prompt: str) -> str:
+    messages = [
+        {"role": "system", "content":
+            "Tu es AVA, un assistant qui connaît parfaitement ce glossaire :\n\n" + knowledge
+        },
+        {"role": "user",   "content": prompt}
+    ]
+    resp = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",      # ← ici
+        messages=messages,
+        temperature=0.2,
+        max_tokens=200
+    )
+    return resp.choices[0].message.content.strip()
 
 def trouver_reponse(question: str) -> str:
     question_clean = question.lower().strip()
