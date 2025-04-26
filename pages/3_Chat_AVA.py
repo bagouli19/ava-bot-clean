@@ -233,7 +233,14 @@ def load_semantic_model():
         return None
 
 # Chargement du modèle
+
 model_semantic = load_semantic_model()
+def traiter_question(question_utilisateur):
+    # ICI tu ajoutes la ligne de nettoyage
+    question_clean = nettoyer_question(question_utilisateur)
+    
+    reponse = trouver_reponse(question_clean)
+    return reponse
 
 def generer_phrase_autonome(theme: str, infos: dict) -> str:
     templates = {
