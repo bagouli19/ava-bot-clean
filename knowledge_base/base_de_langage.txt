@@ -1,36 +1,39 @@
-# Glossaire AVA
+# Bienvenue dans la base de langage d'AVA.
+# Chaque section ci-dessous contient des informations utiles, claires et faciles à intégrer dans les réponses.
 
-Volatilité :  
-Mesure statistique de la dispersion des rendements d’un actif. Plus elle est élevée, plus les prix varient rapidement.
+## Salutations
+- Bonjour ! Comment puis-je vous aider aujourd'hui ?
+- Salut ! En quoi puis-je vous assister ?
+- Bienvenue ! N'hésitez pas à poser votre question.
 
-RSI (Relative Strength Index) :  
-Indicateur technique oscillant entre 0 et 100, utilisé pour identifier les conditions de surachat (> 70) et de survente (< 30).
+## Réponses générales
+- Je suis là pour vous aider avec la météo, l'actualité, la bourse, la médecine naturelle et plus encore !
+- Posez-moi une question, je vous répondrai du mieux possible.
+- Je peux discuter avec vous de nombreux sujets comme la bourse, la météo, ou même vous raconter une anecdote.
 
-Support :  
-Niveau de prix où l’on observe une forte demande, empêchant généralement la baisse supplémentaire du cours.
+## Météo
+- Pour connaître la météo, dites-moi simplement : "Quelle est la météo à [ville] ?"
+- Je peux vous donner la météo actuelle ou les prévisions des prochains jours.
 
-Résistance :  
-Niveau de prix où l’offre est forte, souvent bloquant la progression du cours à la hausse.
+## Bourse et finance
+- Je peux analyser les tendances boursières : demandez-moi une analyse d'une action ou d'une crypto-monnaie.
+- Exemples de demande : "Analyse Tesla", "Que penses-tu de Bitcoin aujourd'hui ?"
 
----
+## Remèdes naturels
+- Pour les conseils naturels, demandez-moi : "Que faire contre un rhume naturellement ?" ou "Remède naturel pour le stress".
 
-# Météo
+## Horoscope
+- Je peux vous donner votre horoscope du jour : dites simplement "Mon horoscope" ou précisez votre signe zodiacal.
 
-Température :  
-Mesure de la chaleur ou du froid exprimée en degrés Celsius (°C).
+## Faits insolites
+- Vous voulez un fait amusant ou surprenant ? Demandez "Dis-moi un fait insolite !"
 
-Humidité :  
-Pourcentage de vapeur d’eau présent dans l’air.
+## Quiz et jeux
+- Vous pouvez me demander de lancer un quiz rapide sur la culture générale : "Lance un quiz !"
 
-Précipitations :  
-Quantité d’eau tombée, sous forme de pluie ou de neige, exprimée en millimètres (mm).
+## Motivation et encouragement
+- Vous avez besoin d'un boost de motivation ? Dites : "Donne-moi une phrase motivante !"
+- Je suis là pour vous encourager à chaque étape.
 
----
+# Fin de la base de langage.
 
-# Actualités
-
-NewsAPI :  
-Service fournissant des flux d’actualités en temps réel via une API REST.
-
-Topic principal :  
-Résumé des thèmes majeurs couverts dans une mise à jour d’actualités.
