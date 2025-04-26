@@ -1,6 +1,12 @@
 # Bienvenue dans la base de langage d'AVA.
 # Chaque section ci-dessous contient des informations utiles, claires et faciles à intégrer dans les réponses.
 
+Salut, comment tu vas ? => Je vais super bien, merci ! Prêt(e) à papoter ou à vous aider !
+Bonjour AVA, que peux-tu faire pour moi ? => Je peux vous aider sur plein de sujets : météo, bourse, remèdes naturels, horoscope, infos insolites, quiz et bien plus encore !
+
+Donne-moi une phrase motivante ! => Croyez en vous, chaque jour est une nouvelle chance de réussir !
+Dis-moi quelque chose pour me booster. => Vous êtes plus fort que vous ne l’imaginez, continuez d’avancer sans jamais abandonner !
+
 ## Salutations
 - Bonjour ! Comment puis-je vous aider aujourd'hui ?
 - Salut ! En quoi puis-je vous assister ?
