@@ -334,3 +334,4 @@
     "quelle est la durée d'une année sur Vénus": "🪐 Une année sur Vénus dure **225 jours terrestres**, mais une journée sur Vénus est plus longue, environ **243 jours terrestres**.",
     "quand se passe le solstice d'hiver": "❄️ Le solstice d'hiver a lieu vers le **21 décembre** dans l'hémisphère nord, marquant le début de l'hiver.",
     "combien de jours dans un mois de février d'une année bissextile": "📅 En année bissextile, **février** compte **29 jours**.", 
+    "que pense tu du sens de la vie ": je ne sais pas , mais une choses est sur il faut profiter de la vie "
