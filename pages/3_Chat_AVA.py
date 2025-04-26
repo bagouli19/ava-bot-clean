@@ -568,10 +568,8 @@ def nettoyer_texte(txt: str) -> str:
         nettoyer_texte(k): v
         for k, v in SALUTATIONS_COURANTES.items()
     }
-    # Si la question épurée correspond à une salutation
-    if question_clean in SALUTATIONS_CLEAN:
-        return SALUTATIONS_CLEAN[question_clean]
-        
+
+
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
 
@@ -1112,7 +1110,10 @@ def trouver_reponse(question: str) -> str:
 
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
-    
+    # Si la question épurée correspond à une salutation
+    if question_clean in SALUTATIONS_CLEAN:
+        return SALUTATIONS_CLEAN[question_clean]
+        
     # 6️⃣ Fuzzy matching
     match = difflib.get_close_matches(
         question_clean,
