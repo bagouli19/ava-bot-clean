@@ -274,6 +274,7 @@ def nettoyer_texte(txt: str) -> str:
     t = re.sub(r"\s+", " ", t)  # Remplace espaces multiples par un seul espace
     t = t.strip()  # Supprime les espaces au début et à la fin
     return t
+SALUTATIONS_CLEAN = {nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()}
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
