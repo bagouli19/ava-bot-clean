@@ -287,6 +287,20 @@ def nettoyer_texte(txt: str) -> str:
     t = re.sub(r"[?.!]", "", t)  # Supprimer les points d'interrogation, exclamation, points
     t = re.sub(r"\s+", " ", t).strip()  # Nettoyer les espaces multiples
     return t
+    
+# --- Test rapide du nettoyage ---
+if __name__ == "__main__":
+    exemples = [
+        "Salut, ça va ?",
+        "Comment ça se passe !",
+        "Quel est ton but ?",
+        "123 C'est la vie...",
+        "AVA-3.0 est géniale, n'est-ce pas ?"
+    ]
+    for exemple in exemples:
+        print(f"Avant : {exemple}")
+        print(f"Après : {nettoyer_texte(exemple)}")
+        print("-" * 30)
 
  # --- Bloc Salutations courantes --- 
 SALUTATIONS_COURANTES = {
