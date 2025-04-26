@@ -276,6 +276,7 @@ def nettoyer_texte(txt: str) -> str:
     t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç'-]", "", t)
     # On écrase les espaces multiples
     t = re.sub(r"\s+", " ", t).strip()
+    question = re.sub(r'[?.!]', '', question)
     return t
 
  # --- Bloc Salutations courantes --- 
