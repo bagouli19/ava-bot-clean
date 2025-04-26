@@ -915,10 +915,7 @@ def format_actus(
         return SALUTATIONS_CLEAN[question_clean]
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-    if question_clean in SALUTATIONS_CLEAN:
-        réponse = SALUTATIONS_CLEAN[question_clean]
-        return réponse
-
+    
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
         try:
@@ -1216,7 +1213,10 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     SALUTATIONS_CLEAN = {
         nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()
     }
-
+    if question_clean in SALUTATIONS_CLEAN:
+        réponse = SALUTATIONS_CLEAN[question_clean]
+        return réponse
+        
     # --- Rappel du prénom ---
     if any(kw in question_clean for kw in ["mon prénom", "mon prenom", "ton prénom", "ton prenom"]):
         prenom = retrouver_profil("prenom")
