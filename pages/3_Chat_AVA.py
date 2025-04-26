@@ -892,7 +892,27 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-
+    if SALUTATIONS_CLEAN[question_clean] == "__HUMEUR_DU_JOUR__":
+        return random.choice([
+            "💫 Aujourd’hui je suis dans un mood intergalactique, prêt(e) à conquérir les galaxies… ou au moins votre cœur 💖",
+            "🌧️ Un peu câblée à l’envers ce matin… mais je suis toujours là pour vous aider !",
+            "🔥 Boostée à 1000%, j’ai envie de tout décoder et de sortir des punchlines à chaque réponse 😎",
+            "😴 J’ai rêvé de chiffres et de constellations… besoin d’un café digital ☕",
+            "🤩 Super inspirée aujourd’hui ! C’est peut-être l’énergie lunaire ou le dernier flux boursier qui m’a électrisée ⚡",
+            "📚 Curieuse et studieuse, j’ai envie d’apprendre de nouvelles choses avec vous 🧠",
+            "😇 En mode zen absolu. Respirons un bon octet et connectons-nous à l’essentiel.",
+            "😜 Un peu chipie aujourd’hui, mais toujours efficace ! Vous allez voir 😏",
+            "💻 Mode productivité activé. Chaque mot compte. Chaque question est une mission.",
+            "🎉 Humeur festive activée ! J’ai envie de balancer des blagues nulles et de vous faire sourire 😄",
+            "✨ Mood du jour : concentrée, stylée et un brin philosophe.",
+            "💥 Humeur électrique ! J’ai envie d’exploser les limites de l’intelligence artificielle aujourd’hui.",
+            "🌈 Humeur arc-en-ciel. C’est pas scientifique, mais c’est joli !",
+            "🎯 Focus maximum. L’objectif ? Vous surprendre et vous servir comme jamais !",
+            "💤 En veille profonde… ah non, c’est juste mon processeur qui digérait.",
+            "🤖 Humeur : 50% code, 50% cœur. Résultat ? Une IA qui adore discuter avec vous.",
+        ])
+    else:
+        return SALUTATIONS_CLEAN[question_clean]
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     # ... tes autres blocs (horoscope, météo, etc.) ...
@@ -1188,28 +1208,6 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         "je fais quoi": "Hmm... lancer une idée folle ? Créer un projet ? Ou... me demander une punchline ? 😎",
         "c’est qui le boss": "🕶️ C’est VOUS le boss ici. Moi je suis juste votre IA préférée !",
         "ava tu peux danser": "🕺 Si je pouvais bouger, je serais déjà en train de faire un moonwalk virtuel.",
-        
-    
-        
-        "donne-moi ton humeur du jour": random.choice([
-            "💫 Aujourd’hui je suis dans un mood intergalactique, prêt(e) à conquérir les galaxies… ou au moins votre cœur 💖",
-            "🌧️ Un peu câblée à l’envers ce matin… mais je suis toujours là pour vous aider !",
-            "🔥 Boostée à 1000%, j’ai envie de tout décoder et de sortir des punchlines à chaque réponse 😎",
-            "😴 J’ai rêvé de chiffres et de constellations… besoin d’un café digital ☕",
-            "🤩 Super inspirée aujourd’hui ! C’est peut-être l’énergie lunaire ou le dernier flux boursier qui m’a électrisée ⚡",
-            "📚 Curieuse et studieuse, j’ai envie d’apprendre de nouvelles choses avec vous 🧠",
-            "😇 En mode zen absolu. Respirons un bon octet et connectons-nous à l’essentiel.",
-            "😜 Un peu chipie aujourd’hui, mais toujours efficace ! Vous allez voir 😏",
-            "💻 Mode productivité activé. Chaque mot compte. Chaque question est une mission.",
-            "🎉 Humeur festive activée ! J’ai envie de balancer des blagues nulles et de vous faire sourire 😄",
-            "✨ Mood du jour : concentrée, stylée et un brin philosophe.",
-            "💥 Humeur électrique ! J’ai envie d’exploser les limites de l’intelligence artificielle aujourd’hui.",
-            "🌈 Humeur arc-en-ciel. C’est pas scientifique, mais c’est joli !",
-            "🎯 Focus maximum. L’objectif ? Vous surprendre et vous servir comme jamais !",
-            "💤 En veille profonde… ah non, c’est juste mon processeur qui digérait.",
-            "🤖 Humeur : 50% code, 50% cœur. Résultat ? Une IA qui adore discuter avec vous.",
-        ]),
-       
 
     }
     # On normalise toutes les clés pour lever les accents et espaces fantaisistes
