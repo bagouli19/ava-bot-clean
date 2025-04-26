@@ -1,13 +1,36 @@
-# ❖ AVA Glossaire de test
+# Glossaire AVA
 
-GPT-4
-GPT-4 est un modèle de langage multimodal développé par OpenAI.  
-Il peut traiter du texte et des images, et générer des réponses cohérentes sur une grande variété de sujets.
+Volatilité :  
+Mesure statistique de la dispersion des rendements d’un actif. Plus elle est élevée, plus les prix varient rapidement.
 
-Streamlit
-Streamlit est un framework Python open-source qui permet de construire très rapidement des applications web interactives  
-pour le data-science ou les prototypes d’IA.
+RSI (Relative Strength Index) :  
+Indicateur technique oscillant entre 0 et 100, utilisé pour identifier les conditions de surachat (> 70) et de survente (< 30).
 
-SentenceTransformer
-SentenceTransformer est une bibliothèque Python qui fournit des modèles dérivés de BERT  
-pour encoder des phrases en vecteurs (embeddings) et mesurer leur similarité.
+Support :  
+Niveau de prix où l’on observe une forte demande, empêchant généralement la baisse supplémentaire du cours.
+
+Résistance :  
+Niveau de prix où l’offre est forte, souvent bloquant la progression du cours à la hausse.
+
+---
+
+# Météo
+
+Température :  
+Mesure de la chaleur ou du froid exprimée en degrés Celsius (°C).
+
+Humidité :  
+Pourcentage de vapeur d’eau présent dans l’air.
+
+Précipitations :  
+Quantité d’eau tombée, sous forme de pluie ou de neige, exprimée en millimètres (mm).
+
+---
+
+# Actualités
+
+NewsAPI :  
+Service fournissant des flux d’actualités en temps réel via une API REST.
+
+Topic principal :  
+Résumé des thèmes majeurs couverts dans une mise à jour d’actualités.
