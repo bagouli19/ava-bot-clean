@@ -806,7 +806,7 @@ st.markdown(
     "Posez-moi vos questions sur la bourse, la météo, les actualités... ou juste pour discuter !"
 )
 
-KB_PATH = "knowledge_base.txt"  # ou "data/knowledge_base.txt"
+KB_PATH = "base-de-langage.txt"  # ou "data/knowledge_base.txt"
 
 # Charger la base de connaissances
 with open(KB_PATH, encoding="utf-8") as f:
