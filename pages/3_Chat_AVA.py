@@ -39,7 +39,12 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 BASE_DIR   = os.path.dirname(os.path.dirname(__file__))      # remonte d’un cran : ava-bot-ultimate/
 KB_DIR     = os.path.join(BASE_DIR, "knowledge_base")
 KB_PATH    = os.path.join(KB_DIR, "base_de_langage.txt")
-
+# 1) Lecture de la clé depuis st.secrets
+if "OPENAI_API_KEY" not in st.secrets:
+    st.error("⚠️ OPENAI_API_KEY introuvable dans les secrets ! Vérifie tes Settings.")
+else:
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
+    st.sidebar.success("🔑 Clé OpenAI chargée depuis les Secrets.")
 # 2) Si le dossier/fichier n’existe pas, on affiche un message d’erreur
 if not os.path.isdir(KB_DIR):
     st.error(f"📂 Le dossier knowledge_base/ est introuvable. Crée-le à : `{KB_DIR}`")
