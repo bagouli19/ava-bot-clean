@@ -36,6 +36,13 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+try:
+    with open("base_connaissances.json", "r", encoding="utf-8") as f:
+        base_connaissances = json.load(f)
+except Exception as e:
+    print(f"Erreur chargement base_connaissances.json : {e}")
+    base_connaissances = {}
+    
 # Repère le dossier pages/ et remonte d’un cran jusqu’à la racine du projet
 SCRIPT_DIR   = os.path.dirname(__file__)                          # .../ava-bot-ultimate/pages
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))  # .../ava-bot-ultimate
