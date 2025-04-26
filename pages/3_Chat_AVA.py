@@ -568,7 +568,10 @@ def nettoyer_texte(txt: str) -> str:
         nettoyer_texte(k): v
         for k, v in SALUTATIONS_COURANTES.items()
     }
-
+    # Si la question épurée correspond à une salutation
+    if question_clean in SALUTATIONS_CLEAN:
+        return SALUTATIONS_CLEAN[question_clean]
+        
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
 
@@ -1215,9 +1218,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             return f"⚠️ Impossible de récupérer les actualités : {e}"
     
 
-    # Si la question épurée correspond à une salutation
-    if question_clean in SALUTATIONS_CLEAN:
-        return SALUTATIONS_CLEAN[question_clean]
+    
     
     
     # --- Rappel du prénom ---
