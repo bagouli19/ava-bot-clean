@@ -43,7 +43,16 @@ PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))  # .../ava-b
 # Indique le dossier knowledge_base et le nom du fichier
 KB_DIR  = os.path.join(PROJECT_ROOT, "knowledge_base")
 KB_PATH = os.path.join(KB_DIR, "base_de_langage.txt")
+# --- Chargement de la base de connaissances personnalisée ---
+def charger_base_connaissances():
+    chemin = os.path.join(os.path.dirname(__file__), "knowledge_base", "base_de_langage.txt")
+    if os.path.exists(chemin):
+        with open(chemin, "r", encoding="utf-8") as fichier:
+            return fichier.read()
+    else:
+        return ""
 
+base_connaissances = charger_base_connaissances()
 # 1) Lecture de la clé depuis st.secrets
 if "OPENAI_API_KEY" not in st.secrets:
     st.error("⚠️ OPENAI_API_KEY introuvable dans les secrets ! Vérifie tes Settings.")
@@ -1277,7 +1286,19 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     meteo_repondu     = False
     actus_repondu     = False
     analyse_complete  = False
+    
+    if base_connaissances:
+    question_clean = question_clean.lower()
 
+    if "salut" in question_clean or "bonjour" in question_clean:
+        if "comment tu vas" in question_clean or "comment ça va" in question_clean:
+            return "Salut ! Je vais super bien, merci 😄 Et vous ?"
+
+    if "motivation" in question_clean or "encouragement" in question_clean:
+        return "N'abandonne jamais tes rêves, tu es plus fort que tu ne le crois ! 🚀"
+
+    if "phrase motivante" in question_clean or "boost" in question_clean:
+        return "Crois en toi, chaque pas te rapproche de ta réussite ! 🌟"
     # --- Bloc Culture générale simple ---
     if any(keyword in question_clean for keyword in [
         "qui ", "quand ", "où ", "combien ", "quel ", "quelle ",
