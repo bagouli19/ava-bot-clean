@@ -2081,7 +2081,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             message_bot = f"🍽️ Voici une autre idée :\n\n{choix}"
         else:
             message_bot = "⚠️ Je n'ai pas encore partagé de recette. Demandez-moi d'abord une recette !"
-
+        
         # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
         # détection de salutations en anglais
@@ -2102,7 +2102,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 "formulation ou tapez 'analyse complète' pour un aperçu du marché 📊"
             ]
             message_bot = random.choice(reponses_ava)
-
+    return None 
     # --- Bloc final pour renvoyer la réponse ---
     if message_bot and isinstance(message_bot, str):
         return message_bot.strip()
@@ -2115,7 +2115,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     ]
     return random.choice(reponses_ava)
 
-
+    
 # ─── Boucle Streamlit Chat (TOUJOURS en bas) ───
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
