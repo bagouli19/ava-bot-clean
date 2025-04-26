@@ -263,21 +263,17 @@ def generer_phrase_autonome(theme: str, infos: dict) -> str:
 # ───────────────────────────────────────────────────────────────────────
 def nettoyer_texte(txt: str) -> str:
     """
-    Nettoie une chaîne de texte pour comparaison :
-    - Normalisation NFKC,
-    - Passage en minuscules,
-    - Suppression de toute ponctuation,
-    - Conservation uniquement des lettres, chiffres, espaces, apostrophes et accents français.
+    Nettoie et normalise un texte :
+    - Supprime toute la ponctuation superflue,
+    - Passe en minuscules,
+    - Ne conserve que lettres, chiffres, accents et apostrophes utiles.
     """
-    # Normalise les caractères Unicode
     t = unicodedata.normalize("NFKC", txt)
-    # Remplacements courants
-    t = t.replace("’", "'").replace("“", '"').replace("”", '"').lower().strip()
-    # Retire toute ponctuation sauf apostrophe
-    t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç']", " ", t)
-    # Remplace plusieurs espaces par un seul
-    t = re.sub(r"\s+", " ", t)
-    return t.strip()
+    t = t.replace("’", "'").replace("“", '"').lower()
+    t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç'-]", "", t)  # Enlève tous les caractères non autorisés
+    t = re.sub(r"\s+", " ", t)  # Remplace espaces multiples par un seul espace
+    t = t.strip()  # Supprime les espaces au début et à la fin
+    return t
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
@@ -1216,7 +1212,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     if question_clean in SALUTATIONS_CLEAN:
         réponse = SALUTATIONS_CLEAN[question_clean]
         return réponse
-        
+
     # --- Rappel du prénom ---
     if any(kw in question_clean for kw in ["mon prénom", "mon prenom", "ton prénom", "ton prenom"]):
         prenom = retrouver_profil("prenom")
