@@ -913,19 +913,6 @@ def format_actus(
         return SALUTATIONS_CLEAN[question_clean]
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-    # On normalise toutes les clés pour lever les accents et espaces fantaisistes
-    SALUTATIONS_CLEAN = {
-        nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()
-    }
-
-    # --- Bloc Actualités améliorées ---
-    if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
-        try:
-            actus = get_general_news()
-            return format_actus(actus)
-        except Exception as e:
-            return f"⚠️ Impossible de récupérer les actualités : {e}"
-    
     # --- Bloc Salutations courantes --- 
     SALUTATIONS_COURANTES = {
     # SALUTATIONS
@@ -1220,6 +1207,16 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     # Si la question épurée correspond à une salutation
     if question_clean in SALUTATIONS_CLEAN:
         return SALUTATIONS_CLEAN[question_clean]
+
+    # --- Bloc Actualités améliorées ---
+    if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
+        try:
+            actus = get_general_news()
+            return format_actus(actus)
+        except Exception as e:
+            return f"⚠️ Impossible de récupérer les actualités : {e}"
+    
+    
     
     # --- Rappel du prénom ---
     if any(kw in question_clean for kw in ["mon prénom", "mon prenom", "ton prénom", "ton prenom"]):
