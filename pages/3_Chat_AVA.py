@@ -1211,12 +1211,15 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
     }
     # On normalise toutes les clés pour lever les accents et espaces fantaisistes
-    SALUTATIONS_CLEAN = {
-        nettoyer_texte(k): v
-        for k, v in SALUTATIONS_COURANTES.items()
-    }
+    question_clean = nettoyer_texte(question)
     if question_clean in SALUTATIONS_CLEAN:
-        return SALUTATIONS_CLEAN[question_clean]
+        réponse = SALUTATIONS_CLEAN[question_clean]
+        if réponse == "__HUMEUR_DU_JOUR__":
+            return random.choice([
+                # Ta liste des humeurs ici
+            ])
+        else:
+            return réponse
     
 
     # --- Rappel du prénom ---
