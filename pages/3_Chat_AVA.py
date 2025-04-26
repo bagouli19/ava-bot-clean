@@ -915,7 +915,15 @@ def format_actus(
         return SALUTATIONS_CLEAN[question_clean]
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-    # --- Bloc Salutations courantes --- 
+   
+    # --- Bloc Actualités améliorées ---
+    if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
+        try:
+            actus = get_general_news()
+            return format_actus(actus)
+        except Exception as e:
+            return f"⚠️ Impossible de récupérer les actualités : {e}"
+     # --- Bloc Salutations courantes --- 
     SALUTATIONS_COURANTES = {
     # SALUTATIONS
         "salut": "Salut ! Comment puis-je vous aider aujourd'hui ?",
@@ -1209,15 +1217,6 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     # Si la question épurée correspond à une salutation
     if question_clean in SALUTATIONS_CLEAN:
         return SALUTATIONS_CLEAN[question_clean]
-
-    # --- Bloc Actualités améliorées ---
-    if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
-        try:
-            actus = get_general_news()
-            return format_actus(actus)
-        except Exception as e:
-            return f"⚠️ Impossible de récupérer les actualités : {e}"
-    
     
     
     # --- Rappel du prénom ---
