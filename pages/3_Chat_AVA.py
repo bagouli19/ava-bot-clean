@@ -859,9 +859,8 @@ def trouver_reponse(question: str) -> str:
     if score > 0.7:
         return base_culture_nettoyee[best]
     # — Bloc : fallback vers OpenAI si le modèle local est présent —
-    if model_semantic:
-        # envoi du prompt nettoyé à l'API OpenAI
-        return repondre_openai(question_clean)
+    reponse_openai = repondre_openai(question_clean)
+    return reponse_openai
     # Si on n'a rien trouvé
     reponses_ava = [
         "Je n'ai pas compris, peux-tu reformuler ?",
