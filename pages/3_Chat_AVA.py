@@ -270,6 +270,9 @@ def generer_phrase_autonome(theme: str, infos: dict) -> str:
 # ───────────────────────────────────────────────────────────────────────
 # 7️⃣ Base de culture et nettoyage de texte
 # ───────────────────────────────────────────────────────────────────────
+import unicodedata
+import re
+
 def nettoyer_texte(txt: str) -> str:
     """
     Nettoie et normalise un texte :
@@ -283,7 +286,6 @@ def nettoyer_texte(txt: str) -> str:
     t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç'-]", "", t)
     # On écrase les espaces multiples
     t = re.sub(r"\s+", " ", t).strip()
-    question = re.sub(r'[?.!]', '', question)
     return t
 
  # --- Bloc Salutations courantes --- 
