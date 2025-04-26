@@ -264,15 +264,16 @@ def generer_phrase_autonome(theme: str, infos: dict) -> str:
 def nettoyer_texte(txt: str) -> str:
     """
     Nettoie et normalise un texte :
-    - Supprime toute la ponctuation superflue,
-    - Passe en minuscules,
-    - Ne conserve que lettres, chiffres, accents et apostrophes utiles.
+    - Normalisation Unicode NFKC
+    - Passage en minuscules
+    - Conserve lettres (y compris accents), chiffres, espaces, apostrophes et traits d’union
     """
     t = unicodedata.normalize("NFKC", txt)
     t = t.replace("’", "'").replace("“", '"').lower()
-    t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç'-]", "", t)  # Enlève tous les caractères non autorisés
-    t = re.sub(r"\s+", " ", t)  # Remplace espaces multiples par un seul espace
-    t = t.strip()  # Supprime les espaces au début et à la fin
+    # On conserve les caractères autorisés : lettres, chiffres, accents, apostrophes et traits d’union
+    t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç'-]", "", t)
+    # On écrase les espaces multiples
+    t = re.sub(r"\s+", " ", t).strip()
     return t
 
 
@@ -1210,13 +1211,15 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         "ava tu peux danser": "🕺 Si je pouvais bouger, je serais déjà en train de faire un moonwalk virtuel.",
 
     }
-     SALUTATIONS_CLEAN = {
-        nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()
+    # On normalise les clés une seule fois
+    SALUTATIONS_CLEAN = {
+        nettoyer_texte(k): v
+        for k, v in SALUTATIONS_COURANTES.items()
     }
-    
+
+    # Si la question épurée correspond à une salutation
     if question_clean in SALUTATIONS_CLEAN:
-        réponse = SALUTATIONS_CLEAN[question_clean]
-        return réponse
+        return SALUTATIONS_CLEAN[question_clean]
     
     # --- Rappel du prénom ---
     if any(kw in question_clean for kw in ["mon prénom", "mon prenom", "ton prénom", "ton prenom"]):
