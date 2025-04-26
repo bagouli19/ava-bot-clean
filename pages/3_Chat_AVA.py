@@ -274,7 +274,7 @@ def nettoyer_texte(txt: str) -> str:
     t = re.sub(r"\s+", " ", t)  # Remplace espaces multiples par un seul espace
     t = t.strip()  # Supprime les espaces au début et à la fin
     return t
-SALUTATIONS_CLEAN = {nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()}
+
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
@@ -912,7 +912,11 @@ def format_actus(
         return SALUTATIONS_CLEAN[question_clean]
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-    
+    # On normalise toutes les clés pour lever les accents et espaces fantaisistes
+    SALUTATIONS_CLEAN = {
+        nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()
+    }
+
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
         try:
@@ -920,7 +924,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             return format_actus(actus)
         except Exception as e:
             return f"⚠️ Impossible de récupérer les actualités : {e}"
-
+    
     # --- Bloc Salutations courantes --- 
     SALUTATIONS_COURANTES = {
     # SALUTATIONS
@@ -1206,11 +1210,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         "ava tu peux danser": "🕺 Si je pouvais bouger, je serais déjà en train de faire un moonwalk virtuel.",
 
     }
-    # On normalise toutes les clés pour lever les accents et espaces fantaisistes
-    SALUTATIONS_CLEAN = {
-        nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()
-    }
-
+    
     # --- Rappel du prénom ---
     if any(kw in question_clean for kw in ["mon prénom", "mon prenom", "ton prénom", "ton prenom"]):
         prenom = retrouver_profil("prenom")
