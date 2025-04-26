@@ -1286,19 +1286,20 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     meteo_repondu     = False
     actus_repondu     = False
     analyse_complete  = False
-    
+
     if base_connaissances:
-    question_clean = question_clean.lower()
+        question_clean = question_clean.lower()
 
-    if "salut" in question_clean or "bonjour" in question_clean:
-        if "comment tu vas" in question_clean or "comment ça va" in question_clean:
-            return "Salut ! Je vais super bien, merci 😄 Et vous ?"
+        if "salut" in question_clean or "bonjour" in question_clean:
+            if "comment tu vas" in question_clean or "comment ça va" in question_clean:
+                return "Salut ! Je vais super bien, merci 😄 Et vous ?"
 
-    if "motivation" in question_clean or "encouragement" in question_clean:
-        return "N'abandonne jamais tes rêves, tu es plus fort que tu ne le crois ! 🚀"
+        if "motivation" in question_clean or "encouragement" in question_clean:
+            return "N'abandonne jamais tes rêves, tu es plus fort que tu ne le crois ! 🚀"
 
-    if "phrase motivante" in question_clean or "boost" in question_clean:
-        return "Crois en toi, chaque pas te rapproche de ta réussite ! 🌟"
+        if "phrase motivante" in question_clean or "boost" in question_clean:
+            return "Crois en toi, chaque pas te rapproche de ta réussite ! 🌟"
+            
     # --- Bloc Culture générale simple ---
     if any(keyword in question_clean for keyword in [
         "qui ", "quand ", "où ", "combien ", "quel ", "quelle ",
