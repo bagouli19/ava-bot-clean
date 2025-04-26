@@ -27,7 +27,7 @@ from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
 import openai
-from AVA_Knowledge_Bank import base_culture_nettoyee
+from AVA_Knowledge_Bank.base_culture_nettoyee import base_culture_nettoyee
 
 # ───────────────────────────────────────────────────────────────────────
 # Configuration de la page
