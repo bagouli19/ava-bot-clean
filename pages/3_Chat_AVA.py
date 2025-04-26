@@ -27,7 +27,7 @@ from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
 import openai
-from AVA_Knowledge_Bank.base_culture_nettoyee import base_culture_nettoyee
+
 
 # ───────────────────────────────────────────────────────────────────────
 # Configuration de la page
@@ -266,7 +266,7 @@ motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", 
 
 # Chargement de la base de culture (on pourrait l’extraire dans un JSON séparé pour faciliter la maintenance)
 base_culture = {
-   "quand a été signée la déclaration des droits de l'homme": "📝 En **1789**, pendant la Révolution française.",
+    "quand a été signée la déclaration des droits de l'homme": "📝 En **1789**, pendant la Révolution française.",
     "quand a été signé le traité de Maastricht": "🇪🇺 Le traité de Maastricht, fondateur de l'Union européenne, a été signé en **1992**.",
     "qui a été le premier président des États-Unis": "🇺🇸 **George Washington** a été le premier président des États-Unis, en 1789.",
     "quand a été inventé le vaccin contre la variole": "💉 Le premier vaccin contre la variole a été développé par **Edward Jenner** en **1796**.",
@@ -786,6 +786,10 @@ st.markdown(
 st.markdown(
     "Posez-moi vos questions sur la bourse, la météo, les actualités... ou juste pour discuter !"
 )
+
+KB_PATH = os.path.join(os.path.dirname(__file__), "..", "knowledge_base", "base_de_langage.txt")
+with open(KB_PATH, encoding="utf-8") as f:
+    base_de_langage = f.read()
 
 def obtenir_reponse_openai(prompt_utilisateur):
     try:
