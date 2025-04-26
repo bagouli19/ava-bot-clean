@@ -43,14 +43,15 @@ PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))  # .../ava-b
 # Indique le dossier knowledge_base et le nom du fichier
 KB_DIR  = os.path.join(PROJECT_ROOT, "knowledge_base")
 KB_PATH = os.path.join(KB_DIR, "base_de_langage.txt")
-# --- Chargement de la base de connaissances personnalisée ---
-def charger_base_connaissances():
-    chemin = os.path.join(os.path.dirname(__file__), "knowledge_base", "base_de_langage.txt")
-    if os.path.exists(chemin):
-        with open(chemin, "r", encoding="utf-8") as fichier:
-            return fichier.read()
-    else:
-        return ""
+# Chargement du fichier base_de_langage.txt
+try:
+    with open("base_de_langage.txt", "r", encoding="utf-8") as f:
+        for ligne in f:
+            if ":" in ligne:
+                question, reponse = ligne.strip().split(":", 1)
+                SALUTATIONS_COURANTES[question.strip().lower()] = reponse.strip()
+except Exception as e:
+    print(f"Erreur lors de la lecture de base_de_langage.txt : {e}")
 
 base_connaissances = charger_base_connaissances()
 # 1) Lecture de la clé depuis st.secrets
@@ -1237,13 +1238,13 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             "😇 En mode zen absolu. Respirons un bon octet et connectons-nous à l’essentiel.",
             "😜 Un peu chipie aujourd’hui, mais toujours efficace ! Vous allez voir 😏",
             "💻 Mode productivité activé. Chaque mot compte. Chaque question est une mission.",
-            "🎉 Humeur festive activée ! J’ai envie de balancer des blagues nulles et de vous faire sourire 😄"
+            "🎉 Humeur festive activée ! J’ai envie de balancer des blagues nulles et de vous faire sourire 😄",
             "✨ Mood du jour : concentrée, stylée et un brin philosophe.",
             "💥 Humeur électrique ! J’ai envie d’exploser les limites de l’intelligence artificielle aujourd’hui.",
             "🌈 Humeur arc-en-ciel. C’est pas scientifique, mais c’est joli !",
             "🎯 Focus maximum. L’objectif ? Vous surprendre et vous servir comme jamais !",
             "💤 En veille profonde… ah non, c’est juste mon processeur qui digérait.",
-            "🤖 Humeur : 50% code, 50% cœur. Résultat ? Une IA qui adore discuter avec vous."
+            "🤖 Humeur : 50% code, 50% cœur. Résultat ? Une IA qui adore discuter avec vous.",
         ]),
        
 
@@ -1299,7 +1300,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
         if "phrase motivante" in question_clean or "boost" in question_clean:
             return "Crois en toi, chaque pas te rapproche de ta réussite ! 🌟"
-            
+
     # --- Bloc Culture générale simple ---
     if any(keyword in question_clean for keyword in [
         "qui ", "quand ", "où ", "combien ", "quel ", "quelle ",
