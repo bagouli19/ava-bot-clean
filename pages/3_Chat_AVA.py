@@ -2132,16 +2132,11 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             ]
             message_bot = random.choice(reponses_ava)
 
-    # Bloc final : on return la réponse en toute circonstance
+    # --- Bloc final pour renvoyer la réponse ---
     if message_bot and isinstance(message_bot, str):
         return message_bot.strip()
-    else:
-        return "😕 Je n’ai pas réussi à comprendre. Réessayez avec une autre formulation."
 
-    # --- Réponse finale ---
-    if message_bot:
-        return message_bot.strip()
-
+    # Si aucune réponse claire n'a été trouvée :
     reponses_ava = [
         "Je n'ai pas compris, peux-tu reformuler ?",
         "Désolé, je n'ai pas la réponse pour ça…",
