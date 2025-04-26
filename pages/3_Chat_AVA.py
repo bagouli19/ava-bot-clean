@@ -1210,6 +1210,12 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         "ava tu peux danser": "🕺 Si je pouvais bouger, je serais déjà en train de faire un moonwalk virtuel.",
 
     }
+     SALUTATIONS_CLEAN = {
+        nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()
+    }
+    if question_clean in SALUTATIONS_CLEAN:
+        réponse = SALUTATIONS_CLEAN[question_clean]
+        return réponse
     
     # --- Rappel du prénom ---
     if any(kw in question_clean for kw in ["mon prénom", "mon prenom", "ton prénom", "ton prenom"]):
