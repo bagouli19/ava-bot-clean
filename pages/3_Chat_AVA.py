@@ -36,7 +36,21 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+BASE_DIR   = os.path.dirname(os.path.dirname(__file__))      # remonte d’un cran : ava-bot-ultimate/
+KB_DIR     = os.path.join(BASE_DIR, "knowledge_base")
+KB_PATH    = os.path.join(KB_DIR, "base_de_langage.txt")
 
+# 2) Si le dossier/fichier n’existe pas, on affiche un message d’erreur
+if not os.path.isdir(KB_DIR):
+    st.error(f"📂 Le dossier knowledge_base/ est introuvable. Crée-le à : `{KB_DIR}`")
+    base_de_langage = ""
+elif not os.path.isfile(KB_PATH):
+    st.error(f"📄 Le fichier base_de_langage.txt est introuvable dans : `{KB_PATH}`")
+    base_de_langage = ""
+else:
+    # 3) Sinon on le charge en mémoire
+    with open(KB_PATH, "r", encoding="utf-8") as f:
+        base_de_langage = f.read()
 # ───────────────────────────────────────────────────────────────────────
 # Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
