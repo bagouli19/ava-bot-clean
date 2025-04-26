@@ -36,9 +36,14 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-BASE_DIR   = os.path.dirname(os.path.dirname(__file__))      # remonte d’un cran : ava-bot-ultimate/
-KB_DIR     = os.path.join(BASE_DIR, "knowledge_base")
-KB_PATH    = os.path.join(KB_DIR, "base_de_langage.txt")
+# Repère le dossier pages/ et remonte d’un cran jusqu’à la racine du projet
+SCRIPT_DIR   = os.path.dirname(__file__)                          # .../ava-bot-ultimate/pages
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))  # .../ava-bot-ultimate
+
+# Indique le dossier knowledge_base et le nom du fichier
+KB_DIR  = os.path.join(PROJECT_ROOT, "knowledge_base")
+KB_PATH = os.path.join(KB_DIR, "base_de_langage.txt")
+
 # 1) Lecture de la clé depuis st.secrets
 if "OPENAI_API_KEY" not in st.secrets:
     st.error("⚠️ OPENAI_API_KEY introuvable dans les secrets ! Vérifie tes Settings.")
@@ -806,9 +811,7 @@ st.markdown(
     "Posez-moi vos questions sur la bourse, la météo, les actualités... ou juste pour discuter !"
 )
 
-KB_PATH = "base-de-langage.txt"  # ou "data/knowledge_base.txt"
-
-# Charger la base de connaissances
+# Puis, là où tu fais ton open :
 with open(KB_PATH, encoding="utf-8") as f:
     knowledge = f.read()
 
