@@ -279,14 +279,13 @@ def nettoyer_texte(txt: str) -> str:
     - Normalisation Unicode NFKC
     - Passage en minuscules
     - Conserve lettres (y compris accents), chiffres, espaces, apostrophes et traits d’union
-    - Supprime la ponctuation (points, virgules, points d’interrogation, etc.)
+    - Retire les ponctuations inutiles (comme ? ! . ,)
     """
     t = unicodedata.normalize("NFKC", txt)
     t = t.replace("’", "'").replace("“", '"').lower()
-    # Supprimer toute la ponctuation
-    t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç'-]", "", t)
-    t = re.sub(r"[?.!]", "", t)  # <<< ici on enlève bien les ?, ., !
-    t = re.sub(r"\s+", " ", t).strip()
+    t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç'-]", "", t)  # Garder lettres, chiffres, accents, tirets et apostrophes
+    t = re.sub(r"[?.!]", "", t)  # Supprimer les points d'interrogation, exclamation, points
+    t = re.sub(r"\s+", " ", t).strip()  # Nettoyer les espaces multiples
     return t
 
  # --- Bloc Salutations courantes --- 
