@@ -915,7 +915,9 @@ def format_actus(
         return SALUTATIONS_CLEAN[question_clean]
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-    # ... tes autres blocs (horoscope, météo, etc.) ...
+    if question_clean in SALUTATIONS_CLEAN:
+        réponse = SALUTATIONS_CLEAN[question_clean]
+        return réponse
 
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
@@ -1211,16 +1213,9 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
     }
     # On normalise toutes les clés pour lever les accents et espaces fantaisistes
-    question_clean = nettoyer_texte(question)
-    if question_clean in SALUTATIONS_CLEAN:
-        réponse = SALUTATIONS_CLEAN[question_clean]
-        if réponse == "__HUMEUR_DU_JOUR__":
-            return random.choice([
-                # Ta liste des humeurs ici
-            ])
-        else:
-            return réponse
-    
+    SALUTATIONS_CLEAN = {
+        nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()
+    }
 
     # --- Rappel du prénom ---
     if any(kw in question_clean for kw in ["mon prénom", "mon prenom", "ton prénom", "ton prenom"]):
