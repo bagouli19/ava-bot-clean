@@ -270,33 +270,29 @@ def generer_phrase_autonome(theme: str, infos: dict) -> str:
 import unicodedata
 import re
 
-def nettoyer_texte(txt: str) -> str:
-    """
-    Nettoie et normalise un texte :
-    - Normalisation Unicode NFKC
-    - Passage en minuscules
-    - Conserve lettres (y compris accents), chiffres, espaces, apostrophes et traits d’union
-    - Retire les ponctuations inutiles (comme ? ! . ,)
-    """
-    t = unicodedata.normalize("NFKC", txt)
-    t = t.replace("’", "'").replace("“", '"').lower()
-    t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç'-]", "", t)  # Garder lettres, chiffres, accents, tirets et apostrophes
-    t = re.sub(r"[?.!]", "", t)  # Corrigé ici ! (nettoyer t, pas question)
-    t = re.sub(r"\s+", " ", t).strip()  # Nettoyer les espaces multiples
-    return t
-# --- Test rapide du nettoyage ---
-if __name__ == "__main__":
-    exemples = [
-        "Salut, ça va ?",
-        "Comment ça se passe !",
-        "Quel est ton but ?",
-        "123 C'est la vie...",
-        "AVA-3.0 est géniale, n'est-ce pas ?"
-    ]
-    for exemple in exemples:
-        print(f"Avant : {exemple}")
-        print(f"Après : {nettoyer_texte(exemple)}")
-        print("-" * 30)
+# Fonction pour nettoyer le texte
+def nettoyer_texte(texte: str) -> str:
+    texte = texte.lower()
+    texte = texte.replace("?", "").replace("!", "").replace(".", "").replace(",", "")
+    texte = texte.replace("é", "e").replace("è", "e").replace("à", "a").replace("ù", "u")
+    return texte
+
+# Fonction pour récupérer la réponse
+def get_reponse(message_utilisateur: str) -> str:
+    message_clean = nettoyer_texte(message_utilisateur)
+    if message_clean in SALUTATIONS_CLEAN:
+        return SALUTATIONS_CLEAN[message_clean]
+    else:
+        return "Désolé, je n'ai pas compris. Pouvez-vous reformuler ?"
+
+# Fonction pour obtenir la réponse de l'utilisateur
+def obtenir_reponse_utilisateur(question):
+    """Pose une question à l'utilisateur et récupère la réponse"""
+    reponse = st.text_input(question, key=f"reponse_{random.randint(0,1000000)}")
+    if reponse:
+        return reponse
+    else:
+        return None
 
  # --- Bloc Salutations courantes --- 
 SALUTATIONS_COURANTES = {
@@ -936,33 +932,7 @@ base_culture_nettoyee = {
     for question, reponse in base_culture.items()
 }
 
-# Nettoyer le message de l'utilisateur avant de chercher
-def get_reponse(message_utilisateur: str) -> str:
-    # Nettoyer le texte de l'utilisateur
-    message_clean = nettoyer_texte(message_utilisateur)
-    
-    # Vérifier si le message nettoyé est dans le dictionnaire des salutations
-    if message_clean in SALUTATIONS_CLEAN:
-        return SALUTATIONS_CLEAN[message_clean]
-    else:
-        return "Désolé, je n'ai pas compris. Pouvez-vous reformuler ?"
 
-# --- Test du fonctionnement ---
-if __name__ == "__main__":
-    # Test des messages
-    exemples = [
-        "Salut, ça va ?",
-        "Tu vas bien !",
-        "AVA, tu es là.",
-        "yo",
-        "je suis fatigué",
-        "quoi de neuf ?"
-    ]
-    
-    for exemple in exemples:
-        print(f"Message: {exemple}")
-        print(f"Réponse: {get_reponse(exemple)}")
-        print("-" * 30)
 
 API_KEY = "3b2ff0b77dd65559ba4a1a69769221d5"
 
@@ -2183,7 +2153,9 @@ if prompt:
     st.session_state["messages"].append({"role": "user", "content": prompt})
 
     # Calcul de la réponse
-    réponse = trouver_reponse(prompt)
+    if user_message:
+        reponse = get_reponse(user_message)
+        st.write(f"AVA : {reponse}")
 
     if not isinstance(réponse, str) or not réponse.strip():
         réponse = "Hmm... je n’ai pas compris, vous pouvez reformuler ? 😊"
