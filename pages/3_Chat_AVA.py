@@ -267,32 +267,27 @@ def generer_phrase_autonome(theme: str, infos: dict) -> str:
 # ───────────────────────────────────────────────────────────────────────
 # 7️⃣ Base de culture et nettoyage de texte
 # ───────────────────────────────────────────────────────────────────────
-import unicodedata
-import re
 
-# Fonction pour nettoyer le texte
+
 def nettoyer_texte(texte: str) -> str:
-    texte = texte.lower()
-    texte = texte.replace("?", "").replace("!", "").replace(".", "").replace(",", "")
-    texte = texte.replace("é", "e").replace("è", "e").replace("à", "a").replace("ù", "u")
-    return texte
-
-# Fonction pour récupérer la réponse
-def get_reponse(message_utilisateur: str) -> str:
-    message_clean = nettoyer_texte(message_utilisateur)
-    if message_clean in SALUTATIONS_CLEAN:
-        return SALUTATIONS_CLEAN[message_clean]
-    else:
-        return "Désolé, je n'ai pas compris. Pouvez-vous reformuler ?"
-
-# Fonction pour obtenir la réponse de l'utilisateur
-def obtenir_reponse_utilisateur(question):
-    """Pose une question à l'utilisateur et récupère la réponse"""
-    reponse = st.text_input(question, key=f"reponse_{random.randint(0,1000000)}")
-    if reponse:
-        return reponse
-    else:
-        return None
+    """
+    - Normalise Unicode (décompose les accents)
+    - Enlève les caractères combinants (accents)
+    - Passe en minuscules
+    - Remplace toute ponctuation par un espace
+    - Réduit les espaces multiples à un seul
+    """
+    # 1) Décomposition Unicode pour séparer base + accent
+    t = unicodedata.normalize("NFKD", texte)
+    # 2) On retire les accents
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    # 3) Minuscules
+    t = t.lower()
+    # 4) Remplace toute ponctuation (tout ce qui n'est ni lettre, ni chiffre, ni espace) par un espace
+    t = re.sub(r"[^\w\s]", " ", t)
+    # 5) Écrase les multiples espaces et supprime ceux en bordure
+    t = re.sub(r"\s+", " ", t).strip()
+    return t
 
  # --- Bloc Salutations courantes --- 
 SALUTATIONS_COURANTES = {
@@ -1111,22 +1106,29 @@ st.markdown(
 
 
 def trouver_reponse(question: str) -> str:
-    question_clean = question.lower().strip()
-    message_bot = ""
+    # on nettoie dès le départ
+    question_clean = nettoyer_texte(question)
 
     incrementer_interactions()
     ajuster_affection(question)
-    
+
+    # 1) modules spéciaux
     resp = gerer_modules_speciaux(question, question_clean)
     if resp:
         return resp.strip()
 
+    # 2) exact match base culture
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # Si la question épurée correspond à une salutation
+    # 3) salutations
     if question_clean in SALUTATIONS_CLEAN:
         return SALUTATIONS_CLEAN[question_clean]
+
+    # 4) fuzzy, sémantique…
+    # (reste inchangé)
+    …
+
 
     # 6️⃣ Fuzzy matching
     match = difflib.get_close_matches(
