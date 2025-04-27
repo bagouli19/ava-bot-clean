@@ -7,9 +7,10 @@ st.set_page_config(page_title="Bienvenue sur AVA", layout="centered")
 # Animation étoiles en fond
 st.markdown("""
     <style>
-        body {
+        .stApp {
             background: radial-gradient(circle at center, #0f0f0f 0%, #1c1c1c 70%) fixed, url('https://i.imgur.com/4HJbzEq.gif') repeat;
             background-size: cover;
+            color: #ffffff;
         }
     </style>
 """, unsafe_allow_html=True)
