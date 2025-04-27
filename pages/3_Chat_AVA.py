@@ -284,10 +284,9 @@ def nettoyer_texte(txt: str) -> str:
     t = unicodedata.normalize("NFKC", txt)
     t = t.replace("’", "'").replace("“", '"').lower()
     t = re.sub(r"[^\w\sàâäéèêëïîôöùûüç'-]", "", t)  # Garder lettres, chiffres, accents, tirets et apostrophes
-    t = re.sub(r"[?.!]", "", t)  # Supprimer les points d'interrogation, exclamation, points
+    t = re.sub(r"[?.!]", "", t)  # Corrigé ici ! (nettoyer t, pas question)
     t = re.sub(r"\s+", " ", t).strip()  # Nettoyer les espaces multiples
     return t
-    
 # --- Test rapide du nettoyage ---
 if __name__ == "__main__":
     exemples = [
