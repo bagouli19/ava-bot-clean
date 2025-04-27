@@ -1548,23 +1548,22 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
         
     # --- Bloc Réponses médicales explicites ---
-    if any(kw in question_clean for kw in ["grippe", "rhume", "fièvre", …]):
-        reponses_medic = {
-            "grippe", "rhume", "fièvre", "migraine", "angine", "hypertension", "stress", "toux", "maux", "douleur",
-            "asthme", "bronchite", "eczéma", "diabète", "cholestérol", "acné", "ulcère", "anémie", "insomnie",
-            "vertige", "brûlures", "reflux", "nausée", "dépression", "allergie", "palpitations", "otite", "sinusite",
-            "crampes", "infections urinaires", "fatigue", "constipation", "diarrhée", "ballonnements", "brûlures d'estomac",
-            "saignement de nez", "mal de dos", "entorse", "tendinite", "ampoule", "piqûre d’insecte", "bruit dans l'oreille",
-            "angoisse", "boutons de fièvre", "lombalgie", "périarthrite", "hallux valgus", "hallucinations", "trouble du sommeil",
-            "inflammation", "baisse de tension", "fièvre nocturne", "bradycardie", "tachycardie", "psoriasis", "fibromyalgie",
-            "thyroïde", "cystite", "glaucome", "bruxisme", "arthrose", "hernie discale", "spasmophilie", "urticaire",
-            "coup de chaleur", "luxation", "anxiété", "torticolis", "eczéma de contact", "hypoglycémie", "apnée du sommeil",
-            "brûlure chimique", "eczéma atopique", "syndrome des jambes sans repos", "colique néphrétique", "hépatite",
-            "pneumonie", "zona", "épilepsie", "coupure profonde", "hépatite c", "phlébite", "gastro-entérite",
-            "blessure musculaire", "tendinopathie", "œil rouge", "perte d'odorat", "brûlure au second degré", "gerçures", "mal de gorge",
-            "gencive douloureuse", "œdème","sciatique", "gerçure aux mains", "trachéite", "kyste sébacé", "arthrite", "hémorroïdes",  "crise d’angoisse", 
-            "baisse de vue soudaine", "lésion cutanée", "spasmes musculaires", "trouble digestif", "infection dentaire", "bruit de craquement dans les articulations",
-        }
+    if any(kw in question_clean for kw in [
+        "grippe", "rhume", "fièvre", "migraine", "angine", "hypertension", "stress", "toux", "maux", "douleur",
+        "asthme", "bronchite", "eczéma", "diabète", "cholestérol", "acné", "ulcère", "anémie", "insomnie",
+        "vertige", "brûlures", "reflux", "nausée", "dépression", "allergie", "palpitations", "otite", "sinusite",
+        "crampes", "infections urinaires", "fatigue", "constipation", "diarrhée", "ballonnements", "brûlures d'estomac",
+        "saignement de nez", "mal de dos", "entorse", "tendinite", "ampoule", "piqûre d’insecte", "bruit dans l'oreille",
+        "angoisse", "boutons de fièvre", "lombalgie", "périarthrite", "hallux valgus", "hallucinations", "trouble du sommeil",
+        "inflammation", "baisse de tension", "fièvre nocturne", "bradycardie", "tachycardie", "psoriasis", "fibromyalgie",
+        "thyroïde", "cystite", "glaucome", "bruxisme", "arthrose", "hernie discale", "spasmophilie", "urticaire",
+        "coup de chaleur", "luxation", "anxiété", "torticolis", "eczéma de contact", "hypoglycémie", "apnée du sommeil",
+        "brûlure chimique", "eczéma atopique", "syndrome des jambes sans repos", "colique néphrétique", "hépatite",
+        "pneumonie", "zona", "épilepsie", "coupure profonde", "hépatite c", "phlébite", "gastro-entérite",
+        "blessure musculaire", "tendinopathie", "œil rouge", "perte d'odorat", "brûlure au second degré", "gerçures", "mal de gorge",
+        "gencive douloureuse", "œdème","sciatique", "gerçure aux mains", "trachéite", "kyste sébacé", "arthrite", "hémorroïdes",  "crise d’angoisse", 
+        "baisse de vue soudaine", "lésion cutanée", "spasmes musculaires", "trouble digestif", "infection dentaire", "bruit de craquement dans les articulations",
+    ]):   
     
         reponses_medic = {
             "grippe": "🤒 Les symptômes de la grippe incluent : fièvre élevée, frissons, fatigue intense, toux sèche, douleurs musculaires.",
