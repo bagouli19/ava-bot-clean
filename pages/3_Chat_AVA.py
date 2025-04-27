@@ -2218,6 +2218,13 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 "formulation ou tapez 'analyse complète' pour un aperçu du marché 📊"
             ]
             message_bot = random.choice(reponses_ava)
+
+    # Bloc de secours
+    if not message_bot:
+        message_bot = "🤔 Je n'ai pas d'information locale sur ce sujet pour le moment. Pose-moi une autre question ou demande-moi de te faire découvrir un pays, par exemple ! 🌍"
+
+    return message_bot
+
     return None 
    
 
