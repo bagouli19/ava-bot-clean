@@ -1383,11 +1383,17 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 "Peut-être un souci temporaire ? Réessayez dans quelques minutes."
             )
 
-    # --- Bloc Remèdes naturels ---
-    if not message_bot and any(phrase in question_clean for phrase in [
-             "remède", "solution naturelle", "astuce maison", "traitement doux", "soulager naturellement",
-            "tisane", "huile essentielle", "remedes naturels", "plantes médicinales", "remède maison"
-    ]):
+   
+
+    # --- Bloc remèdes naturels ---
+    if any(kw in question_clean for kw in ["remède", "remedes", "remede", "soigner", "soulager", "traitement naturel"]):
+        try:
+            remede = remede_naturel(question_clean)
+            if remede:
+                return f"🌿 {remede}"
+        except Exception:
+            pass  # En cas d'erreur, on continue plus bas
+
         if "stress" in question_clean:
             message_bot = "🧘 Pour le stress : tisane de camomille ou de valériane, respiration profonde, méditation guidée ou bain tiède aux huiles essentielles de lavande."
         elif "mal de gorge" in question_clean or "gorge" in question_clean:
@@ -1542,7 +1548,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
         
     # --- Bloc Réponses médicales explicites ---
-    if not message_bot and any(phrase in question_clean for phrase in [
+    if any(kw in question_clean for kw in [
         "grippe", "rhume", "fièvre", "migraine", "angine", "hypertension", "stress", "toux", "maux", "douleur",
         "asthme", "bronchite", "eczéma", "diabète", "cholestérol", "acné", "ulcère", "anémie", "insomnie",
         "vertige", "brûlures", "reflux", "nausée", "dépression", "allergie", "palpitations", "otite", "sinusite",
@@ -1558,7 +1564,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         "gencive douloureuse", "œdème","sciatique", "gerçure aux mains", "trachéite", "kyste sébacé", "arthrite", "hémorroïdes",  "crise d’angoisse", 
         "baisse de vue soudaine", "lésion cutanée", "spasmes musculaires", "trouble digestif", "infection dentaire", "bruit de craquement dans les articulations",
     ]):
-
+    
         reponses_medic = {
             "grippe": "🤒 Les symptômes de la grippe incluent : fièvre élevée, frissons, fatigue intense, toux sèche, douleurs musculaires.",
             "rhume": "🤧 Le rhume provoque généralement une congestion nasale, des éternuements, une légère fatigue et parfois un peu de fièvre.",
@@ -1667,6 +1673,8 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             if symptome in question_clean:
                 message_bot = reponse
                 break
+        # ❗ Si aucun symptôme ne correspond ➔ message d'erreur fixe
+        return "🩺 Désolé, je n'ai pas trouvé d'information médicale correspondante. Pouvez-vous préciser votre symptôme ?"
 
     # ─── Bloc Géographie (capitales) ─────────────
     if any(kw in question_clean for kw in ["capitale", "où se trouve", "ville principale"]):
@@ -2107,21 +2115,21 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         "🍫 **Mug cake chocolat** : 4 ingrédients, 1 mug, 1 micro-ondes. Gâteau prêt en 1 minute !",
         "🥔 **Chips maison micro-ondes** : pommes de terre très fines + sel + micro-ondes 5 à 6 min. Ultra croustillant !"
     ]
-    # 1) Demande initiale de recette
+     # 1) Demande initiale de recette
     if any(kw in question_clean for kw in [
         "recette", "idée recette", "une recette", "qu'est-ce qu'on mange", "on mange quoi"
     ]):
         choix = random.choice(recettes)
         st.session_state['derniere_recette'] = choix
-        message_bot = f"🍽️ Voici une idée de recette :\n\n{choix}"
-    # 2) Si on demande « encore une/une autre »
+        return f"🍽️ Voici une idée de recette rapide :\n\n{choix}"
+
     elif any(kw in question_clean for kw in ["encore une", "une autre", "autre recette"]):
         if 'derniere_recette' in st.session_state:
             choix = random.choice(recettes)
             st.session_state['derniere_recette'] = choix
-            message_bot = f"🍽️ Voici une autre idée :\n\n{choix}"
+            return f"🍽️ Voici une autre idée de recette :\n\n{choix}"
         else:
-            message_bot = "⚠️ Je n'ai pas encore partagé de recette. Demandez-moi d'abord une recette !"
+            return "⚠️ Je n'ai pas encore partagé de recette. Demandez-moi d'abord une recette !"
         
         # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
