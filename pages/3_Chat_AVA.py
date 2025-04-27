@@ -1682,7 +1682,12 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
     
     # --- Bloc Découverte du Monde 100% local ---
-    if any(kw in question_clean for kw in ["découverte", "découvrir un pays", "parle-moi d'un pays", "endroit à visiter", "voyage", "montre-moi une ville"]):
+    if any(kw in question_clean for kw in ["pays", "fait-moi découvrir", "découvre-moi", "exploration du monde", "découvrir un pays"]):
+        try:
+            pays_info = random.choice(pays_du_monde)  # On pioche un pays aléatoire
+            message_bot = f"🌍 {pays_info}"
+        except Exception:
+            message_bot = "⚠️ Désolé, une erreur est survenue en essayant de découvrir un nouveau pays."
         DESTINATIONS = [
             {
                 "pays": "Islande 🇮🇸",
