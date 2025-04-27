@@ -1548,7 +1548,8 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
         
     # --- Bloc Réponses médicales explicites ---
-    if any(kw in question_clean for kw in [
+    if any(kw in question_clean for kw in ["grippe", "rhume", "fièvre", …]):
+        reponses_medic = {
         "grippe", "rhume", "fièvre", "migraine", "angine", "hypertension", "stress", "toux", "maux", "douleur",
         "asthme", "bronchite", "eczéma", "diabète", "cholestérol", "acné", "ulcère", "anémie", "insomnie",
         "vertige", "brûlures", "reflux", "nausée", "dépression", "allergie", "palpitations", "otite", "sinusite",
@@ -1563,7 +1564,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         "blessure musculaire", "tendinopathie", "œil rouge", "perte d'odorat", "brûlure au second degré", "gerçures", "mal de gorge",
         "gencive douloureuse", "œdème","sciatique", "gerçure aux mains", "trachéite", "kyste sébacé", "arthrite", "hémorroïdes",  "crise d’angoisse", 
         "baisse de vue soudaine", "lésion cutanée", "spasmes musculaires", "trouble digestif", "infection dentaire", "bruit de craquement dans les articulations",
-    ]):
+    }
     
         reponses_medic = {
             "grippe": "🤒 Les symptômes de la grippe incluent : fièvre élevée, frissons, fatigue intense, toux sèche, douleurs musculaires.",
