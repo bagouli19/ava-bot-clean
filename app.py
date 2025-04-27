@@ -4,6 +4,16 @@ from streamlit.components.v1 import html
 
 st.set_page_config(page_title="Bienvenue sur AVA", layout="centered")
 
+# Animation étoiles en fond
+st.markdown("""
+    <style>
+        body {
+            background: radial-gradient(circle at center, #0f0f0f 0%, #1c1c1c 70%) fixed, url('https://i.imgur.com/4HJbzEq.gif') repeat;
+            background-size: cover;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # --- CSS pour fond et style AVA ---
 st.markdown("""
     <style>
@@ -65,7 +75,7 @@ try:
     st.markdown('</div>', unsafe_allow_html=True)
 except Exception as e:
     st.error(f"Logo non trouvé : {e}")
-    
+
 # --- Mention spéciale "Nyx veille" ---
 st.markdown("""
 <div style='text-align: center; margin-top: -1rem; margin-bottom: 2rem;'>
