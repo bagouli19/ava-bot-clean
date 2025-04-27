@@ -2153,9 +2153,7 @@ if prompt:
     st.session_state["messages"].append({"role": "user", "content": prompt})
 
     # Calcul de la réponse
-    if user_message:
-        reponse = get_reponse(user_message)
-        st.write(f"AVA : {reponse}")
+    réponse = trouver_reponse(prompt)
 
     if not isinstance(réponse, str) or not réponse.strip():
         réponse = "Hmm... je n’ai pas compris, vous pouvez reformuler ? 😊"
