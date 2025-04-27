@@ -1174,7 +1174,16 @@ def trouver_reponse(question: str) -> str:
         "Essaie une autre formulation ou tape 'analyse complète' pour du trading 📊"
     ]
     return random.choice(reponses_ava)
-
+    # ───> 6) **Fallback** OpenAI (seulement ici)
+    try:
+        return repondre_openai(question)
+    except Exception as e:
+        # si OpenAI échoue ou pas de clé, on retombe sur un message générique
+        return random.choice([
+            "Je n'ai pas compris, peux-tu reformuler ?",
+            "Désolé, je n'ai pas la réponse pour ça…",
+            "Essaie une autre formulation ou tape 'analyse complète' pour du trading 📊"
+        ])
 
 
 # ─── Clé et fonctions NewsAPI ───
