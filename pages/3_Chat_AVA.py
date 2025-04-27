@@ -36,7 +36,7 @@ import openai
 # ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 try:
     with open("base_connaissances.json", "r", encoding="utf-8") as f:
@@ -1104,6 +1104,20 @@ st.markdown(
     "Posez-moi vos questions sur la bourse, la météo, les actualités... ou juste pour discuter !"
 )
 
+def repondre_openai(prompt: str) -> str:
+    """
+    Envoie le prompt à l’API ChatCompletion (gpt-3.5-turbo).
+    """
+    try:
+        resp = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=300,
+        )
+        return resp.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Erreur OpenAI : {e}"
 
 def trouver_reponse(question: str) -> str:
     # on nettoie dès le départ
@@ -1125,6 +1139,11 @@ def trouver_reponse(question: str) -> str:
     if question_clean in SALUTATIONS_CLEAN:
         return SALUTATIONS_CLEAN[question_clean]
 
+    # ───> INSÉREZ ICI le bloc OpenAI :
+    if model_semantic:
+        # Utilisation d’OpenAI pour peaufiner la réponse
+        return repondre_openai(question_clean)
+        
     # 6️⃣ Fuzzy matching
     match = difflib.get_close_matches(
         question_clean,
