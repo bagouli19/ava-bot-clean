@@ -236,33 +236,7 @@ def load_semantic_model():
 
 model_semantic = load_semantic_model()
 
-# Nettoyer le message de l'utilisateur avant de chercher
-def get_reponse(message_utilisateur: str) -> str:
-    # Nettoyer le texte de l'utilisateur
-    message_clean = nettoyer_texte(message_utilisateur)
-    
-    # Vérifier si le message nettoyé est dans le dictionnaire des salutations
-    if message_clean in SALUTATIONS_CLEAN:
-        return SALUTATIONS_CLEAN[message_clean]
-    else:
-        return "Désolé, je n'ai pas compris. Pouvez-vous reformuler ?"
 
-# --- Test du fonctionnement ---
-if __name__ == "__main__":
-    # Test des messages
-    exemples = [
-        "Salut, ça va ?",
-        "Tu vas bien !",
-        "AVA, tu es là.",
-        "yo",
-        "je suis fatigué",
-        "quoi de neuf ?"
-    ]
-    
-    for exemple in exemples:
-        print(f"Message: {exemple}")
-        print(f"Réponse: {get_reponse(exemple)}")
-        print("-" * 30)
 
 
 def generer_phrase_autonome(theme: str, infos: dict) -> str:
@@ -962,7 +936,33 @@ base_culture_nettoyee = {
     for question, reponse in base_culture.items()
 }
 
+# Nettoyer le message de l'utilisateur avant de chercher
+def get_reponse(message_utilisateur: str) -> str:
+    # Nettoyer le texte de l'utilisateur
+    message_clean = nettoyer_texte(message_utilisateur)
+    
+    # Vérifier si le message nettoyé est dans le dictionnaire des salutations
+    if message_clean in SALUTATIONS_CLEAN:
+        return SALUTATIONS_CLEAN[message_clean]
+    else:
+        return "Désolé, je n'ai pas compris. Pouvez-vous reformuler ?"
 
+# --- Test du fonctionnement ---
+if __name__ == "__main__":
+    # Test des messages
+    exemples = [
+        "Salut, ça va ?",
+        "Tu vas bien !",
+        "AVA, tu es là.",
+        "yo",
+        "je suis fatigué",
+        "quoi de neuf ?"
+    ]
+    
+    for exemple in exemples:
+        print(f"Message: {exemple}")
+        print(f"Réponse: {get_reponse(exemple)}")
+        print("-" * 30)
 
 API_KEY = "3b2ff0b77dd65559ba4a1a69769221d5"
 
