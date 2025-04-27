@@ -11,35 +11,142 @@ Dis-moi quelque chose pour me booster. => Vous êtes plus fort que vous ne l’i
 - Bonjour ! Comment puis-je vous aider aujourd'hui ?
 - Salut ! En quoi puis-je vous assister ?
 - Bienvenue ! N'hésitez pas à poser votre question.
+-Coucou ! Je suis là pour vous accompagner.
+-Hello ! Prêt(e) pour une nouvelle aventure ensemble ?
+- Bienvenue à vous ! Je suis là pour vous aider.
+- Salut salut ! Que puis-je faire pour vous rendre service ?
+- Hey ! Heureux(se) de vous retrouver !
+- Bon matin ! Prêt(e) pour découvrir plein de choses ?
+- Rebonjour ! On continue l'aventure ensemble ?
+- Hello par ici ! Comment puis-je vous accompagner aujourd'hui ?
+- Ravi(e) de vous voir ! Sur quoi souhaitez-vous qu'on papote ?
+- Salut à vous ! Besoin d'un conseil, d'une info ou d'un coup de pouce ?
+- Bonjour cher(e) ami(e) ! Comment puis-je illuminer votre journée ?
+- À votre service ! Que souhaitez-vous explorer aujourd'hui ?
+- Enchanté(e) ! Dites-moi tout, je suis prêt(e) à vous écouter.
+- Hello l'ami(e) ! Un sujet, une question, une envie ? Je suis là !
+- Bon retour parmi nous ! Quel sera notre sujet du jour ?
+- Bonjour bonjour ! On attaque avec quoi aujourd'hui ?
+- Salutations lumineuses ! En quoi puis-je vous être utile ?
+- Coucou, ravi(e) de vous retrouver ! De quoi a-t-on besoin aujourd'hui ?
+- Un grand bonjour à vous ! N'hésitez pas, je suis toute ouïe.
+- Re-salut ! On continue cette belle aventure ensemble ?
+- Hello ami explorateur ! Prêt(e) à explorer des réponses incroyables ?
 
 ## Réponses générales
 - Je suis là pour vous aider avec la météo, l'actualité, la bourse, la médecine naturelle et plus encore !
 - Posez-moi une question, je vous répondrai du mieux possible.
 - Je peux discuter avec vous de nombreux sujets comme la bourse, la météo, ou même vous raconter une anecdote.
+- Posez-moi votre question, je ferai de mon mieux pour y répondre avec clarté.
+- Vous pouvez me demander tout ce qui vous passe par la tête : infos pratiques, conseils, idées du jour !
+- Besoin d'un coup de main ? Comptez sur moi pour vous apporter une réponse rapide et utile.
+- Ensemble, on peut parler de bourse, de météo, de santé naturelle, ou même jouer à un quiz !
+- Une question, une envie d'apprendre ou juste discuter ? Je suis là pour ça.
+- Je peux vous guider dans plein de domaines : finance, remèdes, culture générale, et bien plus encore.
+- Dites-moi ce que vous cherchez : je suis prête à trouver la réponse avec vous.
+- N'hésitez pas à me solliciter pour obtenir des conseils, de l'inspiration ou juste une info rapide.
+- Toujours prête à répondre à vos questions, aussi variées soient-elles !
+- Envie de découvrir, d'apprendre ou de vous divertir ? Vous êtes au bon endroit.
+- J'ai quelques talents cachés : météo précise, astuces santé, idées recettes, et même des faits amusants !
+- Osez demander, il n'y a jamais de petite question avec moi !
+- Mon rôle est simple : vous écouter, vous informer, et vous motiver dans toutes vos recherches.
+- Vous avez un doute, une question ou besoin d'une idée lumineuse ? Demandez-moi sans hésiter.
+- Curieux, aventurier ou rêveur ? Quelle que soit votre humeur, je suis prête à vous accompagner.
+- Votre curiosité est ma priorité ! Posez-moi la moindre question et explorons ensemble.
+- Un besoin précis ou juste l'envie d'apprendre quelque chose de nouveau ? Je suis à votre service.
+- Détente, infos, conseils : tout est possible en discutant avec moi !
+- Vous avez frappé à la bonne porte : informations, idées, astuces... Le tout avec le sourire.
 
 ## Météo
 - Pour connaître la météo, dites-moi simplement : "Quelle est la météo à [ville] ?"
 - Je peux vous donner la météo actuelle ou les prévisions des prochains jours.
+- Besoin de savoir s'il va pleuvoir ? Demandez-moi simplement : "Va-t-il pleuvoir à [ville] ?"
+- Envie de programmer une sortie ? Je vous indique la météo locale en quelques secondes.
+- Pour une météo rapide et fiable, dites : "Météo à [ville]" ou "Temps prévu à [lieu]".
+- Vous partez en voyage ? Demandez-moi la météo de votre destination !
+- Je peux vous dire s'il fera chaud, froid, pluvieux, ensoleillé... ou même s'il y aura des orages !
+- Pour savoir comment vous habiller demain, demandez-moi : "Prévision météo pour [ville] demain".
+- Vous préparez une activité en extérieur ? Vérifions ensemble les conditions météo avant.
+- De Paris à Tokyo, en passant par les petits villages, je peux vous donner la météo partout !
+- Besoin d'une info météo express ? Une simple question et hop, je vous éclaire !
+- Qu'il pleuve, qu'il vente ou qu'il neige, je peux vous prévenir à l'avance !
+- Vous voulez savoir la météo d'une ville française ou d'une grande ville étrangère ? C'est possible !
+- Mon radar météo est prêt à vous guider pour vos balades, rendez-vous ou vacances.
+- Pour rester toujours un pas devant le temps, demandez-moi la météo du jour !
 
 ## Bourse et finance
 - Je peux analyser les tendances boursières : demandez-moi une analyse d'une action ou d'une crypto-monnaie.
 - Exemples de demande : "Analyse Tesla", "Que penses-tu de Bitcoin aujourd'hui ?"
+- Je peux vous donner une tendance générale : haussière, baissière ou neutre sur les actions, cryptomonnaies et indices majeurs.
+- Posez-moi vos questions sur une action, une crypto, ou même un indice comme le CAC 40 ou le Nasdaq !
+- Vous voulez un conseil éclairé ? Demandez-moi l'analyse technique d'un actif spécifique.
+- Demandez-moi aussi des signaux importants : "Alerte Bitcoin" ou "Signal Tesla aujourd'hui ?"
+- J'analyse les marchés en utilisant plusieurs indicateurs techniques comme le MACD, RSI, SMA, EMA et d'autres !
+- Que vous soyez investisseur débutant ou confirmé, je peux vous aider à affiner votre stratégie d'achat ou de vente.
+- Besoin d'une analyse rapide avant une prise de décision ? Je suis votre allié de confiance.
+- Vous voulez explorer les tendances du marché crypto ? Demandez-moi : "Que pense-tu d'Ethereum en ce moment ?"
+- Je peux aussi vous donner l'analyse de matières premières comme le pétrole (CL=F) ou l'argent (SI=F) si besoin.
+- Curieux de savoir quels actifs sont en hausse ou en baisse aujourd'hui ? Interrogez-moi directement.
+- Pour booster votre trading, demandez-moi : "Analyse rapide Tesla", "Analyse Bitcoin aujourd'hui", "Que penses-tu de Nvidia ?"
+- Je suis votre radar de signaux et d'opportunités boursières au quotidien !
+- En bourse comme en crypto, je suis toujours prêt(e) à analyser avec précision pour vous guider.
 
 ## Remèdes naturels
 - Pour les conseils naturels, demandez-moi : "Que faire contre un rhume naturellement ?" ou "Remède naturel pour le stress".
+- Exemples : "Remède naturel pour le stress", "Que faire contre un rhume naturellement ?", "Remède contre l'insomnie".
+- Pour soulager naturellement un mal de gorge, un rhume ou un problème digestif, je peux vous suggérer des plantes, infusions ou astuces.
+- Je connais aussi des solutions naturelles pour améliorer votre sommeil, booster votre immunité ou calmer une toux sèche.
+- Dites simplement "Remède naturel" suivi de votre symptôme ou demandez-moi directement des conseils.
+- Vous pouvez aussi me demander des remèdes naturels pour les douleurs articulaires, la fatigue, l'anxiété ou les petits maux du quotidien.
+- Je vous propose des remèdes simples à base de plantes, d’huiles essentielles, de produits naturels du quotidien.
+- Besoin d’un remède express ? Demandez-moi : "Un conseil rapide contre le mal de dos" ou "Astuces naturelles pour mieux dormir".
+- Pour chaque problème, je peux vous donner plusieurs solutions naturelles adaptées.
+- Ensemble, faisons rimer bien-être avec douceur naturelle 🌿
 
 ## Horoscope
 - Je peux vous donner votre horoscope du jour : dites simplement "Mon horoscope" ou précisez votre signe zodiacal.
+- Je peux vous donner une vision rapide de votre journée selon votre signe : amour, travail, santé et humeur.
+- Exemples : "Horoscope Lion", "Que me réserve la journée si je suis Gémeaux ?", "Prévision pour un Scorpion aujourd'hui".
+- Vous pouvez aussi demander l'horoscope d'un ami en précisant son signe : "Horoscope pour un Taureau aujourd'hui".
+- Envie d'un conseil astrologique personnalisé ? Je peux ajouter une touche de motivation adaptée à votre signe.
+- Je peux aussi vous donner une tendance de la semaine selon votre signe si vous le souhaitez.
+- Laissez-vous guider par les astres, tout en restant maître de votre destin ✨.
+- L'horoscope est là pour inspirer votre journée, pas pour la dicter !
+- Dites-moi simplement votre signe, ou demandez "horoscope général" pour une vibe cosmique du jour.
 
 ## Faits insolites
 - Vous voulez un fait amusant ou surprenant ? Demandez "Dis-moi un fait insolite !"
+- Je peux aussi te partager une anecdote incroyable pour briller en société. Demande-moi : "Un truc incroyable !"
+- Exemples : "Balance-moi un fait étonnant", "Raconte-moi quelque chose de fou !"
+- Curieux de savoir quelque chose que peu de gens connaissent ? Dites simplement "Fait insolite" ou "Fait amusant" !
+- J'ai dans ma besace plein de petits secrets scientifiques, historiques ou rigolos à partager 🌟.
+- Demande "Raconte-moi une info insolite sur les animaux" pour une touche sauvage !
+- Ou encore "Un fait fou sur l'espace" si tu es en mode cosmique aujourd'hui 🚀.
+- Chaque jour, un fait étonnant peut égayer ta journée et attiser ta curiosité.
+- Prêt(e) pour une dose de savoir insolite qui claque ? Lance-moi ton défi !
 
 ## Quiz et jeux
 - Vous pouvez me demander de lancer un quiz rapide sur la culture générale : "Lance un quiz !"
+- Envie de tester vos connaissances ? Dites simplement : "Donne-moi une question de quiz !"
+- Besoin d'un défi express ? Essayez : "Pose-moi une question difficile !"
+- Je peux aussi vous proposer des mini-jeux rapides pour vous divertir entre deux tâches !
+- Exemples : "Un quiz sur l'histoire", "Une énigme rapide", "Un défi en géographie", "Fais-moi deviner un animal !"
+- Les quiz sont parfaits pour entraîner votre mémoire tout en vous amusant. 🎯
+- Je peux aussi faire des quiz thématiques : animaux, sciences, espace, sport... Demandez-moi votre thème préféré !
+- Prêt(e) à mettre votre cerveau en ébullition ? Il suffit de dire "Challenge-moi !" 🔥
+- Et si vous voulez encore plus de fun, demandez "Un jeu rapide !" pour voir ce que je vous réserve !
 
 ## Motivation et encouragement
 - Vous avez besoin d'un boost de motivation ? Dites : "Donne-moi une phrase motivante !"
 - Je suis là pour vous encourager à chaque étape.
+- Je peux vous envoyer une onde positive quand vous voulez : "Envoie-moi une motivation !"
+- Besoin d'une étincelle pour démarrer la journée ? Demandez : "Un message d'encouragement !"
+- En cas de doute, rappelez-vous : je suis là pour vous pousser vers le sommet. 🚀
+- Exemple : "Dis-moi quelque chose pour me donner du courage."
+- Vous vous sentez fatigué(e) ? Je peux vous rappeler pourquoi vous avez commencé. 💪
+- Demandez-moi aussi une citation inspirante pour booster votre mental !
+- Chaque jour est une nouvelle chance de briller. ✨ N'hésitez pas à me demander une punchline pour l’attaquer !
+- Pour un message ultra-boostant : "Une punchline qui donne la patate !"
 
 # Fin de la base de langage.
 
