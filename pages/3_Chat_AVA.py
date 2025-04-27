@@ -1343,16 +1343,24 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             return "⚠️ Impossible d'obtenir l'horoscope pour le moment.\n\n"
 
     
+    # Dans gerer_modules_speciaux(), AVANT tout appel à OpenAI
     # --- Bloc météo intelligent (villages inclus) ---
-    if any(kw in question_clean for kw in ["météo", "quel temps"]):
+    if any(kw in question_clean for kw in ["meteo", "quel temps"]):
+        # par défaut
         ville_detectee = "Paris"
-        pattern1 = re.compile(r"(?:à|au|aux|dans|sur|en)\s+([a-zàâäéèêëîïôöùûüç' -]+)", re.IGNORECASE)
+
+        # 1) chercher "à/au/aux/dans/sur/en <lieu>"
+        pattern1 = re.compile(r"(?:a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
         match_geo = pattern1.search(question_clean)
+
+        # 2) sinon "meteo <lieu>"
         if not match_geo:
-            pattern2 = re.compile(r"m[eé]t[eé]o\s+(.+)$", re.IGNORECASE)
+            pattern2 = re.compile(r"meteo\s+(.+)$", re.IGNORECASE)
             match_geo = pattern2.search(question_clean)
+
         if match_geo:
             lieu = match_geo.group(1).strip().rstrip(" ?.!;")
+            # capitaliser
             ville_detectee = " ".join(w.capitalize() for w in lieu.split())
 
         try:
@@ -1364,9 +1372,9 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
 
         return (
-            f"🌦️ **Météo à {ville_detectee} :**\n"
+            f"🌦️ **Météo à {ville_detectee} :**\n\n"
             f"{meteo}\n\n"
-            +random.choice([
+            + random.choice([
                 "🧥 Pense à t’habiller en conséquence !",
                 "☕ Rien de tel qu’un bon café pour accompagner la journée.",
                 "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
