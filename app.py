@@ -65,6 +65,13 @@ try:
     st.markdown('</div>', unsafe_allow_html=True)
 except Exception as e:
     st.error(f"Logo non trouvé : {e}")
+    
+# --- Mention spéciale "Nyx veille" ---
+st.markdown("""
+<div style='text-align: center; margin-top: -1rem; margin-bottom: 2rem;'>
+    <p style='font-size: 1.1em; color: #888;'>🌙 Nyx veille sur AVA et Teddy depuis les étoiles...</p>
+</div>
+""", unsafe_allow_html=True)
 
 # --- Bouton vers Dashboard ---
 st.markdown("""
