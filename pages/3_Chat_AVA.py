@@ -1125,11 +1125,6 @@ def trouver_reponse(question: str) -> str:
     if question_clean in SALUTATIONS_CLEAN:
         return SALUTATIONS_CLEAN[question_clean]
 
-    # 4) fuzzy, sémantique…
-    # (reste inchangé)
-    …
-
-
     # 6️⃣ Fuzzy matching
     match = difflib.get_close_matches(
         question_clean,
