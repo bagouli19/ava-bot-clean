@@ -2194,17 +2194,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             ]
             message_bot = random.choice(reponses_ava)
     return None 
-    # --- Bloc final pour renvoyer la réponse ---
-    if message_bot and isinstance(message_bot, str):
-        return message_bot.strip()
-
-    # Si aucune réponse claire n'a été trouvée :
-    reponses_ava = [
-        "Je n'ai pas compris, peux-tu reformuler ?",
-        "Désolé, je n'ai pas la réponse pour ça…",
-        "Essaie une autre formulation ou tape 'analyse complète' pour du trading 📊"
-    ]
-    return random.choice(reponses_ava)
+   
 
     
 # ─── Boucle Streamlit Chat (TOUJOURS en bas) ───
