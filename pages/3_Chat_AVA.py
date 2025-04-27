@@ -1357,29 +1357,32 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             lieu = match_geo.group(1).strip().rstrip(" ?.!;")
             ville_detectee = " ".join(w.capitalize() for w in lieu.split())
 
-        # 2) On appelle la fonction get_meteo_ville
+        # 2) On appelle la fonction get_meteo_ville avec protection
         try:
             meteo = get_meteo_ville(ville_detectee)
+            if not meteo or "erreur" in meteo.lower():
+                return (
+                    f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. "
+                    "Peux-tu essayer un autre endroit ?"
+                )
+            else:
+                return (
+                    f"🌦️ **Météo à {ville_detectee} :**\n"
+                    f"{meteo}\n\n"
+                    + random.choice([
+                        "🧥 Pense à t’habiller en conséquence !",
+                        "☕ Rien de tel qu’un bon café pour accompagner la journée.",
+                        "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
+                        "💡 Info météo = longueur d’avance.",
+                        "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
+                    ])
+                )
         except Exception:
-            return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
-
-        # 3) On retourne immédiatement le texte formaté
-        if "erreur" in meteo.lower():
             return (
-                f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. "
-                "Peux-tu essayer un autre endroit ?"
+                "⚠️ Impossible de récupérer la météo pour le moment. "
+                "Peut-être un souci temporaire ? Réessayez dans quelques minutes."
             )
-        return (
-            f"🌦️ **Météo à {ville_detectee} :**\n"
-            f"{meteo}\n\n"
-            + random.choice([
-                "🧥 Pense à t’habiller en conséquence !",
-                "☕ Rien de tel qu’un bon café pour accompagner la journée.",
-                "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
-                "💡 Info météo = longueur d’avance.",
-                "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
-            ])
-        )
+
     # --- Bloc Remèdes naturels ---
     if not message_bot and any(phrase in question_clean for phrase in [
              "remède", "solution naturelle", "astuce maison", "traitement doux", "soulager naturellement",
