@@ -1669,9 +1669,10 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
 
         }
-        base_medecine_nettoyee = {
-            nettoyer_texte(k): v for k, v in base_medecine.items()
-        }
+        # on parcourt le dict et on retourne dès qu'on trouve
+        for symptome, reponse in reponses_medic.items():
+            if symptome in question_clean:
+                return reponse
         # ❗ Si aucun symptôme ne correspond ➔ message d'erreur fixe
         return "🩺 Désolé, je n'ai pas trouvé d'information médicale correspondante. Pouvez-vous préciser votre symptôme ?"
 
