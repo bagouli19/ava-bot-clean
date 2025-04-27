@@ -1242,26 +1242,26 @@ def format_actus(
     else:
         return SALUTATIONS_CLEAN[question_clean]
 
-    DESTINATIONS = [
-            {
-                "pays": "Islande 🇮🇸",
-                "faits": [
-                    "Terre de volcans et de glaciers spectaculaires.",
-                    "On y trouve des aurores boréales incroyables en hiver.",
-                    "L'Islande possède plus de moutons que d’habitants.",
-                    "Les Islandais croient beaucoup aux elfes et créatures magiques."
-                ]
-            },
-            {
-                "pays": "Japon 🇯🇵",
-                "faits": [
-                    "Pays des cerisiers en fleurs et des traditions ancestrales.",
-                    "Tokyo est la plus grande métropole du monde.",
-                    "Le mont Fuji est un symbole sacré.",
-                    "Les Japonais fêtent la floraison des cerisiers avec le Hanami."
-                ]
-            },
-    ]    
+DESTINATIONS = [
+        {
+            "pays": "Islande 🇮🇸",
+            "faits": [
+                "Terre de volcans et de glaciers spectaculaires.",
+                "On y trouve des aurores boréales incroyables en hiver.",
+                "L'Islande possède plus de moutons que d’habitants.",
+                "Les Islandais croient beaucoup aux elfes et créatures magiques."
+            ]
+        },
+        {
+            "pays": "Japon 🇯🇵",
+            "faits": [
+                "Pays des cerisiers en fleurs et des traditions ancestrales.",
+                "Tokyo est la plus grande métropole du monde.",
+                "Le mont Fuji est un symbole sacré.",
+                "Les Japonais fêtent la floraison des cerisiers avec le Hanami."
+            ]
+        },
+]    
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
    
