@@ -1167,13 +1167,7 @@ def trouver_reponse(question: str) -> str:
     best, score = max(zip(keys, sims), key=lambda x: x[1])
     if score > 0.7:
         return base_culture_nettoyee[best]
-    # Si on n'a rien trouvé
-    reponses_ava = [
-        "Je n'ai pas compris, peux-tu reformuler ?",
-        "Désolé, je n'ai pas la réponse pour ça…",
-        "Essaie une autre formulation ou tape 'analyse complète' pour du trading 📊"
-    ]
-    return random.choice(reponses_ava)
+ 
     # ───> 6) **Fallback** OpenAI (seulement ici)
     try:
         return repondre_openai(question)
