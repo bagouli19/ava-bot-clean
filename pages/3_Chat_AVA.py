@@ -1679,29 +1679,29 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     # ───────────────────────────────────────────────────────────────────────
     # 2️⃣ Base d’endroits magnifiques (Découverte de pays/villes)
     # ───────────────────────────────────────────────────────────────────────
-    if any(kw in question_clean for kw in [
+    if any(kw in question_clean for kw in[                      
         "découverte", "découvrir un pays", "parle-moi d'un pays",
         "endroit à visiter", "voyage", "montre-moi une ville"
     ]):
-    DESTINATIONS = [
-        {
-            "pays": "Islande 🇮🇸",
-            "faits": [
-                "Terre de volcans et de glaciers spectaculaires.",
-                "On y trouve des aurores boréales incroyables en hiver.",
-                "L'Islande possède plus de moutons que d’habitants.",
-                "Les Islandais croient beaucoup aux elfes et créatures magiques."
-            ]
-        },
-        {
-            "pays": "Japon 🇯🇵",
-            "faits": [
-                "Pays des cerisiers en fleurs et des traditions ancestrales.",
-                "Tokyo est la plus grande métropole du monde.",
-                "Le mont Fuji est un symbole sacré.",
-                "Les Japonais fêtent la floraison des cerisiers avec le Hanami."
-            ]
-        },
+        DESTINATIONS = [
+            {
+                "pays": "Islande 🇮🇸",
+                "faits": [
+                    "Terre de volcans et de glaciers spectaculaires.",
+                    "On y trouve des aurores boréales incroyables en hiver.",
+                    "L'Islande possède plus de moutons que d’habitants.",
+                    "Les Islandais croient beaucoup aux elfes et créatures magiques."
+                ]
+            },
+            {
+                "pays": "Japon 🇯🇵",
+                "faits": [
+                    "Pays des cerisiers en fleurs et des traditions ancestrales.",
+                    "Tokyo est la plus grande métropole du monde.",
+                    "Le mont Fuji est un symbole sacré.",
+                    "Les Japonais fêtent la floraison des cerisiers avec le Hanami."
+                ]
+            },
     # … ajoutez d’autres destinations ici …
     ]
     destination = random.choice(DESTINATIONS)
@@ -1711,7 +1711,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         message += f"- {fait}\n"
     message += "\nEnvie d’en découvrir un autre ? 😉"
     return message
-    
+
     # ─── Bloc Géographie (capitales) ─────────────
     if any(kw in question_clean for kw in ["capitale", "où se trouve", "ville principale"]):
         # 1) On extrait le nom du pays
