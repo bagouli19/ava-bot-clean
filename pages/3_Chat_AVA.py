@@ -1244,29 +1244,7 @@ def format_actus(
         ])
     else:
         return SALUTATIONS_CLEAN[question_clean]
-    # ───────────────────────────────────────────────────────────────────────
-    # 2️⃣ Base d’endroits magnifiques (Découverte de pays/villes)
-    # ───────────────────────────────────────────────────────────────────────
-    DESTINATIONS = [
-            {
-                "pays": "Islande 🇮🇸",
-                "faits": [
-                    "Terre de volcans et de glaciers spectaculaires.",
-                    "On y trouve des aurores boréales incroyables en hiver.",
-                    "L'Islande possède plus de moutons que d’habitants.",
-                    "Les Islandais croient beaucoup aux elfes et créatures magiques."
-                ]
-            },
-            {
-                "pays": "Japon 🇯🇵",
-                "faits": [
-                    "Pays des cerisiers en fleurs et des traditions ancestrales.",
-                    "Tokyo est la plus grande métropole du monde.",
-                    "Le mont Fuji est un symbole sacré.",
-                    "Les Japonais fêtent la floraison des cerisiers avec le Hanami."
-                ]
-            },
-    ]    
+ 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
    
@@ -1703,17 +1681,64 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         return "🩺 Désolé, je n'ai pas trouvé d'information médicale correspondante. Pouvez-vous préciser votre symptôme ?"
 
     
-    # Bloc découverte de destinations/voyages
-    if any(kw in question_clean for kw in [
-        "découverte", "découvrir un pays", "parle-moi d'un pays",
-        "endroit à visiter", "voyage", "montre-moi une ville"
-    ]):
+    # --- Bloc Découverte du Monde 100% local ---
+    if any(kw in question_clean for kw in ["découverte", "découvrir un pays", "parle-moi d'un pays", "endroit à visiter", "voyage", "montre-moi une ville"]):
+        DESTINATIONS = [
+            {
+                "pays": "Islande 🇮🇸",
+                "faits": [
+                    "Terre de volcans et de glaciers spectaculaires.",
+                    "On y trouve des aurores boréales incroyables en hiver.",
+                    "L'Islande possède plus de moutons que d’habitants.",
+                    "Les Islandais croient beaucoup aux elfes et créatures magiques."
+                ]
+            },
+            {
+                "pays": "Japon 🇯🇵",
+                "faits": [
+                    "Pays des cerisiers en fleurs et des traditions ancestrales.",
+                    "Tokyo est la plus grande métropole du monde.",
+                    "Le mont Fuji est un symbole sacré.",
+                    "Les Japonais fêtent la floraison des cerisiers avec le Hanami."
+                ]
+            },
+            {
+                "pays": "Italie 🇮🇹",
+                "faits": [
+                    "Berceau de la Renaissance.",
+                    "La pizza est née à Naples.",
+                    "Le Colisée de Rome est l'un des monuments les plus visités au monde.",
+                    "Venise est célèbre pour ses canaux romantiques."
+                ]
+            },
+            {
+                "pays": "Brésil 🇧🇷",
+                "faits": [
+                    "Pays du carnaval le plus célèbre au monde, à Rio.",
+                    "La forêt amazonienne couvre 60% du territoire.",
+                    "Le football est une véritable religion.",
+                    "Le Christ Rédempteur à Rio est une des 7 merveilles modernes."
+                ]
+            },
+            {
+                "pays": "Égypte 🇪🇬",
+                "faits": [
+                    "Pays des pharaons et des pyramides millénaires.",
+                    "Le Nil est le plus long fleuve du monde.",
+                    "Le Sphinx de Gizeh garde ses secrets depuis 4500 ans.",
+                    "L’écriture hiéroglyphique est un héritage fascinant."
+                ]
+            }
+            # (On pourra en rajouter plein d’autres ensuite 💪)
+        ]
+    
         destination = random.choice(DESTINATIONS)
-        message = f"🌍 Aujourd'hui, je te propose de découvrir **{destination['pays']}** :\n\n"
+
+        message_bot = f"🌍 Aujourd'hui, je te propose de découvrir **{destination['pays']}** :\n\n"
         for fait in destination["faits"]:
-            message += f"- {fait}\n"
-        message += "\nEnvie d’en découvrir un autre ? 😉"
-        return message
+            message_bot += f"- {fait}\n"
+        message_bot += "\nVeux-tu en découvrir un autre ? 😉"
+
 
     # ─── Bloc Géographie (capitales) ─────────────
     if any(kw in question_clean for kw in ["capitale", "où se trouve", "ville principale"]):
