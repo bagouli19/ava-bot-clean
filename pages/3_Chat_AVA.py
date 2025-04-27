@@ -1965,7 +1965,9 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             "avax": "avax-usd", "avalanche": "avax-usd",
             "ltc": "ltc-usd", "litecoin": "ltc-usd",
             "cuivre": "hg=F", "copper": "hg=F",
-            "dow": "^dji", "dji": "^dji", "dowjones": "^dji"
+            "dow": "^dji", "dji": "^dji", "dowjones": "^dji",
+            "amd": "AMD (Advanced Micro Devices)",
+            "ko": "Coca-Cola","meta": "Meta Platforms (Facebook)"
         }
 
         nom_ticker = correspondances.get(nom_simple_norm)
@@ -2014,7 +2016,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         "msft", "microsoft", "amzn", "amazon", "nvda", "nvidia", "doge", "dogecoin", "ada", "cardano",
         "sol", "solana", "gold", "or", "sp500", "s&p", "cac", "cac40", "cl", "pétrole", "petrole",
         "si", "argent", "xrp", "ripple", "bnb", "matic", "polygon", "uni", "uniswap", "ndx", "nasdaq",
-        "nasdaq100", "avax", "ltc", "cuivre", "copper", "dji", "dowjones", "dow"
+        "nasdaq100", "avax", "ltc", "cuivre", "copper", "dji", "dowjones", "dow","ko", "amd","meta",
     ]
 
     if any(symb in question_clean for symb in tickers_detectables):
@@ -2029,7 +2031,8 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             "xrp": "xrp-usd", "ripple": "xrp-usd", "bnb": "bnb-usd", "matic": "matic-usd", "polygon": "matic-usd",
             "uni": "uni-usd", "uniswap": "uni-usd", "ndx": "^ndx", "nasdaq": "^ndx", "nasdaq100": "^ndx",
             "avax": "avax-usd", "ltc": "ltc-usd", "cuivre": "hg=F", "copper": "hg=F",
-            "dow": "^dji", "dowjones": "^dji", "dji": "^dji"
+            "dow": "^dji", "dowjones": "^dji", "dji": "^dji","amd": "AMD (Advanced Micro Devices)",
+            "ko": "Coca-Cola","meta": "Meta Platforms (Facebook)",
         }
         nom_ticker = correspondance_simple.get(ticker_simplifie)
         if nom_ticker:

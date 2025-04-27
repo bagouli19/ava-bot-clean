@@ -14,7 +14,8 @@ tickers = [
     "aapl", "tsla", "googl", "btc-usd", "eth-usd", "msft", "amzn", "nvda","avax-usd", 
     "ltc-usd","hg=F","^dji"
     "^gspc", "doge-usd", "ada-usd", "sol-usd", "gc=F", "^fchi",
-    "xrp-usd", "bnb-usd", "cl=F", "si=F","matic-usd", "uni-usd", "^ndx"  # Nouveaux ajouts
+    "xrp-usd", "bnb-usd", "cl=F", "si=F","matic-usd", "uni-usd", "^ndx",
+    "amd", "ko", "meta"  # Nouveaux ajouts
 ]
 
 

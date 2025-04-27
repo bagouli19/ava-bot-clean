@@ -12,7 +12,7 @@ tickers = [
     "msft", "amzn", "nvda", "^gspc", "doge-usd", "ada-usd",
     "sol-usd", "gc=F", "^fchi", "xrp-usd", "bnb-usd", "cl=F", "si=F",
     "matic-usd", "uni-usd", "^ndx","avax-usd","ltc-usd",
-    "hg=F","^dji"
+    "hg=F","^dji","amd": "AMD ","ko","meta"
 ]
 
 nom_affichages = {
@@ -41,6 +41,9 @@ nom_affichages = {
     "ltc-usd": "Litecoin",
     "hg=F": "Cuivre (Copper)",
     "^dji": "Dow Jones Industrial Average",
+    "amd": "AMD (Advanced Micro Devices)",
+    "ko": "Coca-Cola",
+    "meta": "Meta Platforms (Facebook)",
 
 
 }

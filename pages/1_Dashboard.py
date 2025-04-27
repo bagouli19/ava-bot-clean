@@ -27,7 +27,7 @@ tickers = [
     "msft", "amzn", "nvda", "^gspc", "doge-usd", "ada-usd",
     "sol-usd", "gc=F", "^fchi", "xrp-usd", "bnb-usd", "cl=F",
      "si=F","matic-usd", "uni-usd", "^ndx","avax-usd",
-    "ltc-usd","hg=F","^dji"
+    "ltc-usd","hg=F","^dji","amd", "ko", "meta"
     ]
 
 
