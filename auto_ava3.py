@@ -12,10 +12,10 @@ import xgboost as xgb
 # --- TICKERS À TRAITER ---
 tickers = [
     "aapl", "tsla", "googl", "btc-usd", "eth-usd", "msft", "amzn", "nvda","avax-usd", 
-    "ltc-usd","hg=F","^dji"
+    "ltc-usd","hg=F","^dji",
     "^gspc", "doge-usd", "ada-usd", "sol-usd", "gc=F", "^fchi",
     "xrp-usd", "bnb-usd", "cl=F", "si=F","matic-usd", "uni-usd", "^ndx",
-    "amd", "ko", "meta"  # Nouveaux ajouts
+    "amd", "ko", "meta",  # Nouveaux ajouts
 ]
 
 
