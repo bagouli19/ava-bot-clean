@@ -235,12 +235,35 @@ def load_semantic_model():
 # Chargement du modèle
 
 model_semantic = load_semantic_model()
-def traiter_question(question_utilisateur):
-    # ICI tu ajoutes la ligne de nettoyage
-    question_clean = nettoyer_question(question_utilisateur)
+
+# Nettoyer le message de l'utilisateur avant de chercher
+def get_reponse(message_utilisateur: str) -> str:
+    # Nettoyer le texte de l'utilisateur
+    message_clean = nettoyer_texte(message_utilisateur)
     
-    reponse = trouver_reponse(question_clean)
-    return reponse
+    # Vérifier si le message nettoyé est dans le dictionnaire des salutations
+    if message_clean in SALUTATIONS_CLEAN:
+        return SALUTATIONS_CLEAN[message_clean]
+    else:
+        return "Désolé, je n'ai pas compris. Pouvez-vous reformuler ?"
+
+# --- Test du fonctionnement ---
+if __name__ == "__main__":
+    # Test des messages
+    exemples = [
+        "Salut, ça va ?",
+        "Tu vas bien !",
+        "AVA, tu es là.",
+        "yo",
+        "je suis fatigué",
+        "quoi de neuf ?"
+    ]
+    
+    for exemple in exemples:
+        print(f"Message: {exemple}")
+        print(f"Réponse: {get_reponse(exemple)}")
+        print("-" * 30)
+
 
 def generer_phrase_autonome(theme: str, infos: dict) -> str:
     templates = {
