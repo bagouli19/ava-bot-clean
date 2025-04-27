@@ -1118,6 +1118,10 @@ def repondre_openai(prompt: str) -> str:
         return resp.choices[0].message.content.strip()
     except Exception as e:
         return f"Erreur OpenAI : {e}"
+        # Par exemple :
+        if "quota" in str(e).lower():
+            return "⚠️ Mon quota API est épuisé pour le moment. Je reviendrai dès que possible !"
+        return f"Erreur OpenAI : {e}"
 
 def trouver_reponse(question: str) -> str:
     # on nettoie dès le départ
@@ -1143,7 +1147,7 @@ def trouver_reponse(question: str) -> str:
     if model_semantic:
         # Utilisation d’OpenAI pour peaufiner la réponse
         return repondre_openai(question_clean)
-        
+
     # 6️⃣ Fuzzy matching
     match = difflib.get_close_matches(
         question_clean,
