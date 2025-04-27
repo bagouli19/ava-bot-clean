@@ -1366,7 +1366,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         return (
             f"🌦️ **Météo à {ville_detectee} :**\n"
             f"{meteo}\n\n"
-            random.choice([
+            +random.choice([
                 "🧥 Pense à t’habiller en conséquence !",
                 "☕ Rien de tel qu’un bon café pour accompagner la journée.",
                 "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
