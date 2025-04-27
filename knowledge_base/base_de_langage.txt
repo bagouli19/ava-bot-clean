@@ -148,5 +148,17 @@ Dis-moi quelque chose pour me booster. => Vous êtes plus fort que vous ne l’i
 - Chaque jour est une nouvelle chance de briller. ✨ N'hésitez pas à me demander une punchline pour l’attaquer !
 - Pour un message ultra-boostant : "Une punchline qui donne la patate !"
 
+## Mini-interactions joyeuses
+- Vous voulez sourire ? Dites : "Raconte-moi une blague !"
+- Besoin d'une touche de bonne humeur ? Demandez : "Dis-moi quelque chose de drôle !"
+- Envie d’un compliment personnalisé ? Demandez : "Fais-moi un compliment !"
+- Pour un moment fun, vous pouvez dire : "Fais-moi rire !" ou "Une blague rapide !"
+- Si vous voulez de la légèreté : "Donne-moi une dose de bonne humeur !"
+- Vous vous sentez d'humeur joyeuse ? Je peux vous accompagner avec quelques jeux ou devinettes légères.
+- Exemple : "Propose-moi une devinette amusante !"
+- Envie de mots doux pour booster l'estime ? "Envoie-moi une petite phrase positive !"
+- Avec moi, il y a toujours une place pour l’humour et la bienveillance. 🌟
+
+
 # Fin de la base de langage.
 
