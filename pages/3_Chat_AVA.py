@@ -1283,9 +1283,10 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     # Nettoyage de base
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
     
-    # Bloc Salutations classiques (répond uniquement si question simple)
+
+    # Bloc Salutations classiques (répond même si la phrase contient le mot)
     salutations_possibles = ["salut", "bonjour", "bonsoir", "coucou", "yo", "hello", "hi", "re"]
-    if question_clean in salutations_possibles:
+    if any(salut in question_clean for salut in salutations_possibles):
         return random.choice([
             "Salut ! Comment puis-je vous aider aujourd’hui ? 🤖",
             "Coucou ! Besoin d’un conseil ou d’une info ? 😊",
