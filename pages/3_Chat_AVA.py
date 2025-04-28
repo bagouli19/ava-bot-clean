@@ -1263,6 +1263,13 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     
     # Nettoyage de base
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
+    
+    # Détection simple d'informations à mémoriser
+    if "mon chien s'appelle" in question_clean.lower():
+        nom_chien = question_clean.lower().split("mon chien s'appelle")[-1].strip().capitalize()
+        souvenir_cle = f"chien_{nom_chien.lower()}"
+        souvenir_valeur = f"Mon chien s'appelle {nom_chien}"
+        ajouter_souvenir(souvenir_cle, souvenir_valeur)
 
     # --- 1️⃣ Bloc Ajout automatique de souvenirs ---
     patterns_souvenirs = {
