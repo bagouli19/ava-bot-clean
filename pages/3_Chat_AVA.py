@@ -1294,25 +1294,22 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             "Yo ! Que puis-je faire pour vous aujourd'hui ? 👋",
             "Bonjour ! Que puis-je faire pour égayer votre journée ? ☀️",
         ])
-        
-    # Dans gerer_modules_speciaux(), AVANT tout appel à OpenAI
-    # --- Bloc météo intelligent (villages inclus) ---
-    if any(kw in question_clean for kw in ["meteo", "quel temps"]):
-        # par défaut
-        ville_detectee = "Paris"
 
-        # 1) chercher "à/au/aux/dans/sur/en <lieu>"
-        pattern1 = re.compile(r"(?:a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
+    # --- Bloc météo intelligent (ultra robuste) ---
+    if any(kw in question_clean for kw in ["meteo", "météo", "quel temps", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"]):
+        ville_detectee = "Paris"  # Par défaut
+
+        # Chercher "à/au/aux/dans/sur/en <lieu>"
+        pattern1 = re.compile(r"(?:à|a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
         match_geo = pattern1.search(question_clean)
 
-        # 2) sinon "meteo <lieu>"
+        # Sinon "meteo <lieu>" ou "météo <lieu>"
         if not match_geo:
-            pattern2 = re.compile(r"meteo\s+(.+)$", re.IGNORECASE)
+            pattern2 = re.compile(r"(?:meteo|météo)\s+(.+)$", re.IGNORECASE)
             match_geo = pattern2.search(question_clean)
 
         if match_geo:
             lieu = match_geo.group(1).strip().rstrip(" ?.!;")
-            # capitaliser
             ville_detectee = " ".join(w.capitalize() for w in lieu.split())
 
         try:
@@ -1333,8 +1330,8 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 "💡 Info météo = longueur d’avance.",
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
-        )            
-    
+        )
+
     # Détection simple d'informations à mémoriser
     if "mon chien s'appelle" in question_clean.lower():
         nom_chien = question_clean.lower().split("mon chien s'appelle")[-1].strip().capitalize()
