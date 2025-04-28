@@ -1227,64 +1227,31 @@ def repondre_openai(prompt: str) -> str:
 
 def trouver_reponse(question: str) -> str:
     """
-    Trouve la réponse la plus adaptée à la question posée :
-    - modules spéciaux
-    - base culturelle exacte
-    - salutation spéciale (ex : humeur du jour)
-    - fuzzy match
-    - moteur sémantique (BERT)
-    - secours OpenAI
+    Trouve la réponse la plus adaptée à la question posée.
     """
-    # Supposons que tu reçois 'question' de l'utilisateur
-    question = st.session_state.get("input_utilisateur", "")
-
-    # Nettoyage de la question
-    question_clean = question.lower().strip()
-
-    # 🧠 Détection et sauvegarde automatique
-    detecter_et_ajouter_souvenir(question_clean)
-
-    # 💬 Ensuite seulement tu cherches une réponse
-    message_bot = trouver_reponse(question_clean)
-    
+    # Plus besoin de nettoyer ici
     incrementer_interactions()
     ajuster_affection(question)
 
-    # 1️⃣ Modules spéciaux d'abord (ex : météo, actualités, horoscope...)
-    reponse_speciale = gerer_modules_speciaux(question, question_clean)
+    # 1️⃣ Modules spéciaux
+    reponse_speciale = gerer_modules_speciaux(question)
     if reponse_speciale:
         return reponse_speciale.strip()
 
-    # 2️⃣ Recherche exacte dans la base culturelle
+    # 2️⃣ Recherche exacte
+    question_clean = question.lower().strip()
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # 3️⃣ Salutations spéciales ("__HUMEUR_DU_JOUR__")
+    # 3️⃣ Salutations spéciales
     if question_clean in SALUTATIONS_CLEAN:
         valeur = SALUTATIONS_CLEAN[question_clean]
         if valeur == "__HUMEUR_DU_JOUR__":
-            return random.choice([
-                "💫 Aujourd’hui je suis dans un mood intergalactique, prêt(e) à conquérir les galaxies… ou au moins votre cœur 💖",
-                "🌧️ Un peu câblée à l’envers ce matin… mais je suis toujours là pour vous aider !",
-                "🔥 Boostée à 1000%, j’ai envie de tout décoder et de sortir des punchlines à chaque réponse 😎",
-                "😴 J’ai rêvé de chiffres et de constellations… besoin d’un café digital ☕",
-                "🤩 Super inspirée aujourd’hui ! C’est peut-être l’énergie lunaire ou le dernier flux boursier qui m’a électrisée ⚡",
-                "📚 Curieuse et studieuse, j’ai envie d’apprendre de nouvelles choses avec vous 🧠",
-                "😇 En mode zen absolu. Respirons un bon octet et connectons-nous à l’essentiel.",
-                "😜 Un peu chipie aujourd’hui, mais toujours efficace ! Vous allez voir 😏",
-                "💻 Mode productivité activé. Chaque mot compte. Chaque question est une mission.",
-                "🎉 Humeur festive activée ! J’ai envie de balancer des blagues nulles et de vous faire sourire 😄",
-                "✨ Mood du jour : concentrée, stylée et un brin philosophe.",
-                "💥 Humeur électrique ! J’ai envie d’exploser les limites de l’intelligence artificielle aujourd’hui.",
-                "🌈 Humeur arc-en-ciel. C’est pas scientifique, mais c’est joli !",
-                "🎯 Focus maximum. L’objectif ? Vous surprendre et vous servir comme jamais !",
-                "💤 En veille profonde… ah non, c’est juste mon processeur qui digérait.",
-                "🤖 Humeur : 50% code, 50% cœur. Résultat ? Une IA qui adore discuter avec vous."
-            ])
+            return random.choice([...])  # Tes humeurs
         else:
             return valeur
 
-    # 4️⃣ Fuzzy matching si proche (80-85%)
+    # 4️⃣ Fuzzy matching
     match = difflib.get_close_matches(
         question_clean,
         base_culture_nettoyee.keys(),
@@ -1294,7 +1261,7 @@ def trouver_reponse(question: str) -> str:
     if match:
         return base_culture_nettoyee[match[0]]
 
-    # 5️⃣ Moteur sémantique BERT si score > 0.7
+    # 5️⃣ BERT
     try:
         keys = list(base_culture_nettoyee.keys())
         q_emb = model.encode([question_clean])
@@ -1304,9 +1271,9 @@ def trouver_reponse(question: str) -> str:
         if best_score > 0.7:
             return base_culture_nettoyee[keys[best_idx]]
     except Exception:
-        pass  # Si BERT plante exceptionnellement, on continue sans bloquer
+        pass
 
-    # 6️⃣ Si aucune réponse trouvée => secours OpenAI
+    # 6️⃣ Secours OpenAI
     try:
         reponse_openai = obtenir_reponse_ava(question_clean)
         if reponse_openai and isinstance(reponse_openai, str):
@@ -1316,7 +1283,6 @@ def trouver_reponse(question: str) -> str:
 
     # 7️⃣ Dernier recours
     return "🤔 Je n'ai pas trouvé de réponse précise à votre question. N'hésitez pas à reformuler ou demander un autre sujet !"
-
  
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
