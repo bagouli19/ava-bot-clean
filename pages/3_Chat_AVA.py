@@ -2298,11 +2298,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 return f"✨ Souvenir retrouvé : **{valeur}**"
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
 
-    # --- FIN de gerer_modules_speciaux ---
-    if message_bot:
-        return message_bot
-
-    return None
+   
 
     # 3. Sinon, chercher une réponse par similarité avec BERT
     reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
@@ -2315,7 +2311,11 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         return "Je suis désolée, une erreur est survenue avec OpenAI."
 
     
-   
+    # --- FIN de gerer_modules_speciaux ---
+    if message_bot:
+        return message_bot
+
+    return None
 
     
 # ─── Boucle Streamlit Chat (TOUJOURS en bas) ───
