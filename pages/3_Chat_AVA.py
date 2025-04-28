@@ -1293,11 +1293,13 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             reponse_salutation = repondre_salutation(question_clean)
             if reponse_salutation:
                 return reponse_salutation
-                
-     # 1b. Ensuite, essayer de répondre avec la mémoire dynamique (souvenirs)
+
+    # 1b. Ensuite, essayer de répondre avec la mémoire dynamique (souvenirs)
     for cle_souvenir, contenu_souvenir in st.session_state.get("souvenirs", {}).items():
-        if cle_souvenir.replace("_", " ") in question_clean or cle_souvenir in question_clean:
-            return f"✨ Souvenir retrouvé : {contenu_souvenir}"           
+        # Si la VALEUR du souvenir (pas la clé) est présente dans la question
+        if contenu_souvenir.lower() in question_clean:
+            return f"✨ Souvenir retrouvé : {contenu_souvenir}"
+
 
     # 2. Ensuite, chercher une réponse dans ta base de culture générale
     reponse_culture = base_culture.get(question_clean)
