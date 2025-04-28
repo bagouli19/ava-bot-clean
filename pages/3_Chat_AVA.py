@@ -154,7 +154,22 @@ def retrouver_souvenir(cle: str) -> str:
         cle,
         "❓ Je n'ai pas de souvenir pour ça…"
     )
+# --- Fonction pour ajouter un souvenir à la mémoire d'AVA ---
+def ajouter_souvenir(cle: str, valeur: str, fichier="memoire_ava.json"):
+    """Ajoute ou met à jour un souvenir dans le fichier mémoire."""
+    # Vérifier si le fichier existe, sinon créer une mémoire vide
+    if os.path.exists(fichier):
+        with open(fichier, "r", encoding="utf-8") as f:
+            memoire = json.load(f)
+    else:
+        memoire = {}
 
+    # Mise à jour de la mémoire
+    memoire[cle] = valeur
+
+    # Sauvegarde dans le fichier
+    with open(fichier, "w", encoding="utf-8") as f:
+        json.dump(memoire, f, ensure_ascii=False, indent=4)
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
@@ -1275,7 +1290,22 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             return f"⚠️ Impossible de récupérer les actualités : {e}"
     
 
-    
+    # --- Bloc Ajout automatique de souvenirs ---
+    if any(kw in question_clean for kw in ["je m'appelle", "mon prénom est", "mon film préféré est", "j'adore", "mon chien s'appelle", "mon plat préféré est", "mon sport préféré est"]):
+        try:
+            # On extrait ce que l'utilisateur veut enregistrer
+            match = re.search(r"(je m'appelle|mon prénom est|mon film préféré est|j'adore|mon chien s'appelle|mon plat préféré est|mon sport préféré est)\s+(.*)", question_clean)
+            if match:
+                type_info = match.group(1)
+                valeur = match.group(2).strip().rstrip(".!?")
+                # Création d'une clé intelligente
+                cle = type_info.replace(" ", "_") + "_" + valeur.split(" ")[0].lower()
+
+                # Sauvegarde automatique
+                ajouter_souvenir(cle, valeur)
+                return f"✨ Super, j'ai bien enregistré : **{valeur}** ! Je m'en souviendrai dorénavant. 🧠"
+        except Exception as e:
+            return f"⚠️ Je n'ai pas réussi à enregistrer ton souvenir à cause d'une erreur : {e}"
     
     
     # --- Rappel du prénom ---
@@ -2258,7 +2288,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         return reponse_openai
     except Exception as e:
         return "Je suis désolée, une erreur est survenue avec OpenAI."
-        
+
     return None 
    
 
