@@ -1140,24 +1140,25 @@ def repondre_openai(prompt: str) -> str:
         return f"Erreur OpenAI : {e}"
 
 def trouver_reponse(question: str) -> str:
+    # 1) Nettoyage et style
     question_clean = nettoyer_texte(question)
     incrementer_interactions()
     ajuster_affection(question)
 
-    # 1) modules spéciaux
-    resp_sem = trouver_reponse_semantique(question_clean, base_culture_nettoyee)
-    if resp_sem:
-        return resp_sem
+    # 2) Modules spéciaux (météo, remèdes, découverte, etc.)
+    resp_spec = gerer_modules_speciaux(question, question_clean)
+    if resp_spec:
+        return resp_spec.strip()
 
-    # 2) exact match base culture
+    # 3) Base de culture – exact match
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # 3) salutations
+    # 4) Salutations
     if question_clean in SALUTATIONS_CLEAN:
         return SALUTATIONS_CLEAN[question_clean]
 
-    # 4) fuzzy matching
+    # 5) Fuzzy match sur la base de culture
     match = difflib.get_close_matches(
         question_clean,
         base_culture_nettoyee.keys(),
@@ -1167,25 +1168,19 @@ def trouver_reponse(question: str) -> str:
     if match:
         return base_culture_nettoyee[match[0]]
 
-    # 5) sémantique sur base locale
+    # 6) Sémantique “locale” avec SentenceTransformer
     keys = list(base_culture_nettoyee.keys())
+    # pré‐encode tes clés en début de script pour ne pas réencoder à chaque appel !
     sims = cosine_similarity(
         [model_semantic.encode(question_clean)],
         model_semantic.encode(keys)
     )[0]
-    best, score = max(zip(keys, sims), key=lambda x: x[1])
-    if score > 0.7:
-        return base_culture_nettoyee[best]
+    best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
+    if best_score > 0.7:
+        return base_culture_nettoyee[keys[best_idx]]
 
-    # 6) ***Only*** in extremis : fallback sur OpenAI
-    try:
-        return repondre_openai(question)
-    except Exception:
-        return random.choice([
-            "Je n'ai pas compris, peux-tu reformuler ?",
-            "Désolé, je n'ai pas la réponse pour ça…",
-            "Essaie une autre formulation ou tape 'analyse complète' pour du trading 📊"
-        ])
+    # 7) Message de secours **100% local**, plus d’OpenAI
+    return "🤔 Je n'ai pas d'information locale pour ça pour l'instant. Peux-tu reformuler ou demander autre chose ? 🌍"
 
 
 # ─── Clé et fonctions NewsAPI ───
