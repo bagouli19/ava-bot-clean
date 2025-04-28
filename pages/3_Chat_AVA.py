@@ -1280,10 +1280,12 @@ def trouver_reponse(question: str) -> str:
  
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-    # Avant la détection mémoire ➔ nettoyage spécial
+    """Détecte si la question correspond à un module spécial (salutation, mémoire, etc.)."""
+    
+    # Nettoyage de base
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
 
-    # --- Bloc Ajout automatique de souvenirs ---
+    # --- 1️⃣ Bloc Ajout automatique de souvenirs ---
     patterns_souvenirs = {
         "je m'appelle": "mon_prenom_est",
         "mon prénom est": "mon_prenom_est",
@@ -1301,23 +1303,18 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 ajouter_souvenir(cle, valeur)
                 return f"✨ Super, j'ai bien enregistré : **{valeur}** dans mes souvenirs ! 🧠"
 
-    # 2️⃣ Bloc Salutations normaux MAIS élargi
+    # --- 2️⃣ Ensuite seulement, tenter de retrouver un souvenir existant ---
+    for cle_souvenir, contenu_souvenir in st.session_state.get("souvenirs", {}).items():
+        if cle_souvenir.replace("_", " ") in question_clean or cle_souvenir in question_clean:
+            return f"✨ Souvenir retrouvé : {contenu_souvenir}"
+
+    # --- 3️⃣ Bloc Salutations classiques
     salutations_possibles = ["salut", "bonjour", "bonsoir", "coucou", "yo", "hello", "hi", "re"]
     for salut in salutations_possibles:
         if salut in question_clean:
             reponse_salutation = repondre_salutation(question_clean)
             if reponse_salutation:
                 return reponse_salutation
-
-    # 1b. Ensuite, essayer de répondre avec la mémoire dynamique (souvenirs)
-    question_mots = set(question_clean.lower().split())
-
-    for cle_souvenir, contenu_souvenir in st.session_state.get("souvenirs", {}).items():
-        contenu_mots = set(contenu_souvenir.lower().split())
-        # Si un mot du souvenir apparaît dans la question
-        if question_mots & contenu_mots:
-            return f"✨ Souvenir retrouvé : {contenu_souvenir}"
-
 
     # 2. Ensuite, chercher une réponse dans ta base de culture générale
     reponse_culture = base_culture.get(question_clean)
