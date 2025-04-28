@@ -1224,7 +1224,8 @@ def trouver_reponse(question: str) -> str:
     """
     Trouve la réponse la plus adaptée à la question posée.
     """
-    question_clean = question.lower().strip()  # Il faut nettoyer ici aussi pour la base culturelle
+    question_clean = question.lower().strip() # Il faut nettoyer ici aussi pour la base culturelle
+
 
     incrementer_interactions()
     ajuster_affection(question)
@@ -1283,37 +1284,6 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     # Nettoyage de base
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
     
-    # Détection simple d'informations à mémoriser
-    if "mon chien s'appelle" in question_clean.lower():
-        nom_chien = question_clean.lower().split("mon chien s'appelle")[-1].strip().capitalize()
-        souvenir_cle = f"chien_{nom_chien.lower()}"
-        souvenir_valeur = f"Mon chien s'appelle {nom_chien}"
-        ajouter_souvenir(souvenir_cle, souvenir_valeur)
-
-    # --- 1️⃣ Bloc Ajout automatique de souvenirs ---
-    patterns_souvenirs = {
-        "je m'appelle": "mon_prenom_est",
-        "mon prénom est": "mon_prenom_est",
-        "mon chien s'appelle": "mon_chien_sappelle",
-        "mon plat préféré est": "mon_plat_prefere_est",
-        "mon film préféré est": "mon_film_prefere_est",
-        "mon sport préféré est": "mon_sport_prefere_est"
-    }
-
-    for debut_phrase, prefixe_cle in patterns_souvenirs.items():
-        if question_clean.startswith(debut_phrase):
-            valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
-            if valeur:
-                cle = f"{prefixe_cle}_{valeur.lower().replace(' ', '_')}"
-                ajouter_souvenir(cle, valeur)  # <== ICI c’est correct maintenant
-                return f"✨ Super, j'ai bien enregistré : **{valeur}** dans mes souvenirs ! 🧠"
-
-
-    # --- 2️⃣ Ensuite seulement, tenter de retrouver un souvenir existant ---
-    for cle_souvenir, contenu_souvenir in st.session_state.get("souvenirs", {}).items():
-        if cle_souvenir.replace("_", " ") in question_clean or cle_souvenir in question_clean:
-            return f"✨ Souvenir retrouvé : {contenu_souvenir}"
-
     # --- 3️⃣ Bloc Salutations classiques
     salutations_possibles = ["salut", "bonjour", "bonsoir", "coucou", "yo", "hello", "hi", "re"]
     for salut in salutations_possibles:
@@ -1321,11 +1291,6 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             reponse_salutation = repondre_salutation(question_clean)
             if reponse_salutation:
                 return reponse_salutation
-
-    # 2. Ensuite, chercher une réponse dans ta base de culture générale
-    reponse_culture = base_culture.get(question_clean)
-    if reponse_culture:
-        return reponse_culture
 
     # Dans gerer_modules_speciaux(), AVANT tout appel à OpenAI
     # --- Bloc météo intelligent (villages inclus) ---
@@ -1365,7 +1330,45 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 "💡 Info météo = longueur d’avance.",
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
-        )
+        )            
+    
+    # Détection simple d'informations à mémoriser
+    if "mon chien s'appelle" in question_clean.lower():
+        nom_chien = question_clean.lower().split("mon chien s'appelle")[-1].strip().capitalize()
+        souvenir_cle = f"chien_{nom_chien.lower()}"
+        souvenir_valeur = f"Mon chien s'appelle {nom_chien}"
+        ajouter_souvenir(souvenir_cle, souvenir_valeur)
+
+    # --- 1️⃣ Bloc Ajout automatique de souvenirs ---
+    patterns_souvenirs = {
+        "je m'appelle": "mon_prenom_est",
+        "mon prénom est": "mon_prenom_est",
+        "mon chien s'appelle": "mon_chien_sappelle",
+        "mon plat préféré est": "mon_plat_prefere_est",
+        "mon film préféré est": "mon_film_prefere_est",
+        "mon sport préféré est": "mon_sport_prefere_est"
+    }
+
+    for debut_phrase, prefixe_cle in patterns_souvenirs.items():
+        if question_clean.startswith(debut_phrase):
+            valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
+            if valeur:
+                cle = f"{prefixe_cle}_{valeur.lower().replace(' ', '_')}"
+                ajouter_souvenir(cle, valeur)  # <== ICI c’est correct maintenant
+                return f"✨ Super, j'ai bien enregistré : **{valeur}** dans mes souvenirs ! 🧠"
+
+
+    # --- 2️⃣ Ensuite seulement, tenter de retrouver un souvenir existant ---
+    for cle_souvenir, contenu_souvenir in st.session_state.get("souvenirs", {}).items():
+        if cle_souvenir.replace("_", " ") in question_clean or cle_souvenir in question_clean:
+            return f"✨ Souvenir retrouvé : {contenu_souvenir}"
+
+    # 2. Ensuite, chercher une réponse dans ta base de culture générale
+    reponse_culture = base_culture.get(question_clean)
+    if reponse_culture:
+        return reponse_culture
+
+    
 
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
