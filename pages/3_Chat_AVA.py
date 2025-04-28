@@ -243,7 +243,7 @@ def trouver_reponse_semantique(question_clean, base_connaissances):
     question_embedding = model.encode([question_clean])
 
     # On encode toutes les phrases de la base
-    base_phrases = list(base_connaissances.keys())
+    base_phrases = list(base_culture_nettoyee.keys())
     base_embeddings = model.encode(base_phrases)
 
     # On calcule la similarité cosinus
@@ -252,13 +252,13 @@ def trouver_reponse_semantique(question_clean, base_connaissances):
     # On prend la réponse la plus similaire
     idx_max = np.argmax(similarities)
     meilleure_phrase = base_phrases[idx_max]
-    meilleure_reponse = base_connaissances[meilleure_phrase]
+    meilleure_reponse = base_culture_nettoyee[meilleure_phrase]
     corpus = SALUTATIONS_COURANTES + PHRASES_COMPLEXES
     corpus_embeddings = model.encode(corpus, convert_to_tensor=True)
 
     return meilleure_reponse
 
-    message_bot = trouver_reponse_semantique(question_clean, BASE_CONNAISSANCES)
+    message_bot = trouver_reponse_semantique(question_clean, base_culture_nettoyee)
 
 
 def generer_phrase_autonome(theme: str, infos: dict) -> str:
@@ -1153,9 +1153,9 @@ def trouver_reponse(question: str) -> str:
     ajuster_affection(question)
 
     # 1) modules spéciaux
-    resp = gerer_modules_speciaux(question, question_clean)
-    if resp:
-        return resp.strip()
+    resp_sem = trouver_reponse_semantique(question_clean, base_culture_nettoyee)
+    if resp_sem:
+        return resp_sem
 
     # 2) exact match base culture
     if question_clean in base_culture_nettoyee:
