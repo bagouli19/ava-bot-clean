@@ -253,7 +253,7 @@ def trouver_reponse_semantique(question_clean, base_connaissances):
     idx_max = np.argmax(similarities)
     meilleure_phrase = base_phrases[idx_max]
     meilleure_reponse = base_culture_nettoyee[meilleure_phrase]
-    corpus = SALUTATIONS_COURANTES + PHRASES_COMPLEXES
+    corpus = SALUTATIONS_COURANTES 
     corpus_embeddings = model.encode(corpus, convert_to_tensor=True)
 
     return meilleure_reponse
