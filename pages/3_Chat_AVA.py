@@ -163,18 +163,17 @@ def ajouter_souvenir(cle: str, valeur: str, fichier="memoire_ava.json"):
             with open(fichier, "r", encoding="utf-8") as f:
                 memoire = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
-            # Fichier vide ou corrompu ➔ mémoire vide
             memoire = {}
 
-    # Mise à jour de la mémoire
     memoire[cle] = valeur
 
-    # Sauvegarde dans le fichier
     with open(fichier, "w", encoding="utf-8") as f:
         json.dump(memoire, f, ensure_ascii=False, indent=2)
 
-    # Et surtout ➔ mise à jour directe dans st.session_state
     st.session_state.souvenirs = memoire
+
+    # ➡️ Debug visible
+    print(f"🧠 Souvenir ajouté : {cle} ➔ {valeur}")
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
