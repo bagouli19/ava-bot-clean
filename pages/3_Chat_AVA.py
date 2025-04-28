@@ -1229,14 +1229,13 @@ def trouver_reponse(question: str) -> str:
     """
     Trouve la réponse la plus adaptée à la question posée.
     """
-    question_clean = question.lower().strip()
+    question_clean = question.lower().strip()  # Il faut nettoyer ici aussi pour la base culturelle
 
-    # Plus besoin de nettoyer ici
     incrementer_interactions()
     ajuster_affection(question)
 
-    # 1️⃣ Modules spéciaux
-    reponse_speciale = gerer_modules_speciaux(question)
+    # 1️⃣ Modules spéciaux avec 2 arguments
+    reponse_speciale = gerer_modules_speciaux(question, question_clean)
     if reponse_speciale:
         return reponse_speciale.strip()
 
