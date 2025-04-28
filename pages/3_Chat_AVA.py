@@ -138,26 +138,14 @@ def save_souvenirs() -> None:
     with open(GLOBAL_MEMOIRE, "w", encoding="utf-8") as f:
         json.dump(st.session_state.souvenirs, f, ensure_ascii=False, indent=2)
 
-def stocker_souvenir(cle: str, valeur: str) -> None:
+def ajouter_souvenir(cle: str, valeur: str) -> None:
     """
-    Ajoute ou met à jour une entrée dans les souvenirs
-    et écrit immédiatement le fichier.
+    Ajoute ou met à jour un souvenir dans la session et sauvegarde immédiatement.
     """
-    st.session_state.souvenirs[cle] = valeur
-    save_souvenirs()
-
-def ajouter_souvenir(cle: str, valeur: str, fichier="memoire_ava.json"):
-    """Ajoute ou met à jour un souvenir dans la session et le fichier mémoire."""
-    # Mise à jour immédiate de la session
     if "souvenirs" not in st.session_state:
         st.session_state.souvenirs = {}
     st.session_state.souvenirs[cle] = valeur
-
-    # Mise à jour dans le fichier mémoire
-    os.makedirs(os.path.dirname(fichier), exist_ok=True)
-    with open(fichier, "w", encoding="utf-8") as f:
-        json.dump(st.session_state.souvenirs, f, ensure_ascii=False, indent=4)
-
+    save_souvenirs()
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
@@ -1294,7 +1282,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 ajouter_souvenir(cle, valeur)  # <== ICI c’est correct maintenant
                 return f"✨ Super, j'ai bien enregistré : **{valeur}** dans mes souvenirs ! 🧠"
     st.write("📚 Souvenirs actuels :", st.session_state.get("souvenirs", {}))
-    
+
     # --- 2️⃣ Ensuite seulement, tenter de retrouver un souvenir existant ---
     for cle_souvenir, contenu_souvenir in st.session_state.get("souvenirs", {}).items():
         if cle_souvenir.replace("_", " ") in question_clean or cle_souvenir in question_clean:
