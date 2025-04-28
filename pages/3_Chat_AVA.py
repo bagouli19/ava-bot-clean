@@ -1176,8 +1176,10 @@ def trouver_reponse(question: str) -> str:
     if best_score > 0.7:
         return base_culture_nettoyee[keys[best_idx]]
 
-    # 6) Message de secours 100% local
-    return "🤔 Je n'ai pas d'information locale pour ça pour l'instant. Peux-tu reformuler ou demander autre chose ? 🌍"
+    # 🔹 2. Sinon continuer normalement avec OpenAI ou autre moteur
+    # (exemple : base de connaissances, ou API GPT)
+    reponse_openai = obtenir_reponse_ava(question_clean)
+    return reponse_openai
 
 
 
