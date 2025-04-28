@@ -146,40 +146,26 @@ def stocker_souvenir(cle: str, valeur: str) -> None:
     st.session_state.souvenirs[cle] = valeur
     save_souvenirs()
 
-def retrouver_souvenir(cle: str) -> str:
-    """
-    Renvoie la valeur associée à 'cle' ou un message si absent.
-    """
-    return st.session_state.souvenirs.get(
-        cle,
-        "❓ Je n'ai pas de souvenir pour ça…"
-    )
-
 def ajouter_souvenir(cle: str, valeur: str, fichier="memoire_ava.json"):
-    """Ajoute ou met à jour un souvenir dans le fichier mémoire et en session."""
-    try:
-        # Charger mémoire existante
-        if os.path.exists(fichier):
-            with open(fichier, "r", encoding="utf-8") as f:
-                memoire = json.load(f)
-        else:
-            memoire = {}
-        
-        # Mise à jour
-        memoire[cle] = valeur
-        
-        # Sauvegarder dans le fichier
-        with open(fichier, "w", encoding="utf-8") as f:
-            json.dump(memoire, f, ensure_ascii=False, indent=2)
+    """Ajoute ou met à jour un souvenir dans le fichier mémoire et la session."""
+    # Vérifier si le fichier existe
+    if os.path.exists(fichier):
+        with open(fichier, "r", encoding="utf-8") as f:
+            memoire = json.load(f)
+    else:
+        memoire = {}
 
-        # ➡️ Mise à jour immédiate de la mémoire active
-        st.session_state.souvenirs = memoire
+    # Mise à jour de la mémoire
+    memoire[cle] = valeur
 
-        # ➡️ Debug console
-        print(f"🧠 Souvenir ajouté : {cle} ➔ {valeur}")
+    # Mise à jour immédiate de la session
+    if "souvenirs" not in st.session_state:
+        st.session_state.souvenirs = {}
+    st.session_state.souvenirs[cle] = valeur
 
-    except Exception as e:
-        print(f"❌ Erreur sauvegarde souvenir : {e}")
+    # Sauvegarde dans le fichier
+    with open(fichier, "w", encoding="utf-8") as f:
+        json.dump(memoire, f, ensure_ascii=False, indent=4)
 
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
