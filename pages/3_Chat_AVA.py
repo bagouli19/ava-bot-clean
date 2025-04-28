@@ -156,24 +156,16 @@ def retrouver_souvenir(cle: str) -> str:
     )
 
 def ajouter_souvenir(cle: str, valeur: str, fichier="memoire_ava.json"):
-    """Ajoute ou met à jour un souvenir dans le fichier mémoire et dans la session."""
-    # Charger la mémoire actuelle
-    if os.path.exists(fichier):
-        with open(fichier, "r", encoding="utf-8") as f:
-            memoire = json.load(f)
-    else:
-        memoire = {}
+    """Ajoute ou met à jour un souvenir dans la session et le fichier mémoire."""
+    # Ajouter aussi dans la session en direct
+    if "souvenirs" not in st.session_state:
+        st.session_state.souvenirs = {}
+    st.session_state.souvenirs[cle] = valeur
 
-    # Mettre à jour
-    memoire[cle] = valeur
-
-    # Sauvegarder dans le fichier
+    # Puis enregistrer dans le fichier mémoire
+    os.makedirs(os.path.dirname(fichier), exist_ok=True)
     with open(fichier, "w", encoding="utf-8") as f:
-        json.dump(memoire, f, ensure_ascii=False, indent=4)
-
-    # ➡️ Et très important : mettre à jour la mémoire active
-    if "souvenirs" in st.session_state:
-        st.session_state.souvenirs[cle] = valeur
+        json.dump(st.session_state.souvenirs, f, ensure_ascii=False, indent=4)
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
