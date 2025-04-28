@@ -1273,8 +1273,7 @@ def trouver_reponse(question: str) -> str:
  
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-
-    # 1️⃣ --- Bloc Ajout automatique de souvenirs (TOUT EN PREMIER) ---
+    # 1️⃣ Bloc Ajout automatique de souvenirs (TOUT EN PREMIER)
     if any(kw in question_clean for kw in ["je m'appelle", "mon prénom est", "mon film préféré est", "j'adore", "mon chien s'appelle", "mon plat préféré est", "mon sport préféré est"]):
         try:
             match = re.search(r"(je m'appelle|mon prénom est|mon film préféré est|j'adore|mon chien s'appelle|mon plat préféré est|mon sport préféré est)\s+(.*)", question_clean)
@@ -1286,12 +1285,13 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 return f"✨ Super, j'ai bien enregistré : **{valeur}** ! Je m'en souviendrai dorénavant. 🧠"
         except Exception as e:
             return f"⚠️ Je n'ai pas réussi à enregistrer ton souvenir à cause d'une erreur : {e}"
-    """Détecte si la question correspond à un module spécial (salutation, etc.)."""
-    
-    # 1. D'abord, essayer de répondre avec les salutations courantes
-    reponse_salutation = repondre_salutation(question_clean)
-    if reponse_salutation:
-        return reponse_salutation
+
+    # 2️⃣ Bloc Salutations précises
+    salutations = ["salut", "bonjour", "bonsoir", "coucou", "yo", "re", "hello", "hi", "good morning", "good evening"]
+    if any(question_clean.strip() == salut for salut in salutations):
+        reponse_salutation = repondre_salutation(question_clean)
+        if reponse_salutation:
+            return reponse_salutation
 
     # 2. Ensuite, chercher une réponse dans ta base de culture générale
     reponse_culture = base_culture.get(question_clean)
