@@ -1264,16 +1264,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     reponse_culture = base_culture.get(question_clean)
     if reponse_culture:
         return reponse_culture
-
-    # 3. Sinon, chercher une réponse par similarité avec BERT
-    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
-    if reponse_semantique:
-        return reponse_semantique
-    try:
-        reponse_openai = obtenir_reponse_ava(question_clean)
-        return reponse_openai
-    except Exception as e:
-        return "Je suis désolée, une erreur est survenue avec OpenAI."
+   
 
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
@@ -2257,7 +2248,17 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         message_bot = "🤔 Je n'ai pas d'information locale sur ce sujet pour le moment. Pose-moi une autre question ou demande-moi de te faire découvrir un pays, par exemple ! 🌍"
 
     return message_bot
-
+    
+    # 3. Sinon, chercher une réponse par similarité avec BERT
+    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
+    if reponse_semantique:
+        return reponse_semantique
+    try:
+        reponse_openai = obtenir_reponse_ava(question_clean)
+        return reponse_openai
+    except Exception as e:
+        return "Je suis désolée, une erreur est survenue avec OpenAI."
+        
     return None 
    
 
