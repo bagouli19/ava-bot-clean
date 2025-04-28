@@ -1327,7 +1327,45 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     if reponse_culture:
         return reponse_culture
 
-    
+    # Dans gerer_modules_speciaux(), AVANT tout appel à OpenAI
+    # --- Bloc météo intelligent (villages inclus) ---
+    if any(kw in question_clean for kw in ["meteo", "quel temps"]):
+        # par défaut
+        ville_detectee = "Paris"
+
+        # 1) chercher "à/au/aux/dans/sur/en <lieu>"
+        pattern1 = re.compile(r"(?:a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
+        match_geo = pattern1.search(question_clean)
+
+        # 2) sinon "meteo <lieu>"
+        if not match_geo:
+            pattern2 = re.compile(r"meteo\s+(.+)$", re.IGNORECASE)
+            match_geo = pattern2.search(question_clean)
+
+        if match_geo:
+            lieu = match_geo.group(1).strip().rstrip(" ?.!;")
+            # capitaliser
+            ville_detectee = " ".join(w.capitalize() for w in lieu.split())
+
+        try:
+            meteo = get_meteo_ville(ville_detectee)
+        except Exception:
+            return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
+
+        if "erreur" in meteo.lower():
+            return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
+
+        return (
+            f"🌦️ **Météo à {ville_detectee} :**\n\n"
+            f"{meteo}\n\n"
+            + random.choice([
+                "🧥 Pense à t’habiller en conséquence !",
+                "☕ Rien de tel qu’un bon café pour accompagner la journée.",
+                "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
+                "💡 Info météo = longueur d’avance.",
+                "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
+            ])
+        )
 
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
@@ -1414,49 +1452,6 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
         except Exception:
             return "⚠️ Impossible d'obtenir l'horoscope pour le moment.\n\n"
-
-    
-    # Dans gerer_modules_speciaux(), AVANT tout appel à OpenAI
-    # --- Bloc météo intelligent (villages inclus) ---
-    if any(kw in question_clean for kw in ["meteo", "quel temps"]):
-        # par défaut
-        ville_detectee = "Paris"
-
-        # 1) chercher "à/au/aux/dans/sur/en <lieu>"
-        pattern1 = re.compile(r"(?:a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
-        match_geo = pattern1.search(question_clean)
-
-        # 2) sinon "meteo <lieu>"
-        if not match_geo:
-            pattern2 = re.compile(r"meteo\s+(.+)$", re.IGNORECASE)
-            match_geo = pattern2.search(question_clean)
-
-        if match_geo:
-            lieu = match_geo.group(1).strip().rstrip(" ?.!;")
-            # capitaliser
-            ville_detectee = " ".join(w.capitalize() for w in lieu.split())
-
-        try:
-            meteo = get_meteo_ville(ville_detectee)
-        except Exception:
-            return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
-
-        if "erreur" in meteo.lower():
-            return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
-
-        return (
-            f"🌦️ **Météo à {ville_detectee} :**\n\n"
-            f"{meteo}\n\n"
-            + random.choice([
-                "🧥 Pense à t’habiller en conséquence !",
-                "☕ Rien de tel qu’un bon café pour accompagner la journée.",
-                "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
-                "💡 Info météo = longueur d’avance.",
-                "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
-            ])
-        )
-
-   
 
     # --- Bloc remèdes naturels ---
     if any(kw in question_clean for kw in ["remède", "remedes", "remede", "soigner", "soulager", "traitement naturel"]):
