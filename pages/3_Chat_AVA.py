@@ -1242,10 +1242,7 @@ def trouver_reponse(question: str) -> str:
     # 3️⃣ Salutations spéciales
     if question_clean in SALUTATIONS_CLEAN:
         valeur = SALUTATIONS_CLEAN[question_clean]
-        if valeur == "__HUMEUR_DU_JOUR__":
-            return random.choice([...])  # Tes humeurs
-        else:
-            return valeur
+        
 
     # 4️⃣ Fuzzy matching
     match = difflib.get_close_matches(
