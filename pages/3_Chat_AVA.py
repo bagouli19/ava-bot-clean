@@ -1229,6 +1229,8 @@ def trouver_reponse(question: str) -> str:
     """
     Trouve la réponse la plus adaptée à la question posée.
     """
+    question_clean = question.lower().strip()
+
     # Plus besoin de nettoyer ici
     incrementer_interactions()
     ajuster_affection(question)
