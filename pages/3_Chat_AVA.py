@@ -1279,17 +1279,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     reponse_culture = base_culture.get(question_clean)
     if reponse_culture:
         return reponse_culture
-   
-
-    # --- Bloc Actualités améliorées ---
-    if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
-        try:
-            actus = get_general_news()
-            return format_actus(actus)
-        except Exception as e:
-            return f"⚠️ Impossible de récupérer les actualités : {e}"
-    
-
+        
     # --- Bloc Ajout automatique de souvenirs ---
     if any(kw in question_clean for kw in ["je m'appelle", "mon prénom est", "mon film préféré est", "j'adore", "mon chien s'appelle", "mon plat préféré est", "mon sport préféré est"]):
         try:
@@ -1306,6 +1296,17 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 return f"✨ Super, j'ai bien enregistré : **{valeur}** ! Je m'en souviendrai dorénavant. 🧠"
         except Exception as e:
             return f"⚠️ Je n'ai pas réussi à enregistrer ton souvenir à cause d'une erreur : {e}"
+
+    # --- Bloc Actualités améliorées ---
+    if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
+        try:
+            actus = get_general_news()
+            return format_actus(actus)
+        except Exception as e:
+            return f"⚠️ Impossible de récupérer les actualités : {e}"
+    
+
+    
     
     
     # --- Rappel du prénom ---
