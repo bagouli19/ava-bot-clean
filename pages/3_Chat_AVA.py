@@ -146,6 +146,56 @@ def ajouter_souvenir(cle: str, valeur: str) -> None:
         st.session_state.souvenirs = {}
     st.session_state.souvenirs[cle] = valeur
     save_souvenirs()
+
+def detecter_et_ajouter_souvenir(question_clean: str):
+    """
+    Détecte automatiquement des informations personnelles dans la question
+    et les ajoute aux souvenirs si pertinent.
+    """
+    question_clean = question_clean.lower()
+
+    # Détection du nom du chien
+    if "mon chien s'appelle" in question_clean:
+        try:
+            nom_chien = question_clean.split("mon chien s'appelle")[-1].strip().capitalize()
+            cle = f"chien_{nom_chien.lower()}"
+            valeur = f"Mon chien s'appelle {nom_chien}"
+            ajouter_souvenir(cle, valeur)
+        except Exception as e:
+            print(f"Erreur ajout souvenir chien : {e}")
+
+    # Détection du prénom de l'utilisateur
+    if "je m'appelle" in question_clean:
+        try:
+            prenom = question_clean.split("je m'appelle")[-1].strip().capitalize()
+            cle = f"prenom_{prenom.lower()}"
+            valeur = f"Je m'appelle {prenom}"
+            ajouter_souvenir(cle, valeur)
+        except Exception as e:
+            print(f"Erreur ajout souvenir prénom : {e}")
+
+    # Détection de la ville de résidence
+    if "j'habite à" in question_clean or "je vis à" in question_clean:
+        try:
+            if "j'habite à" in question_clean:
+                ville = question_clean.split("j'habite à")[-1].strip().capitalize()
+            elif "je vis à" in question_clean:
+                ville = question_clean.split("je vis à")[-1].strip().capitalize()
+            cle = f"ville_{ville.lower()}"
+            valeur = f"J'habite à {ville}"
+            ajouter_souvenir(cle, valeur)
+        except Exception as e:
+            print(f"Erreur ajout souvenir ville : {e}")
+
+    # Détection de l'humeur
+    if "je suis" in question_clean:
+        try:
+            humeur = question_clean.split("je suis")[-1].strip()
+            cle = f"humeur_{humeur.lower()}"
+            valeur = f"Tu m'as dit que tu es {humeur}"
+            ajouter_souvenir(cle, valeur)
+        except Exception as e:
+            print(f"Erreur ajout souvenir humeur : {e}")
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
@@ -1186,6 +1236,7 @@ def trouver_reponse(question: str) -> str:
     - secours OpenAI
     """
     question_clean = nettoyer_texte(question)
+    detecter_et_ajouter_souvenir(question_clean)
     incrementer_interactions()
     ajuster_affection(question)
 
