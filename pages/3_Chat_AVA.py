@@ -1254,7 +1254,7 @@ def trouver_reponse(question: str) -> str:
  
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-        """Détecte si la question correspond à un module spécial (salutation, etc.)."""
+    """Détecte si la question correspond à un module spécial (salutation, etc.)."""
     # 1. D'abord, essayer de répondre avec les salutations courantes
     reponse_salutation = repondre_salutation(question_clean)
     if reponse_salutation:
@@ -1274,7 +1274,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         return reponse_openai
     except Exception as e:
         return "Je suis désolée, une erreur est survenue avec OpenAI."
-        
+
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
         try:
