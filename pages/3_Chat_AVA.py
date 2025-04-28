@@ -1235,8 +1235,18 @@ def trouver_reponse(question: str) -> str:
     - moteur sémantique (BERT)
     - secours OpenAI
     """
-    question_clean = nettoyer_texte(question)
+    # Supposons que tu reçois 'question' de l'utilisateur
+    question = st.session_state.get("input_utilisateur", "")
+
+    # Nettoyage de la question
+    question_clean = question.lower().strip()
+
+    # 🧠 Détection et sauvegarde automatique
     detecter_et_ajouter_souvenir(question_clean)
+
+    # 💬 Ensuite seulement tu cherches une réponse
+    message_bot = trouver_reponse(question_clean)
+    
     incrementer_interactions()
     ajuster_affection(question)
 
