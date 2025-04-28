@@ -138,32 +138,27 @@ def save_souvenirs() -> None:
     with open(GLOBAL_MEMOIRE, "w", encoding="utf-8") as f:
         json.dump(st.session_state.souvenirs, f, ensure_ascii=False, indent=2)
 
-def ajouter_souvenir(cle: str, valeur: str) -> None:
+def ajouter_souvenir(cle: str, valeur: str, fichier="memoire_ava.json"):
     """
-    Ajoute ou met à jour un souvenir dans la session et sauvegarde immédiatement.
+    Ajoute ou met à jour un souvenir dans la session et sauvegarde immédiatement dans le fichier mémoire.
     """
     if "souvenirs" not in st.session_state:
         st.session_state.souvenirs = {}
     st.session_state.souvenirs[cle] = valeur
+
+    # Mise à jour immédiate du fichier après chaque ajout
     save_souvenirs()
 
 def detecter_et_ajouter_souvenir(question_clean: str):
     """
-    Détecte automatiquement des informations personnelles dans la question
-    et les ajoute aux souvenirs si pertinent.
+    Détecte automatiquement certaines informations dans les questions et les stocke comme souvenirs.
     """
-    question_clean = question_clean.lower()
-
-    # Détection du nom du chien
     if "mon chien s'appelle" in question_clean:
-        try:
-            nom_chien = question_clean.split("mon chien s'appelle")[-1].strip().capitalize()
-            cle = f"chien_{nom_chien.lower()}"
-            valeur = f"Mon chien s'appelle {nom_chien}"
+        nom = question_clean.replace("mon chien s'appelle", "").strip()
+        if nom:
+            cle = f"chien_{nom.lower()}"
+            valeur = f"Mon chien s'appelle {nom.capitalize()}"
             ajouter_souvenir(cle, valeur)
-        except Exception as e:
-            print(f"Erreur ajout souvenir chien : {e}")
-
     # Détection du prénom de l'utilisateur
     if "je m'appelle" in question_clean:
         try:
