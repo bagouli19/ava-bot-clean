@@ -232,33 +232,27 @@ def load_bert_model():
 # Chargement du modèle BERT
 model = load_bert_model()
 
-def trouver_reponse_semantique(question_clean, base_connaissances):
+def trouver_reponse_semantique(question_clean: str, base_dict: dict) -> Optional[str]:
     """
-    Recherche la réponse la plus pertinente via BERT dans la base de connaissances.
+    Recherche la réponse la plus pertinente via BERT dans base_dict.
+    Renvoie None si base_dict est vide.
     """
-    if not base_connaissances:
-        return "🤖 Je n'ai pas encore assez de connaissances pour répondre à cela."
+    if not base_dict:
+        return None
 
-    # On encode la question posée
-    question_embedding = model.encode([question_clean])
+    # 1) encode la question
+    question_emb = model.encode([question_clean])
 
-    # On encode toutes les phrases de la base
-    base_phrases = list(base_culture_nettoyee.keys())
-    base_embeddings = model.encode(base_phrases)
+    # 2) encode toutes les clés de la base
+    keys = list(base_dict.keys())
+    base_embs = model.encode(keys)
 
-    # On calcule la similarité cosinus
-    similarities = cosine_similarity(question_embedding, base_embeddings)
+    # 3) calcule la similarité et récupère l'indice du meilleur score
+    sims = cosine_similarity(question_emb, base_embs)[0]
+    idx_max = np.argmax(sims)
 
-    # On prend la réponse la plus similaire
-    idx_max = np.argmax(similarities)
-    meilleure_phrase = base_phrases[idx_max]
-    meilleure_reponse = base_culture_nettoyee[meilleure_phrase]
-    corpus = SALUTATIONS_COURANTES 
-    corpus_embeddings = model.encode(corpus, convert_to_tensor=True)
-
-    return meilleure_reponse
-
-    message_bot = trouver_reponse_semantique(question_clean, base_culture_nettoyee)
+    # 4) retourne la réponse associée
+    return base_dict[keys[idx_max]]
 
 
 def generer_phrase_autonome(theme: str, infos: dict) -> str:
