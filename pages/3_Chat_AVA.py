@@ -1269,12 +1269,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     if reponse_semantique:
         return reponse_semantique
 
-    # 4. Si toujours rien, appeler OpenAI (GPT-3.5 ou autre) comme dernier recours
-    try:
-        reponse_openai = obtenir_reponse_ava(question_clean)
-        return reponse_openai
-    except Exception as e:
-        return "Je suis désolée, une erreur est survenue avec OpenAI."
+    
 
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
@@ -2251,7 +2246,14 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 "formulation ou tapez 'analyse complète' pour un aperçu du marché 📊"
             ]
             message_bot = random.choice(reponses_ava)
-
+    
+    # 4. Si toujours rien, appeler OpenAI (GPT-3.5 ou autre) comme dernier recours
+    try:
+        reponse_openai = obtenir_reponse_ava(question_clean)
+        return reponse_openai
+    except Exception as e:
+        return "Je suis désolée, une erreur est survenue avec OpenAI."
+        
     # Bloc de secours
     if not message_bot:
         message_bot = "🤔 Je n'ai pas d'information locale sur ce sujet pour le moment. Pose-moi une autre question ou demande-moi de te faire découvrir un pays, par exemple ! 🌍"
