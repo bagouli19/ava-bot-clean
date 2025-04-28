@@ -2304,6 +2304,8 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
     return message_bot
     
+    return None 
+    
     # 3. Sinon, chercher une réponse par similarité avec BERT
     reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
     if reponse_semantique:
@@ -2314,7 +2316,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     except Exception as e:
         return "Je suis désolée, une erreur est survenue avec OpenAI."
 
-    return None 
+    
    
 
     
