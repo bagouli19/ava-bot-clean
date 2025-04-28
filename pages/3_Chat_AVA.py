@@ -1283,13 +1283,15 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     # Nettoyage de base
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
     
-    # --- 3️⃣ Bloc Salutations classiques
     salutations_possibles = ["salut", "bonjour", "bonsoir", "coucou", "yo", "hello", "hi", "re"]
     for salut in salutations_possibles:
-        if salut in question_clean:
-            reponse_salutation = repondre_salutation(question_clean)
-            if reponse_salutation:
-                return reponse_salutation
+        if question_clean == salut:
+            return random.choice([
+                "Salut ! Comment puis-je vous aider aujourd’hui ? 🤖",
+                "Coucou ! Besoin d’un conseil ou d’une info ? 😊",
+                "Hello ! Prêt(e) à découvrir plein de choses ensemble ? 🚀",
+                "Yo ! Que puis-je faire pour vous aujourd'hui ? 👋",
+            ])
 
     # Dans gerer_modules_speciaux(), AVANT tout appel à OpenAI
     # --- Bloc météo intelligent (villages inclus) ---
