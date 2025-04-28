@@ -1191,13 +1191,13 @@ def trouver_reponse(question: str) -> str:
         return base_culture_nettoyee[best]
 
     if question_clean.strip() in [q.lower() for q in SALUTATIONS_COURANTES]:
-    return random.choice([
-        "Wouhou, salut toi ! Ça me fait super plaisir de te voir ! 🥳",
-        "Hey hey ! Installe-toi, on va passer un super moment ! 🚀",
-        "Salut l'ami(e) ! Toujours prêt(e) pour une nouvelle aventure ? 😄",
-        "Coucou, me revoilà ! Prêt(e) à conquérir le monde ensemble ? 🌍✨",
-        "Yoohoo ! Trop contente de vous revoir ! 🤗"
-    ])
+        return random.choice([
+            "Wouhou, salut toi ! Ça me fait super plaisir de te voir ! 🥳",
+            "Hey hey ! Installe-toi, on va passer un super moment ! 🚀",
+            "Salut l'ami(e) ! Toujours prêt(e) pour une nouvelle aventure ? 😄",
+            "Coucou, me revoilà ! Prêt(e) à conquérir le monde ensemble ? 🌍✨",
+            "Yoohoo ! Trop contente de vous revoir ! 🤗"
+        ])
     
     # ───> 6) **Fallback** OpenAI (seulement ici)
     try:
