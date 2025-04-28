@@ -1122,6 +1122,48 @@ st.markdown(
 st.markdown(
     "Posez-moi vos questions sur la bourse, la météo, les actualités... ou juste pour discuter !"
 )
+# ─── Clé et fonctions NewsAPI ───
+NEWSAPI_KEY = "681120bace124ee99d390cc059e6aca5"
+
+def get_general_news() -> List[Tuple[str, str]]:
+    """
+    Récupère les 5 premiers titres d'actualité (en anglais) via NewsAPI.
+    """
+    if not NEWSAPI_KEY:
+        raise ValueError("Clé API NewsAPI manquante (NEWSAPI_KEY).")
+    url = (
+        "https://newsapi.org/v2/top-headlines"
+        "?language=en"
+        "&pageSize=5"
+        f"&apiKey={NEWSAPI_KEY}"
+    )
+    resp = requests.get(url, timeout=5)
+    resp.raise_for_status()
+    data = resp.json()
+    articles = data.get("articles", [])
+    return [(a["title"], a["url"]) for a in articles]
+
+
+def format_actus(
+    actus: Union[str, List[Tuple[str, str]]]
+) -> str:
+    """
+    Transforme la liste d'actus en Markdown.
+    """
+    # cas où on passe déjà une chaîne d'erreur
+    if isinstance(actus, str):
+        return actus
+
+    # si liste vide
+    if not actus:
+        return "⚠️ Aucune actualité disponible pour le moment."
+
+    # sinon on formate
+    texte = "📰 **Dernières actualités importantes :**\n\n"
+    for i, (titre, url) in enumerate(actus[:5], start=1):
+        texte += f"{i}. 🔹 [{titre}]({url})\n"
+    texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
+    return texte
 
 def repondre_openai(prompt: str) -> str:
     """
@@ -1186,48 +1228,7 @@ def trouver_reponse(question: str) -> str:
 
 
 
-# ─── Clé et fonctions NewsAPI ───
-NEWSAPI_KEY = "681120bace124ee99d390cc059e6aca5"
 
-def get_general_news() -> List[Tuple[str, str]]:
-    """
-    Récupère les 5 premiers titres d'actualité (en anglais) via NewsAPI.
-    """
-    if not NEWSAPI_KEY:
-        raise ValueError("Clé API NewsAPI manquante (NEWSAPI_KEY).")
-    url = (
-        "https://newsapi.org/v2/top-headlines"
-        "?language=en"
-        "&pageSize=5"
-        f"&apiKey={NEWSAPI_KEY}"
-    )
-    resp = requests.get(url, timeout=5)
-    resp.raise_for_status()
-    data = resp.json()
-    articles = data.get("articles", [])
-    return [(a["title"], a["url"]) for a in articles]
-
-
-def format_actus(
-    actus: Union[str, List[Tuple[str, str]]]
-) -> str:
-    """
-    Transforme la liste d'actus en Markdown.
-    """
-    # cas où on passe déjà une chaîne d'erreur
-    if isinstance(actus, str):
-        return actus
-
-    # si liste vide
-    if not actus:
-        return "⚠️ Aucune actualité disponible pour le moment."
-
-    # sinon on formate
-    texte = "📰 **Dernières actualités importantes :**\n\n"
-    for i, (titre, url) in enumerate(actus[:5], start=1):
-        texte += f"{i}. 🔹 [{titre}]({url})\n"
-    texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
-    return texte
 
     if SALUTATIONS_CLEAN[question_clean] == "__HUMEUR_DU_JOUR__":
         return random.choice([
@@ -1253,24 +1254,7 @@ def format_actus(
  
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-    """Détecte si la question correspond à un module spécial (salutation, etc.)."""
-    # 1. D'abord, essayer de répondre avec les salutations courantes
-    reponse_salutation = repondre_salutation(question_clean)
-    if reponse_salutation:
-        return reponse_salutation
-
-    # 2. Ensuite, chercher une réponse dans ta base de culture générale
-    reponse_culture = base_culture.get(question_clean)
-    if reponse_culture:
-        return reponse_culture
-
-    # 3. Sinon, chercher une réponse par similarité avec BERT
-    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
-    if reponse_semantique:
-        return reponse_semantique
-
     
-
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
         try:
@@ -2247,13 +2231,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             ]
             message_bot = random.choice(reponses_ava)
     
-    # 4. Si toujours rien, appeler OpenAI (GPT-3.5 ou autre) comme dernier recours
-    try:
-        reponse_openai = obtenir_reponse_ava(question_clean)
-        return reponse_openai
-    except Exception as e:
-        return "Je suis désolée, une erreur est survenue avec OpenAI."
-        
+
     # Bloc de secours
     if not message_bot:
         message_bot = "🤔 Je n'ai pas d'information locale sur ce sujet pour le moment. Pose-moi une autre question ou demande-moi de te faire découvrir un pays, par exemple ! 🌍"
