@@ -1310,18 +1310,6 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             return format_actus(actus)
         except Exception as e:
             return f"⚠️ Impossible de récupérer les actualités : {e}"
-    
-
-    
-    
-    
-    # --- Rappel du prénom ---
-    if any(kw in question_clean for kw in ["mon prénom", "mon prenom", "ton prénom", "ton prenom"]):
-        prenom = retrouver_profil("prenom")
-        if prenom:
-            return f"Tu m'as dit que tu t'appelles **{prenom}**."
-        else:
-            return "Je ne connais pas encore ton prénom ! Dis‑moi comment tu t'appelles."
 
     # --- Souvenirs dynamiques ---
     if any(kw in question_clean for kw in ["tu te souviens", "tu te rappelles", "qu’est-ce que je t’ai dit"]):
