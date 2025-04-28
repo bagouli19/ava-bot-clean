@@ -593,6 +593,9 @@ SALUTATIONS_COURANTES = {
 # On normalise les clés une seule fois
 SALUTATIONS_CLEAN = {nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()}
 
+def repondre_salutation(question_clean: str) -> Optional[str]:
+    """Si la question est une salutation connue, retourne la réponse adaptée."""
+    return SALUTATIONS_CLEAN.get(question_clean)
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
@@ -1250,7 +1253,29 @@ def format_actus(
  
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-   
+    """Détecte si la question correspond à un module spécial (salutation, etc.)."""
+    # 1. D'abord, essayer de répondre avec les salutations courantes
+    reponse_salutation = repondre_salutation(question_clean)
+    if reponse_salutation:
+        return reponse_salutation
+
+    # 2. Ensuite, chercher une réponse dans ta base de culture générale
+    reponse_culture = base_culture.get(question_clean)
+    if reponse_culture:
+        return reponse_culture
+
+    # 3. Sinon, chercher une réponse par similarité avec BERT
+    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
+    if reponse_semantique:
+        return reponse_semantique
+
+    # 4. Si toujours rien, appeler OpenAI (GPT-3.5 ou autre) comme dernier recours
+    try:
+        reponse_openai = obtenir_reponse_ava(question_clean)
+        return reponse_openai
+    except Exception as e:
+        return "Je suis désolée, une erreur est survenue avec OpenAI."
+
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
         try:
