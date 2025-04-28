@@ -154,7 +154,7 @@ def retrouver_souvenir(cle: str) -> str:
         cle,
         "❓ Je n'ai pas de souvenir pour ça…"
     )
-    
+
 def ajouter_souvenir(cle: str, valeur: str, fichier="memoire_ava.json"):
     """Ajoute ou met à jour un souvenir dans le fichier mémoire et dans la session."""
     # Charger la mémoire actuelle
@@ -1273,28 +1273,25 @@ def trouver_reponse(question: str) -> str:
  
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
-    """Détecte si la question correspond à un module spécial (salutation, etc.)."""
-    # 1. D'abord, essayer de répondre avec les salutations courantes
-    reponse_salutation = repondre_salutation(question_clean)
-    if reponse_salutation:
-        return reponse_salutation
 
-    # --- Bloc Ajout automatique de souvenirs ---
+    # 1️⃣ --- Bloc Ajout automatique de souvenirs (TOUT EN PREMIER) ---
     if any(kw in question_clean for kw in ["je m'appelle", "mon prénom est", "mon film préféré est", "j'adore", "mon chien s'appelle", "mon plat préféré est", "mon sport préféré est"]):
         try:
-            # On extrait ce que l'utilisateur veut enregistrer
             match = re.search(r"(je m'appelle|mon prénom est|mon film préféré est|j'adore|mon chien s'appelle|mon plat préféré est|mon sport préféré est)\s+(.*)", question_clean)
             if match:
                 type_info = match.group(1)
                 valeur = match.group(2).strip().rstrip(".!?")
-                # Création d'une clé intelligente
                 cle = type_info.replace(" ", "_") + "_" + valeur.split(" ")[0].lower()
-
-                # Sauvegarde automatique
                 ajouter_souvenir(cle, valeur)
                 return f"✨ Super, j'ai bien enregistré : **{valeur}** ! Je m'en souviendrai dorénavant. 🧠"
         except Exception as e:
             return f"⚠️ Je n'ai pas réussi à enregistrer ton souvenir à cause d'une erreur : {e}"
+    """Détecte si la question correspond à un module spécial (salutation, etc.)."""
+    
+    # 1. D'abord, essayer de répondre avec les salutations courantes
+    reponse_salutation = repondre_salutation(question_clean)
+    if reponse_salutation:
+        return reponse_salutation
 
     # 2. Ensuite, chercher une réponse dans ta base de culture générale
     reponse_culture = base_culture.get(question_clean)
