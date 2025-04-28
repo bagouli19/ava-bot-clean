@@ -2298,14 +2298,12 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 return f"✨ Souvenir retrouvé : **{valeur}**"
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
 
-    # Bloc de secours
-    if not message_bot:
-        message_bot = "🤔 Je n'ai pas d'information locale sur ce sujet pour le moment. Pose-moi une autre question ou demande-moi de te faire découvrir un pays, par exemple ! 🌍"
+    # --- FIN de gerer_modules_speciaux ---
+    if message_bot:
+        return message_bot
 
-    return message_bot
-    
-    return None 
-    
+    return None
+
     # 3. Sinon, chercher une réponse par similarité avec BERT
     reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
     if reponse_semantique:
