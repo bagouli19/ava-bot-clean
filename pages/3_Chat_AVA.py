@@ -1140,25 +1140,24 @@ def repondre_openai(prompt: str) -> str:
         return f"Erreur OpenAI : {e}"
 
 def trouver_reponse(question: str) -> str:
-    # 1) Nettoyage et style
     question_clean = nettoyer_texte(question)
     incrementer_interactions()
     ajuster_affection(question)
 
-    # 2) Modules spéciaux (météo, remèdes, découverte, etc.)
+    # 1) Modules spéciaux (météo, remède, découverte…)
     resp_spec = gerer_modules_speciaux(question, question_clean)
     if resp_spec:
         return resp_spec.strip()
 
-    # 3) Base de culture – exact match
+    # 2) Base culture – exact match
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # 4) Salutations
+    # 3) Salutations
     if question_clean in SALUTATIONS_CLEAN:
         return SALUTATIONS_CLEAN[question_clean]
 
-    # 5) Fuzzy match sur la base de culture
+    # 4) Fuzzy match
     match = difflib.get_close_matches(
         question_clean,
         base_culture_nettoyee.keys(),
@@ -1168,19 +1167,18 @@ def trouver_reponse(question: str) -> str:
     if match:
         return base_culture_nettoyee[match[0]]
 
-    # 6) Sémantique “locale” avec SentenceTransformer
+    # 5) Sémantique “locale” (BERT) **seulement si score > 0.7**
     keys = list(base_culture_nettoyee.keys())
-    # pré‐encode tes clés en début de script pour ne pas réencoder à chaque appel !
-    sims = cosine_similarity(
-        [model_semantic.encode(question_clean)],
-        model_semantic.encode(keys)
-    )[0]
+    q_emb = model.encode([question_clean])
+    keys_emb = model.encode(keys)
+    sims = cosine_similarity(q_emb, keys_emb)[0]
     best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
     if best_score > 0.7:
         return base_culture_nettoyee[keys[best_idx]]
 
-    # 7) Message de secours **100% local**, plus d’OpenAI
+    # 6) Message de secours 100% local
     return "🤔 Je n'ai pas d'information locale pour ça pour l'instant. Peux-tu reformuler ou demander autre chose ? 🌍"
+
 
 
 # ─── Clé et fonctions NewsAPI ───
