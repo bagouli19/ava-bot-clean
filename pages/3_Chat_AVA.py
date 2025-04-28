@@ -1295,9 +1295,12 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 return reponse_salutation
 
     # 1b. Ensuite, essayer de répondre avec la mémoire dynamique (souvenirs)
+    question_mots = set(question_clean.lower().split())
+
     for cle_souvenir, contenu_souvenir in st.session_state.get("souvenirs", {}).items():
-        # Si la VALEUR du souvenir (pas la clé) est présente dans la question
-        if contenu_souvenir.lower() in question_clean:
+        contenu_mots = set(contenu_souvenir.lower().split())
+        # Si un mot du souvenir apparaît dans la question
+        if question_mots & contenu_mots:
             return f"✨ Souvenir retrouvé : {contenu_souvenir}"
 
 
