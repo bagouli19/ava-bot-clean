@@ -1239,9 +1239,9 @@ def trouver_reponse(question: str) -> str:
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # 3️⃣ Salutations spéciales
     if question_clean in SALUTATIONS_CLEAN:
         valeur = SALUTATIONS_CLEAN[question_clean]
+        return valeur
         
 
     # 4️⃣ Fuzzy matching
