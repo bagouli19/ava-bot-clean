@@ -1273,6 +1273,8 @@ def trouver_reponse(question: str) -> str:
  
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
+    # Avant la détection mémoire ➔ nettoyage spécial
+    question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
     # 1️⃣ Ajout automatique de souvenirs (PRIORITÉ TOTALE)
     if any(kw in question_clean for kw in ["je m'appelle", "mon prénom est", "mon film préféré est", "j'adore", "mon chien s'appelle", "mon plat préféré est", "mon sport préféré est"]):
         try:
