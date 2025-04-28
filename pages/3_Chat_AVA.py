@@ -1311,7 +1311,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 cle = f"{prefixe_cle}_{valeur.lower().replace(' ', '_')}"
                 ajouter_souvenir(cle, valeur)  # <== ICI c’est correct maintenant
                 return f"✨ Super, j'ai bien enregistré : **{valeur}** dans mes souvenirs ! 🧠"
-    st.write("📚 Souvenirs actuels :", st.session_state.get("souvenirs", {}))
+
 
     # --- 2️⃣ Ensuite seulement, tenter de retrouver un souvenir existant ---
     for cle_souvenir, contenu_souvenir in st.session_state.get("souvenirs", {}).items():
