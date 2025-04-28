@@ -1276,22 +1276,30 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     # Avant la détection mémoire ➔ nettoyage spécial
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
 
-    if any(kw in question_simplifiee for kw in [
-        "je mappelle", "mon prenom est", "mon film prefere est",
-        "jadore", "mon chien sappelle", "mon plat prefere est",
-        "mon sport prefere est"
-    ]):
-        try:
-            match = re.search(r"(je mappelle|mon prenom est|mon film prefere est|jadore|mon chien sappelle|mon plat prefere est|mon sport prefere est)\s+(.*)", question_simplifiee)
-            if match:
-                type_info = match.group(1)
-                valeur = match.group(2).strip().rstrip(".!?")
-                cle = type_info.replace(" ", "_") + "_" + valeur.split(" ")[0].lower()
+    # --- Rappel intelligent d'un souvenir enregistré ---
+    if any(mot in question_clean for mot in ["mon prénom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
+        if "prénom" in question_clean or "prenom" in question_clean:
+            for cle, valeur in st.session_state["souvenirs"].items():
+                if cle.startswith("je_mappelle") or cle.startswith("mon_prenom_est"):
+                    return f"👤 Ton prénom est : **{valeur}**."
+        elif "chien" in question_clean:
+            for cle, valeur in st.session_state["souvenirs"].items():
+                if cle.startswith("mon_chien_sappelle"):
+                    return f"🐶 Ton chien s'appelle : **{valeur}**."
+        elif "plat" in question_clean:
+            for cle, valeur in st.session_state["souvenirs"].items():
+                if cle.startswith("mon_plat_prefere_est"):
+                    return f"🍽️ Ton plat préféré est : **{valeur}**."
+        elif "film" in question_clean:
+            for cle, valeur in st.session_state["souvenirs"].items():
+                if cle.startswith("mon_film_prefere_est"):
+                    return f"🎬 Ton film préféré est : **{valeur}**."
+        elif "sport" in question_clean:
+            for cle, valeur in st.session_state["souvenirs"].items():
+                if cle.startswith("mon_sport_prefere_est"):
+                    return f"🏀 Ton sport préféré est : **{valeur}**."
 
-                stocker_souvenir(cle, valeur)
-                return f"✨ Super, j'ai bien enregistré : **{valeur}** ! Je m'en souviendrai dorénavant. 🧠"
-        except Exception as e:
-            return f"⚠️ Je n'ai pas réussi à enregistrer ton souvenir à cause d'une erreur : {e}"
+        return "❓ Je n'ai pas encore enregistré cette information."
 
     # 2️⃣ Bloc Salutations normaux MAIS élargi
     salutations_possibles = ["salut", "bonjour", "bonsoir", "coucou", "yo", "hello", "hi", "re"]
@@ -2278,7 +2286,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             if any(mot in cle for mot in question_clean.split()):
                 return f"✨ Souvenir retrouvé : **{valeur}**"
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
-        
+
     # Bloc de secours
     if not message_bot:
         message_bot = "🤔 Je n'ai pas d'information locale sur ce sujet pour le moment. Pose-moi une autre question ou demande-moi de te faire découvrir un pays, par exemple ! 🌍"
