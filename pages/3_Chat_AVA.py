@@ -154,22 +154,26 @@ def retrouver_souvenir(cle: str) -> str:
         cle,
         "❓ Je n'ai pas de souvenir pour ça…"
     )
-# --- Fonction pour ajouter un souvenir à la mémoire d'AVA ---
+    
 def ajouter_souvenir(cle: str, valeur: str, fichier="memoire_ava.json"):
-    """Ajoute ou met à jour un souvenir dans le fichier mémoire."""
-    # Vérifier si le fichier existe, sinon créer une mémoire vide
+    """Ajoute ou met à jour un souvenir dans le fichier mémoire et dans la session."""
+    # Charger la mémoire actuelle
     if os.path.exists(fichier):
         with open(fichier, "r", encoding="utf-8") as f:
             memoire = json.load(f)
     else:
         memoire = {}
 
-    # Mise à jour de la mémoire
+    # Mettre à jour
     memoire[cle] = valeur
 
-    # Sauvegarde dans le fichier
+    # Sauvegarder dans le fichier
     with open(fichier, "w", encoding="utf-8") as f:
         json.dump(memoire, f, ensure_ascii=False, indent=4)
+
+    # ➡️ Et très important : mettre à jour la mémoire active
+    if "souvenirs" in st.session_state:
+        st.session_state.souvenirs[cle] = valeur
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
@@ -1274,7 +1278,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     reponse_salutation = repondre_salutation(question_clean)
     if reponse_salutation:
         return reponse_salutation
-        
+
     # --- Bloc Ajout automatique de souvenirs ---
     if any(kw in question_clean for kw in ["je m'appelle", "mon prénom est", "mon film préféré est", "j'adore", "mon chien s'appelle", "mon plat préféré est", "mon sport préféré est"]):
         try:
