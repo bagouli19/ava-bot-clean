@@ -147,25 +147,16 @@ def stocker_souvenir(cle: str, valeur: str) -> None:
     save_souvenirs()
 
 def ajouter_souvenir(cle: str, valeur: str, fichier="memoire_ava.json"):
-    """Ajoute ou met à jour un souvenir dans le fichier mémoire et la session."""
-    # Vérifier si le fichier existe
-    if os.path.exists(fichier):
-        with open(fichier, "r", encoding="utf-8") as f:
-            memoire = json.load(f)
-    else:
-        memoire = {}
-
-    # Mise à jour de la mémoire
-    memoire[cle] = valeur
-
+    """Ajoute ou met à jour un souvenir dans la session et le fichier mémoire."""
     # Mise à jour immédiate de la session
     if "souvenirs" not in st.session_state:
         st.session_state.souvenirs = {}
     st.session_state.souvenirs[cle] = valeur
 
-    # Sauvegarde dans le fichier
+    # Mise à jour dans le fichier mémoire
+    os.makedirs(os.path.dirname(fichier), exist_ok=True)
     with open(fichier, "w", encoding="utf-8") as f:
-        json.dump(memoire, f, ensure_ascii=False, indent=4)
+        json.dump(st.session_state.souvenirs, f, ensure_ascii=False, indent=4)
 
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
@@ -1201,18 +1192,27 @@ def trouver_reponse(question: str) -> str:
     incrementer_interactions()
     ajuster_affection(question)
 
-    # 1) Modules spéciaux (météo, remède, découverte…)
+    # 1) Modules spéciaux
     resp_spec = gerer_modules_speciaux(question, question_clean)
     if resp_spec:
         return resp_spec.strip()
 
-    # 2) Base culture – exact match
+    # 2) Réponse exacte dans base culture
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # 3) Salutations
+    # 3) Réponse de salutation spéciale (ex : humeur du jour)
     if question_clean in SALUTATIONS_CLEAN:
-        return SALUTATIONS_CLEAN[question_clean]
+        if SALUTATIONS_CLEAN[question_clean] == "__HUMEUR_DU_JOUR__":
+            return random.choice([
+                "💫 Aujourd’hui je suis dans un mood intergalactique...",
+                "🌧️ Un peu câblée à l’envers ce matin…",
+                "🔥 Boostée à 1000%...",
+                "😴 J’ai rêvé de chiffres et de constellations…",
+                # etc...
+            ])
+        else:
+            return SALUTATIONS_CLEAN[question_clean]
 
     # 4) Fuzzy match
     match = difflib.get_close_matches(
@@ -1224,7 +1224,7 @@ def trouver_reponse(question: str) -> str:
     if match:
         return base_culture_nettoyee[match[0]]
 
-    # 5) Sémantique “locale” (BERT) **seulement si score > 0.7**
+    # 5) Sémantique (BERT) si rien trouvé
     keys = list(base_culture_nettoyee.keys())
     q_emb = model.encode([question_clean])
     keys_emb = model.encode(keys)
@@ -1233,14 +1233,12 @@ def trouver_reponse(question: str) -> str:
     if best_score > 0.7:
         return base_culture_nettoyee[keys[best_idx]]
 
-    # 🔹 2. Sinon continuer normalement avec OpenAI ou autre moteur
-    # (exemple : base de connaissances, ou API GPT)
-    reponse_openai = obtenir_reponse_ava(question_clean)
-    return reponse_openai
-
-
-
-
+    # 6) Sinon moteur OpenAI en secours
+    try:
+        reponse_openai = obtenir_reponse_ava(question_clean)
+        return reponse_openai
+    except Exception as e:
+        return f"Je suis désolée, une erreur est survenue avec OpenAI : {e}"
 
     if SALUTATIONS_CLEAN[question_clean] == "__HUMEUR_DU_JOUR__":
         return random.choice([
