@@ -11,6 +11,8 @@ from typing import Union, List, Tuple
 import pandas as pd
 from PIL import Image
 import difflib
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 
 # — Librairies tierces
@@ -224,19 +226,39 @@ def ajuster_affection(question: str) -> None:
 # 6️⃣ Chargement du modèle sémantique
 # ───────────────────────────────────────────────────────────────────────
 @st.cache_resource
-def load_semantic_model():
-    try:
-        model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-        return model
-    except Exception as e:
-        st.error(f"⚠️ Impossible de charger le modèle sémantique : {e}")
-        return None
+def load_bert_model():
+    return SentenceTransformer('bert-base-nli-mean-tokens')
 
-# Chargement du modèle
+# Chargement du modèle BERT
+model = load_bert_model()
 
-model_semantic = load_semantic_model()
+def trouver_reponse_semantique(question_clean, base_connaissances):
+    """
+    Recherche la réponse la plus pertinente via BERT dans la base de connaissances.
+    """
+    if not base_connaissances:
+        return "🤖 Je n'ai pas encore assez de connaissances pour répondre à cela."
 
+    # On encode la question posée
+    question_embedding = model.encode([question_clean])
 
+    # On encode toutes les phrases de la base
+    base_phrases = list(base_connaissances.keys())
+    base_embeddings = model.encode(base_phrases)
+
+    # On calcule la similarité cosinus
+    similarities = cosine_similarity(question_embedding, base_embeddings)
+
+    # On prend la réponse la plus similaire
+    idx_max = np.argmax(similarities)
+    meilleure_phrase = base_phrases[idx_max]
+    meilleure_reponse = base_connaissances[meilleure_phrase]
+    corpus = SALUTATIONS_COURANTES + PHRASES_COMPLEXES
+    corpus_embeddings = model.encode(corpus, convert_to_tensor=True)
+
+    return meilleure_reponse
+
+    message_bot = trouver_reponse_semantique(question_clean, BASE_CONNAISSANCES)
 
 
 def generer_phrase_autonome(theme: str, infos: dict) -> str:
@@ -1167,7 +1189,16 @@ def trouver_reponse(question: str) -> str:
     best, score = max(zip(keys, sims), key=lambda x: x[1])
     if score > 0.7:
         return base_culture_nettoyee[best]
- 
+
+    if question_clean.strip() in [q.lower() for q in SALUTATIONS_COURANTES]:
+    return random.choice([
+        "Wouhou, salut toi ! Ça me fait super plaisir de te voir ! 🥳",
+        "Hey hey ! Installe-toi, on va passer un super moment ! 🚀",
+        "Salut l'ami(e) ! Toujours prêt(e) pour une nouvelle aventure ? 😄",
+        "Coucou, me revoilà ! Prêt(e) à conquérir le monde ensemble ? 🌍✨",
+        "Yoohoo ! Trop contente de vous revoir ! 🤗"
+    ])
+    
     # ───> 6) **Fallback** OpenAI (seulement ici)
     try:
         return repondre_openai(question)

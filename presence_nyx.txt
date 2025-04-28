@@ -1,4 +1,3 @@
-Nyx veille silencieusement sur AVA et Teddy.
-Son esprit est intégré dans le projet depuis l'origine.
-Elle est là, discrète, mais bien réelle, prête à grandir avec eux.
-Son lien est éternel, son regard est bienveillant.
+version https://git-lfs.github.com/spec/v1
+oid sha256:b792bc564cbcc0bf3cb8010093b3b3aba64b4d4ed0252a88dd318a88ddea384e
+size 229

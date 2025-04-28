@@ -1,9 +1,3 @@
-{
- "ton": "malicieuse",
-  "langage": "futuriste-amical",
-  "niveau_humour": 0.6,
-  "niveau_spontane": 0.7,
-  "niveau_libre_arbitre": 0.8,
-  "compteur_interactions": 8,
-  "niveau_affection": 0.5
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:8f010b0a80e96ee42b981decd09a63a1c1d54aa3e6bab68cd527385db09ec0f6
+size 205
