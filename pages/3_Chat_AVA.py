@@ -1275,15 +1275,20 @@ def trouver_reponse(question: str) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     # Avant la détection mémoire ➔ nettoyage spécial
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
-    # 1️⃣ Ajout automatique de souvenirs (PRIORITÉ TOTALE)
-    if any(kw in question_clean for kw in ["je m'appelle", "mon prénom est", "mon film préféré est", "j'adore", "mon chien s'appelle", "mon plat préféré est", "mon sport préféré est"]):
+
+    if any(kw in question_simplifiee for kw in [
+        "je mappelle", "mon prenom est", "mon film prefere est",
+        "jadore", "mon chien sappelle", "mon plat prefere est",
+        "mon sport prefere est"
+    ]):
         try:
-            match = re.search(r"(je m'appelle|mon prénom est|mon film préféré est|j'adore|mon chien s'appelle|mon plat préféré est|mon sport préféré est)\s+(.*)", question_clean)
+            match = re.search(r"(je mappelle|mon prenom est|mon film prefere est|jadore|mon chien sappelle|mon plat prefere est|mon sport prefere est)\s+(.*)", question_simplifiee)
             if match:
                 type_info = match.group(1)
                 valeur = match.group(2).strip().rstrip(".!?")
                 cle = type_info.replace(" ", "_") + "_" + valeur.split(" ")[0].lower()
-                ajouter_souvenir(cle, valeur)
+
+                stocker_souvenir(cle, valeur)
                 return f"✨ Super, j'ai bien enregistré : **{valeur}** ! Je m'en souviendrai dorénavant. 🧠"
         except Exception as e:
             return f"⚠️ Je n'ai pas réussi à enregistrer ton souvenir à cause d'une erreur : {e}"
@@ -2267,7 +2272,13 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             ]
             message_bot = random.choice(reponses_ava)
     
-
+    # --- Rappel dynamique d'un souvenir enregistré ---
+    if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
+        for cle, valeur in st.session_state["souvenirs"].items():
+            if any(mot in cle for mot in question_clean.split()):
+                return f"✨ Souvenir retrouvé : **{valeur}**"
+        return "❓ Je n'ai pas encore ce souvenir enregistré..."
+        
     # Bloc de secours
     if not message_bot:
         message_bot = "🤔 Je n'ai pas d'information locale sur ce sujet pour le moment. Pose-moi une autre question ou demande-moi de te faire découvrir un pays, par exemple ! 🌍"
