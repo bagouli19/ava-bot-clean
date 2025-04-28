@@ -1276,30 +1276,23 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     # Avant la détection mémoire ➔ nettoyage spécial
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
 
-    # --- Rappel intelligent d'un souvenir enregistré ---
-    if any(mot in question_clean for mot in ["mon prénom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
-        if "prénom" in question_clean or "prenom" in question_clean:
-            for cle, valeur in st.session_state["souvenirs"].items():
-                if cle.startswith("je_mappelle") or cle.startswith("mon_prenom_est"):
-                    return f"👤 Ton prénom est : **{valeur}**."
-        elif "chien" in question_clean:
-            for cle, valeur in st.session_state["souvenirs"].items():
-                if cle.startswith("mon_chien_sappelle"):
-                    return f"🐶 Ton chien s'appelle : **{valeur}**."
-        elif "plat" in question_clean:
-            for cle, valeur in st.session_state["souvenirs"].items():
-                if cle.startswith("mon_plat_prefere_est"):
-                    return f"🍽️ Ton plat préféré est : **{valeur}**."
-        elif "film" in question_clean:
-            for cle, valeur in st.session_state["souvenirs"].items():
-                if cle.startswith("mon_film_prefere_est"):
-                    return f"🎬 Ton film préféré est : **{valeur}**."
-        elif "sport" in question_clean:
-            for cle, valeur in st.session_state["souvenirs"].items():
-                if cle.startswith("mon_sport_prefere_est"):
-                    return f"🏀 Ton sport préféré est : **{valeur}**."
+    # --- Bloc Ajout automatique de souvenirs ---
+    patterns_souvenirs = {
+        "je m'appelle": "mon_prenom_est",
+        "mon prénom est": "mon_prenom_est",
+        "mon chien s'appelle": "mon_chien_sappelle",
+        "mon plat préféré est": "mon_plat_prefere_est",
+        "mon film préféré est": "mon_film_prefere_est",
+        "mon sport préféré est": "mon_sport_prefere_est"
+    }
 
-        return "❓ Je n'ai pas encore enregistré cette information."
+    for debut_phrase, prefixe_cle in patterns_souvenirs.items():
+        if question_clean.startswith(debut_phrase):
+            valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
+            if valeur:
+                cle = f"{prefixe_cle}_{valeur.lower().replace(' ', '_')}"
+                ajouter_souvenir(cle, valeur)
+                return f"✨ Super, j'ai bien enregistré : **{valeur}** dans mes souvenirs ! 🧠"
 
     # 2️⃣ Bloc Salutations normaux MAIS élargi
     salutations_possibles = ["salut", "bonjour", "bonsoir", "coucou", "yo", "hello", "hi", "re"]
