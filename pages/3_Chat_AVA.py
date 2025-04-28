@@ -1140,9 +1140,7 @@ def repondre_openai(prompt: str) -> str:
         return f"Erreur OpenAI : {e}"
 
 def trouver_reponse(question: str) -> str:
-    # on nettoie dès le départ
     question_clean = nettoyer_texte(question)
-
     incrementer_interactions()
     ajuster_affection(question)
 
@@ -1159,12 +1157,7 @@ def trouver_reponse(question: str) -> str:
     if question_clean in SALUTATIONS_CLEAN:
         return SALUTATIONS_CLEAN[question_clean]
 
-    # ───> INSÉREZ ICI le bloc OpenAI :
-    if model_semantic:
-        # Utilisation d’OpenAI pour peaufiner la réponse
-        return repondre_openai(question_clean)
-
-    # 6️⃣ Fuzzy matching
+    # 4) fuzzy matching
     match = difflib.get_close_matches(
         question_clean,
         base_culture_nettoyee.keys(),
@@ -1174,7 +1167,7 @@ def trouver_reponse(question: str) -> str:
     if match:
         return base_culture_nettoyee[match[0]]
 
-    # 7️⃣ Sémantique
+    # 5) sémantique sur base locale
     keys = list(base_culture_nettoyee.keys())
     sims = cosine_similarity(
         [model_semantic.encode(question_clean)],
@@ -1184,12 +1177,10 @@ def trouver_reponse(question: str) -> str:
     if score > 0.7:
         return base_culture_nettoyee[best]
 
-    
-    # ───> 6) **Fallback** OpenAI (seulement ici)
+    # 6) ***Only*** in extremis : fallback sur OpenAI
     try:
         return repondre_openai(question)
-    except Exception as e:
-        # si OpenAI échoue ou pas de clé, on retombe sur un message générique
+    except Exception:
         return random.choice([
             "Je n'ai pas compris, peux-tu reformuler ?",
             "Désolé, je n'ai pas la réponse pour ça…",
