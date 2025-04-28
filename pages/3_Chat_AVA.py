@@ -1235,7 +1235,6 @@ def trouver_reponse(question: str) -> str:
         return reponse_speciale.strip()
 
     # 2️⃣ Recherche exacte
-    question_clean = question.lower().strip()
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
