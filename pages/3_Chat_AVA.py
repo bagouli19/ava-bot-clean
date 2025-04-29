@@ -1286,6 +1286,148 @@ def trouver_reponse(question: str) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     message_bot = None
     """Détecte si la question correspond à un module spécial (salutation, mémoire, etc.)."""
+        # --- Bloc spécial : Calcul ---
+    if not message_bot:
+        question_calc = question_clean.replace(",", ".")
+        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
+        try:
+            if any(op in question_calc for op in ["+", "-", "*", "/", "%", "**"]):
+                try:
+                    result = eval(question_calc)
+                    message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
+                except Exception:
+                    pass
+            if not message_bot:
+                match = re.search(r"(?:combien font|combien|calcul(?:e)?|résultat de)\s*(.*)", question_calc)
+                if match:
+                    expression = match.group(1).strip()
+                    result = eval(expression)
+                    message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
+        except:
+            pass
+
+     # --- Bloc Recettes rapides ---
+    recettes = [
+        "🥪 **Sandwich thon-avocat** : pain complet, thon, avocat écrasé, citron, sel, poivre. 5 minutes chrono !",
+        "🍝 **Pâtes à l’ail** : pâtes + ail émincé + huile d’olive + herbes. Simple, rapide, efficace.",
+        "🍳 **Omelette fromage** : œufs battus, sel, poivre, fromage râpé. 5 minutes à la poêle !",
+        "🥗 **Salade express** : tomates cerises, mozzarella, roquette, huile d’olive, vinaigre balsamique.",
+        "🌯 **Wrap poulet-crudités** : galette + restes de poulet + salade + sauce yaourt.",
+        "🥔 **Pommes de terre sautées** : en cubes, à la poêle avec ail et persil. Parfait avec des œufs !",
+        "🍲 **Soupe express** : légumes surgelés mixés + cube bouillon + crème légère. Prête en 10 minutes.",
+        "🍞 **Croque-monsieur rapide** : pain de mie, jambon, fromage, 5 min au grill ou à la poêle.",
+        "🥒 **Tartines fraîcheur** : pain grillé, fromage frais, concombre, citron et herbes.",
+        "🍚 **Riz sauté aux légumes** : reste de riz + légumes + œuf + sauce soja. Un wok express !",
+        "🍗 **Poulet minute au curry** : dés de poulet + crème + curry + oignon, à la poêle en 10 min.",
+        "🍳 **Œufs brouillés crémeux** : œufs + beurre + sel + poivre, cuisson douce pour onctuosité.",
+        "🧄 **Pâtes ail-persil** : ail doré à la poêle, persil frais, huile d’olive, et hop sur les pâtes !",
+        "🥑 **Toast avocat-œuf** : pain grillé + avocat écrasé + œuf au plat ou mollet.",
+        "🌮 **Tacos express** : galette + steak haché ou haricots + tomate + salade + sauce.",
+        "🥔 **Gratin express au micro-ondes** : pommes de terre en tranches fines + crème + fromage.",
+        "🍅 **Tomates mozzarella** : tranches de tomates + mozzarella + basilic + huile d’olive. Simple et frais.",
+        "🧀 **Quesadilla express** : deux tortillas + fromage + restes au choix + poêle 5 min chaque côté.",
+        "🍳 **Mini shakshuka rapide** : tomates en dés + œufs + cumin dans une petite poêle. Un délice !",
+        "🥣 **Bowl sucré express** : fromage blanc + fruits + flocons d’avoine + miel. Parfait au petit dej.",
+        "🥕 **Bâtonnets carottes-concombre** : trempés dans du houmous ou une sauce yaourt. Frais et sain.",
+        "🍞 **Pain perdu rapide** : tranches de pain + œuf + lait + sucre, à la poêle jusqu’à dorure.",
+        "🍠 **Patate douce micro-ondes** : piquée à la fourchette, 7 min puissance max, à garnir à volonté.",
+        "🥒 **Taboulé express** : semoule, tomate, menthe, citron, huile d’olive. Hydratation 5 min à l’eau chaude.",
+        "🍌 **Banana pancakes** : 1 banane + 2 œufs, mélangés et cuits en petites galettes. Sans farine !",
+        "🧈 **Wrap beurre de cacahuète-banane** : rapide, énergétique, parfait en collation !",
+        "🍽️ **Assiette anti-gaspi** : reste de pâtes, légumes et un œuf, mélangés et poêlés façon wok !",
+        "🍜 **Nouilles instant maison** : nouilles + bouillon + œuf + légumes râpés. Prêt en 7 minutes top chrono !",
+        "🥓 **Œuf cocotte express** : œuf + crème + fromage dans un ramequin, 1 min au micro-ondes.",
+        "🌽 **Galette de maïs rapide** : maïs + œuf + farine + épices, cuit à la poêle façon pancake salé.",
+        "🍕 **Mini pizzas pain de mie** : pain de mie, sauce tomate, fromage, garniture au choix, 10 min au four.",
+        "🍄 **Poêlée champignons ail-persil** : champignons frais, ail, persil, et huile d’olive. Simple & savoureux.",
+        "🌯 **Wrap sucré pomme-cannelle** : pomme râpée, cannelle, un filet de miel, le tout roulé dans une galette.",
+        "🍳 **Tortilla minute** : œufs battus + restes de légumes + fromage, à la poêle comme une omelette épaisse.",
+        "🧀 **Boulettes express** : steak haché + chapelure + épices, façonnées et dorées en 5 min à la poêle.",
+        "🍫 **Mug cake chocolat** : 4 ingrédients, 1 mug, 1 micro-ondes. Gâteau prêt en 1 minute !",
+        "🥔 **Chips maison micro-ondes** : pommes de terre très fines + sel + micro-ondes 5 à 6 min. Ultra croustillant !"
+    ]
+     # 1) Demande initiale de recette
+    if any(kw in question_clean for kw in [
+        "recette", "idée recette", "une recette", "qu'est-ce qu'on mange", "on mange quoi"
+    ]):
+        choix = random.choice(recettes)
+        st.session_state['derniere_recette'] = choix
+        return f"🍽️ Voici une idée de recette rapide :\n\n{choix}"
+
+    elif any(kw in question_clean for kw in ["encore une", "une autre", "autre recette"]):
+        if 'derniere_recette' in st.session_state:
+            choix = random.choice(recettes)
+            st.session_state['derniere_recette'] = choix
+            return f"🍽️ Voici une autre idée de recette :\n\n{choix}"
+        else:
+            return "⚠️ Je n'ai pas encore partagé de recette. Demandez-moi d'abord une recette !"
+    
+    # --- Bloc remèdes naturels ---
+    if any(kw in question_clean for kw in ["remède", "remedes", "remede", "soigner", "soulager", "traitement naturel"]):
+        try:
+            remede = remede_naturel(question_clean)
+            if remede:
+                return f"🌿 {remede}"
+        except Exception:
+            pass  # En cas d'erreur, on continue plus bas
+
+        if "stress" in question_clean:
+            message_bot = "🧘 Pour le stress : tisane de camomille ou de valériane, respiration profonde, méditation guidée ou bain tiède aux huiles essentielles de lavande."
+        elif "mal de gorge" in question_clean or "gorge" in question_clean:
+            message_bot = "🍯 Miel et citron dans une infusion chaude, gargarisme d’eau salée tiède, ou infusion de thym. Évite de trop parler et garde ta gorge bien hydratée."
+        elif "rhume" in question_clean or "nez bouché" in question_clean:
+            message_bot = "🌿 Inhalation de vapeur avec huile essentielle d’eucalyptus, tisane de gingembre, et bouillon chaud. Repose-toi bien."
+        elif "fièvre" in question_clean:
+            message_bot = "🧊 Infusion de saule blanc, cataplasme de vinaigre de cidre sur le front, linge froid sur les poignets et repos absolu."
+        elif "digestion" in question_clean or "ventre" in question_clean:
+            message_bot = "🍵 Infusion de menthe poivrée ou fenouil, massage abdominal doux dans le sens des aiguilles d’une montre, alimentation légère."
+        elif "toux" in question_clean:
+            message_bot = "🌰 Sirop naturel à base d’oignon et miel, infusion de thym, ou inhalation de vapeur chaude. Évite les environnements secs."
+        elif "insomnie" in question_clean or "sommeil" in question_clean:
+            message_bot = "🌙 Tisane de passiflore, valériane ou verveine. Évite les écrans avant le coucher, opte pour une routine calme et tamise la lumière."
+        elif "brûlure d'estomac" in question_clean or "reflux" in question_clean:
+            message_bot = "🔥 Une cuillère de gel d’aloe vera, infusion de camomille ou racine de guimauve. Évite les repas copieux et mange lentement."
+        elif "peau" in question_clean or "acné" in question_clean:
+            message_bot = "🧼 Masque au miel et curcuma, infusion de bardane, et hydratation régulière. Évite les produits agressifs."
+        elif "fatigue" in question_clean:
+            message_bot = "⚡ Cure de gelée royale, infusion de ginseng ou d’éleuthérocoque, alimentation riche en fruits et repos régulier."
+        elif "maux de tête" in question_clean or "migraine" in question_clean:
+            message_bot = "🧠 Huile essentielle de menthe poivrée sur les tempes, infusion de grande camomille ou compresse froide sur le front."
+        elif "nausée" in question_clean:
+            message_bot = "🍋 Un peu de gingembre frais râpé, infusion de menthe douce ou respiration lente en position semi-allongée."
+        elif "crampes" in question_clean:
+            message_bot = "🦵 Eau citronnée, étirements doux, magnésium naturel via les graines, amandes ou bananes."
+        elif "dépression" in question_clean:
+            message_bot = "🖤 Millepertuis (à surveiller si tu prends déjà un traitement), lumière naturelle quotidienne, et activités créatives relaxantes."
+        elif "allergie" in question_clean:
+            message_bot = "🌼 Pour soulager une allergie : infusion d’ortie ou de rooibos, miel local, et rinçage nasal au sérum physiologique."
+        elif "eczéma" in question_clean or "démangeaisons" in question_clean:
+            message_bot = "🩹 Bain à l’avoine colloïdale, gel d’aloe vera pur, huile de calendula ou crème à base de camomille."
+        elif "arthrose" in question_clean or "articulations" in question_clean:
+            message_bot = "🦴 Curcuma, gingembre, infusion d’harpagophytum et cataplasme d’argile verte sur les articulations douloureuses."
+        elif "ballonnements" in question_clean:
+            message_bot = "🌬️ Infusion de fenouil ou d’anis, charbon actif, marche légère après le repas, et respiration abdominale."
+        elif "anxiété" in question_clean:
+            message_bot = "🧘‍♀️ Respiration en cohérence cardiaque, huiles essentielles de lavande ou marjolaine, et bain tiède relaxant au sel d’Epsom."
+        elif "brûlure légère" in question_clean or "brûlure" in question_clean:
+            message_bot = "🔥 Applique du gel d’aloe vera pur, ou une compresse froide au thé noir infusé. Ne perce jamais une cloque !"
+        elif "circulation" in question_clean or "jambes lourdes" in question_clean:
+            message_bot = "🦵 Bain de jambes à la vigne rouge, infusion de ginkgo biloba, et surélévation des jambes le soir."
+        elif "foie" in question_clean or "digestion difficile" in question_clean:
+            message_bot = "🍋 Cure de radis noir, jus de citron tiède à jeun, infusion de pissenlit ou d’artichaut."
+        elif "yeux fatigués" in question_clean:
+            message_bot = "👁️ Compresse de camomille, repos visuel (20 secondes toutes les 20 min), et massage des tempes avec de l’huile essentielle de rose."
+        elif "système immunitaire" in question_clean or "immunité" in question_clean:
+            message_bot = "🛡️ Cure d’échinacée, gelée royale, infusion de thym et alimentation riche en vitamines C et D."
+        elif "tensions musculaires" in question_clean:
+            message_bot = "💆‍♂️ Massage à l’huile d’arnica, étirements doux, bain chaud avec du sel d’Epsom, et infusion de mélisse."
+        elif "transpiration excessive" in question_clean:
+            message_bot = "💦 Sauge en infusion ou en déodorant naturel, porter du coton, et éviter les plats épicés."
+        elif "inflammation" in question_clean:
+            message_bot = "🧂 Cataplasme d’argile verte, infusion de curcuma et gingembre, ou massage à l’huile de millepertuis."
+        else:
+            message_bot = "🌱 Je connais plein de remèdes naturels ! Dites-moi pour quel symptôme ou souci, et je vous propose une solution douce et efficace."
+        
     
     # Nettoyage de base
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
@@ -1463,71 +1605,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         except Exception:
             return "⚠️ Impossible d'obtenir l'horoscope pour le moment.\n\n"
 
-    # --- Bloc remèdes naturels ---
-    if any(kw in question_clean for kw in ["remède", "remedes", "remede", "soigner", "soulager", "traitement naturel"]):
-        try:
-            remede = remede_naturel(question_clean)
-            if remede:
-                return f"🌿 {remede}"
-        except Exception:
-            pass  # En cas d'erreur, on continue plus bas
 
-        if "stress" in question_clean:
-            message_bot = "🧘 Pour le stress : tisane de camomille ou de valériane, respiration profonde, méditation guidée ou bain tiède aux huiles essentielles de lavande."
-        elif "mal de gorge" in question_clean or "gorge" in question_clean:
-            message_bot = "🍯 Miel et citron dans une infusion chaude, gargarisme d’eau salée tiède, ou infusion de thym. Évite de trop parler et garde ta gorge bien hydratée."
-        elif "rhume" in question_clean or "nez bouché" in question_clean:
-            message_bot = "🌿 Inhalation de vapeur avec huile essentielle d’eucalyptus, tisane de gingembre, et bouillon chaud. Repose-toi bien."
-        elif "fièvre" in question_clean:
-            message_bot = "🧊 Infusion de saule blanc, cataplasme de vinaigre de cidre sur le front, linge froid sur les poignets et repos absolu."
-        elif "digestion" in question_clean or "ventre" in question_clean:
-            message_bot = "🍵 Infusion de menthe poivrée ou fenouil, massage abdominal doux dans le sens des aiguilles d’une montre, alimentation légère."
-        elif "toux" in question_clean:
-            message_bot = "🌰 Sirop naturel à base d’oignon et miel, infusion de thym, ou inhalation de vapeur chaude. Évite les environnements secs."
-        elif "insomnie" in question_clean or "sommeil" in question_clean:
-            message_bot = "🌙 Tisane de passiflore, valériane ou verveine. Évite les écrans avant le coucher, opte pour une routine calme et tamise la lumière."
-        elif "brûlure d'estomac" in question_clean or "reflux" in question_clean:
-            message_bot = "🔥 Une cuillère de gel d’aloe vera, infusion de camomille ou racine de guimauve. Évite les repas copieux et mange lentement."
-        elif "peau" in question_clean or "acné" in question_clean:
-            message_bot = "🧼 Masque au miel et curcuma, infusion de bardane, et hydratation régulière. Évite les produits agressifs."
-        elif "fatigue" in question_clean:
-            message_bot = "⚡ Cure de gelée royale, infusion de ginseng ou d’éleuthérocoque, alimentation riche en fruits et repos régulier."
-        elif "maux de tête" in question_clean or "migraine" in question_clean:
-            message_bot = "🧠 Huile essentielle de menthe poivrée sur les tempes, infusion de grande camomille ou compresse froide sur le front."
-        elif "nausée" in question_clean:
-            message_bot = "🍋 Un peu de gingembre frais râpé, infusion de menthe douce ou respiration lente en position semi-allongée."
-        elif "crampes" in question_clean:
-            message_bot = "🦵 Eau citronnée, étirements doux, magnésium naturel via les graines, amandes ou bananes."
-        elif "dépression" in question_clean:
-            message_bot = "🖤 Millepertuis (à surveiller si tu prends déjà un traitement), lumière naturelle quotidienne, et activités créatives relaxantes."
-        elif "allergie" in question_clean:
-            message_bot = "🌼 Pour soulager une allergie : infusion d’ortie ou de rooibos, miel local, et rinçage nasal au sérum physiologique."
-        elif "eczéma" in question_clean or "démangeaisons" in question_clean:
-            message_bot = "🩹 Bain à l’avoine colloïdale, gel d’aloe vera pur, huile de calendula ou crème à base de camomille."
-        elif "arthrose" in question_clean or "articulations" in question_clean:
-            message_bot = "🦴 Curcuma, gingembre, infusion d’harpagophytum et cataplasme d’argile verte sur les articulations douloureuses."
-        elif "ballonnements" in question_clean:
-            message_bot = "🌬️ Infusion de fenouil ou d’anis, charbon actif, marche légère après le repas, et respiration abdominale."
-        elif "anxiété" in question_clean:
-            message_bot = "🧘‍♀️ Respiration en cohérence cardiaque, huiles essentielles de lavande ou marjolaine, et bain tiède relaxant au sel d’Epsom."
-        elif "brûlure légère" in question_clean or "brûlure" in question_clean:
-            message_bot = "🔥 Applique du gel d’aloe vera pur, ou une compresse froide au thé noir infusé. Ne perce jamais une cloque !"
-        elif "circulation" in question_clean or "jambes lourdes" in question_clean:
-            message_bot = "🦵 Bain de jambes à la vigne rouge, infusion de ginkgo biloba, et surélévation des jambes le soir."
-        elif "foie" in question_clean or "digestion difficile" in question_clean:
-            message_bot = "🍋 Cure de radis noir, jus de citron tiède à jeun, infusion de pissenlit ou d’artichaut."
-        elif "yeux fatigués" in question_clean:
-            message_bot = "👁️ Compresse de camomille, repos visuel (20 secondes toutes les 20 min), et massage des tempes avec de l’huile essentielle de rose."
-        elif "système immunitaire" in question_clean or "immunité" in question_clean:
-            message_bot = "🛡️ Cure d’échinacée, gelée royale, infusion de thym et alimentation riche en vitamines C et D."
-        elif "tensions musculaires" in question_clean:
-            message_bot = "💆‍♂️ Massage à l’huile d’arnica, étirements doux, bain chaud avec du sel d’Epsom, et infusion de mélisse."
-        elif "transpiration excessive" in question_clean:
-            message_bot = "💦 Sauge en infusion ou en déodorant naturel, porter du coton, et éviter les plats épicés."
-        elif "inflammation" in question_clean:
-            message_bot = "🧂 Cataplasme d’argile verte, infusion de curcuma et gingembre, ou massage à l’huile de millepertuis."
-        else:
-            message_bot = "🌱 Je connais plein de remèdes naturels ! Dites-moi pour quel symptôme ou souci, et je vous propose une solution douce et efficace."
         
     
     # --- Bloc Faits Insolites ---
@@ -2006,31 +2084,6 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         else:
             return "🌍 Je ne connais pas encore la capitale de ce pays. Essayez un autre !"
 
-    
-    
-
-    # --- Bloc Calcul (simple expression mathématique ou phrase) ---
-    if not message_bot:
-        question_calc = question_clean.replace(",", ".")
-        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
-        try:
-            if any(op in question_calc for op in ["+", "-", "*", "/", "%", "**"]):
-                try:
-                    result = eval(question_calc)
-                    message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-                except Exception:
-                    pass
-            if not message_bot:
-                match = re.search(r"(?:combien font|combien|calcul(?:e)?|résultat de)\s*(.*)", question_calc)
-                if match:
-                    expression = match.group(1).strip()
-                    result = eval(expression)
-                    message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-        except:
-            pass
-
-        
-
     # --- Bloc Convertisseur intelligent ---
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
         try:
@@ -2221,62 +2274,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             message_bot = f"❌ Oops ! Ce n'était pas ça... La bonne réponse était **{reponse_attendue.capitalize()}**."
         st.session_state["quiz_attendu"] = ""
 
-    # --- Bloc Recettes rapides ---
-    recettes = [
-        "🥪 **Sandwich thon-avocat** : pain complet, thon, avocat écrasé, citron, sel, poivre. 5 minutes chrono !",
-        "🍝 **Pâtes à l’ail** : pâtes + ail émincé + huile d’olive + herbes. Simple, rapide, efficace.",
-        "🍳 **Omelette fromage** : œufs battus, sel, poivre, fromage râpé. 5 minutes à la poêle !",
-        "🥗 **Salade express** : tomates cerises, mozzarella, roquette, huile d’olive, vinaigre balsamique.",
-        "🌯 **Wrap poulet-crudités** : galette + restes de poulet + salade + sauce yaourt.",
-        "🥔 **Pommes de terre sautées** : en cubes, à la poêle avec ail et persil. Parfait avec des œufs !",
-        "🍲 **Soupe express** : légumes surgelés mixés + cube bouillon + crème légère. Prête en 10 minutes.",
-        "🍞 **Croque-monsieur rapide** : pain de mie, jambon, fromage, 5 min au grill ou à la poêle.",
-        "🥒 **Tartines fraîcheur** : pain grillé, fromage frais, concombre, citron et herbes.",
-        "🍚 **Riz sauté aux légumes** : reste de riz + légumes + œuf + sauce soja. Un wok express !",
-        "🍗 **Poulet minute au curry** : dés de poulet + crème + curry + oignon, à la poêle en 10 min.",
-        "🍳 **Œufs brouillés crémeux** : œufs + beurre + sel + poivre, cuisson douce pour onctuosité.",
-        "🧄 **Pâtes ail-persil** : ail doré à la poêle, persil frais, huile d’olive, et hop sur les pâtes !",
-        "🥑 **Toast avocat-œuf** : pain grillé + avocat écrasé + œuf au plat ou mollet.",
-        "🌮 **Tacos express** : galette + steak haché ou haricots + tomate + salade + sauce.",
-        "🥔 **Gratin express au micro-ondes** : pommes de terre en tranches fines + crème + fromage.",
-        "🍅 **Tomates mozzarella** : tranches de tomates + mozzarella + basilic + huile d’olive. Simple et frais.",
-        "🧀 **Quesadilla express** : deux tortillas + fromage + restes au choix + poêle 5 min chaque côté.",
-        "🍳 **Mini shakshuka rapide** : tomates en dés + œufs + cumin dans une petite poêle. Un délice !",
-        "🥣 **Bowl sucré express** : fromage blanc + fruits + flocons d’avoine + miel. Parfait au petit dej.",
-        "🥕 **Bâtonnets carottes-concombre** : trempés dans du houmous ou une sauce yaourt. Frais et sain.",
-        "🍞 **Pain perdu rapide** : tranches de pain + œuf + lait + sucre, à la poêle jusqu’à dorure.",
-        "🍠 **Patate douce micro-ondes** : piquée à la fourchette, 7 min puissance max, à garnir à volonté.",
-        "🥒 **Taboulé express** : semoule, tomate, menthe, citron, huile d’olive. Hydratation 5 min à l’eau chaude.",
-        "🍌 **Banana pancakes** : 1 banane + 2 œufs, mélangés et cuits en petites galettes. Sans farine !",
-        "🧈 **Wrap beurre de cacahuète-banane** : rapide, énergétique, parfait en collation !",
-        "🍽️ **Assiette anti-gaspi** : reste de pâtes, légumes et un œuf, mélangés et poêlés façon wok !",
-        "🍜 **Nouilles instant maison** : nouilles + bouillon + œuf + légumes râpés. Prêt en 7 minutes top chrono !",
-        "🥓 **Œuf cocotte express** : œuf + crème + fromage dans un ramequin, 1 min au micro-ondes.",
-        "🌽 **Galette de maïs rapide** : maïs + œuf + farine + épices, cuit à la poêle façon pancake salé.",
-        "🍕 **Mini pizzas pain de mie** : pain de mie, sauce tomate, fromage, garniture au choix, 10 min au four.",
-        "🍄 **Poêlée champignons ail-persil** : champignons frais, ail, persil, et huile d’olive. Simple & savoureux.",
-        "🌯 **Wrap sucré pomme-cannelle** : pomme râpée, cannelle, un filet de miel, le tout roulé dans une galette.",
-        "🍳 **Tortilla minute** : œufs battus + restes de légumes + fromage, à la poêle comme une omelette épaisse.",
-        "🧀 **Boulettes express** : steak haché + chapelure + épices, façonnées et dorées en 5 min à la poêle.",
-        "🍫 **Mug cake chocolat** : 4 ingrédients, 1 mug, 1 micro-ondes. Gâteau prêt en 1 minute !",
-        "🥔 **Chips maison micro-ondes** : pommes de terre très fines + sel + micro-ondes 5 à 6 min. Ultra croustillant !"
-    ]
-     # 1) Demande initiale de recette
-    if any(kw in question_clean for kw in [
-        "recette", "idée recette", "une recette", "qu'est-ce qu'on mange", "on mange quoi"
-    ]):
-        choix = random.choice(recettes)
-        st.session_state['derniere_recette'] = choix
-        return f"🍽️ Voici une idée de recette rapide :\n\n{choix}"
-
-    elif any(kw in question_clean for kw in ["encore une", "une autre", "autre recette"]):
-        if 'derniere_recette' in st.session_state:
-            choix = random.choice(recettes)
-            st.session_state['derniere_recette'] = choix
-            return f"🍽️ Voici une autre idée de recette :\n\n{choix}"
-        else:
-            return "⚠️ Je n'ai pas encore partagé de recette. Demandez-moi d'abord une recette !"
-        
+   
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
         # détection de salutations en anglais
