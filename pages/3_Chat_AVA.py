@@ -1284,6 +1284,7 @@ def trouver_reponse(question: str) -> str:
  
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
+    message_bot = None
     """Détecte si la question correspond à un module spécial (salutation, mémoire, etc.)."""
     
     # Nettoyage de base
