@@ -1286,7 +1286,7 @@ def trouver_reponse(question: str) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     message_bot = None
     """Détecte si la question correspond à un module spécial (salutation, mémoire, etc.)."""
-        # --- Bloc spécial : Calcul ---
+    # --- Bloc spécial : Calcul ---
     if not message_bot:
         question_calc = question_clean.replace(",", ".")
         question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
@@ -1305,6 +1305,10 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                     message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
         except:
             pass
+        
+    # ✅ CORRECTION IMPORTANTE
+        if message_bot:
+            return message_bot
 
      # --- Bloc Recettes rapides ---
     recettes = [
@@ -1428,7 +1432,10 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         else:
             message_bot = "🌱 Je connais plein de remèdes naturels ! Dites-moi pour quel symptôme ou souci, et je vous propose une solution douce et efficace."
         
-    
+    # ✅ CORRECTION IMPORTANTE
+        if message_bot:
+            return message_bot
+
     # Nettoyage de base
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
     
