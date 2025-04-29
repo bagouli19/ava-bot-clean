@@ -15,7 +15,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import sys
 sys.path.append("knowledge_base")
-from base_de_language import base_langage
+from knowledge_base.base_de_language import base_langage
 
 
 # — Librairies tierces
