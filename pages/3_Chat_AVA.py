@@ -1305,7 +1305,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                     message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
         except:
             pass
-        
+
     # ✅ CORRECTION IMPORTANTE
         if message_bot:
             return message_bot
@@ -2312,9 +2312,8 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
 
     # --- Bloc Langage courant (base_langage externe) ---
     for phrase, reponses in base_langage.items():
-        if phrase in question_clean:
-            return random.choice(reponses)
-    print("Phrase reconnue via base de langage :", phrase)        
+        if phrase in question_clean and len(phrase.split()) > 2 and len(question_clean) <= 80:
+            return random.choice(reponses        
 
     # 3. Sinon, chercher une réponse par similarité avec BERT
     reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
