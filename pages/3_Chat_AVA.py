@@ -13,6 +13,7 @@ from PIL import Image
 import difflib
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+from knowledge_base.base_de_language import base_de_langage
 
 
 # — Librairies tierces
@@ -2270,7 +2271,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
         else:
             return "⚠️ Je n'ai pas encore partagé de recette. Demandez-moi d'abord une recette !"
         
-        # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
+    # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
         # détection de salutations en anglais
         if any(phrase in question_clean for phrase in [
@@ -2298,7 +2299,10 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
                 return f"✨ Souvenir retrouvé : **{valeur}**"
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
 
-   
+    # --- Bloc Langage courant (base_langage externe) ---
+    for phrase, reponses in base_langage.items():
+        if phrase in question_clean:
+            return random.choice(reponses)
 
     # 3. Sinon, chercher une réponse par similarité avec BERT
     reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
