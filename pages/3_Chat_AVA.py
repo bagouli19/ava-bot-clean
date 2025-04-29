@@ -68,6 +68,7 @@ user = st.session_state.user_id
 # 2️⃣ Chemins et fichiers de profil
 # ───────────────────────────────────────────────────────────────────────
 SCRIPT_DIR     = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
 PROFILE_FILE   = os.path.join(SCRIPT_DIR, f"profil_utilisateur_{user}.json")
 GLOBAL_MEMOIRE = os.path.join(SCRIPT_DIR, "memoire_ava.json")
 STYLE_FILE     = os.path.join(SCRIPT_DIR, "style_ava.json")
@@ -264,7 +265,8 @@ def ajuster_affection(question: str) -> None:
 # ───────────────────────────────────────────────────────────────────────
 @st.cache_resource
 def load_bert_model():
-    return SentenceTransformer('bert-base-nli-mean-tokens')
+    MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
+    return SentenceTransformer(MODEL_PATH)
 
 # Chargement du modèle BERT
 model = load_bert_model()
