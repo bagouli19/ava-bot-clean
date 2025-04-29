@@ -13,7 +13,9 @@ from PIL import Image
 import difflib
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-from knowledge_base.base_de_language import base_langage
+import sys
+sys.path.append("knowledge_base")
+from base_de_language import base_langage
 
 
 # — Librairies tierces
