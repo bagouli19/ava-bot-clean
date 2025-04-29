@@ -2303,6 +2303,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
     for phrase, reponses in base_langage.items():
         if phrase in question_clean:
             return random.choice(reponses)
+    print("Phrase reconnue via base de langage :", phrase)        
 
     # 3. Sinon, chercher une réponse par similarité avec BERT
     reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
