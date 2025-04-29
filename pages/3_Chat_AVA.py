@@ -266,10 +266,13 @@ def ajuster_affection(question: str) -> None:
 @st.cache_resource
 def load_bert_model():
     MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
+    
+    if not os.path.exists(MODEL_PATH):
+        st.error(f"❌ Le modèle BERT est introuvable à l’emplacement : {MODEL_PATH}")
+        raise FileNotFoundError(f"Modèle introuvable à {MODEL_PATH}")
+    
     return SentenceTransformer(MODEL_PATH)
 
-# Chargement du modèle BERT
-model = load_bert_model()
 
 def trouver_reponse_semantique(question_clean: str, base_dict: dict) -> Optional[str]:
     """
