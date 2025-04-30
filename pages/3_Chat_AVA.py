@@ -286,6 +286,7 @@ def load_bert_model():
         st.error(f"❌ Impossible de charger le modèle BERT : {e}")
         raise
 
+model = load_bert_model()
 
 def trouver_reponse_semantique(question_clean: str, base_dict: dict, model) -> Optional[str]:
     if not base_dict:
