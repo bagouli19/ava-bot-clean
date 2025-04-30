@@ -34,6 +34,7 @@ from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
 import openai
+global model
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -265,10 +266,10 @@ def ajuster_affection(question: str) -> None:
 # ───────────────────────────────────────────────────────────────────────
 # 6️⃣ Chargement du modèle sémantique
 # ───────────────────────────────────────────────────────────────────────
+# Juste après définition de PROJECT_ROOT
 @st.cache_resource
 def load_bert_model():
     MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
-
     if os.path.exists(MODEL_PATH):
         st.success("✅ Modèle BERT local détecté.")
         return SentenceTransformer(MODEL_PATH)
@@ -277,31 +278,23 @@ def load_bert_model():
         try:
             return SentenceTransformer('bert-base-nli-mean-tokens')
         except Exception as e:
-            st.error("❌ Impossible de charger le modèle BERT. Vérifiez votre connexion internet ou le dossier `models/`.")
+            st.error("❌ Impossible de charger le modèle BERT.")
             raise FileNotFoundError(f"Erreur lors du chargement BERT : {e}")
+
+# Chargement du modèle AVANT toute autre fonction
+model = load_bert_model()
 
 
 def trouver_reponse_semantique(question_clean: str, base_dict: dict) -> Optional[str]:
-    """
-    Recherche la réponse la plus pertinente via BERT dans base_dict.
-    Renvoie None si base_dict est vide.
-    """
     if not base_dict:
         return None
 
-    # 1) encode la question
+    # Utilise le modèle global chargé
     question_emb = model.encode([question_clean])
-
-    # 2) encode toutes les clés de la base
-    keys = list(base_dict.keys())
-    base_embs = model.encode(keys)
-
-    # 3) calcule la similarité et récupère l'indice du meilleur score
+    base_embs = model.encode(list(base_dict.keys()))
     sims = cosine_similarity(question_emb, base_embs)[0]
     idx_max = np.argmax(sims)
-
-    # 4) retourne la réponse associée
-    return base_dict[keys[idx_max]]
+    return base_dict[list(base_dict.keys())[idx_max]]
 
 
 def generer_phrase_autonome(theme: str, infos: dict) -> str:
