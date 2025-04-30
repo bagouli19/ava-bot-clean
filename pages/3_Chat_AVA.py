@@ -1234,7 +1234,7 @@ def trouver_reponse(question: str) -> str:
     ajuster_affection(question)
 
     # 1️⃣ Modules spéciaux avec 2 arguments
-    reponse_speciale = gerer_modules_speciaux(question, question_clean)
+    reponse_speciale = gerer_modules_speciaux(question, question_clean, model)
     if reponse_speciale:
         return reponse_speciale.strip()
 
