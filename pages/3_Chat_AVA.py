@@ -269,23 +269,22 @@ st.write(">>> MODEL_PATH =", MODEL_PATH)
 
 @st.cache_resource
 def load_bert_model():
-    # 1️⃣ Pointage sur le bon dossier
     MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
     config_file = os.path.join(MODEL_PATH, "config.json")
 
-    # 2️⃣ Si pas de config.json, on clone l’intégralité du repo
+    # 1️⃣ Si le dossier local ne contient pas config.json, on clone tout le repo
     if not os.path.isfile(config_file):
         st.info("⬇️ Téléchargement complet du modèle BERT depuis Hugging Face…")
         snapshot_download(
             repo_id="sentence-transformers/bert-base-nli-mean-tokens",
             local_dir=MODEL_PATH,
             local_dir_use_symlinks=False,
-            token=st.secrets.get("HUGGINGFACE_TOKEN", None)
+            token=st.secrets.get("HUGGINGFACE_TOKEN", None)  # optionnel si tu as un token privé
         )
-        # Pour debugger, affiche ce qu’on a téléchargé
-        st.write(">>> Contenu de MODEL_PATH :", os.listdir(MODEL_PATH))
+        # debug : lister le contenu
+        st.write("Contenu de MODEL_PATH :", os.listdir(MODEL_PATH))
 
-    # 3️⃣ Chargement du modèle
+    # 2️⃣ Puis charger le modèle
     try:
         st.success("✅ Modèle BERT prêt à l’emploi.")
         return SentenceTransformer(MODEL_PATH)
