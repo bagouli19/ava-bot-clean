@@ -16,7 +16,7 @@ import sys
 sys.path.append("knowledge_base")
 from base_de_langage import base_langage
 from huggingface_hub import snapshot_download, hf_hub_download
-from modules_speciaux import gerer_modules_speciaux
+
 
 # — Librairies tierces
 import streamlit as st
