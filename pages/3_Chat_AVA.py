@@ -267,7 +267,7 @@ def ajuster_affection(question: str) -> None:
 @st.cache_resource
 def load_bert_model():
     try:
-        MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
+        MODEL_PATH = os.path.join(PROJECT_ROOT, "modeles", "bert-base-nli-mean-tokens")
         # 1) si déjà présent, on l'utilise
         if os.path.exists(MODEL_PATH):
             st.success("✅ Modèle BERT local détecté.")
