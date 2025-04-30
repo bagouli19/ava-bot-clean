@@ -271,25 +271,38 @@ st.write(">>> MODEL_PATH =", MODEL_PATH)
 def load_bert_model():
     MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
     config_file = os.path.join(MODEL_PATH, "config.json")
+    pt_file     = os.path.join(MODEL_PATH, "pytorch_model.bin")
 
-    # 1️⃣ Si le dossier local ne contient pas config.json, on clone tout le repo
+    # 1️⃣ Si le dossier n'existe pas encore, clone le repo HF (config+tokenizer+IR)
     if not os.path.isfile(config_file):
-        st.info("⬇️ Téléchargement complet du modèle BERT depuis Hugging Face…")
+        st.info("⬇️ Téléchargement des fichiers du modèle BERT…")
         snapshot_download(
             repo_id="sentence-transformers/bert-base-nli-mean-tokens",
             local_dir=MODEL_PATH,
             local_dir_use_symlinks=False,
-            token=st.secrets.get("HUGGINGFACE_TOKEN", None)  # optionnel si tu as un token privé
+            token=st.secrets.get("HUGGINGFACE_TOKEN", None)
         )
-        # debug : lister le contenu
-        st.write("Contenu de MODEL_PATH :", os.listdir(MODEL_PATH))
 
-    # 2️⃣ Puis charger le modèle
+    # 2️⃣ Si les poids PyTorch manquent, on les récupère via hf_hub_download
+    if not os.path.isfile(pt_file):
+        st.info("⬇️ Téléchargement des poids PyTorch manquants…")
+        # télécharge pytorch_model.bin dans MODEL_PATH
+        hf_hub_download(
+            repo_id="sentence-transformers/bert-base-nli-mean-tokens",
+            filename="pytorch_model.bin",
+            cache_dir=MODEL_PATH,
+            token=st.secrets.get("HUGGINGFACE_TOKEN", None)
+        )
+
+    # debug : liste de MODEL_PATH
+    st.write("Contenu de MODEL_PATH :", os.listdir(MODEL_PATH))
+
+    # 3️⃣ Chargement du modèle
     try:
-        st.success("✅ Modèle BERT prêt à l’emploi.")
+        st.success("✅ Modèle BERT chargé avec succès.")
         return SentenceTransformer(MODEL_PATH)
     except Exception as e:
-        st.error(f"❌ Échec du chargement BERT après téléchargement : {e}")
+        st.error(f"❌ Échec lors du chargement final du modèle BERT : {e}")
         st.stop()
 
 model = load_bert_model()
