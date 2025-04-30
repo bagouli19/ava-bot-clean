@@ -16,6 +16,7 @@ import sys
 sys.path.append("knowledge_base")
 from base_de_langage import base_langage
 from huggingface_hub import snapshot_download, hf_hub_download
+from modules_speciaux import gerer_modules_speciaux
 
 # — Librairies tierces
 import streamlit as st
@@ -306,16 +307,6 @@ def load_bert_model():
         st.stop()
 
 model = load_bert_model()
-
-def trouver_reponse_semantique(question_clean: str, base_dict: dict, model) -> Optional[str]:
-    if not base_dict:
-        return None
-    question_emb = model.encode([question_clean])
-    keys = list(base_dict.keys())
-    base_embs = model.encode(keys)
-    sims = cosine_similarity(question_emb, base_embs)[0]
-    idx_max = np.argmax(sims)
-    return base_dict[keys[idx_max]]
 
 
 def generer_phrase_autonome(theme: str, infos: dict) -> str:
