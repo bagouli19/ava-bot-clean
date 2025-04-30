@@ -1467,10 +1467,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "Yo ! Que puis-je faire pour vous aujourd'hui ? 👋",
             "Bonjour ! Que puis-je faire pour égayer votre journée ? ☀️",
         ])
-     # 🔍 Recherche sémantique via MiniLM
-    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture_nettoyee, model)
-    if reponse_semantique:
-        return reponse_semantique
+    
 
     # --- Bloc météo intelligent (ultra robuste) ---
     if any(kw in question_clean for kw in ["meteo", "météo", "quel temps", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"]):
