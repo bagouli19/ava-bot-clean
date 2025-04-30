@@ -11,7 +11,6 @@ from typing import Union, List, Tuple
 import pandas as pd
 from PIL import Image
 import difflib
-from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import sys
 sys.path.append("knowledge_base")
@@ -21,7 +20,6 @@ from base_de_langage import base_langage
 # — Librairies tierces
 import streamlit as st
 import requests
-from PIL import Image
 from langdetect import detect
 from newsapi import NewsApiClient
 from forex_python.converter import CurrencyRates, CurrencyCodes
@@ -283,8 +281,7 @@ def load_minilm_model():
 # — IMPORTANT : appel ici pour définir la variable `model`
 model = load_minilm_model()
 
-st.write("📁 Chemin attendu :", MODEL_PATH)
-st.write("📁 Contenu de models :", os.listdir(os.path.join(PROJECT_ROOT, "models")))
+
 
 
 
