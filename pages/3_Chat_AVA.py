@@ -1223,7 +1223,7 @@ def repondre_openai(prompt: str) -> str:
             return "⚠️ Mon quota API est épuisé pour le moment. Je reviendrai dès que possible !"
         return f"Erreur OpenAI : {e}"
 
-def trouver_reponse(question: str) -> str:
+def trouver_reponse(question: str, model) -> str:
     """
     Trouve la réponse la plus adaptée à la question posée.
     """
@@ -1280,7 +1280,7 @@ def trouver_reponse(question: str) -> str:
     return "🤔 Je n'ai pas trouvé de réponse précise à votre question. N'hésitez pas à reformuler ou demander un autre sujet !"
  
 # --- Modules personnalisés (à enrichir) ---
-def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
+def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     message_bot = None
     """Détecte si la question correspond à un module spécial (salutation, mémoire, etc.)."""
     # --- Bloc spécial : Calcul ---
