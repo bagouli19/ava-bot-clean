@@ -265,25 +265,24 @@ def ajuster_affection(question: str) -> None:
 # 6️⃣ Chargement du modèle sémantique MiniLM
 # ───────────────────────────────────────────────────────────────────────
 @st.cache_resource
-def load_minilm_model():
+def load_bert_model():
     try:
-        MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "all-MiniLM-L6-v2")
+        # Chemin où tu auras placé ton modèle BERT localement
+        MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
         if os.path.exists(MODEL_PATH):
-            st.success("✅ Modèle MiniLM local détecté.")
+            st.success("✅ Modèle BERT local détecté.")
             return SentenceTransformer(MODEL_PATH)
         else:
-            st.warning("⚠️ Modèle local introuvable, chargement depuis Hugging Face...")
-            return SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+            st.warning("⚠️ Modèle BERT local introuvable, chargement depuis Hugging Face...")
+            return SentenceTransformer('sentence-transformers/bert-base-nli-mean-tokens')
     except Exception as e:
-        st.error("❌ Impossible de charger le modèle MiniLM.")
-        raise FileNotFoundError(f"Erreur lors du chargement MiniLM : {e}")
+        st.error("❌ Impossible de charger le modèle BERT.")
+        raise FileNotFoundError(f"Erreur lors du chargement BERT : {e}")
 
-# — IMPORTANT : appel ici pour définir la variable `model`
-model = load_minilm_model()
-
-
-
-
+# puis, en lieu et place de :
+# model = load_minilm_model()
+# tu feras :
+model = load_bert_model()
 
 
 def trouver_reponse_semantique(question_clean: str, base_dict: dict, model) -> Optional[str]:
