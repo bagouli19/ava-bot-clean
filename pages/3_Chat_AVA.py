@@ -275,6 +275,8 @@ def load_bert_model():
     
     return SentenceTransformer(MODEL_PATH)
 
+model = load_bert_model()
+
 
 def trouver_reponse_semantique(question_clean: str, base_dict: dict) -> Optional[str]:
     """
