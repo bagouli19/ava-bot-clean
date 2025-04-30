@@ -283,6 +283,9 @@ def load_minilm_model():
 # — IMPORTANT : appel ici pour définir la variable `model`
 model = load_minilm_model()
 
+st.write("📁 Chemin attendu :", MODEL_PATH)
+st.write("📁 Contenu de models :", os.listdir(os.path.join(PROJECT_ROOT, "models")))
+
 
 
 
