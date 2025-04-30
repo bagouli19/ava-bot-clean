@@ -15,7 +15,7 @@ import numpy as np
 import sys
 sys.path.append("knowledge_base")
 from base_de_langage import base_langage
-
+from huggingface_hub import snapshot_download
 
 # — Librairies tierces
 import streamlit as st
@@ -267,22 +267,24 @@ def ajuster_affection(question: str) -> None:
 @st.cache_resource
 def load_bert_model():
     try:
-        # Chemin où tu auras placé ton modèle BERT localement
         MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
+        # 1) si déjà présent, on l'utilise
         if os.path.exists(MODEL_PATH):
             st.success("✅ Modèle BERT local détecté.")
-            return SentenceTransformer(MODEL_PATH)
         else:
-            st.warning("⚠️ Modèle BERT local introuvable, chargement depuis Hugging Face...")
-            return SentenceTransformer('sentence-transformers/bert-base-nli-mean-tokens')
+            st.info("⬇️ Téléchargement du modèle BERT depuis Hugging Face...")
+            snapshot_download(
+                repo_id="sentence-transformers/bert-base-nli-mean-tokens",
+                cache_dir=MODEL_PATH,
+                library_name="sentence_transformers",
+                token=st.secrets.get("HUGGINGFACE_TOKEN", None)  # si besoin d’un token privé
+            )
+        # 2) on charge ensuite la couche SentenceTransformer
+        return SentenceTransformer(MODEL_PATH)
     except Exception as e:
-        st.error("❌ Impossible de charger le modèle BERT.")
-        raise FileNotFoundError(f"Erreur lors du chargement BERT : {e}")
-
-# puis, en lieu et place de :
-# model = load_minilm_model()
-# tu feras :
-model = load_bert_model()
+        # Affiche l’erreur exacte dans les logs pour pouvoir debuguer
+        st.error(f"❌ Impossible de charger le modèle BERT : {e}")
+        raise
 
 
 def trouver_reponse_semantique(question_clean: str, base_dict: dict, model) -> Optional[str]:
