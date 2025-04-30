@@ -267,17 +267,19 @@ def ajuster_affection(question: str) -> None:
 # 6️⃣ Chargement du modèle sémantique
 # ───────────────────────────────────────────────────────────────────────
 # Juste après définition de PROJECT_ROOT
+MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "all-MiniLM-L6-v2")
 @st.cache_resource
 def load_bert_model():
-    MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
-
-    if not os.path.exists(MODEL_PATH):
-        st.warning(f"⚠️ Modèle local introuvable à l’emplacement : {MODEL_PATH}, tentative de téléchargement depuis Hugging Face...")
-        return SentenceTransformer("bert-base-nli-mean-tokens")  # fallback distant
-
-    return SentenceTransformer(MODEL_PATH)
-
-model = load_bert_model()
+    try:
+        if os.path.exists(MODEL_PATH):
+            st.success("✅ Modèle MiniLM local détecté.")
+            return SentenceTransformer(MODEL_PATH)
+        else:
+            st.warning("⚠️ Modèle local introuvable, chargement depuis Hugging Face...")
+            return SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+    except Exception as e:
+        st.error("❌ Impossible de charger le modèle MiniLM.")
+        raise FileNotFoundError(f"Erreur lors du chargement MiniLM : {e}")
 
 
 
@@ -1446,7 +1448,11 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "Yo ! Que puis-je faire pour vous aujourd'hui ? 👋",
             "Bonjour ! Que puis-je faire pour égayer votre journée ? ☀️",
         ])
-
+     # 🔍 Recherche sémantique via MiniLM
+    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture_nettoyee, model)
+    if reponse_semantique:
+        return reponse_semantique
+        
     # --- Bloc météo intelligent (ultra robuste) ---
     if any(kw in question_clean for kw in ["meteo", "météo", "quel temps", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"]):
         ville_detectee = "Paris"  # Par défaut
