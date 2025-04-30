@@ -269,20 +269,18 @@ def ajuster_affection(question: str) -> None:
 # Juste après définition de PROJECT_ROOT
 @st.cache_resource
 def load_bert_model():
-    MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
-    if os.path.exists(MODEL_PATH):
-        st.success("✅ Modèle BERT local détecté.")
-        return SentenceTransformer(MODEL_PATH)
-    else:
-        st.warning("⚠️ Modèle local introuvable, tentative de chargement depuis Hugging Face...")
-        try:
-            return SentenceTransformer('bert-base-nli-mean-tokens')
-        except Exception as e:
-            st.error("❌ Impossible de charger le modèle BERT.")
-            raise FileNotFoundError(f"Erreur lors du chargement BERT : {e}")
+    try:
+        MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "all-MiniLM-L6-v2")
+        if os.path.exists(MODEL_PATH):
+            st.success("✅ Modèle BERT local détecté.")
+            return SentenceTransformer(MODEL_PATH)
+        else:
+            st.warning("⚠️ Modèle local introuvable, chargement depuis Hugging Face...")
+            return SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+    except Exception as e:
+        st.error("❌ Impossible de charger le modèle BERT.")
+        raise FileNotFoundError(f"Erreur lors du chargement BERT : {e}")
 
-# Chargement du modèle AVANT toute autre fonction
-model = load_bert_model()
 
 
 def trouver_reponse_semantique(question_clean: str, base_dict: dict) -> Optional[str]:
