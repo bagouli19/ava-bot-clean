@@ -15,7 +15,7 @@ import numpy as np
 import sys
 sys.path.append("knowledge_base")
 from base_de_langage import base_langage
-from huggingface_hub import snapshot_download
+from huggingface_hub import snapshot_download, hf_hub_download
 
 # — Librairies tierces
 import streamlit as st
