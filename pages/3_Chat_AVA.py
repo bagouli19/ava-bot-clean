@@ -269,25 +269,29 @@ st.write(">>> MODEL_PATH =", MODEL_PATH)
 
 @st.cache_resource
 def load_bert_model():
+    # 1️⃣ Pointage sur le bon dossier
+    MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
+    config_file = os.path.join(MODEL_PATH, "config.json")
+
+    # 2️⃣ Si pas de config.json, on clone l’intégralité du repo
+    if not os.path.isfile(config_file):
+        st.info("⬇️ Téléchargement complet du modèle BERT depuis Hugging Face…")
+        snapshot_download(
+            repo_id="sentence-transformers/bert-base-nli-mean-tokens",
+            local_dir=MODEL_PATH,
+            local_dir_use_symlinks=False,
+            token=st.secrets.get("HUGGINGFACE_TOKEN", None)
+        )
+        # Pour debugger, affiche ce qu’on a téléchargé
+        st.write(">>> Contenu de MODEL_PATH :", os.listdir(MODEL_PATH))
+
+    # 3️⃣ Chargement du modèle
     try:
-        MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
-        # 1) si déjà présent, on l'utilise
-        if os.path.exists(MODEL_PATH):
-            st.success("✅ Modèle BERT local détecté.")
-        else:
-            st.info("⬇️ Téléchargement du modèle BERT depuis Hugging Face...")
-            snapshot_download(
-                repo_id="sentence-transformers/bert-base-nli-mean-tokens",
-                cache_dir=MODEL_PATH,
-                library_name="sentence_transformers",
-                token=st.secrets.get("HUGGINGFACE_TOKEN", None)  # si besoin d’un token privé
-            )
-        # 2) on charge ensuite la couche SentenceTransformer
+        st.success("✅ Modèle BERT prêt à l’emploi.")
         return SentenceTransformer(MODEL_PATH)
     except Exception as e:
-        # Affiche l’erreur exacte dans les logs pour pouvoir debuguer
-        st.error(f"❌ Impossible de charger le modèle BERT : {e}")
-        raise
+        st.error(f"❌ Échec du chargement BERT après téléchargement : {e}")
+        st.stop()
 
 model = load_bert_model()
 
