@@ -1251,26 +1251,28 @@ def trouver_reponse(question: str, model) -> str:
     """
     Trouve la réponse la plus adaptée à la question posée.
     """
-    question_clean = question.lower().strip() # Il faut nettoyer ici aussi pour la base culturelle
-
+    # 0️⃣ Normalisation « universelle »
+    question_raw   = question.strip()
+    question_clean = nettoyer_texte(question_raw)
 
     incrementer_interactions()
-    ajuster_affection(question)
+    ajuster_affection(question_raw)
 
-    # 1️⃣ Modules spéciaux avec 2 arguments
-    reponse_speciale = gerer_modules_speciaux(question, question_clean, model)
+    # 1️⃣ Salutations (avant tout)
+    salut = repondre_salutation(question_clean)
+    if salut:
+        return salut
+
+    # 2️⃣ Modules spéciaux (recettes, calcul, météo, souvenirs…)
+    reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale:
         return reponse_speciale.strip()
 
-    # 2️⃣ Recherche exacte
+    # 3️⃣ Recherche exacte dans la culture générale
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    if question_clean in SALUTATIONS_CLEAN:
-        return SALUTATIONS_CLEAN[question_clean]
-        
-
-    # 4️⃣ Fuzzy matching
+    # 4️⃣ Fuzzy matching dans la culture générale
     match = difflib.get_close_matches(
         question_clean,
         base_culture_nettoyee.keys(),
@@ -1280,12 +1282,12 @@ def trouver_reponse(question: str, model) -> str:
     if match:
         return base_culture_nettoyee[match[0]]
 
-    # 5️⃣ BERT
+    # 5️⃣ Recherche sémantique avec BERT
     try:
-        keys = list(base_culture_nettoyee.keys())
-        q_emb = model.encode([question_clean])
-        keys_emb = model.encode(keys)
-        sims = cosine_similarity(q_emb, keys_emb)[0]
+        keys       = list(base_culture_nettoyee.keys())
+        q_emb      = model.encode([question_clean])
+        keys_emb   = model.encode(keys)
+        sims       = cosine_similarity(q_emb, keys_emb)[0]
         best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
         if best_score > 0.7:
             return base_culture_nettoyee[keys[best_idx]]
@@ -1295,14 +1297,17 @@ def trouver_reponse(question: str, model) -> str:
     # 6️⃣ Secours OpenAI
     try:
         reponse_openai = obtenir_reponse_ava(question_clean)
-        if reponse_openai and isinstance(reponse_openai, str):
+        if isinstance(reponse_openai, str) and reponse_openai.strip():
             return reponse_openai
     except Exception as e:
         return f"⚠️ Une erreur est survenue avec OpenAI : {e}"
 
     # 7️⃣ Dernier recours
-    return "🤔 Je n'ai pas trouvé de réponse précise à votre question. N'hésitez pas à reformuler ou demander un autre sujet !"
- 
+    return (
+        "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
+        "N'hésitez pas à reformuler ou à demander un autre sujet !"
+    )
+
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     message_bot = None
