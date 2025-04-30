@@ -283,16 +283,15 @@ def load_bert_model():
 
 
 
-def trouver_reponse_semantique(question_clean: str, base_dict: dict) -> Optional[str]:
+def trouver_reponse_semantique(question_clean: str, base_dict: dict, model) -> Optional[str]:
     if not base_dict:
         return None
-
-    # Utilise le modèle global chargé
     question_emb = model.encode([question_clean])
-    base_embs = model.encode(list(base_dict.keys()))
+    keys = list(base_dict.keys())
+    base_embs = model.encode(keys)
     sims = cosine_similarity(question_emb, base_embs)[0]
     idx_max = np.argmax(sims)
-    return base_dict[list(base_dict.keys())[idx_max]]
+    return base_dict[keys[idx_max]]
 
 
 def generer_phrase_autonome(theme: str, infos: dict) -> str:
@@ -2314,7 +2313,7 @@ def gerer_modules_speciaux(question: str, question_clean: str) -> Optional[str]:
             return random.choice(reponses)       
 
     # 3. Sinon, chercher une réponse par similarité avec BERT
-    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture)
+    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture, model)
     if reponse_semantique:
         return reponse_semantique
     try:
