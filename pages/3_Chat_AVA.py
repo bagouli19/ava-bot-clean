@@ -13,6 +13,8 @@ from PIL import Image
 import difflib
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+import sys
+sys.path.append("knowledge_base")
 from base_de_langage import base_langage
 
 
