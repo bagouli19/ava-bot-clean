@@ -264,6 +264,9 @@ def ajuster_affection(question: str) -> None:
 # ───────────────────────────────────────────────────────────────────────
 # 6️⃣ Chargement du modèle sémantique MiniLM
 # ───────────────────────────────────────────────────────────────────────
+MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
+st.write(">>> MODEL_PATH =", MODEL_PATH)
+
 @st.cache_resource
 def load_bert_model():
     try:
