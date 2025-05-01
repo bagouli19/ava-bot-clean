@@ -1301,7 +1301,7 @@ def trouver_reponse(question: str, model) -> str:
 
     # 6️⃣ Secours OpenAI
     try:
-        reponse_openai = obtenir_reponse_ava(question_clean)
+        reponse_openai = repondre_openai(question_clean)
         if isinstance(reponse_openai, str) and reponse_openai.strip():
             return reponse_openai
     except Exception as e:
