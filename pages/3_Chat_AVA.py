@@ -1578,7 +1578,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             if key in question_clean:
                 return reponse
 
-    # --- Bloc Horoscope avec API fiable ---
+    
+    # --- Bloc Horoscope ---
     if any(kw in question_clean for kw in ["horoscope", "signe", "astrologie"]):
         signes_disponibles = [
             "bélier", "taureau", "gémeaux", "cancer", "lion", "vierge", "balance",
@@ -1594,18 +1595,18 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         try:
             response = requests.post(
-                "https://aztro.sameerkumar.website/?sign=" + signe_detecte + "&day=today"
+                f" https://kayoo123.github.io/astroo-api/jour.json"
             )
             response.raise_for_status()
             data = response.json()
-            texte = data.get("description", "").strip()
+            texte = data.get("description", "")
 
             if texte:
-                return f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n> {texte}\n"
+                return f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n> {texte}\n\n"
             else:
                 return f"🌙 Horoscope pour **{signe_detecte.capitalize()}** indisponible. Essayez plus tard."
 
-        except Exception:
+        except Exception as e:
             return "⚠️ Je n'arrive pas à récupérer l'horoscope pour le moment. Réessayez plus tard."
 
 
