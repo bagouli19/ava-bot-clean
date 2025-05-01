@@ -1593,15 +1593,26 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             )
 
         try:
-            response = requests.post(
-                f" https://kayoo123.github.io/astroo-api/jour.json"
-            )
+            response = requests.get("https://kayoo123.github.io/astroo-api/jour.json", timeout=5)
             response.raise_for_status()
             data = response.json()
-            texte = data.get("description", "")
 
-            if texte:
-                return f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n> {texte}\n\n"
+            signes_data = data.get("signes", data)
+            infos = signes_data.get(signe_detecte.lower(), {})
+
+            if isinstance(infos, dict) and infos:
+                amour = infos.get("amour", "Pas d’info.")
+                travail = infos.get("travail", "Pas d’info.")
+                sante = infos.get("santé", "Pas d’info.")
+                humeur = infos.get("humeur", "Pas d’info.")
+
+                return (
+                    f"🔮 Horoscope pour **{signe_detecte.capitalize()}** aujourd’hui :\n\n"
+                    f"❤️ **Amour** : {amour}\n"
+                    f"💼 **Travail** : {travail}\n"
+                    f"💊 **Santé** : {sante}\n"
+                    f"😊 **Humeur** : {humeur}\n"
+                )
             else:
                 return f"🌙 Horoscope pour **{signe_detecte.capitalize()}** indisponible. Essayez plus tard."
 
