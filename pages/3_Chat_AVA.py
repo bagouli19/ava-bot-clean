@@ -1597,14 +1597,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             response.raise_for_status()
             data = response.json()
 
-            signes_data = data.get("signes", data)
-            infos = signes_data.get(signe_detecte.lower(), {})
+            signe_data = data.get("signes", {}).get(signe_detecte.lower(), {})
 
-            if isinstance(infos, dict) and infos:
-                amour = infos.get("amour", "Pas d’info.")
-                travail = infos.get("travail", "Pas d’info.")
-                sante = infos.get("santé", "Pas d’info.")
-                humeur = infos.get("humeur", "Pas d’info.")
+            if signe_data:
+                amour = signe_data.get("amour", "Pas d’info.")
+                travail = signe_data.get("travail", "Pas d’info.")
+                sante = signe_data.get("santé", "Pas d’info.")
+                humeur = signe_data.get("humeur", "Pas d’info.")
 
                 return (
                     f"🔮 Horoscope pour **{signe_detecte.capitalize()}** aujourd’hui :\n\n"
@@ -1616,7 +1615,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             else:
                 return f"🌙 Horoscope pour **{signe_detecte.capitalize()}** indisponible. Essayez plus tard."
 
-        except Exception as e:
+        except Exception:
             return "⚠️ Je n'arrive pas à récupérer l'horoscope pour le moment. Réessayez plus tard."
 
 
