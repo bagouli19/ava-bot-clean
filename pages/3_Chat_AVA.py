@@ -1221,9 +1221,7 @@ def format_actus(
     return texte
 
 def repondre_openai(prompt: str) -> str:
-    """
-    Envoie le prompt à l’API ChatCompletion (gpt-3.5-turbo) et récupère une réponse plus complète.
-    """
+    print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
     try:
         resp = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -1232,12 +1230,12 @@ def repondre_openai(prompt: str) -> str:
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=900,  # Augmenté pour des réponses longues
+            max_tokens=900,
         )
+        print("✅ OpenAI a répondu")
         return resp.choices[0].message.content.strip()
     except Exception as e:
-        if "quota" in str(e).lower():
-            return "⚠️ Mon quota API est épuisé pour le moment. Je reviendrai dès que possible !"
+        print("❌ Erreur OpenAI :", e)
         return f"Erreur OpenAI : {e}"
 
 
