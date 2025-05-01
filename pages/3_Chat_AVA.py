@@ -1578,7 +1578,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             if key in question_clean:
                 return reponse
 
-    # --- Bloc Horoscope ---
+    # --- Bloc Horoscope avec API fiable ---
     if any(kw in question_clean for kw in ["horoscope", "signe", "astrologie"]):
         signes_disponibles = [
             "bélier", "taureau", "gémeaux", "cancer", "lion", "vierge", "balance",
@@ -1593,30 +1593,21 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             )
 
         try:
-            response = requests.get("https://kayoo123.github.io/astroo-api/jour.json", timeout=5)
+            response = requests.post(
+                "https://aztro.sameerkumar.website/?sign=" + signe_detecte + "&day=today"
+            )
             response.raise_for_status()
             data = response.json()
+            texte = data.get("description", "").strip()
 
-            signe_data = data.get("signes", {}).get(signe_detecte.lower(), {})
-
-            if signe_data:
-                amour = signe_data.get("amour", "Pas d’info.")
-                travail = signe_data.get("travail", "Pas d’info.")
-                sante = signe_data.get("santé", "Pas d’info.")
-                humeur = signe_data.get("humeur", "Pas d’info.")
-
-                return (
-                    f"🔮 Horoscope pour **{signe_detecte.capitalize()}** aujourd’hui :\n\n"
-                    f"❤️ **Amour** : {amour}\n"
-                    f"💼 **Travail** : {travail}\n"
-                    f"💊 **Santé** : {sante}\n"
-                    f"😊 **Humeur** : {humeur}\n"
-                )
+            if texte:
+                return f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n> {texte}\n"
             else:
                 return f"🌙 Horoscope pour **{signe_detecte.capitalize()}** indisponible. Essayez plus tard."
 
         except Exception:
             return "⚠️ Je n'arrive pas à récupérer l'horoscope pour le moment. Réessayez plus tard."
+
 
 
         
