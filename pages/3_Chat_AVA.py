@@ -2334,7 +2334,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if reponse_semantique:
         return reponse_semantique
     try:
-        reponse_openai = obtenir_reponse_ava(question_clean)
+        reponse_openai = repondre_openai(question_clean)
         return reponse_openai
     except Exception as e:
         return "Je suis désolée, une erreur est survenue avec OpenAI."
