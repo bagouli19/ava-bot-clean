@@ -1315,25 +1315,7 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     message_bot = None
     """Détecte si la question correspond à un module spécial (salutation, mémoire, etc.)."""
-    # --- Bloc spécial : Calcul ---
-    if not message_bot:
-        question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
-        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
     
-        try:
-            # Détection d'expressions simples avec opérateurs mathématiques
-            if re.search(r"[\d\s\.\+\-\*/%()]+", question_calc):
-                expression = re.findall(r"[\d\.\+\-\*/%\(\)\s]+", question_calc)
-                expression = "".join(expression)
-                result = eval(expression, {"__builtins__": None}, {})
-                message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-        except:
-            message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
-
-
-        # ✅ CORRECTION IMPORTANTE
-        if message_bot:
-            return message_bot
 
      # --- Bloc Recettes rapides ---
     recettes = [
@@ -2294,7 +2276,26 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         st.session_state["quiz_attendu"] = question_choisie["réponse"].lower()
         return f"🧠 **Quiz Culture G** :\n{question_choisie['question']}\n\nRépondez directement !"
 
-   
+    # --- Bloc spécial : Calcul ---
+    if not message_bot:
+        question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
+        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
+    
+        try:
+            # Détection d'expressions simples avec opérateurs mathématiques
+            if re.search(r"[\d\s\.\+\-\*/%()]+", question_calc):
+                expression = re.findall(r"[\d\.\+\-\*/%\(\)\s]+", question_calc)
+                expression = "".join(expression)
+                result = eval(expression, {"__builtins__": None}, {})
+                message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
+        except:
+            message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
+
+
+        # ✅ CORRECTION IMPORTANTE
+        if message_bot:
+            return message_bot
+            
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
         # détection de salutations en anglais
