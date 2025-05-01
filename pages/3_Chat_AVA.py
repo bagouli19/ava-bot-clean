@@ -1594,7 +1594,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         try:
             response = requests.post(
-                f"https://aztro.sameerkumar.website/?sign={signe_detecte}&day=today"
+                f" https://kayoo123.github.io/astroo-api/jour.json"
             )
             response.raise_for_status()
             data = response.json()
@@ -2295,7 +2295,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         # ✅ CORRECTION IMPORTANTE
         if message_bot:
             return message_bot
-            
+
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
         # détection de salutations en anglais
