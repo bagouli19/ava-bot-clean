@@ -1317,25 +1317,21 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     """Détecte si la question correspond à un module spécial (salutation, mémoire, etc.)."""
     # --- Bloc spécial : Calcul ---
     if not message_bot:
-        question_calc = question_clean.replace(",", ".")
+        question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
         question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
+    
         try:
-            if any(op in question_calc for op in ["+", "-", "*", "/", "%", "**"]):
-                try:
-                    result = eval(question_calc)
-                    message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-                except Exception:
-                    pass
-            if not message_bot:
-                match = re.search(r"(?:combien font|combien|calcul(?:e)?|résultat de)\s*(.*)", question_calc)
-                if match:
-                    expression = match.group(1).strip()
-                    result = eval(expression)
-                    message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
+            # Détection d'expressions simples avec opérateurs mathématiques
+            if re.search(r"[\d\s\.\+\-\*/%()]+", question_calc):
+                expression = re.findall(r"[\d\.\+\-\*/%\(\)\s]+", question_calc)
+                expression = "".join(expression)
+                result = eval(expression, {"__builtins__": None}, {})
+                message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
         except:
-            pass
+            message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
 
-    # ✅ CORRECTION IMPORTANTE
+
+        # ✅ CORRECTION IMPORTANTE
         if message_bot:
             return message_bot
 
@@ -1606,7 +1602,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "bélier", "taureau", "gémeaux", "cancer", "lion", "vierge", "balance",
             "scorpion", "sagittaire", "capricorne", "verseau", "poissons"
         ]
-        # on détecte le signe dans la question
         signe_detecte = next((s for s in signes_disponibles if s in question_clean), None)
 
         if not signe_detecte:
@@ -1616,31 +1611,20 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             )
 
         try:
-            resp = requests.get(
-                "https://kayoo123.github.io/astroo-api/jour.json",
-                timeout=5
+            response = requests.post(
+                f"https://aztro.sameerkumar.website/?sign={signe_detecte}&day=today"
             )
-            resp.raise_for_status()
-            data = resp.json()
-            horoscope_dict = data.get("signes", data)
-            entry = horoscope_dict.get(signe_detecte.lower())
-
-            # on extrait le texte d'horoscope
-            if isinstance(entry, dict):
-                texte = entry.get("horoscope", "").strip()
-            else:
-                texte = str(entry).strip()
+            response.raise_for_status()
+            data = response.json()
+            texte = data.get("description", "")
 
             if texte:
                 return f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n> {texte}\n\n"
             else:
-                return (
-                    f"🔍 Horoscope indisponible pour **{signe_detecte.capitalize()}**. "
-                    "Veuillez réessayer plus tard.\n\n"
-                )
+                return f"🌙 Horoscope pour **{signe_detecte.capitalize()}** indisponible. Essayez plus tard."
 
-        except Exception:
-            return "⚠️ Impossible d'obtenir l'horoscope pour le moment.\n\n"
+        except Exception as e:
+            return "⚠️ Je n'arrive pas à récupérer l'horoscope pour le moment. Réessayez plus tard."
 
 
         
@@ -1871,12 +1855,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     
     # --- Bloc Découverte du Monde 100% local ---
-    if any(kw in question_clean for kw in ["pays", "fait-moi découvrir", "découvre-moi", "exploration du monde", "découvrir un pays"]):
-        try:
-            pays_info = random.choice(pays_du_monde)  # On pioche un pays aléatoire
-            message_bot = f"🌍 {pays_info}"
-        except Exception:
-            message_bot = "⚠️ Désolé, une erreur est survenue en essayant de découvrir un nouveau pays."
+    if not message_bot and any(kw in question_clean for kw in [
+        "pays", "fait-moi découvrir", "découvre-moi", "exploration du monde", "découvrir un pays"
+    ]):
         DESTINATIONS = [
             {
                 "pays": "Islande 🇮🇸",
@@ -1926,17 +1907,17 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             # (On pourra en rajouter plein d’autres ensuite 💪)
         ]
     
-        destination = random.choice(DESTINATIONS)
-
-        message_bot = f"🌍 Aujourd'hui, je te propose de découvrir **{destination['pays']}** :\n\n"
-        for fait in destination["faits"]:
-            message_bot += f"- {fait}\n"
-        message_bot += "\nVeux-tu en découvrir un autre ? 😉"
-
+        try:
+            destination = random.choice(DESTINATIONS)
+            message_bot = f"🌍 Aujourd'hui, je te propose de découvrir **{destination['pays']}** :\n\n"
+            for fait in destination["faits"]:
+                message_bot += f"- {fait}\n"
+            message_bot += "\nVeux-tu en découvrir un autre ? 😉"
+        except Exception:
+            message_bot = "⚠️ Désolé, une erreur est survenue en essayant de découvrir un nouveau pays."
 
     # ─── Bloc Géographie (capitales) ─────────────
-    if any(kw in question_clean for kw in ["capitale", "où se trouve", "ville principale"]):
-        # 1) On extrait le nom du pays
+    if "capitale" in question_clean or "où se trouve" in question_clean or "ville principale" in question_clean:
         match = re.search(r"(?:de la|de l'|du|de|des)\s+([a-zàâçéèêëîïôûùüÿñæœ' -]+)", question_clean)
         if match:
             pays_detecte = match.group(1).strip().lower()
@@ -2272,6 +2253,17 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return f"🔍 Vous souhaitez en savoir plus sur **{nom_ticker.upper()}** ? Tapez `analyse {nom_ticker}` pour une analyse complète 📊"
 
         
+   # --- Vérification de la réponse au quiz --- (à placer AVANT toute détection de nouveau quiz)
+    if "quiz_attendu" in st.session_state and st.session_state["quiz_attendu"]:
+        reponse_attendue = st.session_state["quiz_attendu"]
+        if question_clean.lower() == reponse_attendue:
+            st.session_state["quiz_attendu"] = ""
+            return "✅ Bonne réponse ! Vous avez l’esprit affûté 🧠💪"
+        else:
+            message = f"❌ Oops ! Ce n'était pas ça... La bonne réponse était **{reponse_attendue.capitalize()}**."
+            st.session_state["quiz_attendu"] = ""
+            return message
+
     # --- Bloc Quiz de culture générale ---
     if not message_bot and any(mot in question_clean for mot in [
         "quiz", "quizz", "question", "culture générale", "pose-moi une question", "teste mes connaissances"
@@ -2300,16 +2292,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         ]
         question_choisie = random.choice(quizz_culture)
         st.session_state["quiz_attendu"] = question_choisie["réponse"].lower()
-        message_bot = f"🧠 **Quiz Culture G** :\n{question_choisie['question']}\n\nRépondez directement !"
-
-    # --- Vérification de la réponse au quiz ---
-    elif "quiz_attendu" in st.session_state and st.session_state["quiz_attendu"]:
-        reponse_attendue = st.session_state["quiz_attendu"]
-        if question_clean.lower() == reponse_attendue:
-            message_bot = "✅ Bonne réponse ! Vous avez l’esprit affûté 🧠💪"
-        else:
-            message_bot = f"❌ Oops ! Ce n'était pas ça... La bonne réponse était **{reponse_attendue.capitalize()}**."
-        st.session_state["quiz_attendu"] = ""
+        return f"🧠 **Quiz Culture G** :\n{question_choisie['question']}\n\nRépondez directement !"
 
    
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
