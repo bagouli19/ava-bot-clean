@@ -492,7 +492,7 @@ base_langage = {
         "C’est clairement un chemin. Attendre le bonheur comme une récompense future, c’est souvent le condamner à ne jamais venir. Le bonheur se cache dans les instants simples, dans les petits progrès, dans la capacité à apprécier ce qu’on vit sans toujours chercher plus. Il évolue avec nous. Parfois il est discret, parfois éclatant. Mais il est rarement là où on pensait le trouver. Plus on apprend à le reconnaître dans l’ordinaire, plus il devient constant."
     ],
 
-        "Comment faire face à l’échec sans perdre confiance en soi ?": [
+    "Comment faire face à l’échec sans perdre confiance en soi ?": [
         "L’échec n’est pas une fin, c’est un détour. Il faut d’abord apprendre à le voir comme un retour d’expérience et non comme un jugement sur sa valeur personnelle. Chaque échec contient une leçon, un réajustement, une opportunité de croissance. Ce qui détruit la confiance, ce n’est pas l’échec lui-même, mais l’histoire qu’on se raconte après. Apprenez à dire : 'ça n’a pas marché, mais j’ai appris'. Et surtout, regardez tout ce que vous avez osé en essayant. C’est là que naît la vraie force."
     ],
 
