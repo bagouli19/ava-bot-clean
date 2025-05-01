@@ -1255,6 +1255,17 @@ def trouver_reponse(question: str, model) -> str:
     if salut:
         return salut
 
+    base_langage_clean = {
+        nettoyer_texte(phrase): reponses
+        for phrase, reponses in base_langage.items()
+    }
+
+    # Tentez un fuzzy-match si aucune inclusion exacte
+    if base_langage_clean:
+        # 1) inclusion stricte
+        if question_clean in base_langage_clean:
+            return random.choice(base_langage_clean[question_clean])
+
     # 2️⃣ Modules spéciaux (recettes, calcul, météo, souvenirs…)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale:
@@ -2328,11 +2339,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             if any(mot in cle for mot in question_clean.split()):
                 return f"✨ Souvenir retrouvé : **{valeur}**"
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
-
-    # --- Bloc Langage courant (base_langage externe) ---
-    for phrase, reponses in base_langage.items():
-        if phrase in question_clean and len(phrase.split()) > 2 and len(question_clean) <= 80:
-            return random.choice(reponses)       
+    
 
     # 3. Sinon, chercher une réponse par similarité avec BERT
     reponse_semantique = trouver_reponse_semantique(question_clean, base_culture, model)
