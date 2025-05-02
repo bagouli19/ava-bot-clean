@@ -82,7 +82,15 @@ fichier_pred = f"predictions/prediction_{ticker.lower().replace('-', '').replace
 if os.path.exists(fichier_data):
     df = pd.read_csv(fichier_data)
 
-    df.columns = [col.strip().lower() for col in df.columns]
+    # ✅ On renomme les colonnes si nécessaire pour correspondre à l'analyse technique
+    colonnes_obligatoires = ["Open", "High", "Low", "Close", "Volume", "Date"]
+    df.columns = [col.strip().capitalize() for col in df.columns]
+
+    # 🔒 Vérifie que toutes les colonnes nécessaires sont bien là
+    for col in colonnes_obligatoires:
+        if col not in df.columns:
+            st.error(f"❌ Colonne manquante dans les données : {col}")
+            st.stop()
     df = ajouter_indicateurs_techniques(df)
 
     try:
