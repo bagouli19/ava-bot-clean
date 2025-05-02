@@ -176,7 +176,7 @@ if os.path.exists(fichier_data):
                 st.warning("⚠️ Impossible de charger les actualités financières.")
                 st.text(f"Erreur : {e}")
         else:
-    s       t.error(f"❌ Aucune donnée trouvée pour {ticker}. Veuillez lancer le script d'entraînement.")
+            st.error(f"❌ Aucune donnée trouvée pour {ticker}. Veuillez lancer le script d'entraînement.")
 
     except Exception as e:
         st.error(f"Une erreur est survenue pendant l'analyse : {e}")
