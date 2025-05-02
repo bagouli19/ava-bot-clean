@@ -155,11 +155,6 @@ if os.path.exists(fichier_data):
             )
             st.plotly_chart(fig, use_container_width=True)
 
-        except Exception as e:
-            st.warning("⚠️ Impossible d'afficher le graphique en bougies.")
-            st.error(f"Erreur : {e}")
-       
-
         # --- Actualités financières ---
         st.subheader("🗞️ Actualités financières récentes")
         try:
