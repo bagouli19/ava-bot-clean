@@ -83,8 +83,15 @@ if os.path.exists(fichier_data):
     df = pd.read_csv(fichier_data)
 
     # ✅ On renomme les colonnes si nécessaire pour correspondre à l'analyse technique
-    colonnes_obligatoires = ["Open", "High", "Low", "Close", "Volume", "Date"]
-    df.columns = [col.strip().capitalize() for col in df.columns]
+    df.columns = [col.strip().lower() for col in df.columns]
+    df = df.rename(columns={
+        "open": "Open",
+        "high": "High",
+        "low": "Low",
+        "close": "Close",
+        "volume": "Volume",
+        "date": "Date"
+    })
 
     # 🔒 Vérifie que toutes les colonnes nécessaires sont bien là
     for col in colonnes_obligatoires:
