@@ -7,23 +7,12 @@ tickers = ["AAPL", "TSLA", "GOOGL", "BTC-USD", "ETH-USD"]
 data_dir = "data"
 
 def ajouter_indicateurs_techniques(df):
-    # Normalisation des noms de colonnes
-    df.columns = [col.lower() for col in df.columns]
-
-    # Sécurité : vérifie que les colonnes nécessaires sont présentes
-    colonnes_requises = ["close", "high", "low"]
-    for col in colonnes_requises:
-        if col not in df.columns:
-            raise KeyError(f"La colonne obligatoire '{col}' est absente du DataFrame.")
-
-    # Ajout des indicateurs techniques
-    df["sma"] = ta.trend.sma_indicator(df["close"], window=20)
-    df["ema"] = ta.trend.ema_indicator(df["close"], window=20)
-    df["rsi"] = ta.momentum.rsi(df["close"], window=14)
-    df["adx"] = ta.trend.adx(df["high"], df["low"], df["close"], window=14)
-    df["cci"] = ta.trend.cci(df["high"], df["low"], df["close"], window=20)
-    df["macd"] = ta.trend.macd(df["close"])
-
+    df['Sma'] = ta.trend.sma_indicator(df['Close'], window=20)
+    df['Ema'] = ta.trend.ema_indicator(df['Close'], window=20)
+    df['Rsi'] = ta.momentum.rsi(df['Close'], window=14)
+    macd = ta.trend.macd(df['Close'])
+    df['Macd'] = macd
+    df['Adx'] = ta.trend.adx(df['High'], df['Low'], df['Close'], window=14)
     return df
 
 
