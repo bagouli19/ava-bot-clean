@@ -108,6 +108,20 @@ def set_my_profile(profile: dict):
     profils = load_profiles()
     profils[user] = profile
     save_profiles(profils)
+    
+def memoriser_souvenir(cle: str, valeur: str):
+    """
+    Enregistre un souvenir (clé/valeur) dans le profil utilisateur actuel.
+    """
+    profil = get_my_profile()
+    souvenirs = profil.get("souvenirs", {})
+
+    # Mettre à jour ou ajouter la nouvelle info
+    souvenirs[cle] = valeur
+    profil["souvenirs"] = souvenirs
+
+    # Mise à jour du profil en session et dans le fichier
+    set_my_profile(profil)
 
 # — Initialisation du profil utilisateur s’il n’existe pas encore
 all_profiles = load_profiles()
