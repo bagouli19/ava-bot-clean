@@ -111,7 +111,7 @@ def memoriser_souvenir(cle: str, valeur: str):
     profil = get_my_profile()
     profil["souvenirs"][cle] = valeur
     set_my_profile(profil)
-    
+
 # Chargement ou création du profil
 all_profiles = load_profiles()
 if user not in all_profiles:
@@ -1265,7 +1265,12 @@ def trouver_reponse(question: str, model) -> str:
 
     incrementer_interactions()
     ajuster_affection(question_raw)
-    memoriser_souvenir("ville_preferee", "Barcelone")
+    
+    # 🎯 Test temporaire pour vérifier l'enregistrement de souvenirs
+    if "test mémoire" in question_clean:
+        memoriser_souvenir("ville_preferee", "Barcelone")
+        return "✅ Souvenir test enregistré : ville préférée = Barcelone"
+    
 
     # 1️⃣ Salutations (avant tout)
     salut = repondre_salutation(question_clean)
