@@ -1525,37 +1525,36 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             ])
         )
 
-    # 1️⃣ Bloc Ajout automatique de souvenirs (profil utilisateur)
+    # --- 1️⃣ Détection et enregistrement automatique de souvenirs dans le profil utilisateur ---
     patterns_souvenirs = {
         "je m'appelle": "prenom",
         "mon prénom est": "prenom",
         "mon chien s'appelle": "chien",
         "mon plat préféré est": "plat_prefere",
         "mon film préféré est": "film_prefere",
-        "mon sport préféré est": "sport_prefere"
+        "mon sport préféré est": "sport_prefere",
     }
 
     for debut_phrase, cle_souvenir in patterns_souvenirs.items():
         if question_clean.startswith(debut_phrase):
-            valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
+           valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
             if valeur:
+                # Mise à jour du profil utilisateur (fichier + session)
                 profil = get_my_profile()
                 profil["souvenirs"][cle_souvenir] = valeur
                 set_my_profile(profil)
-                ajouter_souvenir(f"{cle_souvenir}_{valeur.lower().replace(' ', '_')}", valeur)
+
+                # Enregistrement en mémoire globale aussi (optionnel)
+                cle_mem_global = f"{cle_souvenir}_{valeur.lower().replace(' ', '_')}"
+                ajouter_souvenir(cle_mem_global, valeur)
+ 
                 return f"✨ J'ai bien noté dans mes souvenirs : **{valeur.capitalize()}** ! 🧠"
-
-                # 2. Enregistrer aussi dans la mémoire globale
-                cle_globale = f"{cle_memoire}_{valeur.lower().replace(' ', '_')}"
-                ajouter_souvenir(cle_globale, valeur)
-
-                return f"✨ J'ai bien noté dans mes souvenirs : **{valeur}** ! 🧠"
-
-    # 2️⃣ Recherche de souvenirs (dans la mémoire utilisateur)
+    
+    # --- 2️⃣ Recherche d'un souvenir dans le profil utilisateur ---
     profil = get_my_profile()
     for cle_souv, contenu in profil.get("souvenirs", {}).items():
         if cle_souv.replace("_", " ") in question_clean or contenu.lower() in question_clean:
-            return f"🧠 Vous m'aviez dit : **{contenu}**."
+            return f"🧠 Je m'en souviens ! Vous m'avez dit : **{contenu}**"
 
 
     # 2. Ensuite, chercher une réponse dans ta base de culture générale
