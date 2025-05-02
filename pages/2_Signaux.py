@@ -160,9 +160,7 @@ if os.path.exists(fichier_data):
             )
             st.plotly_chart(fig, use_container_width=True)
 
-            # 🔍 Affichage du tableau de données brutes
-            st.subheader("📄 Données récentes")
-            st.dataframe(df.tail(10), use_container_width=True)
+
 
         # --- Actualités financières ---
         st.subheader("🗞️ Actualités financières récentes")
