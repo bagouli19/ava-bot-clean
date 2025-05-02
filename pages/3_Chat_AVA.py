@@ -1537,7 +1537,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     for debut_phrase, cle_souvenir in patterns_souvenirs.items():
         if question_clean.startswith(debut_phrase):
-           valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
+            valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
             if valeur:
                 # Mise à jour du profil utilisateur (fichier + session)
                 profil = get_my_profile()
