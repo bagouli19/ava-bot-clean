@@ -51,38 +51,29 @@ except Exception as e:
     base_connaissances = {}
 
 # ───────────────────────────────────────────────────────────────────────
-# Identification de l’utilisateur
+# 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
-
 if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
-    st.title("Bienvenue dans AVA 🤖")
+    pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
+    prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
+    if not pseudo or not prenom:
+        st.stop()
+    st.session_state.user_id = pseudo.strip()
+    st.session_state.utilisateur = prenom.strip().capitalize()
+    st.experimental_rerun()
 
-    with st.form("login_form"):
-        pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
-        prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
-        submitted = st.form_submit_button("Démarrer")
-
-    if submitted:
-        if pseudo and prenom:
-            st.session_state.user_id = pseudo.strip()
-            st.session_state.utilisateur = prenom.strip().capitalize()
-            st.experimental_rerun()
-        else:
-            st.warning("Veuillez remplir les deux champs pour continuer.")
-    st.stop()
-
-
-
+user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
 
 # ───────────────────────────────────────────────────────────────────────
-# 2️⃣ Chemins et fichiers de profil
+# 2️⃣ Chemins et fichiers
 # ───────────────────────────────────────────────────────────────────────
-SCRIPT_DIR     = os.path.dirname(__file__)
-PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
+SCRIPT_DIR      = os.path.dirname(__file__)
+PROJECT_ROOT    = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
 sys.path.insert(0, os.path.join(PROJECT_ROOT, "knowledge_base"))
-PROFILE_FILE = os.path.join(SCRIPT_DIR, f"profil_utilisateur_{user}.json")
-GLOBAL_MEMOIRE = os.path.join(SCRIPT_DIR, "memoire_ava.json")
-STYLE_FILE     = os.path.join(SCRIPT_DIR, "style_ava.json")
+
+PROFILE_FILE    = os.path.join(SCRIPT_DIR, f"profil_utilisateur_{user}.json")
+GLOBAL_MEMOIRE  = os.path.join(SCRIPT_DIR, "memoire_ava.json")
+STYLE_FILE      = os.path.join(SCRIPT_DIR, "style_ava.json")
 
 
 # ───────────────────────────────────────────────────────────────────────
