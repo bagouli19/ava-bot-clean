@@ -72,7 +72,7 @@ user = st.session_state.user_id
 SCRIPT_DIR     = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
 sys.path.insert(0, os.path.join(PROJECT_ROOT, "knowledge_base"))
-PROFILE_FILE   = os.path.join(SCRIPT_DIR, f"profil_utilisateur_{user}.json")
+PROFILE_FILE = os.path.join(SCRIPT_DIR, f"profil_utilisateur_{user}.json")
 GLOBAL_MEMOIRE = os.path.join(SCRIPT_DIR, "memoire_ava.json")
 STYLE_FILE     = os.path.join(SCRIPT_DIR, "style_ava.json")
 
