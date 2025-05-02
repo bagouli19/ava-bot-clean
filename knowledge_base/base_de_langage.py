@@ -1336,7 +1336,7 @@ base_langage = {
     ],
     
     "Quel est le rôle de la démocratie ?": [
-        "Elle a permis de stabiliser nos societes, mais montre aujourd'hui ses limites : lenteurs, deconnexion"
+        "Elle a permis de stabiliser nos societes, mais montre aujourd'hui ses limites : lenteurs, deconnexion."
     ],
 
     "Pourquoi l incertitude nous destabilise-t-elle autant ?": [
@@ -1357,7 +1357,7 @@ base_langage = {
 
     "Pourquoi certaines personnes ne supportent pas le silence ?": [
         "Parce qu il confronte a soi. Le silence reveille les pensees qu on fuit, les emotions enfouies. Il peut etre inquietant quand l interieur est agite. Mais avec le temps, il devient un refuge. Un espace de verite et d apaisement."
-    ],
+    ]
 
 
 }    
