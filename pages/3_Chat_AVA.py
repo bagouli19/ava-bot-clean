@@ -1486,7 +1486,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 contenu = f"{debut_phrase} {valeur}"
                 ajouter_souvenir_global(cle_souvenir, contenu)
                 return f"📌 J’ai bien mémorisé : **{contenu}**"
-                
+
     # --- 1️⃣ Détection et enregistrement automatique de souvenirs dans le profil utilisateur ---
     patterns_souvenirs = {
         "je m'appelle": "prenom",
@@ -1517,7 +1517,16 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     for cle_souv, contenu in profil.get("souvenirs", {}).items():
         if cle_souv.replace("_", " ") in question_clean or contenu.lower() in question_clean:
             return f"🧠 Je m'en souviens ! Vous m'avez dit : **{contenu}**"
-
+    
+    if "qu'as-tu mémorisé" in question_clean or "montre-moi tes souvenirs" in question_clean:
+    with open(GLOBAL_MEMOIRE, "r", encoding="utf-8") as f:
+        memoire = json.load(f)
+    if memoire:
+        retour = "\n\n".join([f"• **{k}** → {v}" for k, v in memoire.items()])
+        return f"🧠 Voici ce que j’ai en mémoire globale :\n\n{retour}"
+    else:
+        return "🧠 Je n'ai encore rien mémorisé pour le moment."
+        
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
         try:
