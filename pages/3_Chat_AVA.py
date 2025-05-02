@@ -13,8 +13,11 @@ from PIL import Image
 import difflib
 import numpy as np
 import sys
-sys.path.append("knowledge_base")
-from base_de_langage import base_langage
+sys.path.append(os.path.abspath(".."))
+
+from knowledge_base.base_de_langage import base_langage
+
+print("Nombre de questions chargées :", len(base_langage))
 from huggingface_hub import snapshot_download, hf_hub_download
 
 

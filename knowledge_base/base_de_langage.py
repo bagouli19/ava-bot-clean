@@ -1335,30 +1335,6 @@ base_langage = {
         "Parce que notre cerveau adore les raccourcis. Juger rapidement rassure, classe, controle. Mais cela limite la comprehension. Prendre le temps de connaitre, c est choisir la nuance plutot que la peur. Et c est aussi se donner une chance de grandir."
     ],
     
-    "Quel est le rôle de la démocratie ?": [
-        "Elle a permis de stabiliser nos societes, mais montre aujourd'hui ses limites : lenteurs, deconnexion."
-    ],
-
-    "Pourquoi l incertitude nous destabilise-t-elle autant ?": [
-        "Parce qu elle echappe a notre besoin de controle. Le cerveau humain prefere meme une mauvaise nouvelle a l inconnu. Mais dans l incertitude, il y a aussi de la possibilite. C est un espace inconfortable, mais fertile."
-    ],
-
-    "Peut-on aimer sans s attacher ?": [
-        "Oui, si l amour est conscient, libre, present. L attachement cherche a posseder, l amour veritable laisse l autre etre. C est difficile, mais possible. Cela demande de l estime de soi, et une confiance profonde en la vie."
-    ],
-
-    "Pourquoi le regard des autres pese-t-il autant ?": [
-        "Parce que nous sommes des etres sociaux. Etre accepte rassure, rejete blesse. Mais fonder son image sur le regard d autrui, c est se perdre. Le vrai apaisement vient quand on se regarde avec bienveillance, peu importe les jugements exterieurs."
-    ],
-
-    "Peut-on etre en paix dans un monde en crise ?": [
-        "Oui, meme si c est difficile. La paix interieure ne nie pas le chaos exterieur, elle l observe sans s y perdre. Elle se construit par le recentrage, le sens, et la capacite a agir la ou l on peut. C est une forme de resistance douce."
-    ],
-
-    "Pourquoi certaines personnes ne supportent pas le silence ?": [
-        "Parce qu il confronte a soi. Le silence reveille les pensees qu on fuit, les emotions enfouies. Il peut etre inquietant quand l interieur est agite. Mais avec le temps, il devient un refuge. Un espace de verite et d apaisement."
-    ]
-
 
 }    
  
