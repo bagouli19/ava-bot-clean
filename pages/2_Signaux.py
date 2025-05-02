@@ -113,7 +113,29 @@ if os.path.exists(fichier_data):
         st.markdown(f"💬 **Résumé d'AVA :**\n{resume}")
         st.success(f"🤖 *Intuition d'AVA :* {suggestion}")
 
-        # --- Graphique en bougies ---
+    
+        # --- Suggestion de position ---
+        st.subheader("📌 Suggestion de position")
+        st.markdown(suggerer_position_et_niveaux(df))
+
+        # --- Prédiction IA ---
+        if os.path.exists(fichier_pred):
+            df_pred = pd.read_csv(fichier_pred)
+            prediction = df_pred["prediction"].iloc[-1]
+            st.subheader("📈 Prédiction IA (demain) :")
+            st.info("📈 Hausse probable demain" if prediction == 1 else "📉 Baisse probable demain")
+        else:
+            st.warning("Aucune prédiction trouvée.")
+
+        # --- RSI ---
+        if 'Rsi' in df.columns:
+            st.subheader("📊 RSI actuel :")
+            st.metric("RSI", round(df["Rsi"].iloc[-1], 2))
+
+        # --- Données brutes ---
+        st.subheader("📄 Données récentes")
+        st.dataframe(df.tail(10), use_container_width=True)
+         # --- Graphique en bougies ---
         st.subheader("📈 Graphique en bougies japonaises")
         fig = go.Figure(data=[go.Candlestick(
             x=df["Date"],
@@ -150,30 +172,7 @@ if os.path.exists(fichier_data):
         except Exception as e:
             st.warning("⚠️ Impossible de charger les actualités financières.")
             st.text(f"Erreur : {e}")
-
-
-        # --- Suggestion de position ---
-        st.subheader("📌 Suggestion de position")
-        st.markdown(suggerer_position_et_niveaux(df))
-
-        # --- Prédiction IA ---
-        if os.path.exists(fichier_pred):
-            df_pred = pd.read_csv(fichier_pred)
-            prediction = df_pred["prediction"].iloc[-1]
-            st.subheader("📈 Prédiction IA (demain) :")
-            st.info("📈 Hausse probable demain" if prediction == 1 else "📉 Baisse probable demain")
-        else:
-            st.warning("Aucune prédiction trouvée.")
-
-        # --- RSI ---
-        if 'Rsi' in df.columns:
-            st.subheader("📊 RSI actuel :")
-            st.metric("RSI", round(df["Rsi"].iloc[-1], 2))
-
-        # --- Données brutes ---
-        st.subheader("📄 Données récentes")
-        st.dataframe(df.tail(10), use_container_width=True)
-
+            
     except Exception as e:
         st.error(f"Une erreur est survenue pendant l'analyse : {e}")
 
