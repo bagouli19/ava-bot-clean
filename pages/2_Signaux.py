@@ -93,11 +93,6 @@ if os.path.exists(fichier_data):
         "date": "Date"
     })
 
-    # 🔒 Vérifie que toutes les colonnes nécessaires sont bien là
-    for col in colonnes_obligatoires:
-        if col not in df.columns:
-            st.error(f"❌ Colonne manquante dans les données : {col}")
-            st.stop()
     df = ajouter_indicateurs_techniques(df)
 
     try:
