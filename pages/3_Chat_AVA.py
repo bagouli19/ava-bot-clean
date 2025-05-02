@@ -54,13 +54,15 @@ except Exception as e:
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
 if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
-    pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
-    prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
-    if not pseudo or not prenom:
-        st.stop()
-    st.session_state.user_id = pseudo.strip()
-    st.session_state.utilisateur = prenom.strip().capitalize()
-    st.experimental_rerun()
+    with st.form("login_form"):
+        pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
+        prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
+        submitted = st.form_submit_button("✅ Valider")
+        if submitted and pseudo and prenom:
+            st.session_state.user_id = pseudo.strip()
+            st.session_state.utilisateur = prenom.strip().capitalize()
+            st.experimental_rerun()
+    st.stop()
 
 user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
 
