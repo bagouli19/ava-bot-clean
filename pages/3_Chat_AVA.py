@@ -1557,10 +1557,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         if cle_souv.replace("_", " ") in question_clean or contenu.lower() in question_clean:
             return f"🧠 Vous m'aviez dit : **{contenu}**."
 
-    # 3️⃣ Recherche de souvenirs (dans la mémoire globale)
-    for cle_souvenir, contenu_souvenir in st.session_state.get("souvenirs", {}).items():
-        if cle_souvenir.replace("_", " ") in question_clean or cle_souvenir in question_clean:
-            return f"🧠 Souvenir global retrouvé : **{contenu_souvenir}**."
 
     # 2. Ensuite, chercher une réponse dans ta base de culture générale
     reponse_culture = base_culture.get(question_clean)
