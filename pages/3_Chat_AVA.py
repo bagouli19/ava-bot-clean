@@ -47,20 +47,22 @@ global model
 # ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
-# 🔉 Fonctions vocales
+
+WIT_AI_KEY = st.secrets["WIT_AI_KEY"]
+
 def reconnaitre_texte_depuis_micro():
     r = sr.Recognizer()
     with sr.Microphone() as source:
         st.info("🎙️ Parlez maintenant...")
         audio = r.listen(source)
         try:
-            texte = r.recognize_google(audio, language="fr-FR")
+            texte = r.recognize_wit(audio, key=WIT_AI_KEY, show_all=False)
             st.success(f"🗣️ Vous avez dit : {texte}")
             return texte
         except sr.UnknownValueError:
             st.error("❌ Je n’ai pas compris.")
         except sr.RequestError:
-            st.error("⚠️ Erreur de service.")
+            st.error("⚠️ Erreur avec Wit.ai")
     return None
 
 def lire_texte_avec_voix(texte):
