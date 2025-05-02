@@ -121,6 +121,17 @@ if user not in all_profiles:
 # — Chargement du profil dans la session
 st.session_state.profil = all_profiles[user]
 
+# 🔧 Affiche le profil actuel
+st.sidebar.subheader("🧠 Profil AVA (test)")
+st.sidebar.json(st.session_state.profil)
+
+# 🔘 Bouton pour changer le prénom et tester la sauvegarde
+if st.sidebar.button("Changer prénom pour 'Alex'"):
+    nouveau_profil = st.session_state.profil.copy()
+    nouveau_profil["prenom"] = "Alex"
+    set_my_profile(nouveau_profil)
+    st.success("✅ Prénom modifié et profil sauvegardé !")
+    
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion des souvenirs globaux
 # ───────────────────────────────────────────────────────────────────────
