@@ -54,12 +54,7 @@ except Exception as e:
 # Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
 
-if "trigger_reload" not in st.session_state:
-    st.session_state.trigger_reload = False
-
-# Si les infos utilisateur ne sont pas encore définies
 if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
-
     st.title("AVA")
     pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
     prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
@@ -69,16 +64,11 @@ if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
     else:
         st.session_state.user_id = pseudo.strip()
         st.session_state.utilisateur = prenom.strip()
-        st.session_state.trigger_reload = True
-        st.stop()
+        st.experimental_rerun()  # Recharge pour passer à la suite
 
-# Relancer une fois après enregistrement pour recharger les variables
-if st.session_state.trigger_reload:
-    st.session_state.trigger_reload = False
-    st.experimental_rerun()
-
-# Nettoyage du nom d'utilisateur (supprime les caractères spéciaux)
+# Nettoyage du nom d'utilisateur pour générer le nom de fichier profil
 user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
+
 
 
 
