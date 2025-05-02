@@ -172,11 +172,9 @@ if os.path.exists(fichier_data):
     else:
         st.error(f"❌ Aucune donnée trouvée pour {ticker}. Veuillez lancer le script d'entraînement.")
 
-    except Exception as e:
-        st.error(f"Une erreur est survenue pendant l'analyse : {e}")
+   
 
-else:
-    st.warning(f"❌ Aucune donnée trouvée pour {ticker}. Veuillez lancer l'entraînement AVA.")
+
 
 
 
