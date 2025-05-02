@@ -14,7 +14,6 @@ import difflib
 import numpy as np
 import sys
 sys.path.append(os.path.abspath(".."))
-
 from knowledge_base.base_de_langage import base_langage
 
 print("Nombre de questions chargées :", len(base_langage))
