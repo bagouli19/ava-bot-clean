@@ -28,9 +28,7 @@ from newsapi import NewsApiClient
 from forex_python.converter import CurrencyRates, CurrencyCodes
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-from gtts import gTTS
-from pydub import AudioSegment
-from pydub.playback import play
+
 
 # — Modules internes
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
@@ -46,32 +44,6 @@ global model
 # ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
-
-WIT_AI_KEY = st.secrets["WIT_AI_KEY"]
-
-def reconnaitre_texte_depuis_micro():
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.info("🎙️ Parlez maintenant...")
-        audio = r.listen(source)
-        try:
-            texte = r.recognize_wit(audio, key=WIT_AI_KEY, show_all=False)
-            st.success(f"🗣️ Vous avez dit : {texte}")
-            return texte
-        except sr.UnknownValueError:
-            st.error("❌ Je n’ai pas compris.")
-        except sr.RequestError:
-            st.error("⚠️ Erreur avec Wit.ai")
-    return None
-
-def lire_texte_avec_voix(texte):
-    if not texte:
-        return
-    tts = gTTS(text=texte, lang='fr')
-    tts.save("ava_reponse.mp3")
-    audio = AudioSegment.from_file("ava_reponse.mp3", format="mp3")
-    play(audio)
-    os.remove("ava_reponse.mp3")
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -2377,36 +2349,37 @@ for msg in st.session_state["messages"]:
     with st.chat_message(role, avatar=avatar):
         st.markdown(msg["content"])
 
-# Saisie utilisateur
+# ─── Saisie utilisateur ───
 prompt = st.chat_input("Pose ta question…")
 
-# 🔊 Option vocale
-if st.button("🎤 Parler avec AVA"):
-    question_vocale = reconnaitre_texte_depuis_micro()
-    if question_vocale:
-        st.session_state["messages"].append({"role": "user", "content": question_vocale})
-        reponse = trouver_reponse(question_vocale, model)
+if prompt:
+    # Ajout du message utilisateur
+    st.session_state["messages"].append({"role": "user", "content": prompt})
 
-        if not isinstance(reponse, str) or not reponse.strip():
-            reponse = "Hmm... je n’ai pas compris, vous pouvez reformuler ? 😊"
+    # Calcul de la réponse
+    reponse = trouver_reponse(prompt, model)
 
-        # Détection automatique de la langue
+    if not isinstance(reponse, str) or not reponse.strip():
+        reponse = "Hmm... je n’ai pas compris, vous pouvez reformuler ? 😊"
+
+    # Détection automatique de la langue
+    try:
+        lang = detect(prompt)
+    except:
+        lang = "fr"
+
+    if lang.lower() != "fr" and reponse.strip():
         try:
-            lang = detect(question_vocale)
+            reponse = traduire_deepl(reponse, langue_cible=lang.upper())
         except:
-            lang = "fr"
+            pass
 
-        if lang.lower() != "fr" and reponse.strip():
-            try:
-                reponse = traduire_deepl(reponse, langue_cible=lang.upper())
-            except:
-                pass
+    # Ajout de la réponse d'AVA dans l'historique
+    st.session_state["messages"].append({"role": "assistant", "content": reponse})
 
-        st.session_state["messages"].append({"role": "assistant", "content": reponse})
-
-        with st.chat_message("assistant", avatar="assets/ava_logo.png"):
-            st.markdown(reponse)
-            lire_texte_avec_voix(reponse)
+    # Affichage immédiat du message d'AVA
+    with st.chat_message("assistant", avatar="assets/ava_logo.png"):
+        st.markdown(reponse)
 
 
 
