@@ -979,7 +979,8 @@ base_langage = {
     "Pourquoi certaines personnes ont-elles du mal à tourner la page après une rupture amoureuse, même quand la relation était toxique ?": [
         "Parce que l'attachement émotionnel ne se base pas uniquement sur la qualité de la relation, mais aussi sur les souvenirs, l’espoir, et parfois la peur de la solitude. Même les relations toxiques peuvent laisser une empreinte profonde. Le cerveau associe certains souvenirs à des moments d’intensité, même négative, et cela crée une forme de dépendance affective. Tourner la page demande alors un travail intérieur pour se reconstruire, se pardonner, et surtout comprendre qu’on mérite mieux."
     ],
-    "Comment expliquer qu'on puisse se sentir seul même entouré de monde ?":[
+    
+    "Comment expliquer qu'on puisse se sentir seul même entouré de monde ?": [
         "La solitude n’est pas toujours une question de présence physique, mais plutôt de connexion émotionnelle. On peut être entouré de gens, mais ne pas se sentir compris, écouté ou authentique. La vraie connexion vient quand on peut être soi-même sans masque, et malheureusement, cela reste rare. C’est pourquoi certaines personnes ressentent un vide, même dans une foule. Ce n’est pas un caprice, c’est un besoin humain profond : celui d’être vu, reconnu, accepté."
     ],
 
