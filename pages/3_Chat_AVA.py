@@ -53,7 +53,9 @@ except Exception as e:
 # ───────────────────────────────────────────────────────────────────────
 # Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
-# Identification initiale
+# ─────────────────────────────────────────────────────
+# Identification initiale avec pseudo et prénom
+# ─────────────────────────────────────────────────────
 if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
     with st.form("auth_form"):
         pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
@@ -65,7 +67,11 @@ if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
             st.experimental_rerun()
     st.stop()
 
-user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
+# Variables utilisateur
+user_id = st.session_state.user_id
+prenom_utilisateur = st.session_state.utilisateur
+user = re.sub(r"[^a-zA-Z0-9]", "", user_id.lower())
+
 
 # ───────────────────────────────────────────────────────────────────────
 # 2️⃣ Chemins et fichiers de profil
