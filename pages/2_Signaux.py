@@ -130,29 +130,35 @@ if os.path.exists(fichier_data):
         st.subheader("📌 Suggestion de position")
         st.markdown(suggerer_position_et_niveaux(df))
 
-        # --- Graphique en bougies ---
-        st.subheader("📈 Graphique en bougies japonaises")
-        fig = go.Figure(data=[go.Candlestick(
-            x=df["date"],
-            open=df["Open"],
-            high=df["High"],
-            low=df["Low"],
-            close=df["Close"],
-            increasing_line_color="green",
-            decreasing_line_color="red"
-        )])
-        fig.update_layout(xaxis_title="Date", yaxis_title="Prix", height=500)
-        st.plotly_chart(fig, use_container_width=True)
+        # ✅ Vérification des colonnes essentielles
+        try:
+            df["Date"] = pd.to_datetime(df["Date"])  # Conversion des dates si ce n’est pas déjà fait
+            st.write("🧾 Colonnes disponibles :", df.columns.tolist())
+            st.write("🔍 Aperçu données OHLC :", df[["Date", "Open", "High", "Low", "Close"]].tail())
 
-        # --- RSI Chart ---
-        if "rsi" in df.columns:
-            st.subheader("📉 Indicateur RSI (14)")
-            fig_rsi = go.Figure()
-            fig_rsi.add_trace(go.Scatter(x=df['date'], y=df['rsi'], mode='lines', name='RSI'))
-            fig_rsi.add_hline(y=70, line_dash="dot", line_color="red")
-            fig_rsi.add_hline(y=30, line_dash="dot", line_color="green")
-            fig_rsi.update_layout(height=300, xaxis_title="Date", yaxis_title="RSI")
-            st.plotly_chart(fig_rsi, use_container_width=True)
+            # 📈 Graphique en bougies japonaises
+            st.subheader("📈 Graphique en bougies japonaises")
+            fig = go.Figure(data=[go.Candlestick(
+                x=df["Date"],
+                open=df["Open"],
+                high=df["High"],
+                low=df["Low"],
+                close=df["Close"],
+                increasing_line_color="green",
+                decreasing_line_color="red"
+            )])
+            fig.update_layout(
+                xaxis_title="Date",
+                yaxis_title="Prix",
+                height=500,
+                xaxis_rangeslider_visible=False
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        except Exception as e:
+            st.warning("⚠️ Impossible d'afficher le graphique en bougies.")
+            st.error(f"Erreur : {e}")
+       
 
         # --- Actualités financières ---
         st.subheader("🗞️ Actualités financières récentes")
