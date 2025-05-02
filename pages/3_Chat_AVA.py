@@ -60,10 +60,14 @@ if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
         pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
         prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
         submitted = st.form_submit_button("✅ Valider")
-        if submitted and pseudo and prenom:
-            st.session_state.user_id = pseudo.strip()
-            st.session_state.utilisateur = prenom.strip().capitalize()
-            st.experimental_rerun()
+        
+        if submitted:
+            if pseudo.strip() and prenom.strip():
+                st.session_state.user_id = pseudo.strip()
+                st.session_state.utilisateur = prenom.strip().capitalize()
+                st.experimental_rerun()
+            else:
+                st.warning("Merci de remplir les deux champs pour continuer 😊")
     st.stop()
 
 user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
