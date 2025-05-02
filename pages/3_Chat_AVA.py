@@ -133,80 +133,34 @@ if st.sidebar.button("Changer prénom pour 'Alex'"):
     st.success("✅ Prénom modifié et profil sauvegardé !")
 
 # ───────────────────────────────────────────────────────────────────────
-# 4️⃣ Gestion des souvenirs globaux
+# 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
 
-# À l'initialisation, on charge les souvenirs depuis GLOBAL_MEMOIRE
-if "souvenirs" not in st.session_state:
+def charger_memoire_globale() -> dict:
+    """Charge la mémoire globale depuis le fichier JSON."""
     try:
         with open(GLOBAL_MEMOIRE, "r", encoding="utf-8") as f:
-            st.session_state.souvenirs = json.load(f)
+            return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        # Si le fichier n'existe pas ou est corrompu, on part d'une mémoire vide
-        st.session_state.souvenirs = {}
+        return {}
 
-def save_souvenirs() -> None:
-    """
-    Sauvegarde l'état actuel de 'souvenirs' dans GLOBAL_MEMOIRE.
-    Crée le dossier parent si nécessaire.
-    """
+def sauvegarder_memoire_globale(memoire: dict):
+    """Sauvegarde la mémoire globale dans le fichier JSON."""
     os.makedirs(os.path.dirname(GLOBAL_MEMOIRE), exist_ok=True)
     with open(GLOBAL_MEMOIRE, "w", encoding="utf-8") as f:
-        json.dump(st.session_state.souvenirs, f, ensure_ascii=False, indent=2)
+        json.dump(memoire, f, ensure_ascii=False, indent=2)
 
-def ajouter_souvenir(cle: str, valeur: str, fichier="memoire_ava.json"):
-    """
-    Ajoute ou met à jour un souvenir dans la session et sauvegarde immédiatement dans le fichier mémoire.
-    """
-    if "souvenirs" not in st.session_state:
-        st.session_state.souvenirs = {}
-    st.session_state.souvenirs[cle] = valeur
+def ajouter_souvenir_global(cle: str, valeur: str):
+    """Ajoute ou met à jour une information dans la mémoire globale."""
+    memoire = charger_memoire_globale()
+    memoire[cle] = valeur
+    sauvegarder_memoire_globale(memoire)
 
-    # Mise à jour immédiate du fichier après chaque ajout
-    save_souvenirs()
+def retrouver_souvenir_global(cle: str) -> Optional[str]:
+    """Recherche une information dans la mémoire globale."""
+    memoire = charger_memoire_globale()
+    return memoire.get(cle)
 
-def detecter_et_ajouter_souvenir(question_clean: str):
-    """
-    Détecte automatiquement certaines informations dans les questions et les stocke comme souvenirs.
-    """
-    if "mon chien s'appelle" in question_clean:
-        nom = question_clean.replace("mon chien s'appelle", "").strip()
-        if nom:
-            cle = f"chien_{nom.lower()}"
-            valeur = f"Mon chien s'appelle {nom.capitalize()}"
-            ajouter_souvenir(cle, valeur)
-    # Détection du prénom de l'utilisateur
-    if "je m'appelle" in question_clean:
-        try:
-            prenom = question_clean.split("je m'appelle")[-1].strip().capitalize()
-            cle = f"prenom_{prenom.lower()}"
-            valeur = f"Je m'appelle {prenom}"
-            ajouter_souvenir(cle, valeur)
-        except Exception as e:
-            print(f"Erreur ajout souvenir prénom : {e}")
-
-    # Détection de la ville de résidence
-    if "j'habite à" in question_clean or "je vis à" in question_clean:
-        try:
-            if "j'habite à" in question_clean:
-                ville = question_clean.split("j'habite à")[-1].strip().capitalize()
-            elif "je vis à" in question_clean:
-                ville = question_clean.split("je vis à")[-1].strip().capitalize()
-            cle = f"ville_{ville.lower()}"
-            valeur = f"J'habite à {ville}"
-            ajouter_souvenir(cle, valeur)
-        except Exception as e:
-            print(f"Erreur ajout souvenir ville : {e}")
-
-    # Détection de l'humeur
-    if "je suis" in question_clean:
-        try:
-            humeur = question_clean.split("je suis")[-1].strip()
-            cle = f"humeur_{humeur.lower()}"
-            valeur = f"Tu m'as dit que tu es {humeur}"
-            ajouter_souvenir(cle, valeur)
-        except Exception as e:
-            print(f"Erreur ajout souvenir humeur : {e}")
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
@@ -1261,12 +1215,8 @@ def trouver_reponse(question: str, model) -> str:
     incrementer_interactions()
     ajuster_affection(question_raw)
 
-    # 🎯 Test temporaire pour vérifier l'enregistrement de souvenirs
-    if "test mémoire" in question_clean:
-        memoriser_souvenir("ville_preferee", "Barcelone")
-        return "✅ Souvenir test enregistré : ville préférée = Barcelone"
-    
-
+    memoriser_souvenir("ville_preferee", "Barcelone")
+        
     # 1️⃣ Salutations (avant tout)
     salut = repondre_salutation(question_clean)
     if salut:
@@ -1512,7 +1462,31 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
+    # 🔍 Bloc de détection automatique pour mémoire globale intelligente
+    patterns_mem_globale = {
+        "le bitcoin a atteint": "btc_record",
+        "le pétrole coûte": "prix_petrole",
+        "la fed a annoncé": "annonce_fed",
+        "le sp500 est à": "valeur_sp500",
+        "il fait": "meteo",
+        "la température est": "meteo_temperature",
+        "mon anniversaire est le": "anniversaire_utilisateur",
+        "le président actuel est": "president_actuel",
+        "la lune est visible": "observation_lune",
+        "la conférence commence à": "evenement_horaire",
+        "le film sort le": "sortie_film",
+        "le résultat du match est": "resultat_sport",
+        "la couleur du ciel est": "description_ciel",
+    }
 
+    for debut_phrase, cle_souvenir in patterns_mem_globale.items():
+        if debut_phrase in question_clean:
+            valeur = question_clean.split(debut_phrase)[-1].strip(" .!?")
+            if valeur:
+                contenu = f"{debut_phrase} {valeur}"
+                ajouter_souvenir_global(cle_souvenir, contenu)
+                return f"📌 J’ai bien mémorisé : **{contenu}**"
+                
     # --- 1️⃣ Détection et enregistrement automatique de souvenirs dans le profil utilisateur ---
     patterns_souvenirs = {
         "je m'appelle": "prenom",
