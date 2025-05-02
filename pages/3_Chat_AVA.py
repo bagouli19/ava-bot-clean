@@ -50,11 +50,6 @@ except Exception as e:
     print(f"Erreur chargement base_connaissances.json : {e}")
     base_connaissances = {}
 
-# Repère le dossier pages/ et remonte d’un cran jusqu’à la racine du projet
-SCRIPT_DIR   = os.path.dirname(__file__)                          # .../ava-bot-ultimate/pages
-PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))  # .../ava-bot-ultimate
-
-
 # ───────────────────────────────────────────────────────────────────────
 # Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
@@ -65,6 +60,17 @@ if "user_id" not in st.session_state:
     st.session_state.user_id = pseudo.strip()
 
 user = st.session_state.user_id
+
+# Détection ou demande du prénom utilisateur
+if "utilisateur" not in st.session_state:
+    st.session_state.utilisateur = st.text_input("Quel est votre prénom ?", "")
+
+# On attend que l'utilisateur remplisse son prénom
+if not st.session_state.utilisateur:
+    st.stop()
+
+# Nom d’utilisateur nettoyé (sans accents, espaces, etc.)
+user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
 
 # ───────────────────────────────────────────────────────────────────────
 # 2️⃣ Chemins et fichiers de profil
@@ -81,7 +87,6 @@ STYLE_FILE     = os.path.join(SCRIPT_DIR, "style_ava.json")
 # 3️⃣ Gestion des profils utilisateur
 # ───────────────────────────────────────────────────────────────────────
 def load_profiles() -> dict:
-    """Charge tous les profils depuis PROFILE_FILE."""
     try:
         with open(PROFILE_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
@@ -89,50 +94,28 @@ def load_profiles() -> dict:
         return {}
 
 def save_profiles(profiles: dict):
-    """Sauvegarde l’ensemble des profils dans PROFILE_FILE."""
     os.makedirs(os.path.dirname(PROFILE_FILE), exist_ok=True)
     with open(PROFILE_FILE, "w", encoding="utf-8") as f:
         json.dump(profiles, f, ensure_ascii=False, indent=2)
 
 def get_my_profile() -> dict:
-    """Retourne le profil courant stocké en session."""
     return st.session_state.profil
 
-def retrouver_profil(cle: str) -> Optional[str]:
-    """Récupère une clé du profil (ex. 'prenom')."""
-    return st.session_state.profil.get(cle)
-
 def set_my_profile(profile: dict):
-    """Met à jour le profil en session et dans le fichier."""
     st.session_state.profil = profile
     profils = load_profiles()
     profils[user] = profile
     save_profiles(profils)
 
-def memoriser_souvenir(cle: str, valeur: str):
-    """
-    Enregistre un souvenir (clé/valeur) dans le profil utilisateur actuel.
-    """
-    profil = get_my_profile()
-    souvenirs = profil.get("souvenirs", {})
-
-    # Mettre à jour ou ajouter la nouvelle info
-    souvenirs[cle] = valeur
-    profil["souvenirs"] = souvenirs
-
-    # Mise à jour du profil en session et dans le fichier
-    set_my_profile(profil)
-
-# — Initialisation du profil utilisateur s’il n’existe pas encore
+# Chargement ou création du profil
 all_profiles = load_profiles()
 if user not in all_profiles:
     all_profiles[user] = {
-        "prenom": user.capitalize(),
+        "prenom": st.session_state.utilisateur.capitalize(),
         "souvenirs": {}
     }
     save_profiles(all_profiles)
 
-# — Chargement du profil dans la session
 st.session_state.profil = all_profiles[user]
 
 # ✅ Test d'affichage pour vérifier si le profil utilisateur est bien chargé
