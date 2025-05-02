@@ -50,7 +50,7 @@ nom_affichages = {
 
 }
 
-st.write("✅ Colonnes disponibles :", df.columns.tolist())
+
 # --- Fonction de suggestion d'ouverture de position avec SL/TP ---
 def suggerer_position_et_niveaux(df):
     close = df["Close"].iloc[-1]
@@ -72,6 +72,8 @@ def suggerer_position_et_niveaux(df):
     sl = round(sl, 2)
     tp = round(tp, 2)
     return f"{position}\n\n🛑 Stop-Loss : **{sl}**\n🎯 Take-Profit : **{tp}**"
+
+st.write("✅ Colonnes disponibles :", df.columns.tolist())
 
 # --- Sélection du ticker ---
 ticker = st.selectbox("Choisissez un actif :", options=tickers, format_func=lambda x: nom_affichages.get(x, x))
