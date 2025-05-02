@@ -53,23 +53,18 @@ except Exception as e:
 # ───────────────────────────────────────────────────────────────────────
 # Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
-if "user_id" not in st.session_state:
-    pseudo = st.text_input("🔑 Entrez votre pseudo pour commencer :", key="login_input")
-    if not pseudo:
-        st.stop()  # on quitte tant que l’utilisateur n’a pas renseigné de pseudo
-    st.session_state.user_id = pseudo.strip()
-
-user = st.session_state.user_id
-
-# Détection ou demande du prénom utilisateur
-if "utilisateur" not in st.session_state:
-    st.session_state.utilisateur = st.text_input("Quel est votre prénom ?", "")
-
-# On attend que l'utilisateur remplisse son prénom
-if not st.session_state.utilisateur:
+# Identification initiale
+if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
+    with st.form("auth_form"):
+        pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
+        prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
+        submitted = st.form_submit_button("Se connecter")
+        if submitted and pseudo and prenom:
+            st.session_state.user_id = pseudo.strip()
+            st.session_state.utilisateur = prenom.strip()
+            st.experimental_rerun()
     st.stop()
 
-# Nom d’utilisateur nettoyé (sans accents, espaces, etc.)
 user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
 
 # ───────────────────────────────────────────────────────────────────────
