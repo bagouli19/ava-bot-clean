@@ -28,7 +28,6 @@ from newsapi import NewsApiClient
 from forex_python.converter import CurrencyRates, CurrencyCodes
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-import speech_recognition as sr
 from gtts import gTTS
 from pydub import AudioSegment
 from pydub.playback import play
