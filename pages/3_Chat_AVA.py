@@ -53,24 +53,33 @@ except Exception as e:
 # ───────────────────────────────────────────────────────────────────────
 # Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
-# ─────────────────────────────────────────────────────
-# Identification initiale avec pseudo et prénom
-# ─────────────────────────────────────────────────────
-if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
-    with st.form("auth_form"):
-        pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
-        prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
-        submitted = st.form_submit_button("Se connecter")
-        if submitted and pseudo and prenom:
-            st.session_state.user_id = pseudo.strip()
-            st.session_state.utilisateur = prenom.strip()
-            st.experimental_rerun()
-    st.stop()
 
-# Variables utilisateur
-user_id = st.session_state.user_id
-prenom_utilisateur = st.session_state.utilisateur
-user = re.sub(r"[^a-zA-Z0-9]", "", user_id.lower())
+if "trigger_reload" not in st.session_state:
+    st.session_state.trigger_reload = False
+
+# Si les infos utilisateur ne sont pas encore définies
+if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
+
+    st.title("AVA")
+    pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
+    prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
+
+    if not pseudo or not prenom:
+        st.stop()
+    else:
+        st.session_state.user_id = pseudo.strip()
+        st.session_state.utilisateur = prenom.strip()
+        st.session_state.trigger_reload = True
+        st.stop()
+
+# Relancer une fois après enregistrement pour recharger les variables
+if st.session_state.trigger_reload:
+    st.session_state.trigger_reload = False
+    st.experimental_rerun()
+
+# Nettoyage du nom d'utilisateur (supprime les caractères spéciaux)
+user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
+
 
 
 # ───────────────────────────────────────────────────────────────────────
