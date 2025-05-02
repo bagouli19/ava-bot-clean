@@ -1519,14 +1519,14 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return f"🧠 Je m'en souviens ! Vous m'avez dit : **{contenu}**"
     
     if "qu'as-tu mémorisé" in question_clean or "montre-moi tes souvenirs" in question_clean:
-    with open(GLOBAL_MEMOIRE, "r", encoding="utf-8") as f:
-        memoire = json.load(f)
-    if memoire:
-        retour = "\n\n".join([f"• **{k}** → {v}" for k, v in memoire.items()])
-        return f"🧠 Voici ce que j’ai en mémoire globale :\n\n{retour}"
-    else:
-        return "🧠 Je n'ai encore rien mémorisé pour le moment."
-        
+        with open(GLOBAL_MEMOIRE, "r", encoding="utf-8") as f:
+            memoire = json.load(f)
+        if memoire:
+            retour = "\n\n".join([f"• **{k}** → {v}" for k, v in memoire.items()])
+            return f"🧠 Voici ce que j’ai en mémoire globale :\n\n{retour}"
+        else:
+            return "🧠 Je n'ai encore rien mémorisé pour le moment."
+
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
         try:
