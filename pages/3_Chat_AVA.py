@@ -55,19 +55,21 @@ except Exception as e:
 # ───────────────────────────────────────────────────────────────────────
 
 if "user_id" not in st.session_state or "utilisateur" not in st.session_state:
-    st.title("AVA")
-    pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
-    prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
+    st.title("Bienvenue dans AVA 🤖")
 
-    if not pseudo or not prenom:
-        st.stop()
-    else:
-        st.session_state.user_id = pseudo.strip()
-        st.session_state.utilisateur = prenom.strip()
-        st.experimental_rerun()  # Recharge pour passer à la suite
+    with st.form("login_form"):
+        pseudo = st.text_input("🔑 Ton pseudo :", key="login_pseudo")
+        prenom = st.text_input("👤 Ton prénom :", key="login_prenom")
+        submitted = st.form_submit_button("Démarrer")
 
-# Nettoyage du nom d'utilisateur pour générer le nom de fichier profil
-user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
+    if submitted:
+        if pseudo and prenom:
+            st.session_state.user_id = pseudo.strip()
+            st.session_state.utilisateur = prenom.strip().capitalize()
+            st.experimental_rerun()
+        else:
+            st.warning("Veuillez remplir les deux champs pour continuer.")
+    st.stop()
 
 
 
@@ -1265,7 +1267,7 @@ def trouver_reponse(question: str, model) -> str:
 
     incrementer_interactions()
     ajuster_affection(question_raw)
-    
+
     # 🎯 Test temporaire pour vérifier l'enregistrement de souvenirs
     if "test mémoire" in question_clean:
         memoriser_souvenir("ville_preferee", "Barcelone")
