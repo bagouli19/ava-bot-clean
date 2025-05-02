@@ -81,7 +81,7 @@ fichier_pred = f"predictions/prediction_{ticker.lower().replace('-', '').replace
 
 if os.path.exists(fichier_data):
     df = pd.read_csv(fichier_data)
-    df.columns = [col.strip().lower() for col in df.columns]  # correction ici
+    df.columns = [col.strip().lower() for col in df.columns]
     df = ajouter_indicateurs_techniques(df)
 
     try:
