@@ -165,8 +165,8 @@ if os.path.exists(fichier_data):
             # --- Actualités financières ---
             st.subheader("🗞️ Actualités financières récentes")
             try:
-               flux_rss = "https://www.investing.com/rss/news_301.rss"
-               flux = feedparser.parse(flux_rss)
+                flux_rss = "https://www.investing.com/rss/news_301.rss"
+                flux = feedparser.parse(flux_rss)
                 if flux.entries:
                     for entry in flux.entries[:5]:
                         st.markdown(f"🔹 [{entry.title}]({entry.link})", unsafe_allow_html=True)
