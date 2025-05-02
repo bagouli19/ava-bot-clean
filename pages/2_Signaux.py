@@ -82,9 +82,7 @@ fichier_pred = f"predictions/prediction_{ticker.lower().replace('-', '').replace
 if os.path.exists(fichier_data):
     df = pd.read_csv(fichier_data)
 
-    # ✅ On normalise les colonnes pour correspondre à analyse_technique.py
     df.columns = [col.strip().lower() for col in df.columns]
-
     df = ajouter_indicateurs_techniques(df)
 
     try:
