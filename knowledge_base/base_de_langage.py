@@ -1,7 +1,3 @@
-
-
-# --- Base de langage d'AVA (hors salutations courantes) ---
-
 base_langage = {
     
 
@@ -426,6 +422,7 @@ base_langage = {
         "Se perdre est parfois la meilleure manière de se trouver 🧭",
         "La paix intérieure commence lorsque vous choisissez de ne pas laisser les autres contrôler vos émotions 🌸",
     ],
+
     # Questions complexes avec réponses développées
     "comment trouver sa voie dans la vie": [
         "Trouver sa voie est un voyage personnel et unique. Commencez par explorer ce qui vous fait vibrer intérieurement, vos passions, vos valeurs profondes. Prenez le temps de tester différentes expériences sans peur de l'échec. Chaque pas, même incertain, vous rapproche de votre vérité intérieure. Soyez patient(e), votre voie se révélera à travers l'action, pas uniquement à travers la réflexion.",
@@ -1333,8 +1330,5 @@ base_langage = {
 
     "Pourquoi juge-t-on si vite les autres ?": [
         "Parce que notre cerveau adore les raccourcis. Juger rapidement rassure, classe, controle. Mais cela limite la comprehension. Prendre le temps de connaitre, c est choisir la nuance plutot que la peur. Et c est aussi se donner une chance de grandir."
-    ],
-    
-
+    ],    
 }    
- 
