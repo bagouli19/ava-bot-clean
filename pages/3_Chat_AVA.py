@@ -107,6 +107,11 @@ def set_my_profile(profile: dict):
     profils[user] = profile
     save_profiles(profils)
 
+def memoriser_souvenir(cle: str, valeur: str):
+    profil = get_my_profile()
+    profil["souvenirs"][cle] = valeur
+    set_my_profile(profil)
+    
 # Chargement ou création du profil
 all_profiles = load_profiles()
 if user not in all_profiles:
