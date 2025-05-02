@@ -131,15 +131,14 @@ if os.path.exists(fichier_data):
         if 'Rsi' in df.columns:
             st.subheader("📊 RSI actuel :")
             st.metric("RSI", round(df["Rsi"].iloc[-1], 2))
-
         # --- Graphique en bougies ---
         st.subheader("📈 Graphique en bougies japonaises")
         fig = go.Figure(data=[go.Candlestick(
-            x=df["date"],
-            open=df["open"],
-            high=df["high"],
-            low=df["low"],
-            close=df["close"],
+            x=df["Date"],
+            open=df["Open"],
+            high=df["High"],
+            low=df["Low"],
+            close=df["Close"],
             increasing_line_color="green",
             decreasing_line_color="red"
         )])
