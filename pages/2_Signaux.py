@@ -171,7 +171,7 @@ if os.path.exists(fichier_data):
                     fig_pred.add_trace(go.Scatter(x=df["date"], y=df["prediction"], mode="lines", name="Prédiction IA"))
                     fig_pred.update_layout(xaxis_title="Date", yaxis_title="Prix", height=400)
                     st.plotly_chart(fig_pred, use_container_width=True)
-               else:
+                else:
                     st.warning("❌ Le fichier de prédictions ne contient pas de colonne 'prediction'.")
             except Exception as e:
                 st.error(f"Erreur lors du chargement des prédictions : {e}")
