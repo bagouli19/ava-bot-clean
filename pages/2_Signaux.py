@@ -50,6 +50,7 @@ nom_affichages = {
 
 }
 
+st.write("✅ Colonnes disponibles :", df.columns.tolist())
 # --- Fonction de suggestion d'ouverture de position avec SL/TP ---
 def suggerer_position_et_niveaux(df):
     close = df["Close"].iloc[-1]
@@ -83,7 +84,7 @@ if os.path.exists(fichier_data):
     df = pd.read_csv(fichier_data)
 
     # ✅ On renomme les colonnes si nécessaire pour correspondre à l'analyse technique
-    df.columns = [col.strip().lower() for col in df.columns]
+    df.columns = [col.strip().capitalize() for col in df.columns]
     df = df.rename(columns={
         "open": "Open",
         "high": "High",
