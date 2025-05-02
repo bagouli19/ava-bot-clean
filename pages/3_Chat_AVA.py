@@ -1547,7 +1547,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 # Enregistrement en mémoire globale aussi (optionnel)
                 cle_mem_global = f"{cle_souvenir}_{valeur.lower().replace(' ', '_')}"
                 ajouter_souvenir(cle_mem_global, valeur)
- 
+
                 return f"✨ J'ai bien noté dans mes souvenirs : **{valeur.capitalize()}** ! 🧠"
     
     # --- 2️⃣ Recherche d'un souvenir dans le profil utilisateur ---
@@ -1555,14 +1555,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     for cle_souv, contenu in profil.get("souvenirs", {}).items():
         if cle_souv.replace("_", " ") in question_clean or contenu.lower() in question_clean:
             return f"🧠 Je m'en souviens ! Vous m'avez dit : **{contenu}**"
-
-
-    # 2. Ensuite, chercher une réponse dans ta base de culture générale
-    reponse_culture = base_culture.get(question_clean)
-    if reponse_culture:
-        return reponse_culture
-
-    
 
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
