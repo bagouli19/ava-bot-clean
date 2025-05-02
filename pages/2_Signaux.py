@@ -81,7 +81,10 @@ fichier_pred = f"predictions/prediction_{ticker.lower().replace('-', '').replace
 
 if os.path.exists(fichier_data):
     df = pd.read_csv(fichier_data)
+
+    # ✅ On normalise les colonnes pour correspondre à analyse_technique.py
     df.columns = [col.strip().lower() for col in df.columns]
+
     df = ajouter_indicateurs_techniques(df)
 
     try:
@@ -107,11 +110,15 @@ if os.path.exists(fichier_data):
         signaux_list = analyse.split("\n") if analyse else []
         resume = generer_resume_signal(signaux_list)
 
-        # --- Affichage ---
+        # --- Affichage de l’analyse ---
         st.subheader(f"🔎 Analyse pour {nom_affichages.get(ticker, ticker.upper())}")
         st.markdown(analyse)
         st.markdown(f"💬 **Résumé d'AVA :**\n{resume}")
         st.success(f"🤖 *Intuition d'AVA :* {suggestion}")
+
+        # --- Suggestion de position ---
+        st.subheader("📌 Suggestion de position")
+        st.markdown(suggerer_position_et_niveaux(df))
 
         # --- Graphique en bougies ---
         st.subheader("📈 Graphique en bougies japonaises")
@@ -151,10 +158,6 @@ if os.path.exists(fichier_data):
             st.warning("⚠️ Impossible de charger les actualités financières.")
             st.text(f"Erreur : {e}")
 
-        # --- Suggestion de position ---
-        st.subheader("📌 Suggestion de position")
-        st.markdown(suggerer_position_et_niveaux(df))
-
         # --- Prédiction IA ---
         if os.path.exists(fichier_pred):
             df_pred = pd.read_csv(fichier_pred)
@@ -164,7 +167,7 @@ if os.path.exists(fichier_data):
         else:
             st.warning("Aucune prédiction trouvée.")
 
-        # --- RSI brut ---
+        # --- RSI résumé ---
         if 'rsi' in df.columns:
             st.subheader("📊 RSI actuel :")
             st.metric("RSI", round(df["rsi"].iloc[-1], 2))
@@ -178,11 +181,6 @@ if os.path.exists(fichier_data):
 
 else:
     st.warning(f"❌ Aucune donnée trouvée pour {ticker}. Veuillez lancer l'entraînement AVA.")
-
-
-
-
-
 
 
 
