@@ -1535,14 +1535,15 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "mon sport préféré est": "sport_prefere"
     }
 
-    for debut_phrase, cle_memoire in patterns_souvenirs.items():
+    for debut_phrase, cle_souvenir in patterns_souvenirs.items():
         if question_clean.startswith(debut_phrase):
-            valeur = question_clean.replace(debut_phrase, "").strip(" .!?").capitalize()
+            valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
             if valeur:
-                # 1. Enregistrer dans la mémoire utilisateur
                 profil = get_my_profile()
-                profil["souvenirs"][cle_memoire] = valeur
+                profil["souvenirs"][cle_souvenir] = valeur
                 set_my_profile(profil)
+                ajouter_souvenir(f"{cle_souvenir}_{valeur.lower().replace(' ', '_')}", valeur)
+                return f"✨ J'ai bien noté dans mes souvenirs : **{valeur.capitalize()}** ! 🧠"
 
                 # 2. Enregistrer aussi dans la mémoire globale
                 cle_globale = f"{cle_memoire}_{valeur.lower().replace(' ', '_')}"
