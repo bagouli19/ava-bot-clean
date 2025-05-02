@@ -108,7 +108,7 @@ def set_my_profile(profile: dict):
     profils = load_profiles()
     profils[user] = profile
     save_profiles(profils)
-    
+
 def memoriser_souvenir(cle: str, valeur: str):
     """
     Enregistre un souvenir (clé/valeur) dans le profil utilisateur actuel.
@@ -1277,6 +1277,7 @@ def trouver_reponse(question: str, model) -> str:
 
     incrementer_interactions()
     ajuster_affection(question_raw)
+    memoriser_souvenir("ville_preferee", "Barcelone")
 
     # 1️⃣ Salutations (avant tout)
     salut = repondre_salutation(question_clean)
@@ -1524,36 +1525,41 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             ])
         )
 
-    # Détection simple d'informations à mémoriser
-    if "mon chien s'appelle" in question_clean.lower():
-        nom_chien = question_clean.lower().split("mon chien s'appelle")[-1].strip().capitalize()
-        souvenir_cle = f"chien_{nom_chien.lower()}"
-        souvenir_valeur = f"Mon chien s'appelle {nom_chien}"
-        ajouter_souvenir(souvenir_cle, souvenir_valeur)
-
-    # --- 1️⃣ Bloc Ajout automatique de souvenirs ---
+    # 1️⃣ Bloc Ajout automatique de souvenirs (profil utilisateur)
     patterns_souvenirs = {
-        "je m'appelle": "mon_prenom_est",
-        "mon prénom est": "mon_prenom_est",
-        "mon chien s'appelle": "mon_chien_sappelle",
-        "mon plat préféré est": "mon_plat_prefere_est",
-        "mon film préféré est": "mon_film_prefere_est",
-        "mon sport préféré est": "mon_sport_prefere_est"
+        "je m'appelle": "prenom",
+        "mon prénom est": "prenom",
+        "mon chien s'appelle": "chien",
+        "mon plat préféré est": "plat_prefere",
+        "mon film préféré est": "film_prefere",
+        "mon sport préféré est": "sport_prefere"
     }
 
-    for debut_phrase, prefixe_cle in patterns_souvenirs.items():
+    for debut_phrase, cle_memoire in patterns_souvenirs.items():
         if question_clean.startswith(debut_phrase):
-            valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
+            valeur = question_clean.replace(debut_phrase, "").strip(" .!?").capitalize()
             if valeur:
-                cle = f"{prefixe_cle}_{valeur.lower().replace(' ', '_')}"
-                ajouter_souvenir(cle, valeur)  # <== ICI c’est correct maintenant
-                return f"✨ Super, j'ai bien enregistré : **{valeur}** dans mes souvenirs ! 🧠"
+                # 1. Enregistrer dans la mémoire utilisateur
+                profil = get_my_profile()
+                profil["souvenirs"][cle_memoire] = valeur
+                set_my_profile(profil)
 
+                # 2. Enregistrer aussi dans la mémoire globale
+                cle_globale = f"{cle_memoire}_{valeur.lower().replace(' ', '_')}"
+                ajouter_souvenir(cle_globale, valeur)
 
-    # --- 2️⃣ Ensuite seulement, tenter de retrouver un souvenir existant ---
+                return f"✨ J'ai bien noté dans mes souvenirs : **{valeur}** ! 🧠"
+
+    # 2️⃣ Recherche de souvenirs (dans la mémoire utilisateur)
+    profil = get_my_profile()
+    for cle_souv, contenu in profil.get("souvenirs", {}).items():
+        if cle_souv.replace("_", " ") in question_clean or contenu.lower() in question_clean:
+            return f"🧠 Vous m'aviez dit : **{contenu}**."
+
+    # 3️⃣ Recherche de souvenirs (dans la mémoire globale)
     for cle_souvenir, contenu_souvenir in st.session_state.get("souvenirs", {}).items():
         if cle_souvenir.replace("_", " ") in question_clean or cle_souvenir in question_clean:
-            return f"✨ Souvenir retrouvé : {contenu_souvenir}"
+            return f"🧠 Souvenir global retrouvé : **{contenu_souvenir}**."
 
     # 2. Ensuite, chercher une réponse dans ta base de culture générale
     reponse_culture = base_culture.get(question_clean)
