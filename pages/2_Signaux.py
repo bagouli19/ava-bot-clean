@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
+import plotly.graph_objects as go
+import feedparser
 
 st.set_page_config(page_title="📈 Signaux Techniques", layout="wide")
 st.title("📍 Signaux Techniques d'AVA")
@@ -138,6 +140,45 @@ if os.path.exists(fichier_data):
 
 else:
     st.warning(f"❌ Aucune donnée trouvée pour {ticker}. Veuillez lancer l'entraînement AVA.")
+    
+# --- Graphique en bougies ---
+st.subheader("📈 Graphique en bougies japonaises")
+fig = go.Figure(data=[go.Candlestick(
+    x=df["Date"],
+    open=df["Open"],
+    high=df["High"],
+    low=df["Low"],
+    close=df["Close"],
+    increasing_line_color="green",
+    decreasing_line_color="red"
+)])
+fig.update_layout(xaxis_title="Date", yaxis_title="Prix", height=500)
+st.plotly_chart(fig, use_container_width=True)
+
+# --- RSI Chart ---
+if "Rsi" in df.columns:
+    st.subheader("📉 Indicateur RSI (14)")
+    fig_rsi = go.Figure()
+    fig_rsi.add_trace(go.Scatter(x=df['Date'], y=df['Rsi'], mode='lines', name='RSI'))
+    fig_rsi.add_hline(y=70, line_dash="dot", line_color="red")
+    fig_rsi.add_hline(y=30, line_dash="dot", line_color="green")
+    fig_rsi.update_layout(height=300, xaxis_title="Date", yaxis_title="RSI")
+    st.plotly_chart(fig_rsi, use_container_width=True)
+
+# --- Actualités financières ---
+st.subheader("🗞️ Actualités financières récentes")
+try:
+    flux_rss = "https://www.investing.com/rss/news_301.rss"
+    flux = feedparser.parse(flux_rss)
+    if flux.entries:
+        for entry in flux.entries[:5]:
+            st.markdown(f"🔹 [{entry.title}]({entry.link})", unsafe_allow_html=True)
+    else:
+        st.info("Aucune actualité n’a pu être récupérée pour le moment.")
+except Exception as e:
+    st.warning("⚠️ Impossible de charger les actualités financières.")
+    st.text(f"Erreur : {e}")
+
 
 
 
