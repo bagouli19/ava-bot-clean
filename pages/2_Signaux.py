@@ -130,20 +130,25 @@ if os.path.exists(fichier_data):
         st.subheader("📌 Suggestion de position")
         st.markdown(suggerer_position_et_niveaux(df))
 
-        # ✅ Vérification des colonnes essentielles
-        try:
-            df["Date"] = pd.to_datetime(df["Date"])  # Conversion des dates si ce n’est pas déjà fait
-            st.write("🧾 Colonnes disponibles :", df.columns.tolist())
-            st.write("🔍 Aperçu données OHLC :", df[["Date", "Open", "High", "Low", "Close"]].tail())
+        # 🔄 Normalisation explicite des noms de colonnes pour éviter les erreurs
+        df.columns = [col.lower() for col in df.columns]
 
-            # 📈 Graphique en bougies japonaises
+        # ✅ Vérification de la présence des colonnes nécessaires
+        colonnes_attendues = ["date", "open", "high", "low", "close"]
+        colonnes_manquantes = [col for col in colonnes_attendues if col not in df.columns]
+
+        if colonnes_manquantes:
+            st.error(f"❌ Colonnes manquantes pour le graphique bougies : {colonnes_manquantes}")
+        else:
+            df["date"] = pd.to_datetime(df["date"])
+
             st.subheader("📈 Graphique en bougies japonaises")
             fig = go.Figure(data=[go.Candlestick(
-                x=df["Date"],
-                open=df["Open"],
-                high=df["High"],
-                low=df["Low"],
-                close=df["Close"],
+                x=df["date"],
+                open=df["open"],
+                high=df["high"],
+                low=df["low"],
+                close=df["close"],
                 increasing_line_color="green",
                 decreasing_line_color="red"
             )])
@@ -154,6 +159,10 @@ if os.path.exists(fichier_data):
                 xaxis_rangeslider_visible=False
             )
             st.plotly_chart(fig, use_container_width=True)
+
+            # 🔍 Affichage du tableau de données brutes
+            st.subheader("📄 Données récentes")
+            st.dataframe(df.tail(10), use_container_width=True)
 
         # --- Actualités financières ---
         st.subheader("🗞️ Actualités financières récentes")
