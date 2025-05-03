@@ -86,7 +86,10 @@ fichier_data = f"data/donnees_{ticker.lower()}.csv"
 if os.path.exists(fichier_data):
     df = pd.read_csv(fichier_data)
 
-    # ✅ Renommage explicite des colonnes pour l'analyse technique
+    # 1) Normaliser les colonnes : minuscules, sans espaces
+    df.columns = df.columns.str.strip().str.lower()
+
+    # 2) Renommer explicitement en Title Case pour l'analyse et le plot
     df.rename(columns={
         "date": "Date",
         "open": "Open",
@@ -96,10 +99,13 @@ if os.path.exists(fichier_data):
         "volume": "Volume"
     }, inplace=True)
 
-    # Conversion en datetime si nécessaire
+    # 3) Debug rapide (à retirer une fois validé)
+    # st.write("Colonnes finales :", df.columns.tolist())
+
+    # 4) Conversion de Date en datetime si nécessaire
     df["Date"] = pd.to_datetime(df["Date"])
 
-    # Ajout des indicateurs techniques
+    # 5) Ajout des indicateurs techniques
     df = ajouter_indicateurs_techniques(df)
 
     try:
@@ -135,7 +141,7 @@ if os.path.exists(fichier_data):
         st.subheader("📌 Suggestion de position")
         st.markdown(suggerer_position_et_niveaux(df))
 
-           # --- Graphique en bougies japonaises ---
+        # --- Graphique en bougies japonaises ---
         st.subheader("📈 Graphique en bougies japonaises")
         fig = go.Figure(data=[go.Candlestick(
             x=df["Date"],
@@ -153,7 +159,6 @@ if os.path.exists(fichier_data):
             xaxis_rangeslider_visible=False
         )
         st.plotly_chart(fig, use_container_width=True)
-
 
         # --- Actualités financières ---
         st.subheader("🗞️ Actualités financières récentes")
