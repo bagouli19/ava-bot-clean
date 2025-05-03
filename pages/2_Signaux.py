@@ -131,7 +131,14 @@ if "Date" in df.columns:
         increasing_line_color="green",
         decreasing_line_color="red"
     )])
-    fig.update_layout(xaxis_title="Date", yaxis_title="Prix", height=500, xaxis_rangeslider_visible=False)
+    fig.update_layout(
+    xaxis_title="Date",
+    yaxis_title="Prix",
+    height=500,
+    xaxis_rangeslider_visible=False
+)
+# Forcer l'affichage des dates en catégorie si vide
+fig.update_xaxes(type='category')xaxis_title="Date", yaxis_title="Prix", height=500, xaxis_rangeslider_visible=False)
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.info("Pas de colonne Date pour le graphique.")
@@ -169,6 +176,7 @@ elif "Rsi14" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
