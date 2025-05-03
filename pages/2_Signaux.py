@@ -74,12 +74,6 @@ try:
 except Exception as e:
     st.error(f"Erreur préparation données analysis : {e}")
     st.stop()
-try:
-    df = df_plot.dropna(subset=["Date","Open","High","Low","Close"]).copy()
-    # On inplace ne modifie pas df_plot
-except Exception as e:
-    st.error(f"Erreur préparation données analysis : {e}")
-    st.stop()
 
 # Ajout des indicateurs techniques
 df = ajouter_indicateurs_techniques(df)
@@ -130,6 +124,7 @@ if 'Rsi' in df.columns: st.metric("RSI", round(df['Rsi'].iloc[-1],2))
 # Données récentes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
