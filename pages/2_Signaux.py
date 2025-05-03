@@ -76,13 +76,17 @@ df = df_raw.iloc[:, :6].copy()
 df.columns = ["Date","Open","High","Low","Close","Volume"]
 
 # 3) Conversion des types et suppression des lignes incomplètes
-df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-    for col in ["Open","High","Low","Close","Volume"]:
-        df[col] = pd.to_numeric(df[col], errors="coerce")
-    df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
+#    Pas d'indentation supplémentaire ici
+#    Conversion Date
+ df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+#    Conversion OHLCV
+for col in ["Open","High","Low","Close","Volume"]:
+    df[col] = pd.to_numeric(df[col], errors="coerce")
+#    Purge lignes incomplètes
+ df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
 
-    # Debug: affichage des colonnes après préparation
-    st.write("Colonnes après préparation:", df.columns.tolist())
+#    Debug: affichage des colonnes après préparation
+st.write("Colonnes après préparation:", df.columns.tolist())
 
 # 4) Ajout des indicateurs techniques"
 try:
@@ -151,6 +155,7 @@ if "Rsi14" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
