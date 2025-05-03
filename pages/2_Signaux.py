@@ -100,8 +100,21 @@ if os.path.exists(fichier_data):
     }, inplace=True)
     df["Date"] = pd.to_datetime(df["Date"])
 
-    # 3) Ajout des indicateurs techniques (génère macd, rsi, adx en minuscules)
+     # 1) Trim + lowercase + title case sur TOUTES les colonnes existantes
+    df.columns = df.columns.str.strip().str.lower().str.title()
+
+    # 2) Conversion de la date en datetime
+    df["Date"] = pd.to_datetime(df["Date"])
+
+    # 3) Ajout des indicateurs techniques
     df = ajouter_indicateurs_techniques(df)
+
+    # 4) À nouveau : uniformiser la casse des nouvelles colonnes (Macd, Rsi, Adx…)
+    df.columns = df.columns.str.strip().str.lower().str.title()
+
+    # 5) Debug : vérifiez une dernière fois vos colonnes
+    st.write("Colonnes finales :", df.columns.tolist())
+
 
     # 4) Renommage des indicateurs en Title Case
     df.rename(columns={
@@ -143,7 +156,7 @@ if os.path.exists(fichier_data):
         st.subheader("📌 Suggestion de position")
         st.markdown(suggerer_position_et_niveaux(df))
 
-       # --- Graphique en bougies japonaises ---
+        # --- Graphique en bougies japonaises ---
         st.subheader("📈 Graphique en bougies japonaises")
         fig = go.Figure(data=[go.Candlestick(
             x=df["Date"],
