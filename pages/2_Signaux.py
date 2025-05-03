@@ -139,7 +139,10 @@ if "Date" in df.columns:
     )
     # Forcer l'affichage des dates en type date pour l'axe
     fig.update_xaxes(type='date')
-    st.plotly_chart(fig, use_container_width=True)(fig, use_container_width=True)
+    # Fallback: affichage du cours de clôture en ligne
+st.subheader("📈 Prix de clôture (ligne)")
+line_df = df.set_index("Date")["Close"].sort_index()
+st.line_chart(line_df)
 else:
     st.info("Pas de colonne Date pour le graphique.")
 
@@ -181,6 +184,7 @@ elif "Rsi14" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
