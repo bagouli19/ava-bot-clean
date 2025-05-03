@@ -61,68 +61,65 @@ if not os.path.exists(fichier):
     st.warning(f"❌ Pas de données pour {nom_affichages[ticker]}.")
     st.stop()
 
-# 1) Lecture et prise des 6 colonnes OHLCV
-df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
-df = df_raw.iloc[:, :6].copy()
+    # 1) Lecture et prise des 6 colonnes OHLCV
+    df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
+    df = df_raw.iloc[:, :6].copy()
 
-# 2) Renommage explicite
-col_map = {
-    df.columns[0]: "Date",
-    df.columns[1]: "Open",
-    df.columns[2]: "High",
-    df.columns[3]: "Low",
-    df.columns[4]: "Close",
-    df.columns[5]: "Volume",
-}
-df.rename(columns=col_map, inplace=True)
+    # 2) Renommage explicite
+    col_map = {
+        df.columns[0]: "Date",
+        df.columns[1]: "Open",
+        df.columns[2]: "High",
+        df.columns[3]: "Low",
+        df.columns[4]: "Close",
+        df.columns[5]: "Volume",
+    }
+    df.rename(columns=col_map, inplace=True)
 
-# 3) Conversion des types et purge des lignes corrompues
-df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-for c in ["Open","High","Low","Close","Volume"]:
-    df[c] = pd.to_numeric(df[c], errors="coerce")
-df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
+    # 3) Conversion des types et purge des lignes corrompues
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    for c in ["Open","High","Low","Close","Volume"]:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+    df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
 
-# 4) Ajout des indicateurs techniques
-df = ajouter_indicateurs_techniques(df)
+    # 4) Ajout des indicateurs techniques
+    df = ajouter_indicateurs_techniques(df)
 
-# 5) (Optionnel) Affichage des colonnes disponibles pour debug
-# st.write("Colonnes après indicateurs :", df.columns.tolist())
+    # 6) Analyse & affichages
+    try:
+        analyse, suggestion = analyser_signaux_techniques(df)
 
-# 6) Analyse & affichages
-try:
-    analyse, suggestion = analyser_signaux_techniques(df)
+        # Analyse brute
+        st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
+        st.markdown(analyse or "Pas de signaux.")
 
-    # Analyse brute
-    st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
-    st.markdown(analyse or "Pas de signaux.")
+        # Résumé et intuition AVA
+        signaux_list = analyse.split("\n") if analyse else []
+        st.markdown(f"💬 **Résumé d'AVA :**\n{generer_resume_signal(signaux_list)}")
+        st.success(f"🤖 *Intuition AVA :* {suggestion}")
 
-    # Résumé et intuition AVA
-    signaux_list = analyse.split("\n") if analyse else []
-    st.markdown(f"💬 **Résumé d'AVA :**\n{generer_resume_signal(signaux_list)}")
-    st.success(f"🤖 *Intuition AVA :* {suggestion}")
+        # Suggestion de position
+        st.subheader("📌 Suggestion de position")
+        st.markdown(suggerer_position_et_niveaux(df))
 
-    # Suggestion de position
-    st.subheader("📌 Suggestion de position")
-    st.markdown(suggerer_position_et_niveaux(df))
-
-    # Candlestick
-    st.subheader("📈 Graphique en bougies japonaises")
-    fig = go.Figure(data=[go.Candlestick(
-        x=df["Date"],
-        open=df["Open"],
-        high=df["High"],
-        low=df["Low"],
-        close=df["Close"],
-        increasing_line_color="green",
-        decreasing_line_color="red"
-    )])
-    fig.update_layout(
-        xaxis_title="Date",
-        yaxis_title="Prix",
-        height=500,
-        xaxis_rangeslider_visible=False
-    )
-    st.plotly_chart(fig, use_container_width=True)
+        # Candlestick
+        st.subheader("📈 Graphique en bougies japonaises")
+        fig = go.Figure(data=[go.Candlestick(
+            x=df["Date"],
+            open=df["Open"],
+            high=df["High"],
+            low=df["Low"],
+            close=df["Close"],
+            increasing_line_color="green",
+            decreasing_line_color="red"
+        )])
+        fig.update_layout(
+            xaxis_title="Date",
+            yaxis_title="Prix",
+            height=500,
+            xaxis_rangeslider_visible=False
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
     # Actualités financières
     st.subheader("🗞️ Actualités financières récentes")
