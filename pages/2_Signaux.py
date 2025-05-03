@@ -54,32 +54,23 @@ def suggerer_position(df):
 ticker = st.selectbox("Choisissez un actif :", tickers, format_func=lambda t: nom_affichages[t])
 
 # Chargement du CSV et préparation des données
-# Lecture brute pour le graphique
 try:
-    df_raw = pd.read_csv(f"data/donnees_{ticker.lower()}.csv", parse_dates=[0], dayfirst=True)
-    # Préparation du DataFrame brut pour le candlestick
-    df_raw_plot = df_raw.iloc[:, :6].copy()
-    df_raw_plot.columns = ["Date","Open","High","Low","Close","Volume"]
-    df_raw_plot["Date"] = pd.to_datetime(df_raw_plot["Date"], errors="coerce")
-    for col in ["Open","High","Low","Close","Volume"]:
-        df_raw_plot[col] = pd.to_numeric(df_raw_plot[col], errors="coerce")
-    # On conserve les lignes même si NaN en Volume
+    df_raw = pd.read_csv(f"data/donnees_{ticker.lower()}.csv", parse_dates=True)
+    col_mapping = {c: c.capitalize() for c in df_raw.columns}
+    df_raw.rename(columns=col_mapping, inplace=True)
+    df_raw["Date"] = pd.to_datetime(df_raw["Date"], errors="coerce")
+    for col in ["Open", "High", "Low", "Close"]:
+        df_raw[col] = pd.to_numeric(df_raw[col], errors="coerce")
+    df = df_raw.dropna(subset=["Date", "Open", "High", "Low", "Close"]).copy()
 except Exception as e:
-    st.error(f"Erreur préparation graphique brut : {e}")
+    st.error(f"Erreur lors du chargement ou de la préparation des données : {e}")
     st.stop()
 
-# Préparation du DataFrame pour l'analyse
-try:
-    df = df_raw_plot.dropna(subset=["Date","Open","High","Low","Close"]).copy()
-except Exception as e:
-    st.error(f"Erreur préparation données analysis : {e}")
-    st.stop()
-
-# Ajout des indicateurs techniques
+# Ajout des indicateurs
 df = ajouter_indicateurs_techniques(df)
 df.columns = df.columns.str.title()
 
-# Analyse technique
+# Analyse
 analyse, suggestion = analyser_signaux_techniques(df)
 st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
 st.markdown(analyse or "Pas de signaux.")
@@ -90,9 +81,9 @@ st.success(f"🤖 Intuition : {suggestion}")
 st.subheader("📌 Suggestion de position")
 st.markdown(suggerer_position(df))
 
-# Graphique en bougies japonaises
-df_plot = df.sort_values("Date").reset_index(drop=True)
+# Graphique en bougies
 st.subheader("📈 Graphique en bougies japonaises")
+df_plot = df.sort_values("Date")
 fig = go.Figure(data=[go.Candlestick(
     x=df_plot["Date"], open=df_plot["Open"], high=df_plot["High"],
     low=df_plot["Low"], close=df_plot["Close"],
@@ -102,12 +93,14 @@ fig.update_layout(xaxis_title="Date", yaxis_title="Prix", xaxis_rangeslider_visi
 fig.update_xaxes(type='date')
 st.plotly_chart(fig, use_container_width=True)
 
-# Actualités financières
+# Actualités
 st.subheader("🗞️ Actualités")
-feed = feedparser.parse("https://www.investing.com/rss/news_301.rss")
-if feed.entries:
-    for e in feed.entries[:5]: st.markdown(f"- [{e.title}]({e.link})")
-else: st.info("Pas d'actus.")
+flux = feedparser.parse("https://www.investing.com/rss/news_301.rss")
+if flux.entries:
+    for entry in flux.entries[:5]:
+        st.markdown(f"🔹 [{entry.title}]({entry.link})")
+else:
+    st.info("Pas d'actualités disponibles.")
 
 # Prédiction IA
 st.subheader("📈 Prédiction IA (demain)")
@@ -115,15 +108,18 @@ pred_file = f"predictions/prediction_{ticker.lower().replace('-','').replace('^'
 if os.path.exists(pred_file):
     pred = pd.read_csv(pred_file)["prediction"].iloc[-1]
     st.info("Hausse probable" if pred==1 else "Baisse probable")
-else: st.warning("Pas de prédiction.")
+else:
+    st.warning("Pas de prédiction disponible.")
 
-# RSI actuel
+# RSI
 st.subheader("📊 RSI actuel")
-if 'Rsi' in df.columns: st.metric("RSI", round(df['Rsi'].iloc[-1],2))
+if "Rsi" in df.columns:
+    st.metric("RSI", round(df["Rsi"].iloc[-1], 2))
 
 # Données récentes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
