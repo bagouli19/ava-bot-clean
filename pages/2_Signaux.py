@@ -58,7 +58,9 @@ df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
 df = df_raw.iloc[:, :6].copy()
 
 # 2) On renomme
-df.columns = ["Date","Open","High","Low","Close","Volume"]
+df.columns = df.columns.str.strip().str.lower().map({
+    "date":"Date","open":"Open","high":"High","low":"Low","close":"Close","volume":"Volume"
+}).fillna(df.columns)
 
 # 3) On force types et on droppe les lignes incomplètes
 df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
