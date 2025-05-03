@@ -132,14 +132,14 @@ if os.path.exists(fichier_data):
 
         st.subheader("📈 Graphique en bougies japonaises")
         fig = go.Figure(data=[go.Candlestick(
-            fig = go.Figure(data=[go.Candlestick(
-            x=df["Date"],
-            open=df["Open"],
-            high=df["High"],
-            low=df["Low"],
-            close=df["Close"],
-            increasing_line_color="green",
-            decreasing_line_color="red"
+                fig = go.Figure(data=[go.Candlestick(
+                x=df["Date"],
+                open=df["Open"],
+                high=df["High"],
+                low=df["Low"],
+                close=df["Close"],
+                increasing_line_color="green",
+                decreasing_line_color="red"
         )])
         fig.update_layout(
             xaxis_title="Date",
