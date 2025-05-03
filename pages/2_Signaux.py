@@ -1,21 +1,19 @@
-import streamlit as st 
+import streamlit as st
 import pandas as pd
 import os
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
 import plotly.graph_objects as go
 import feedparser
 
-# Configuration de la page
+# Configuration page
 st.set_page_config(page_title="📈 Signaux Techniques", layout="wide")
 st.title("📍 Signaux Techniques d'AVA")
 
-# --- Tickers et affichages ---
-tickers = [
-    "aapl","tsla","googl","btc-usd","eth-usd","msft","amzn","nvda",
-    "^gspc","doge-usd","ada-usd","sol-usd","gc=F","^fchi","xrp-usd",
-    "bnb-usd","cl=F","si=F","matic-usd","uni-usd","^ndx","avax-usd",
-    "ltc-usd","hg=F","^dji","amd","ko","meta"
-]
+# Tickers et affichages
+tickers = ["aapl","tsla","googl","btc-usd","eth-usd","msft","amzn","nvda",
+           "^gspc","doge-usd","ada-usd","sol-usd","gc=F","^fchi","xrp-usd",
+           "bnb-usd","cl=F","si=F","matic-usd","uni-usd","^ndx","avax-usd",
+           "ltc-usd","hg=F","^dji","amd","ko","meta"]
 nom_affichages = {
     "aapl":"Apple","tsla":"Tesla","googl":"Google","btc-usd":"Bitcoin",
     "eth-usd":"Ethereum","msft":"Microsoft","amzn":"Amazon","nvda":"NVIDIA",
@@ -51,91 +49,52 @@ def suggerer_position(df):
         sl, tp = round(last.Close*1.03,2), round(last.Close*0.95,2)
         return f"📉 Short | SL: {sl} | TP: {tp}"
     return "⚠️ Conditions insuffisantes."
-# Sélection actif
-ticker = st.selectbox("Choisissez un actif :", tickers, format_func=lambda x: nom_affichages[x])
 
-# Lecture CSV
-fichier = f"data/donnees_{ticker.lower()}.csv"
-if not os.path.exists(fichier):
-    st.warning(f"❌ Aucune donnée pour {nom_affichages[ticker]}")
-    st.stop()
+# Sélection du ticker
+ticker = st.selectbox("Choisissez un actif :", tickers, format_func=lambda t: nom_affichages[t])
 
-df_raw = pd.read_csv(fichier)
-if df_raw.shape[1] < 6:
-    st.error("Le CSV doit contenir au moins 6 colonnes OHLCV.")
-    st.stop()
-
-# On prend les 6 premières colonnes et on renomme
-df = df_raw.iloc[:, :6].copy()
+# Chargement du CSV et préparation des données
+df = pd.read_csv(f"data/donnees_{ticker.lower()}.csv")
+df = df.iloc[:, :6].copy()
 df.columns = ["Date","Open","High","Low","Close","Volume"]
-
-# Conversion types
 df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
 for c in ["Open","High","Low","Close","Volume"]:
     df[c] = pd.to_numeric(df[c], errors="coerce")
 df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
 
-# Debug initial
-st.write("Données brutes (5 lignes) :", df.head())
+# Ajout des indicateurs techniques
+df = ajouter_indicateurs_techniques(df)
+df.columns = df.columns.str.title()
 
-# Ajout indicateurs
-try:
-    df = ajouter_indicateurs_techniques(df)
-    df.columns = df.columns.str.title()
-except Exception as e:
-    st.error(f"Erreur indicateurs techniques : {e}")
-    st.stop()
-
-# Debug après indicateurs
-st.write("Colonnes après ajout indicateurs:", df.columns.tolist())
-
-# Analyse signaux
-try:
-    analyse, suggestion = analyser_signaux_techniques(df)
-except Exception as e:
-    st.error(f"Erreur analyse technique : {e}")
-    st.stop()
-
-# Affichages
+# Analyse technique
+analyse, suggestion = analyser_signaux_techniques(df)
 st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
 st.markdown(analyse or "Pas de signaux.")
 st.markdown(f"💬 **Résumé :**\n{generer_resume_signal(analyse.splitlines())}")
-st.success(f"🤖 *Intuition :* {suggestion}")
+st.success(f"🤖 Intuition : {suggestion}")
 
-# Suggestion position
+# Suggestion de position
 st.subheader("📌 Suggestion de position")
-st.markdown(suggerer_position_et_niveaux(df))
+st.markdown(suggerer_position(df))
 
-# Prepare df_plot
+# Graphique en bougies japonaises
 df_plot = df.sort_values("Date").reset_index(drop=True)
-st.write("Données pour graf. bougies:", df_plot.head())
-
-# Candlestick
 st.subheader("📈 Graphique en bougies japonaises")
 fig = go.Figure(data=[go.Candlestick(
-    x=df_plot["Date"],
-    open=df_plot["Open"],
-    high=df_plot["High"],
-    low=df_plot["Low"],
-    close=df_plot["Close"],
-    increasing_line_color="green",
-    decreasing_line_color="red"
+    x=df_plot["Date"], open=df_plot["Open"], high=df_plot["High"],
+    low=df_plot["Low"], close=df_plot["Close"],
+    increasing_line_color="green", decreasing_line_color="red"
 )])
-fig.update_layout(xaxis_rangeslider_visible=False)
+fig.update_layout(xaxis_title="Date", yaxis_title="Prix", xaxis_rangeslider_visible=False)
+fig.update_xaxes(type='date')
 st.plotly_chart(fig, use_container_width=True)
 
-# Fallback line chart
-st.subheader("📈 Prix de clôture (ligne)")
-st.line_chart(df_plot.set_index("Date")["Close"])
-
-# Actualités
+# Actualités financières
 st.subheader("🗞️ Actualités")
-flux = feedparser.parse("https://www.investing.com/rss/news_301.rss")
-if flux.entries:
-    for e in flux.entries[:5]:
-        st.markdown(f"- [{e.title}]({e.link})", unsafe_allow_html=True)
-else:
-    st.info("Pas d’actualités.")
+feed = feedparser.parse("https://www.investing.com/rss/news_301.rss")
+if feed.entries:
+    for e in feed.entries[:5]: st.markdown(f"- [{e.title}]({e.link})")
+else: st.info("Pas d'actus.")
 
 # Prédiction IA
 st.subheader("📈 Prédiction IA (demain)")
@@ -143,17 +102,13 @@ pred_file = f"predictions/prediction_{ticker.lower().replace('-','').replace('^'
 if os.path.exists(pred_file):
     pred = pd.read_csv(pred_file)["prediction"].iloc[-1]
     st.info("Hausse probable" if pred==1 else "Baisse probable")
-else:
-    st.warning("Aucune prédiction.")
+else: st.warning("Pas de prédiction.")
 
-    # RSI
-    st.subheader("📊 RSI actuel")
-    if "Rsi" in df_plot.columns:
-        st.metric("RSI", round(df_plot["Rsi"].iloc[-1],2))
-    elif "Rsi14" in df_plot.columns:
-        st.metric("RSI", round(df_plot["Rsi14"].iloc[-1],2))
+# RSI actuel
+st.subheader("📊 RSI actuel")
+if 'Rsi' in df.columns: st.metric("RSI", round(df['Rsi'].iloc[-1],2))
 
-# Données brutes
+# Données récentes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
 
