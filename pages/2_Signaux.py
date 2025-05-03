@@ -94,6 +94,8 @@ try:
     # Debug: colonnes après ajout des indicateurs
     st.write("Colonnes après ajout des indicateurs:", df.columns.tolist())
     # S'assurer que la colonne Date existe
+    # et uniformisation Title Case de toutes les colonnes (indicateurs inclus)
+    df.columns = df.columns.str.title()
     if "Date" not in df.columns:
         for col in df.columns:
             if "date" in col.lower():
@@ -177,34 +179,3 @@ if "Rsi14" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
