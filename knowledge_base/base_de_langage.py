@@ -1074,6 +1074,10 @@ base_langage = {
 
     "Peux-tu m expliquer les bases du trading technique ?": [
         "Bien sur ! Le trading technique repose sur l analyse des graphiques pour anticiper les mouvements futurs. On utilise des indicateurs comme le RSI (pour detecter la survente ou surachat), le MACD (pour identifier les changements de tendance), ou les moyennes mobiles (pour suivre la direction generale du marche). On regarde aussi les volumes, les figures chartistes (comme les triangles ou les canaux), et les supports/resistances. L idee, c est d entrer au bon moment, avec des signaux clairs, tout en gerant le risque avec un stop-loss. C est une lecture du comportement du marche, basee sur les donnees passees."
+    ],
+
+    "C est quoi le trading ?": [
+        "C est comme lire une carte pour comprendre ou va le marche. Le trading technique regarde les graphiques, les courbes, les volumes, et certains outils comme le RSI ou le MACD pour essayer de deviner si un prix va monter ou descendre. On observe les habitudes du marche pour entrer au bon moment et limiter les risques. Pas besoin de tout comprendre d un coup, mais l idee, c est d analyser les mouvements passés pour prendre de meilleures decisions."
     ]
 
 }
