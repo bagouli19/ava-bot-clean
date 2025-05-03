@@ -76,12 +76,15 @@ df = df_raw.iloc[:, :6].copy()
 df.columns = ["Date","Open","High","Low","Close","Volume"]
 
 # 3) Conversion des types et suppression des lignes incomplètes
-df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-for col in ["Open","High","Low","Close","Volume"]:
-    df[col] = pd.to_numeric(df[col], errors="coerce")
-df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    for col in ["Open","High","Low","Close","Volume"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
 
-# 4) Ajout des indicateurs techniques
+    # Debug: affichage des colonnes après préparation
+    st.write("Colonnes après préparation:", df.columns.tolist())
+
+# 4) Ajout des indicateurs techniques"
 try:
     df = ajouter_indicateurs_techniques(df)
 except Exception as e:
@@ -148,6 +151,7 @@ if "Rsi14" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
