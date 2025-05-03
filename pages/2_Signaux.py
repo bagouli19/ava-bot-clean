@@ -39,14 +39,21 @@ def generer_resume_signal(signaux):
     return texte or "ℹ️ Aucun signal fort."
 
 def suggerer_position_et_niveaux(df):
-    close      = df["Close"].iat[-1]
-    macd       = df["Macd"].iat[-1]
-    rsi14      = df["Rsi14"].iat[-1]
-    adx14      = df["Adx14"].iat[-1]
-    if macd > 0 and rsi14 < 70 and adx14 > 20:
+    # Recherche dynamique des colonnes d'indicateurs
+    cols = {col.lower(): col for col in df.columns}
+    macd_col = cols.get('macd') or next((c for c in df.columns if c.lower().startswith('macd') and 'signal' not in c.lower()), None)
+    rsi_col  = cols.get('rsi14') or cols.get('rsi') or next((c for c in df.columns if c.lower().startswith('rsi')), None)
+    adx_col  = cols.get('adx14') or cols.get('adx') or next((c for c in df.columns if c.lower().startswith('adx')), None)
+    if not all([macd_col, rsi_col, adx_col]):
+        return "⚠️ Indicateurs manquants pour suggestion de position."
+    close = df['Close'].iat[-1]
+    macd  = df[macd_col].iat[-1]
+    rsi   = df[rsi_col].iat[-1]
+    adx   = df[adx_col].iat[-1]
+    if macd > 0 and rsi < 70 and adx > 20:
         sl, tp = round(close * 0.97,2), round(close * 1.05,2)
         return f"📈 **Long**  🛑 SL : {sl}  🎯 TP : {tp}"
-    if macd < 0 and rsi14 > 30 and adx14 > 20:
+    if macd < 0 and rsi > 30 and adx > 20:
         sl, tp = round(close * 1.03,2), round(close * 0.95,2)
         return f"📉 **Short**  🛑 SL : {sl}  🎯 TP : {tp}"
     return "⚠️ Conditions insuffisantes."
@@ -147,6 +154,7 @@ try:
 
 except Exception as e:
     st.error(f"Erreur pendant l'analyse : {e}")
+
 
 
 
