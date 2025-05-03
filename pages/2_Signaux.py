@@ -57,21 +57,28 @@ if not os.path.exists(fichier):
 df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
 df = df_raw.iloc[:, :6].copy()
 
-# 2) On renomme
-df.columns = df.columns.str.strip().str.lower().map({
-    "date":"Date","open":"Open","high":"High","low":"Low","close":"Close","volume":"Volume"
-}).fillna(df.columns)
+# 2) On renomme à la main les 6 colonnes
+col_map = {
+    "date":  "Date",
+    "open":  "Open",
+    "high":  "High",
+    "low":   "Low",
+    "close": "Close",
+    "volume":"Volume"
+}
+df.columns = [col_map.get(col.strip().lower(), col) for col in df.columns]
 
-# 3) On force types et on droppe les lignes incomplètes
+# 3) On force les types et on droppe toute ligne incomplète
 df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-for col in ["Open","High","Low","Close","Volume"]:
-    df[col] = pd.to_numeric(df[col], errors="coerce")
+for c in ["Open","High","Low","Close","Volume"]:
+    df[c] = pd.to_numeric(df[c], errors="coerce")
 df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
 
-# 4) Ajout des indicateurs
+# 4) On ajoute les indicateurs techniques (fonction inchangée)
 df = ajouter_indicateurs_techniques(df)
 
-# 5) Renommage des indicateurs en Title Case
+# 5) On renomme **seulement** les colonnes issues des indicateurs
+#    (elles étaient créées en minuscules dans votre fonction)
 df.rename(columns={
     "sma":   "Sma",
     "ema":   "Ema",
@@ -82,7 +89,7 @@ df.rename(columns={
     "willr": "Willr"
 }, inplace=True)
 
-# 6) On retire tout doublon
+# 6) On s’assure qu’il n’y a pas de doublons de colonnes
 df = df.loc[:, ~df.columns.duplicated()]
 
 # --- Affichage complet ---
