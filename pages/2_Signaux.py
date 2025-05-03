@@ -36,13 +36,31 @@ if not os.path.exists(fichier):
     st.warning(f"❌ Aucune donnée trouvée pour {nom_affichages[ticker]}")
     st.stop()
 
-# Lecture des 6 premières colonnes et renommage
+# Lecture du CSV complet et mapping dynamique des colonnes OHLCV
 try:
-    df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
-    if df_raw.shape[1] < 6:
-        raise ValueError("Le fichier doit contenir au moins 6 colonnes OHLCV.")
-    df = df_raw.iloc[:, :6].copy()
-    df.columns = ["Date","Open","High","Low","Close","Volume"]
+    df_raw = pd.read_csv(fichier)
+    # Mapping des noms courants vers standard
+    col_map = {}
+    for col in df_raw.columns:
+        low = col.lower().strip()
+        if low in ["date","datetime","time"]:
+            col_map[col] = "Date"
+        elif low in ["open","open_price"]:
+            col_map[col] = "Open"
+        elif low in ["high","high_price"]:
+            col_map[col] = "High"
+        elif low in ["low","low_price"]:
+            col_map[col] = "Low"
+        elif low in ["close","close_price","adj close","adjclose"]:
+            col_map[col] = "Close"
+        elif low == "volume":
+            col_map[col] = "Volume"
+    df_temp = df_raw.rename(columns=col_map)
+    required = ["Date","Open","High","Low","Close","Volume"]
+    missing = [c for c in required if c not in df_temp.columns]
+    if missing:
+        raise ValueError(f"Colonnes OHLCV manquantes dans le CSV : {missing}")
+    df = df_temp[required].copy()
 except Exception as e:
     st.error(f"Erreur lecture/renommage CSV : {e}")
     st.stop()
@@ -172,6 +190,7 @@ elif "Rsi" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
