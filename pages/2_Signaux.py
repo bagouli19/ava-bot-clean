@@ -55,20 +55,25 @@ ticker = st.selectbox("Choisissez un actif :", tickers, format_func=lambda t: no
 
 # Chargement du CSV et préparation des données
 # Lecture brute pour le graphique
-df_raw = pd.read_csv(f"data/donnees_{ticker.lower()}.csv", parse_dates=[0], dayfirst=True)
-# Préparation du DataFrame brut pour le candlestick
 try:
-    df_plot = df_raw.iloc[:, :6].copy()
-    df_plot.columns = ["Date","Open","High","Low","Close","Volume"]
-    df_plot["Date"] = pd.to_datetime(df_plot["Date"], errors="coerce")
+    df_raw = pd.read_csv(f"data/donnees_{ticker.lower()}.csv", parse_dates=[0], dayfirst=True)
+    # Préparation du DataFrame brut pour le candlestick
+    df_raw_plot = df_raw.iloc[:, :6].copy()
+    df_raw_plot.columns = ["Date","Open","High","Low","Close","Volume"]
+    df_raw_plot["Date"] = pd.to_datetime(df_raw_plot["Date"], errors="coerce")
     for col in ["Open","High","Low","Close","Volume"]:
-        df_plot[col] = pd.to_numeric(df_plot[col], errors="coerce")
-    # On ne droppe rien ici, on veut voir toutes les barres
+        df_raw_plot[col] = pd.to_numeric(df_raw_plot[col], errors="coerce")
+    # On conserve les lignes même si NaN en Volume
 except Exception as e:
     st.error(f"Erreur préparation graphique brut : {e}")
     st.stop()
 
 # Préparation du DataFrame pour l'analyse
+try:
+    df = df_raw_plot.dropna(subset=["Date","Open","High","Low","Close"]).copy()
+except Exception as e:
+    st.error(f"Erreur préparation données analysis : {e}")
+    st.stop()
 try:
     df = df_plot.dropna(subset=["Date","Open","High","Low","Close"]).copy()
     # On inplace ne modifie pas df_plot
@@ -125,6 +130,7 @@ if 'Rsi' in df.columns: st.metric("RSI", round(df['Rsi'].iloc[-1],2))
 # Données récentes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
