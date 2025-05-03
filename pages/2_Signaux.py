@@ -83,8 +83,8 @@ except Exception as e:
     st.error(f"Erreur indicateurs techniques : {e}")
     st.stop()
 
-# 5) Uniformisation Title Case + suppression de doublons
-df.columns = df.columns.str.strip().str.lower().str.title()
+# 5) Suppression d’éventuels doublons de colonnes, sans renommer
+#    On conserve les indices des colonnes existantes pour garder les bons noms.
 df = df.loc[:, ~df.columns.duplicated()]
 
 # 6) Analyse & affichages
@@ -147,6 +147,7 @@ try:
 
 except Exception as e:
     st.error(f"Erreur pendant l'analyse : {e}")
+
 
 
 
