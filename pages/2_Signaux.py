@@ -89,6 +89,10 @@ for orig in df.columns:
 # On applique le renommage
 if mapping:
     df = df.rename(columns=mapping)
+# Si la colonne Date n'existe toujours pas, on force la première colonne en Date
+if "Date" not in df.columns:
+    df.columns.values[0] = "Date"
+
 # 2) On garde uniquement les colonnes indispensables
 required = ["Date","Open","High","Low","Close","Volume"]
 missing = [c for c in required if c not in df.columns]
@@ -180,6 +184,7 @@ try:
 
 except Exception as e:
     st.error(f"Erreur pendant l'analyse : {e}")
+
 
 
 
