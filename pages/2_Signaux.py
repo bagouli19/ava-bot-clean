@@ -45,13 +45,18 @@ def generer_resume_signal(signaux):
 
 def suggerer_position_et_niveaux(df):
     close = df["Close"].iloc[-1]
-    macd = df.filter(regex="^Macd($|[^a-z])", axis=1).iloc[:,0].iloc[-1]
-    rsi = df.filter(regex="^Rsi", axis=1).iloc[:,0].iloc[-1]
-    adx = df.filter(regex="^Adx", axis=1).iloc[:,0].iloc[-1]
-    if macd > 0 and rsi < 70 and adx > 20:
+    macd = df.filter(regex="(?i)^macd$", axis=1)
+    rsi = df.filter(regex="(?i)^rsi", axis=1)
+    adx = df.filter(regex="(?i)^adx", axis=1)
+    if macd.empty or rsi.empty or adx.empty:
+        return "⚠️ Indicateurs manquants pour suggestion."
+    macd_val = macd.iloc[:,0].iloc[-1]
+    rsi_val  = rsi.iloc[:,0].iloc[-1]
+    adx_val  = adx.iloc[:,0].iloc[-1]
+    if macd_val > 0 and rsi_val < 70 and adx_val > 20:
         sl, tp = round(close*0.97,2), round(close*1.05,2)
         return f"📈 **Position acheteuse**  🛑 SL : {sl}  🎯 TP : {tp}"
-    if macd < 0 and rsi > 30 and adx > 20:
+    if macd_val < 0 and rsi_val > 30 and adx_val > 20:
         sl, tp = round(close*1.03,2), round(close*0.95,2)
         return f"📉 **Position vendeuse**  🛑 SL : {sl}  🎯 TP : {tp}"
     return "⚠️ Conditions insuffisantes pour prise de position."
@@ -76,35 +81,19 @@ df = df_raw.iloc[:, :6].copy()
 df.columns = ["Date","Open","High","Low","Close","Volume"]
 
 # 3) Conversion des types et suppression des lignes incomplètes
-#    Conversion Date
-if "Date" in df.columns:
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-#    Conversion OHLCV
+df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
 for col in ["Open","High","Low","Close","Volume"]:
     df[col] = pd.to_numeric(df[col], errors="coerce")
-#    Purge lignes incomplètes
 df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
 
-#    Debug: affichage des colonnes après préparation
+# Debug: affichage des colonnes et données
 st.write("Colonnes après préparation:", df.columns.tolist())
+st.write(df.head(5))
 
 # 4) Ajout des indicateurs techniques
 try:
     df = ajouter_indicateurs_techniques(df)
-    # Debug: colonnes après ajout des indicateurs
     st.write("Colonnes après ajout des indicateurs:", df.columns.tolist())
-    # S'assurer que la colonne Date existe
-    # et uniformisation Title Case de toutes les colonnes (indicateurs inclus)
-    df.columns = df.columns.str.title()
-    if "Date" not in df.columns:
-        for col in df.columns:
-            if "date" in col.lower():
-                df.rename(columns={col: "Date"}, inplace=True)
-                st.write(f"Colonne '{col}' renommée en 'Date'.")
-                break
-    if "Date" not in df.columns:
-        st.error("Colonne 'Date' introuvable après ajout des indicateurs.")
-        st.stop()
 except Exception as e:
     st.error(f"Erreur indicateurs techniques : {e}")
     st.stop()
@@ -117,11 +106,8 @@ except Exception as e:
     st.stop()
 
 # --- Affichage des résultats ---
-# Analyse brute
 st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
 st.markdown(analyse or "Pas de signaux.")
-
-# Résumé
 st.markdown(f"💬 **Résumé d'AVA :**\n{generer_resume_signal(analyse.split('\n'))}")
 st.success(f"🤖 *Intuition d'AVA :* {suggestion}")
 
@@ -131,37 +117,27 @@ st.markdown(suggerer_position_et_niveaux(df))
 
 # Graphique en bougies japonaises
 st.subheader("📈 Graphique en bougies japonaises")
-# Trier par date pour éviter tout problème d'affichage
+# Tri et plot
 if "Date" in df.columns:
     df_plot = df.sort_values("Date")
-    x_axis = df_plot["Date"]
-    open_series  = df_plot["Open"]
-    high_series  = df_plot["High"]
-    low_series   = df_plot["Low"]
-    close_series = df_plot["Close"]
+    fig = go.Figure(data=[go.Candlestick(
+        x=df_plot["Date"],
+        open=df_plot["Open"],
+        high=df_plot["High"],
+        low=df_plot["Low"],
+        close=df_plot["Close"],
+        increasing_line_color="green",
+        decreasing_line_color="red"
+    )])
+    fig.update_layout(xaxis_title="Date", yaxis_title="Prix", height=500, xaxis_rangeslider_visible=False)
+    st.plotly_chart(fig, use_container_width=True)
 else:
-    df_plot = df.copy()
-    x_axis = df_plot.index
-    open_series  = df_plot["Open"]
-    high_series  = df_plot["High"]
-    low_series   = df_plot["Low"]
-    close_series = df_plot["Close"]
-fig = go.Figure(data=[go.Candlestick(
-    x=x_axis,
-    open=open_series,
-    high=high_series,
-    low=low_series,
-    close=close_series,
-    increasing_line_color="green",
-    decreasing_line_color="red"
-)])
-fig.update_layout(
-    xaxis_title="Date",
-    yaxis_title="Prix",
-    height=500,
-    xaxis_rangeslider_visible=False
-)
-st.plotly_chart(fig, use_container_width=True)
+    st.info("Pas de colonne Date pour le graphique.")
+
+# Fallback: affichage du cours de clôture en ligne
+st.subheader("📈 Prix de clôture (ligne)")
+line_df = df.set_index("Date")["Close"].sort_index()
+st.line_chart(line_df)
 
 # Actualités financières
 st.subheader("🗞️ Actualités financières récentes")
@@ -183,19 +159,15 @@ else:
 
 # RSI actuel
 st.subheader("📊 RSI actuel")
-# Afficher metric sur la colonne Rsi (ou Rsi14)
 if "Rsi" in df.columns:
-    st.metric("RSI", round(df["Rsi"].iloc[-1], 2))
+    st.metric("RSI", round(df["Rsi"].iloc[-1],2))
 elif "Rsi14" in df.columns:
-    st.metric("RSI", round(df["Rsi14"].iloc[-1], 2))
-
-# Données pour debug du graphique
-st.subheader("Données pour graphique bougies")
-st.write(df[["Date", "Open", "High", "Low", "Close"]].head())
+    st.metric("RSI", round(df["Rsi14"].iloc[-1],2))
 
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
