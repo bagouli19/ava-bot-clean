@@ -1031,4 +1031,26 @@ base_langage = {
     "L'exil detruit-il une identite ou la redefinit-il ?": [
         "L'exil bouleverse. Il oblige a quitter ses reperes, a se reconstruire ailleurs. Cela peut provoquer une perte d'identite, un deracinement douloureux. Mais aussi une redéfinition de soi. Certains exiles deviennent plus forts, plus ouverts, plus conscients de ce qu'ils sont. L'exil n'efface pas l'identite, il la met a l'epreuve... et parfois, il l'elargit."
     ],
+
+    "C est quoi le RSI ?": [
+        "Le RSI (Relative Strength Index) est un indicateur technique qui mesure la force d un actif en comparant ses hausses et ses baisses recentes. Il varie entre 0 et 100. Un RSI au-dessus de 70 indique souvent une zone de surachat (possible correction), tandis qu un RSI sous 30 indique une zone de survente (potentiel rebond)."
+    ],
+
+    "Comment interpreter une bougie japonaise ?": [
+        "Une bougie japonaise montre l evolution du prix sur une periode donnee : le corps represente l ecart entre le prix d ouverture et de fermeture, et les meches indiquent les extremes atteints. Si la bougie est verte, le prix a monte ; si elle est rouge, il a baisse. C est un outil visuel puissant pour comprendre les mouvements du marche."
+    ],
+
+    "C est quoi le MACD ?": [
+        "Le MACD (Moving Average Convergence Divergence) est un indicateur de tendance. Il compare deux moyennes mobiles pour detecter les changements de dynamique. Quand la ligne MACD croise au-dessus de sa ligne signal, c est un signal haussier ; si elle croise en dessous, c est un signal baissier. Il aide a reperer les debuts de tendance."
+    ],
+
+    "Quand entrer en position ?": [
+        "Entrer en position, c est choisir le bon moment pour acheter ou vendre. Il faut regarder plusieurs signaux : RSI, MACD, moyennes mobiles, volumes... Un bon point d entree combine souvent un signal technique clair et une confirmation du contexte. Evitez de vous precipiter, attendez une configuration forte et claire."
+    ],
+
+    "A quoi sert un stop-loss ?": [
+        "Un stop-loss est un outil de protection. Il permet de limiter vos pertes en fermant automatiquement une position si le prix atteint un niveau defini. C est essentiel pour preserver votre capital. Meme les meilleurs traders utilisent des stop-loss pour eviter de tout perdre sur un mauvais mouvement de marche."
+    ]
+
+
 }
