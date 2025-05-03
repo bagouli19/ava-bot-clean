@@ -131,17 +131,27 @@ st.markdown(suggerer_position_et_niveaux(df))
 
 # Graphique en bougies japonaises
 st.subheader("📈 Graphique en bougies japonaises")
-# Utilisation de la colonne Date si disponible, sinon de l'index
+# Trier par date pour éviter tout problème d'affichage
 if "Date" in df.columns:
-    x_axis = df["Date"]
+    df_plot = df.sort_values("Date")
+    x_axis = df_plot["Date"]
+    open_series  = df_plot["Open"]
+    high_series  = df_plot["High"]
+    low_series   = df_plot["Low"]
+    close_series = df_plot["Close"]
 else:
-    x_axis = df.index
+    df_plot = df.copy()
+    x_axis = df_plot.index
+    open_series  = df_plot["Open"]
+    high_series  = df_plot["High"]
+    low_series   = df_plot["Low"]
+    close_series = df_plot["Close"]
 fig = go.Figure(data=[go.Candlestick(
     x=x_axis,
-    open=df["Open"],
-    high=df["High"],
-    low=df["Low"],
-    close=df["Close"],
+    open=open_series,
+    high=high_series,
+    low=low_series,
+    close=close_series,
     increasing_line_color="green",
     decreasing_line_color="red"
 )])
@@ -151,7 +161,7 @@ fig.update_layout(
     height=500,
     xaxis_rangeslider_visible=False
 )
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)(fig, use_container_width=True)
 
 # Actualités financières
 st.subheader("🗞️ Actualités financières récentes")
@@ -186,4 +196,5 @@ st.write(df[["Date", "Open", "High", "Low", "Close"]].head())
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
