@@ -137,9 +137,9 @@ if "Date" in df.columns:
         height=500,
         xaxis_rangeslider_visible=False
     )
-    # Forcer l'affichage des dates en catégorie si nécessaire
-    fig.update_xaxes(type='category')
-    st.plotly_chart(fig, use_container_width=True)
+    # Forcer l'affichage des dates en type date pour l'axe
+    fig.update_xaxes(type='date')
+    st.plotly_chart(fig, use_container_width=True)(fig, use_container_width=True)
 else:
     st.info("Pas de colonne Date pour le graphique.")
 
