@@ -76,7 +76,7 @@ df = df_raw.iloc[:, :6].copy()
 df.columns = ["Date","Open","High","Low","Close","Volume"]
 
 # 3) Conversion des types et suppression des lignes incomplètes
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
     for col in ["Open","High","Low","Close","Volume"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
     df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
