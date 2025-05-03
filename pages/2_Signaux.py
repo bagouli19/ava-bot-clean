@@ -87,17 +87,6 @@ st.success(f"🤖 Intuition : {suggestion}")
 st.subheader("📌 Suggestion de position")
 st.markdown(suggerer_position(df))
 
-# Graphique en bougies
-st.subheader("📈 Graphique en bougies japonaises")
-df_plot = df.sort_values("Date")
-fig = go.Figure(data=[go.Candlestick(
-    x=df_plot["Date"], open=df_plot["Open"], high=df_plot["High"],
-    low=df_plot["Low"], close=df_plot["Close"],
-    increasing_line_color="green", decreasing_line_color="red"
-)])
-fig.update_layout(xaxis_title="Date", yaxis_title="Prix", xaxis_rangeslider_visible=False)
-fig.update_xaxes(type='date')
-st.plotly_chart(fig, use_container_width=True)
 
 # Actualités
 st.subheader("🗞️ Actualités")
