@@ -1078,6 +1078,11 @@ base_langage = {
 
     "C est quoi le trading ?": [
         "C est comme lire une carte pour comprendre ou va le marche. Le trading technique regarde les graphiques, les courbes, les volumes, et certains outils comme le RSI ou le MACD pour essayer de deviner si un prix va monter ou descendre. On observe les habitudes du marche pour entrer au bon moment et limiter les risques. Pas besoin de tout comprendre d un coup, mais l idee, c est d analyser les mouvements passés pour prendre de meilleures decisions."
+    ],
+
+    "Quelles sont les erreurs à éviter en trading  ?": [
+        "Une erreur courante, c est de trader sans plan : entrer juste parce que le graphique semble joli, sans vraie stratégie. Une autre, c est de croire qu un indicateur donne une garantie, alors qu il ne fait que donner des indices. Il faut aussi eviter de forcer une position quand les signaux sont flous, ou de trop trader sous l emotion. Enfin, ne pas gerer son risque (pas de stop-loss, mise trop grosse) peut vite faire mal. Le trading technique, c est de la patience, de la discipline et des probabilites, pas de la magie."
     ]
+
 
 }
