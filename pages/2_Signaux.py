@@ -38,7 +38,7 @@ if not os.path.exists(fichier):
 
 # Lecture des 6 premières colonnes et renommage
 try:
-    df_raw = pd.read_csv(fichier)
+    df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
     if df_raw.shape[1] < 6:
         raise ValueError("Le fichier doit contenir au moins 6 colonnes OHLCV.")
     df = df_raw.iloc[:, :6].copy()
@@ -166,6 +166,7 @@ elif "Rsi" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
