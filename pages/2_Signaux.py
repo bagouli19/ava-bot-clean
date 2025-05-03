@@ -121,38 +121,38 @@ if not os.path.exists(fichier):
         )
         st.plotly_chart(fig, use_container_width=True)
 
-    # Actualités financières
-    st.subheader("🗞️ Actualités financières récentes")
-    flux = feedparser.parse("https://www.investing.com/rss/news_301.rss")
-    if flux.entries:
-        for e in flux.entries[:5]:
-            st.markdown(f"🔹 [{e.title}]({e.link})", unsafe_allow_html=True)
-    else:
-        st.info("Aucune actualité récupérée.")
+        # Actualités financières
+        st.subheader("🗞️ Actualités financières récentes")
+        flux = feedparser.parse("https://www.investing.com/rss/news_301.rss")
+        if flux.entries:
+            for e in flux.entries[:5]:
+                st.markdown(f"🔹 [{e.title}]({e.link})", unsafe_allow_html=True)
+        else:
+            st.info("Aucune actualité récupérée.")
 
-    # Prédiction IA
-    pred_file = (
-        f"predictions/prediction_"
-        f"{ticker.lower().replace('-', '').replace('^','').replace('=','')}.csv"
-    )
-    if os.path.exists(pred_file):
-        pred = pd.read_csv(pred_file)["prediction"].iat[-1]
-        st.subheader("📈 Prédiction IA (demain)")
-        st.info("Hausse probable" if pred == 1 else "Baisse probable")
-    else:
-        st.warning("Aucune prédiction trouvée.")
+        # Prédiction IA
+        pred_file = (
+            f"predictions/prediction_"
+            f"{ticker.lower().replace('-', '').replace('^','').replace('=','')}.csv"
+        )
+        if os.path.exists(pred_file):
+            pred = pd.read_csv(pred_file)["prediction"].iat[-1]
+            st.subheader("📈 Prédiction IA (demain)")
+            st.info("Hausse probable" if pred == 1 else "Baisse probable")
+        else:
+            st.warning("Aucune prédiction trouvée.")
 
-    # RSI actuel
-    if "Rsi14" in df.columns:
-        st.subheader("📊 RSI actuel")
-        st.metric("RSI", round(df["Rsi14"].iat[-1],2))
+        # RSI actuel
+        if "Rsi14" in df.columns:
+            st.subheader("📊 RSI actuel")
+            st.metric("RSI", round(df["Rsi14"].iat[-1],2))
 
-    # Données brutes
-    st.subheader("📄 Données récentes")
-    st.dataframe(df.tail(10), use_container_width=True)
+        # Données brutes
+        st.subheader("📄 Données récentes")
+        st.dataframe(df.tail(10), use_container_width=True)
 
-except Exception as e:
-    st.error(f"Erreur pendant l'analyse : {e}")
+    except Exception as e:
+        st.error(f"Erreur pendant l'analyse : {e}")
 
 
 
