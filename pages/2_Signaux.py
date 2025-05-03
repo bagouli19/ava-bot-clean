@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import osimport streamlit as st
+import pandas as pd
 import os
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
 import plotly.graph_objects as go
@@ -129,8 +131,13 @@ st.markdown(suggerer_position_et_niveaux(df))
 
 # Graphique en bougies japonaises
 st.subheader("📈 Graphique en bougies japonaises")
+# Utilisation de la colonne Date si disponible, sinon de l'index
+if "Date" in df.columns:
+    x_axis = df["Date"]
+else:
+    x_axis = df.index
 fig = go.Figure(data=[go.Candlestick(
-    x=df["Date"],
+    x=x_axis,
     open=df["Open"],
     high=df["High"],
     low=df["Low"],
@@ -138,7 +145,12 @@ fig = go.Figure(data=[go.Candlestick(
     increasing_line_color="green",
     decreasing_line_color="red"
 )])
-fig.update_layout(xaxis_title="Date", yaxis_title="Prix", height=500, xaxis_rangeslider_visible=False)
+fig.update_layout(
+    xaxis_title="Date",
+    yaxis_title="Prix",
+    height=500,
+    xaxis_rangeslider_visible=False
+)
 st.plotly_chart(fig, use_container_width=True)
 
 # Actualités financières
@@ -167,6 +179,7 @@ if "Rsi14" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
