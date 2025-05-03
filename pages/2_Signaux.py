@@ -55,10 +55,14 @@ try:
         elif col == "volume":
             col_map[col] = "volume"
     df = df_raw.rename(columns=col_map)
-    df = df[["date", "open", "high", "low", "close", "volume"]]
+    colonnes_finales = [col for col in ["date", "open", "high", "low", "close", "volume"] if col in df.columns]
+    if len(colonnes_finales) < 5:
+        raise ValueError("Colonnes OHLC manquantes ou incomplètes dans le fichier CSV.")
+    df = df[colonnes_finales]
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     for col in ["open", "high", "low", "close"]:
-        df[col] = pd.to_numeric(df[col], errors="coerce")
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
     df.dropna(subset=["date", "open", "high", "low", "close"], inplace=True)
 except Exception as e:
     st.error(f"Erreur lecture CSV : {e}")
@@ -82,7 +86,6 @@ st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
 st.markdown(analyse or "Pas de signaux.")
 
 # Suggestion
-st.subheader("📌 Suggestion de position")
 def suggerer_position_et_niveaux(df):
     try:
         close = df["close"].iloc[-1]
@@ -100,6 +103,7 @@ def suggerer_position_et_niveaux(df):
     except:
         return "⚠️ Indicateurs manquants."
 
+st.subheader("📌 Suggestion de position")
 st.markdown(suggerer_position_et_niveaux(df))
 
 # Bougies
@@ -114,6 +118,7 @@ try:
     st.plotly_chart(fig, use_container_width=True)
 except Exception as e:
     st.warning(f"Erreur bougies : {e}")
+
 
 
 
