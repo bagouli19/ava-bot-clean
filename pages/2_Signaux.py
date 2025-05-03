@@ -53,100 +53,100 @@ if not os.path.exists(fichier):
     st.warning(f"❌ Pas de données pour {nom_affichages[ticker]}.")
     st.stop()
 
-    # 1) On lit et on sélectionne *toujours* les 6 premières colonnes
-    df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
-    df = df_raw.iloc[:, :6].copy()
+# 1) On lit et on sélectionne *toujours* les 6 premières colonnes
+df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
+df = df_raw.iloc[:, :6].copy()
 
-    # 2) On renomme à la main les 6 colonnes
-    col_map = {
-        "date":  "Date",
-        "open":  "Open",
-        "high":  "High",
-        "low":   "Low",
-        "close": "Close",
-        "volume":"Volume"
-    }
-    df.columns = [col_map.get(col.strip().lower(), col) for col in df.columns]
+# 2) On renomme à la main les 6 colonnes
+col_map = {
+    "date":  "Date",
+    "open":  "Open",
+    "high":  "High",
+    "low":   "Low",
+    "close": "Close",
+    "volume":"Volume"
+}
+df.columns = [col_map.get(col.strip().lower(), col) for col in df.columns]
 
-    # 3) On force les types et on droppe toute ligne incomplète
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-    for c in ["Open","High","Low","Close","Volume"]:
-        df[c] = pd.to_numeric(df[c], errors="coerce")
-    df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
+# 3) On force les types et on droppe toute ligne incomplète
+df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+for c in ["Open","High","Low","Close","Volume"]:
+    df[c] = pd.to_numeric(df[c], errors="coerce")
+df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
 
-    # 4) On ajoute les indicateurs techniques (fonction inchangée)
-    df = ajouter_indicateurs_techniques(df)
+# 4) On ajoute les indicateurs techniques (fonction inchangée)
+df = ajouter_indicateurs_techniques(df)
 
-    # 5) On renomme **seulement** les colonnes issues des indicateurs
-    #    (elles étaient créées en minuscules dans votre fonction)
-    df.rename(columns={
-        "sma":   "Sma",
-        "ema":   "Ema",
-        "rsi":   "Rsi",
-        "macd":  "Macd",
-        "adx":   "Adx",
-        "cci":   "Cci",
-        "willr": "Willr"
-    }, inplace=True)
+# 5) On renomme **seulement** les colonnes issues des indicateurs
+#    (elles étaient créées en minuscules dans votre fonction)
+df.rename(columns={
+    "sma":   "Sma",
+    "ema":   "Ema",
+    "rsi":   "Rsi",
+    "macd":  "Macd",
+    "adx":   "Adx",
+    "cci":   "Cci",
+    "willr": "Willr"
+}, inplace=True)
 
-    # 6) On s’assure qu’il n’y a pas de doublons de colonnes
-    df = df.loc[:, ~df.columns.duplicated()]
+# 6) On s’assure qu’il n’y a pas de doublons de colonnes
+df = df.loc[:, ~df.columns.duplicated()]
 
-    # --- Affichage complet ---
-    try:
-        analyse, suggestion = analyser_signaux_techniques(df)
-        st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
-        st.markdown(analyse)
+# --- Affichage complet ---
+try:
+    analyse, suggestion = analyser_signaux_techniques(df)
+    st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
+    st.markdown(analyse)
 
-        resume = generer_resume_signal(analyse.split("\n"))
-        st.markdown(f"💬 **Résumé AVA :**\n{resume}")
-        st.success(f"🤖 *Intuition AVA :* {suggestion}")
+    resume = generer_resume_signal(analyse.split("\n"))
+    st.markdown(f"💬 **Résumé AVA :**\n{resume}")
+    st.success(f"🤖 *Intuition AVA :* {suggestion}")
 
-        st.subheader("📌 Suggestion de position")
-        st.markdown(suggerer_position_et_niveaux(df))
+    st.subheader("📌 Suggestion de position")
+    st.markdown(suggerer_position_et_niveaux(df))
 
-        st.subheader("📈 Graphique en bougies japonaises")
-        fig = go.Figure(data=[go.Candlestick(
-            x=df["Date"],
-            open=df["Open"],
-            high=df["High"],
-            low=df["Low"],
-            close=df["Close"],
-            increasing_line_color="green",
-            decreasing_line_color="red"
-        )])
-        fig.update_layout(xaxis_title="Date", yaxis_title="Prix", height=500, xaxis_rangeslider_visible=False)
-        st.plotly_chart(fig, use_container_width=True)
+    st.subheader("📈 Graphique en bougies japonaises")
+    fig = go.Figure(data=[go.Candlestick(
+        x=df["Date"],
+        open=df["Open"],
+        high=df["High"],
+        low=df["Low"],
+        close=df["Close"],
+        increasing_line_color="green",
+        decreasing_line_color="red"
+    )])
+    fig.update_layout(xaxis_title="Date", yaxis_title="Prix", height=500, xaxis_rangeslider_visible=False)
+    st.plotly_chart(fig, use_container_width=True)
 
-        # 🗞️ Actualités
-        st.subheader("🗞️ Actualités financières")
-        flux = feedparser.parse("https://www.investing.com/rss/news_301.rss")
-        if flux.entries:
-            for e in flux.entries[:5]:
-                st.markdown(f"🔹 [{e.title}]({e.link})", unsafe_allow_html=True)
-        else:
-            st.info("Aucune actualité à afficher.")
+    # 🗞️ Actualités
+    st.subheader("🗞️ Actualités financières")
+    flux = feedparser.parse("https://www.investing.com/rss/news_301.rss")
+    if flux.entries:
+        for e in flux.entries[:5]:
+            st.markdown(f"🔹 [{e.title}]({e.link})", unsafe_allow_html=True)
+    else:
+        st.info("Aucune actualité à afficher.")
 
-        # 🤖 Prédiction IA
-        pred_file = f"predictions/prediction_{ticker.lower().replace('-', '').replace('^','').replace('=','')}.csv"
-        if os.path.exists(pred_file):
-            pred = pd.read_csv(pred_file)["prediction"].iat[-1]
-            st.subheader("📈 Prédiction IA (demain)")
-            st.info("Hausse probable" if pred==1 else "Baisse probable")
-        else:
-            st.warning("Aucune prédiction trouvée.")
+    # 🤖 Prédiction IA
+    pred_file = f"predictions/prediction_{ticker.lower().replace('-', '').replace('^','').replace('=','')}.csv"
+    if os.path.exists(pred_file):
+        pred = pd.read_csv(pred_file)["prediction"].iat[-1]
+        st.subheader("📈 Prédiction IA (demain)")
+        st.info("Hausse probable" if pred==1 else "Baisse probable")
+    else:
+        st.warning("Aucune prédiction trouvée.")
 
-        # 📊 RSI actuel
-        if "Rsi" in df.columns:
-            st.subheader("📊 RSI actuel")
-            st.metric("RSI", round(df["Rsi"].iat[-1],2))
+    # 📊 RSI actuel
+    if "Rsi" in df.columns:
+        st.subheader("📊 RSI actuel")
+        st.metric("RSI", round(df["Rsi"].iat[-1],2))
 
-        # 📄 Données brutes
-        st.subheader("📄 Données récentes")
-        st.dataframe(df.tail(10), use_container_width=True)
+    # 📄 Données brutes
+    st.subheader("📄 Données récentes")
+    st.dataframe(df.tail(10), use_container_width=True)
 
-    except Exception as e:
-        st.error(f"Erreur pendant l'analyse : {e}")
+except Exception as e:
+    st.error(f"Erreur pendant l'analyse : {e}")
 
 
 
