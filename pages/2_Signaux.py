@@ -9,12 +9,10 @@ st.set_page_config(page_title="📈 Signaux Techniques", layout="wide")
 st.title("📍 Signaux Techniques d'AVA")
 
 # --- Tickers et noms d'affichage ---
-tickers = [
-    "aapl","tsla","googl","btc-usd","eth-usd","msft","amzn","nvda",
-    "^gspc","doge-usd","ada-usd","sol-usd","gc=F","^fchi","xrp-usd",
-    "bnb-usd","cl=F","si=F","matic-usd","uni-usd","^ndx","avax-usd",
-    "ltc-usd","hg=F","^dji","amd","ko","meta"
-]
+tickers = ["aapl","tsla","googl","btc-usd","eth-usd","msft","amzn","nvda",
+           "^gspc","doge-usd","ada-usd","sol-usd","gc=F","^fchi","xrp-usd",
+           "bnb-usd","cl=F","si=F","matic-usd","uni-usd","^ndx","avax-usd",
+           "ltc-usd","hg=F","^dji","amd","ko","meta"]
 nom_affichages = {
     "aapl":"Apple","tsla":"Tesla","googl":"Google","btc-usd":"Bitcoin",
     "eth-usd":"Ethereum","msft":"Microsoft","amzn":"Amazon","nvda":"NVIDIA",
@@ -22,96 +20,57 @@ nom_affichages = {
     "sol-usd":"Solana","gc=F":"Or","xrp-usd":"XRP","bnb-usd":"BNB",
     "cl=F":"Pétrole brut","si=F":"Argent","matic-usd":"Polygon",
     "uni-usd":"Uniswap","^ndx":"Nasdaq 100","avax-usd":"Avalanche",
-    "ltc-usd":"Litecoin","hg=F":"Cuivre","^dji":"Dow Jones",
-    "amd":"AMD","ko":"Coca-Cola","meta":"Meta"
+    "ltc-usd":"Litecoin","hg=F":"Cuivre","^dji":"Dow Jones","amd":"AMD",
+    "ko":"Coca-Cola","meta":"Meta"
 }
 
 def generer_resume_signal(signaux):
     texte = ""
-    signaux_str = " ".join(signaux).lower()
-    if "survente" in signaux_str:
-        texte += "🔻 **Zone de survente détectée.** L'actif pourrait être sous-évalué.\n"
-    if "surachat" in signaux_str:
-        texte += "🔺 **Zone de surachat détectée.** Attention à une possible correction.\n"
-    if "haussier" in signaux_str:
-        texte += "📈 **Tendance haussière en cours.** Les indicateurs suggèrent un élan positif.\n"
-    if "baissier" in signaux_str:
-        texte += "📉 **Tendance baissière détectée.** Prudence sur les mouvements actuels.\n"
-    if "faible" in signaux_str:
-        texte += "😴 **Manque de tendance.** Le marché semble indécis.\n"
-    if not texte:
-        texte = "ℹ️ Aucun signal fort détecté pour l'instant. Restez à l'affût."
-    return texte
+    s = " ".join(signaux).lower()
+    if "survente" in s:  texte += "🔻 **Survente détectée.**\n"
+    if "surachat" in s:  texte += "🔺 **Surachat détecté.**\n"
+    if "haussier" in s:  texte += "📈 **Tendance haussière.**\n"
+    if "baissier" in s:  texte += "📉 **Tendance baissière.**\n"
+    if "faible" in s:    texte += "😴 **Marché sans tendance.**\n"
+    return texte or "ℹ️ Aucun signal fort."
 
 def suggerer_position_et_niveaux(df):
-    close = df["Close"].iloc[-1]
-    macd  = df["Macd"].iloc[-1]
-    rsi   = df["Rsi"].iloc[-1]
-    adx   = df["Adx"].iloc[-1]
-    if macd > 0 and rsi < 70 and adx > 20:
-        sl, tp = round(close * 0.97, 2), round(close * 1.05, 2)
-        return f"📈 **Long**  🛑 SL : {sl}  🎯 TP : {tp}"
-    elif macd < 0 and rsi > 30 and adx > 20:
-        sl, tp = round(close * 1.03, 2), round(close * 0.95, 2)
-        return f"📉 **Short**  🛑 SL : {sl}  🎯 TP : {tp}"
-    else:
-        return "⚠️ Conditions insuffisantes pour prise de position."
+    close, macd, rsi, adx = df["Close"].iat[-1], df["Macd"].iat[-1], df["Rsi"].iat[-1], df["Adx"].iat[-1]
+    if macd>0 and rsi<70 and adx>20:
+        sl, tp = round(close*0.97,2), round(close*1.05,2)
+        return f"📈 **Long**  🛑 SL:{sl}  🎯 TP:{tp}"
+    if macd<0 and rsi>30 and adx>20:
+        sl, tp = round(close*1.03,2), round(close*0.95,2)
+        return f"📉 **Short**  🛑 SL:{sl}  🎯 TP:{tp}"
+    return "⚠️ Conditions insuffisantes."
 
-# --- Sélection du ticker ---
-ticker = st.selectbox(
-    "Choisissez un actif :",
-    options=tickers,
-    format_func=lambda x: nom_affichages[x]
-)
+# --- Choix du ticker ---
+ticker = st.selectbox("Choisissez un actif :", tickers, format_func=lambda x: nom_affichages[x])
 
-# --- Chargement du CSV ---
+# --- Lecture & formattage du CSV ---
 fichier = f"data/donnees_{ticker.lower()}.csv"
 if not os.path.exists(fichier):
-    st.warning(f"❌ Aucune donnée pour {nom_affichages[ticker]}.")
+    st.warning(f"❌ Pas de données pour {nom_affichages[ticker]}.")
     st.stop()
 
-df = pd.read_csv(fichier)
+# 1) On lit et on sélectionne *toujours* les 6 premières colonnes
+df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
+df = df_raw.iloc[:, :6].copy()
 
-# --- 1) Uniformiser tous les noms de colonnes en minuscules et sans espaces ---
-df.columns = df.columns.str.strip().str.lower()
+# 2) On renomme
+df.columns = ["Date","Open","High","Low","Close","Volume"]
 
-# --- 2) Déterminer le suffixe ticker pour repérer les colonnes spécifiques ---
-suffix = ticker.lower().replace("^","").replace("=","").replace("-","_")
-
-# --- 3) Mapper date_, open_, high_, low_, close_, volume_ spécifiques vers génériques ---
-mapping = {}
-for base in ["date","open","high","low","close","volume"]:
-    # si la colonne générique existe déjà, on la garde
-    if base in df.columns:
-        mapping[base] = base
-    # sinon si la colonne ticker-spécifique existe, on la renomme
-    tcol = f"{base}_{suffix}"
-    if tcol in df.columns:
-        mapping[tcol] = base
-
-# --- 4) Appliquer le mapping et supprimer les doublons éventuels ---
-df = df.rename(columns=mapping)
-df = df.loc[:, ~df.columns.duplicated()]
-
-# --- 5) Vérifier que l'on dispose bien de date/open/high/low/close/volume ---
-required = ["date","open","high","low","close","volume"]
-missing = [c for c in required if c not in df.columns]
-if missing:
-    st.error(f"Colonnes manquantes : {missing}")
-    st.stop()
-
-# --- 6) Conversion des types ---
-df = df.rename(columns={c: c.title() for c in required})
-df["Date"]   = pd.to_datetime(df["Date"])
+# 3) On force types et on droppe les lignes incomplètes
+df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
 for col in ["Open","High","Low","Close","Volume"]:
     df[col] = pd.to_numeric(df[col], errors="coerce")
-df = df.dropna(subset=["Open","High","Low","Close","Volume"])
+df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
 
-# --- 7) Ajout des indicateurs techniques ---
+# 4) Ajout des indicateurs
 df = ajouter_indicateurs_techniques(df)
 
-# --- 8) Renommage des indicateurs en Title Case ---
-df = df.rename(columns={
+# 5) Renommage des indicateurs en Title Case
+df.rename(columns={
     "sma":   "Sma",
     "ema":   "Ema",
     "rsi":   "Rsi",
@@ -119,28 +78,24 @@ df = df.rename(columns={
     "adx":   "Adx",
     "cci":   "Cci",
     "willr": "Willr"
-})
+}, inplace=True)
+
+# 6) On retire tout doublon
 df = df.loc[:, ~df.columns.duplicated()]
 
-# --- 9) Analyse, affichages et graphiques ---
+# --- Affichage complet ---
 try:
     analyse, suggestion = analyser_signaux_techniques(df)
-
-    # Analyse technique brute
     st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
     st.markdown(analyse)
 
-    # Résumé AVA
-    signaux_list = analyse.split("\n") if analyse else []
-    resume = generer_resume_signal(signaux_list)
-    st.markdown(f"💬 **Résumé d'AVA :**\n{resume}")
-    st.success(f"🤖 *Intuition d'AVA :* {suggestion}")
+    resume = generer_resume_signal(analyse.split("\n"))
+    st.markdown(f"💬 **Résumé AVA :**\n{resume}")
+    st.success(f"🤖 *Intuition AVA :* {suggestion}")
 
-    # Suggestion de position
     st.subheader("📌 Suggestion de position")
     st.markdown(suggerer_position_et_niveaux(df))
 
-    # Graphique en bougies japonaises
     st.subheader("📈 Graphique en bougies japonaises")
     fig = go.Figure(data=[go.Candlestick(
         x=df["Date"],
@@ -151,46 +106,39 @@ try:
         increasing_line_color="green",
         decreasing_line_color="red"
     )])
-    fig.update_layout(
-        xaxis_title="Date",
-        yaxis_title="Prix",
-        height=500,
-        xaxis_rangeslider_visible=False
-    )
+    fig.update_layout(xaxis_title="Date", yaxis_title="Prix", height=500, xaxis_rangeslider_visible=False)
     st.plotly_chart(fig, use_container_width=True)
 
-    # Actualités financières
-    st.subheader("🗞️ Actualités financières récentes")
+    # 🗞️ Actualités
+    st.subheader("🗞️ Actualités financières")
     flux = feedparser.parse("https://www.investing.com/rss/news_301.rss")
     if flux.entries:
-        for entry in flux.entries[:5]:
-            st.markdown(f"🔹 [{entry.title}]({entry.link})", unsafe_allow_html=True)
+        for e in flux.entries[:5]:
+            st.markdown(f"🔹 [{e.title}]({e.link})", unsafe_allow_html=True)
     else:
-        st.info("Aucune actualité récupérée.")
+        st.info("Aucune actualité à afficher.")
 
-    # Prédiction IA
-    fichier_pred = (
-        f"predictions/prediction_"
-        f"{ticker.lower().replace('-', '').replace('^','').replace('=','')}.csv"
-    )
-    if os.path.exists(fichier_pred):
-        pred = pd.read_csv(fichier_pred)["prediction"].iloc[-1]
+    # 🤖 Prédiction IA
+    pred_file = f"predictions/prediction_{ticker.lower().replace('-', '').replace('^','').replace('=','')}.csv"
+    if os.path.exists(pred_file):
+        pred = pd.read_csv(pred_file)["prediction"].iat[-1]
         st.subheader("📈 Prédiction IA (demain)")
-        st.info("Hausse probable" if pred == 1 else "Baisse probable")
+        st.info("Hausse probable" if pred==1 else "Baisse probable")
     else:
         st.warning("Aucune prédiction trouvée.")
 
-    # RSI actuel
+    # 📊 RSI actuel
     if "Rsi" in df.columns:
         st.subheader("📊 RSI actuel")
-        st.metric("RSI", round(df["Rsi"].iloc[-1], 2))
+        st.metric("RSI", round(df["Rsi"].iat[-1],2))
 
-    # Données brutes
+    # 📄 Données brutes
     st.subheader("📄 Données récentes")
     st.dataframe(df.tail(10), use_container_width=True)
 
 except Exception as e:
-    st.error(f"Une erreur est survenue pendant l'analyse : {e}")
+    st.error(f"Erreur pendant l'analyse : {e}")
+
 
 
 
