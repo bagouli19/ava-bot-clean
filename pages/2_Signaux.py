@@ -161,7 +161,7 @@ fig.update_layout(
     height=500,
     xaxis_rangeslider_visible=False
 )
-st.plotly_chart(fig, use_container_width=True)(fig, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)
 
 # Actualités financières
 st.subheader("🗞️ Actualités financières récentes")
@@ -196,5 +196,6 @@ st.write(df[["Date", "Open", "High", "Low", "Close"]].head())
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
