@@ -1,4 +1,3 @@
-# pages/2_Signaux.py
 import streamlit as st
 import pandas as pd
 import os
@@ -61,98 +60,102 @@ if not os.path.exists(fichier):
     st.warning(f"❌ Pas de données pour {nom_affichages[ticker]}.")
     st.stop()
 
-    # 1) Lecture et prise des 6 colonnes OHLCV
-    df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
-    df = df_raw.iloc[:, :6].copy()
+# 1) Lecture et prise des 6 colonnes OHLCV
+df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
+df = df_raw.iloc[:, :6].copy()
 
-    # 2) Renommage explicite
-    col_map = {
-        df.columns[0]: "Date",
-        df.columns[1]: "Open",
-        df.columns[2]: "High",
-        df.columns[3]: "Low",
-        df.columns[4]: "Close",
-        df.columns[5]: "Volume",
-    }
-    df.rename(columns=col_map, inplace=True)
+# 2) Renommage explicite
+col_map = {
+    df.columns[0]: "Date",
+    df.columns[1]: "Open",
+    df.columns[2]: "High",
+    df.columns[3]: "Low",
+    df.columns[4]: "Close",
+    df.columns[5]: "Volume",
+}
+df.rename(columns=col_map, inplace=True)
 
-    # 3) Conversion des types et purge des lignes corrompues
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-    for c in ["Open","High","Low","Close","Volume"]:
-        df[c] = pd.to_numeric(df[c], errors="coerce")
-    df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
+# 3) Conversion des types et purge des lignes corrompues
+df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+for c in ["Open","High","Low","Close","Volume"]:
+    df[c] = pd.to_numeric(df[c], errors="coerce")
+df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
 
-    # 4) Ajout des indicateurs techniques
-    df = ajouter_indicateurs_techniques(df)
+# 4) Ajout des indicateurs techniques
+df = ajouter_indicateurs_techniques(df)
 
-    # 6) Analyse & affichages
-    try:
-        analyse, suggestion = analyser_signaux_techniques(df)
+# 5) (Optionnel) Affichage des colonnes disponibles pour debug
+# st.write("Colonnes après indicateurs :", df.columns.tolist())
 
-        # Analyse brute
-        st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
-        st.markdown(analyse or "Pas de signaux.")
+# 6) Analyse & affichages
+try:
+    analyse, suggestion = analyser_signaux_techniques(df)
 
-        # Résumé et intuition AVA
-        signaux_list = analyse.split("\n") if analyse else []
-        st.markdown(f"💬 **Résumé d'AVA :**\n{generer_resume_signal(signaux_list)}")
-        st.success(f"🤖 *Intuition AVA :* {suggestion}")
+    # Analyse brute
+    st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
+    st.markdown(analyse or "Pas de signaux.")
 
-        # Suggestion de position
-        st.subheader("📌 Suggestion de position")
-        st.markdown(suggerer_position_et_niveaux(df))
+    # Résumé et intuition AVA
+    signaux_list = analyse.split("\n") if analyse else []
+    st.markdown(f"💬 **Résumé d'AVA :**\n{generer_resume_signal(signaux_list)}")
+    st.success(f"🤖 *Intuition AVA :* {suggestion}")
 
-        # Candlestick
-        st.subheader("📈 Graphique en bougies japonaises")
-        fig = go.Figure(data=[go.Candlestick(
-            x=df["Date"],
-            open=df["Open"],
-            high=df["High"],
-            low=df["Low"],
-            close=df["Close"],
-            increasing_line_color="green",
-            decreasing_line_color="red"
-        )])
-        fig.update_layout(
-            xaxis_title="Date",
-            yaxis_title="Prix",
-            height=500,
-            xaxis_rangeslider_visible=False
-        )
-        st.plotly_chart(fig, use_container_width=True)
+    # Suggestion de position
+    st.subheader("📌 Suggestion de position")
+    st.markdown(suggerer_position_et_niveaux(df))
 
-        # Actualités financières
-        st.subheader("🗞️ Actualités financières récentes")
-        flux = feedparser.parse("https://www.investing.com/rss/news_301.rss")
-        if flux.entries:
-            for e in flux.entries[:5]:
-                st.markdown(f"🔹 [{e.title}]({e.link})", unsafe_allow_html=True)
-        else:
-            st.info("Aucune actualité récupérée.")
+    # Candlestick
+    st.subheader("📈 Graphique en bougies japonaises")
+    fig = go.Figure(data=[go.Candlestick(
+        x=df["Date"],
+        open=df["Open"],
+        high=df["High"],
+        low=df["Low"],
+        close=df["Close"],
+        increasing_line_color="green",
+        decreasing_line_color="red"
+    )])
+    fig.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Prix",
+        height=500,
+        xaxis_rangeslider_visible=False
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
-        # Prédiction IA
-        pred_file = (
-            f"predictions/prediction_"
-            f"{ticker.lower().replace('-', '').replace('^','').replace('=','')}.csv"
-        )
-        if os.path.exists(pred_file):
-            pred = pd.read_csv(pred_file)["prediction"].iat[-1]
-            st.subheader("📈 Prédiction IA (demain)")
-            st.info("Hausse probable" if pred == 1 else "Baisse probable")
-        else:
-            st.warning("Aucune prédiction trouvée.")
+    # Actualités financières
+    st.subheader("🗞️ Actualités financières récentes")
+    flux = feedparser.parse("https://www.investing.com/rss/news_301.rss")
+    if flux.entries:
+        for e in flux.entries[:5]:
+            st.markdown(f"🔹 [{e.title}]({e.link})", unsafe_allow_html=True)
+    else:
+        st.info("Aucune actualité récupérée.")
 
-        # RSI actuel
-        if "Rsi14" in df.columns:
-            st.subheader("📊 RSI actuel")
-            st.metric("RSI", round(df["Rsi14"].iat[-1],2))
+    # Prédiction IA
+    pred_file = (
+        f"predictions/prediction_"
+        f"{ticker.lower().replace('-', '').replace('^','').replace('=','')}.csv"
+    )
+    if os.path.exists(pred_file):
+        pred = pd.read_csv(pred_file)["prediction"].iat[-1]
+        st.subheader("📈 Prédiction IA (demain)")
+        st.info("Hausse probable" if pred == 1 else "Baisse probable")
+    else:
+        st.warning("Aucune prédiction trouvée.")
 
-        # Données brutes
-        st.subheader("📄 Données récentes")
-        st.dataframe(df.tail(10), use_container_width=True)
+    # RSI actuel
+    if "Rsi14" in df.columns:
+        st.subheader("📊 RSI actuel")
+        st.metric("RSI", round(df["Rsi14"].iat[-1],2))
 
-    except Exception as e:
-        st.error(f"Erreur pendant l'analyse : {e}")
+    # Données brutes
+    st.subheader("📄 Données récentes")
+    st.dataframe(df.tail(10), use_container_width=True)
+
+except Exception as e:
+    st.error(f"Erreur pendant l'analyse : {e}")
+
 
 
 
