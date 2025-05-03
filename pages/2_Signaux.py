@@ -29,11 +29,12 @@ def suggerer_position_et_niveaux(df):
     macd  = df["Macd"].iloc[-1]
     rsi   = df["Rsi"].iloc[-1]
     adx   = df["Adx"].iloc[-1]
+
     if macd > 0 and rsi < 70 and adx > 20:
-        sl, tp = round(close*0.97,2), round(close*1.05,2)
+        sl, tp = round(close * 0.97, 2), round(close * 1.05, 2)
         return f"📈 **Long**  🛑 SL : {sl}  🎯 TP : {tp}"
     elif macd < 0 and rsi > 30 and adx > 20:
-        sl, tp = round(close*1.03,2), round(close*0.95,2)
+        sl, tp = round(close * 1.03, 2), round(close * 0.95, 2)
         return f"📉 **Short**  🛑 SL : {sl}  🎯 TP : {tp}"
     else:
         return "⚠️ Conditions insuffisantes pour prise de position."
@@ -41,7 +42,7 @@ def suggerer_position_et_niveaux(df):
 # --- Sélection du ticker ---
 ticker = st.selectbox("Choisissez un actif :", tickers, format_func=lambda x: nom_affichages[x])
 
-# --- Lecture du fichier CSV ---
+# --- Chargement des données ---
 fichier = f"data/donnees_{ticker.lower()}.csv"
 if not os.path.exists(fichier):
     st.warning(f"❌ Aucune donnée pour {nom_affichages[ticker]}.")
@@ -49,57 +50,61 @@ if not os.path.exists(fichier):
 
 df = pd.read_csv(fichier)
 
-# 1) Strip + lowercase toutes les colonnes
+# 1) Uniformiser colonnes en minuscules
 df.columns = df.columns.str.strip().str.lower()
 
-# 2) Repérage dynamique du suffixe ticker dans les noms
-suffix = ticker.lower().replace('^','').replace('=','').replace('-','_')
-# ex: "tsla", "btc_usd", "gc_f", etc.
+# 2) Construire le suffixe correct pour ce ticker
+suffix = ticker.lower().replace("^","").replace("=","").replace("-","_")
 
-# 3) Construction du mapping { "open_tsla": "open", ... }
+# 3) Mapper open_tsla → Open, high_tsla → High, etc.
 mapping = {}
 for col in df.columns:
-    parts = col.rsplit('_', 1)
-    if len(parts) == 2 and parts[1] == suffix:
-        mapping[col] = parts[0]
+    for base in ["date","open","high","low","close","volume"]:
+        if col == base or col == f"{base}_{suffix}":
+            mapping[col] = base.title()
 
-# 4) Renommer les colonnes OHLCV ticker-spécifiques
 df.rename(columns=mapping, inplace=True)
 
-# 5) Conversion de la date
-df["date"] = pd.to_datetime(df["date"])
+# 4) Vérifier qu’on a bien les 6 colonnes attendues
+needed = ["Date","Open","High","Low","Close","Volume"]
+if not all(col in df.columns for col in needed):
+    missing = [c for c in needed if c not in df.columns]
+    st.error(f"Colonnes manquantes : {missing}")
+    st.stop()
 
-# 6) Ajout des indicateurs (ils seront en minuscules, ex: 'macd','rsi','adx')
+# 5) Conversion de la date
+df["Date"] = pd.to_datetime(df["Date"])
+
+# 6) Appel aux indicateurs (attend des colonnes Title Case OHLCV)
 df = ajouter_indicateurs_techniques(df)
 
-# 7) Renommage des indicateurs en Title Case
+# 7) Renommer les indicateurs (ajoutés en minuscules) en Title Case
 df.rename(columns={
-    "macd": "Macd",
-    "rsi":  "Rsi",
-    "adx":  "Adx"
+    "sma":   "Sma",
+    "ema":   "Ema",
+    "rsi":   "Rsi",
+    "macd":  "Macd",
+    "adx":   "Adx",
+    "cci":   "Cci",
+    "willr": "Willr"
 }, inplace=True)
 
-# 8) Mettre Title Case sur les colonnes de base
-df.rename(columns=lambda c: c.title(), inplace=True)
-
-# 9) Supprimer d’éventuels doublons (génériques vs ticker-spécifiques résiduels)
+# 8) Suppression d’éventuels doublons
 df = df.loc[:, ~df.columns.duplicated()]
 
-# 6) Remap des colonnes OHLCV si une version ticker-spécifique existe
-ticker_ts = ticker.title()  # ex: "Tsla", "Btc-Usd", etc.
-for attr in ["Open", "High", "Low", "Close", "Volume"]:
-    col_ts = f"{attr}_{ticker_ts}"
-    if col_ts in df.columns:
-        df[attr] = df[col_ts]
-
+# --- Affichages ---
 try:
+    # Analyse technique
     analyse, suggestion = analyser_signaux_techniques(df)
     st.subheader(f"🔎 Analyse pour {nom_affichages[ticker]}")
     st.markdown(analyse)
+    st.markdown(f"💬 **Résumé AVA :** {suggestion}")
 
+    # Suggestion de position
     st.subheader("📌 Suggestion de position")
     st.markdown(suggerer_position_et_niveaux(df))
 
+    # Candlestick
     st.subheader("📈 Graphique en bougies japonaises")
     fig = go.Figure(data=[go.Candlestick(
         x=df["Date"],
@@ -110,17 +115,13 @@ try:
         increasing_line_color="green",
         decreasing_line_color="red"
     )])
-    fig.update_layout(xaxis_title="Date", yaxis_title="Prix", height=500, xaxis_rangeslider_visible=False)
+    fig.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Prix",
+        height=500,
+        xaxis_rangeslider_visible=False
+    )
     st.plotly_chart(fig, use_container_width=True)
-
-    # Actualités
-    st.subheader("🗞️ Actualités financières")
-    flux = feedparser.parse("https://www.investing.com/rss/news_301.rss")
-    if flux.entries:
-        for e in flux.entries[:5]:
-            st.markdown(f"🔹 [{e.title}]({e.link})", unsafe_allow_html=True)
-    else:
-        st.info("Pas d’actus dispo.")
 
     # Prédiction IA
     fichier_pred = f"predictions/prediction_{ticker.lower().replace('-', '').replace('^','').replace('=','')}.csv"
