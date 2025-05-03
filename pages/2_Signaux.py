@@ -48,12 +48,18 @@ except Exception as e:
     st.stop()
 
 # Conversion des types
-df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-for c in ["Open","High","Low","Close","Volume"]:
-    df[c] = pd.to_numeric(df[c], errors="coerce")
-df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
+# Ne droppe pas sur Volume pour conserver un maximum de données
+(df["Date"], df["Open"], df["High"], df["Low"], df["Close"]) = (
+    pd.to_datetime(df["Date"], errors="coerce"),
+    *[pd.to_numeric(df[c], errors="coerce") for c in ["Open","High","Low","Close"]]
+)
+# On conserve Volume même si NaN
+# Suppression uniquement si date ou prix manquant
+df.dropna(subset=["Date","Open","High","Low","Close"], inplace=True)
 
 # Debug initial
+st.write("Données préparées (5 premières lignes) :")
+st.dataframe(df.head())
 st.write("Données préparées (5 premières lignes) :")
 st.dataframe(df.head())
 
@@ -166,6 +172,7 @@ elif "Rsi" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
