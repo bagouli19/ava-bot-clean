@@ -146,12 +146,12 @@ if os.path.exists(pred_file):
 else:
     st.warning("Aucune prédiction.")
 
-# RSI
-st.subheader("📊 RSI actuel")
-if "Rsi" in df_plot.columns:
-    st.metric("RSI", round(df_plot["Rsi"].iloc[-1],2))
-elif "Rsi14" in df_plot.columns:
-    st.metric("RSI", round(df_plot["Rsi14"].iloc[-1],2))
+    # RSI
+    st.subheader("📊 RSI actuel")
+    if "Rsi" in df_plot.columns:
+        st.metric("RSI", round(df_plot["Rsi"].iloc[-1],2))
+    elif "Rsi14" in df_plot.columns:
+        st.metric("RSI", round(df_plot["Rsi14"].iloc[-1],2))
 
 # Données brutes
 st.subheader("📄 Données récentes")
