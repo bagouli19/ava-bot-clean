@@ -86,9 +86,22 @@ fichier_data = f"data/donnees_{ticker.lower()}.csv"
 if os.path.exists(fichier_data):
     df = pd.read_csv(fichier_data)
 
-    # 1) Colonnes data en minuscules
-    df.columns = df.columns.str.strip().str.lower()
+    # 1) Normaliser (strip → lowercase → Title Case) sur TOUTES les colonnes existantes
+    df.columns = df.columns.str.strip().str.lower().str.title()
 
+    # 2) Conversion de la colonne Date
+    df["Date"] = pd.to_datetime(df["Date"])
+
+    # 3) Ajout des indicateurs techniques (ajoute des colonnes en lowercase)
+    df = ajouter_indicateurs_techniques(df)
+
+    # 4) Nouvelle normalisation Title Case pour les indicateurs fraîchement créés
+    df.columns = df.columns.str.strip().str.lower().str.title()
+
+    # 5) **Suppression des colonnes en double** (mêmes noms) — on garde la première occurrence
+    df = df.loc[:, ~df.columns.duplicated()]
+
+    df = ajouter_indicateurs_techniques(df)
     # 2) Renommage explicite data en Title Case
     df.rename(columns={
         "date": "Date",
@@ -99,22 +112,6 @@ if os.path.exists(fichier_data):
         "volume": "Volume"
     }, inplace=True)
     df["Date"] = pd.to_datetime(df["Date"])
-
-     # 1) Trim + lowercase + title case sur TOUTES les colonnes existantes
-    df.columns = df.columns.str.strip().str.lower().str.title()
-
-    # 2) Conversion de la date en datetime
-    df["Date"] = pd.to_datetime(df["Date"])
-
-    # 3) Ajout des indicateurs techniques
-    df = ajouter_indicateurs_techniques(df)
-
-    # 4) À nouveau : uniformiser la casse des nouvelles colonnes (Macd, Rsi, Adx…)
-    df.columns = df.columns.str.strip().str.lower().str.title()
-
-    # 5) Debug : vérifiez une dernière fois vos colonnes
-    st.write("Colonnes finales :", df.columns.tolist())
-
 
     # 4) Renommage des indicateurs en Title Case
     df.rename(columns={
