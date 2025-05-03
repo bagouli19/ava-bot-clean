@@ -62,20 +62,12 @@ if not os.path.exists(fichier):
     st.warning(f"Aucune donnée trouvée pour {nom_affichages[ticker]}")
     st.stop()
 
-# 1) Lire CSV et prendre les 6 premières colonnes
-try:
-    df_raw = pd.read_csv(fichier, parse_dates=[0])
-except Exception as e:
-    st.error(f"Erreur lecture CSV : {e}")
-    st.stop()
-
-if df_raw.shape[1] < 6:
-    st.error("Le fichier doit contenir au moins 6 colonnes OHLCV")
-    st.stop()
-
+# 1) Lire CSV (sans parse_dates) et prendre les 6 premières colonnes
+df_raw = pd.read_csv(fichier)
 df = df_raw.iloc[:, :6].copy()
 
-# 2) Renommer colonnes
+# 2) Renommer colonnes explicitement en Date/Open/.../Volume
+df.columns = ["Date","Open","High","Low","Close","Volume"]
 df.columns = ["Date","Open","High","Low","Close","Volume"]
 
 # 3) Conversion des types
@@ -138,6 +130,7 @@ if "Rsi14" in df.columns:
 
 st.subheader("Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
