@@ -37,9 +37,12 @@ def generer_resume_signal(signaux):
 
 def suggerer_position(df):
     last = df.iloc[-1]
-    macd = last.Macd if 'Macd' in df.columns else None
-    rsi  = last.Rsi  if 'Rsi'  in df.columns else None
-    adx  = last.Adx  if 'Adx'  in df.columns else None
+    try:
+        macd = float(last.Macd) if 'Macd' in df.columns else None
+        rsi  = float(last.Rsi)  if 'Rsi'  in df.columns else None
+        adx  = float(last.Adx)  if 'Adx'  in df.columns else None
+    except:
+        return "⚠️ Valeurs d'indicateurs invalides."
     if macd is None or rsi is None or adx is None:
         return "⚠️ Indicateurs manquants."
     if macd > 0 and rsi < 70 and adx > 20:
@@ -56,8 +59,11 @@ ticker = st.selectbox("Choisissez un actif :", tickers, format_func=lambda t: no
 # Chargement du CSV et préparation des données
 try:
     df_raw = pd.read_csv(f"data/donnees_{ticker.lower()}.csv", parse_dates=True)
-    col_mapping = {c: c.capitalize() for c in df_raw.columns}
-    df_raw.rename(columns=col_mapping, inplace=True)
+    col_mapping = {
+        "date": "Date", "open": "Open", "high": "High", "low": "Low",
+        "close": "Close", "adj close": "Close", "adjclose": "Close", "volume": "Volume"
+    }
+    df_raw.rename(columns=lambda c: col_mapping.get(c.lower().strip(), c), inplace=True)
     df_raw["Date"] = pd.to_datetime(df_raw["Date"], errors="coerce")
     for col in ["Open", "High", "Low", "Close"]:
         df_raw[col] = pd.to_numeric(df_raw[col], errors="coerce")
@@ -119,6 +125,7 @@ if "Rsi" in df.columns:
 # Données récentes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
