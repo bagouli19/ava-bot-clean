@@ -132,7 +132,6 @@ if os.path.exists(fichier_data):
 
         st.subheader("📈 Graphique en bougies japonaises")
             fig = go.Figure(data=[go.Candlestick(
-                fig = go.Figure(data=[go.Candlestick(
                 x=df["Date"],
                 open=df["Open"],
                 high=df["High"],
@@ -148,7 +147,7 @@ if os.path.exists(fichier_data):
             xaxis_rangeslider_visible=False
         )
         st.plotly_chart(fig, use_container_width=True)
-       )])
+      
 
 
         # --- Actualités financières ---
