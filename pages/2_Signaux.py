@@ -173,9 +173,17 @@ else:
 
 # RSI actuel
 st.subheader("📊 RSI actuel")
-if "Rsi14" in df.columns:
-    st.metric("RSI", round(df["Rsi14"].iloc[-1],2))
+# Afficher metric sur la colonne Rsi (ou Rsi14)
+if "Rsi" in df.columns:
+    st.metric("RSI", round(df["Rsi"].iloc[-1], 2))
+elif "Rsi14" in df.columns:
+    st.metric("RSI", round(df["Rsi14"].iloc[-1], 2))
+
+# Données pour debug du graphique
+st.subheader("Données pour graphique bougies")
+st.write(df[["Date", "Open", "High", "Low", "Close"]].head())
 
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
