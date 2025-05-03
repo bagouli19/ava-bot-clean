@@ -37,16 +37,16 @@ def generer_resume_signal(signaux):
 
 def suggerer_position(df):
     last = df.iloc[-1]
-    macd, rsi, adx = last.Macd if 'Macd' in df else None,
-                   last.Rsi if 'Rsi' in df else None,
-                   last.Adx if 'Adx' in df else None
+    macd = last.Macd if 'Macd' in df.columns else None
+    rsi  = last.Rsi  if 'Rsi'  in df.columns else None
+    adx  = last.Adx  if 'Adx'  in df.columns else None
     if macd is None or rsi is None or adx is None:
         return "⚠️ Indicateurs manquants."
-    if macd>0 and rsi<70 and adx>20:
-        sl, tp = round(last.Close*0.97,2), round(last.Close*1.05,2)
+    if macd > 0 and rsi < 70 and adx > 20:
+        sl, tp = round(last.Close * 0.97, 2), round(last.Close * 1.05, 2)
         return f"📈 Long | SL: {sl} | TP: {tp}"
-    if macd<0 and rsi>30 and adx>20:
-        sl, tp = round(last.Close*1.03,2), round(last.Close*0.95,2)
+    if macd < 0 and rsi > 30 and adx > 20:
+        sl, tp = round(last.Close * 1.03, 2), round(last.Close * 0.95, 2)
         return f"📉 Short | SL: {sl} | TP: {tp}"
     return "⚠️ Conditions insuffisantes."
 
@@ -111,6 +111,7 @@ if 'Rsi' in df.columns: st.metric("RSI", round(df['Rsi'].iloc[-1],2))
 # Données récentes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
