@@ -81,6 +81,21 @@ st.dataframe(df.head())
 st.write("Données préparées (5 premières lignes) :")
 st.dataframe(df.head())
 
+# --- Test bougies sur données brutes (5 premières lignes) ---
+try:
+    test_df = df.head(5).copy()
+    test_fig = go.Figure(data=[go.Candlestick(
+        x=pd.to_datetime(test_df["Date"], errors="coerce"),
+        open=test_df["Open"], high=test_df["High"],
+        low=test_df["Low"], close=test_df["Close"],
+        increasing_line_color="green", decreasing_line_color="red"
+    )])
+    test_fig.update_layout(xaxis_rangeslider_visible=False)
+    st.subheader("🔧 Test bougies (données brutes)")
+    st.plotly_chart(test_fig, use_container_width=True)
+except Exception as e:
+    st.warning(f"Test bougies échoué : {e}")
+
 # Ajout des indicateurs techniques
 try:
     df = ajouter_indicateurs_techniques(df)
@@ -190,6 +205,8 @@ elif "Rsi" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
+
 
 
 
