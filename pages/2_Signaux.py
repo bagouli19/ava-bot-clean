@@ -88,9 +88,21 @@ df.dropna(subset=["Date","Open","High","Low","Close","Volume"], inplace=True)
 #    Debug: affichage des colonnes après préparation
 st.write("Colonnes après préparation:", df.columns.tolist())
 
-# 4) Ajout des indicateurs techniques"
+# 4) Ajout des indicateurs techniques
 try:
     df = ajouter_indicateurs_techniques(df)
+    # Debug: colonnes après ajout des indicateurs
+    st.write("Colonnes après ajout des indicateurs:", df.columns.tolist())
+    # S'assurer que la colonne Date existe
+    if "Date" not in df.columns:
+        for col in df.columns:
+            if "date" in col.lower():
+                df.rename(columns={col: "Date"}, inplace=True)
+                st.write(f"Colonne '{col}' renommée en 'Date'.")
+                break
+    if "Date" not in df.columns:
+        st.error("Colonne 'Date' introuvable après ajout des indicateurs.")
+        st.stop()
 except Exception as e:
     st.error(f"Erreur indicateurs techniques : {e}")
     st.stop()
@@ -155,6 +167,7 @@ if "Rsi14" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
