@@ -95,7 +95,7 @@ try:
     df = ajouter_indicateurs_techniques(df)
     # Uniformiser tous les noms en Title Case après ajout des indicateurs
     df.columns = df.columns.str.title()
-    st.write("Colonnes après ajout des indicateurs:", df.columns.tolist())("Colonnes après ajout des indicateurs:", df.columns.tolist())
+    st.write("Colonnes après ajout des indicateurs:", df.columns.tolist())
 except Exception as e:
     st.error(f"Erreur indicateurs techniques : {e}")
     st.stop()
@@ -169,6 +169,7 @@ elif "Rsi14" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
