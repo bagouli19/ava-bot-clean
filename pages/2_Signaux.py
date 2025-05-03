@@ -131,29 +131,25 @@ try:
     st.subheader("📌 Suggestion de position")
     st.markdown(suggerer_position_et_niveaux(df))
 
-    # Candlestick
+        # Candlestick
     st.subheader("📈 Graphique en bougies japonaises")
-    # Détection dynamique de la colonne date
-    date_col = next((c for c in df.columns if c.lower() == "date"), None)
-    if date_col is None:
-        st.error("Colonne 'Date' introuvable, impossible d'afficher le graphique.")
-    else:
-        fig = go.Figure(data=[go.Candlestick(
-            x=df[date_col],
-            open=df.get("Open", df.iloc[:,1]),
-            high=df.get("High", df.iloc[:,2]),
-            low=df.get("Low", df.iloc[:,3]),
-            close=df.get("Close", df.iloc[:,4]),
-            increasing_line_color="green",
-            decreasing_line_color="red"
-        )])
-        fig.update_layout(
-            xaxis_title="Date",
-            yaxis_title="Prix",
-            height=500,
-            xaxis_rangeslider_visible=False
-        )
-        st.plotly_chart(fig, use_container_width=True)
+    # Utilisation des colonnes garanties
+    fig = go.Figure(data=[go.Candlestick(
+        x=df["Date"],
+        open=df["Open"],
+        high=df["High"],
+        low=df["Low"],
+        close=df["Close"],
+        increasing_line_color="green",
+        decreasing_line_color="red"
+    )])
+    fig.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Prix",
+        height=500,
+        xaxis_rangeslider_visible=False
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
     # Actualités
     st.subheader("🗞️ Actualités financières récentes")
@@ -184,6 +180,7 @@ try:
 
 except Exception as e:
     st.error(f"Erreur pendant l'analyse : {e}")
+
 
 
 
