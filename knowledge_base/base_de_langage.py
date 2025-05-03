@@ -1050,7 +1050,28 @@ base_langage = {
 
     "A quoi sert un stop-loss ?": [
         "Un stop-loss est un outil de protection. Il permet de limiter vos pertes en fermant automatiquement une position si le prix atteint un niveau defini. C est essentiel pour preserver votre capital. Meme les meilleurs traders utilisent des stop-loss pour eviter de tout perdre sur un mauvais mouvement de marche."
+    ],
+    
+    "Qu est-ce qu une resistance ?": [
+        "Une resistance est un niveau de prix ou un actif a tendance a buter vers le haut. Cela signifie que les vendeurs prennent le dessus et empechent le prix de monter. Si le prix casse cette resistance, cela peut signaler une poursuite de la hausse."
+    ],
+
+    "Qu est-ce qu un support ?": [
+        "Un support est un niveau de prix ou un actif a tendance a rebondir vers le haut. C est une zone ou les acheteurs reviennent. Si le prix casse ce support a la baisse, cela peut indiquer une poursuite du mouvement baissier."
+    ],
+
+    "Pourquoi utiliser plusieurs indicateurs techniques ?": [
+        "Utiliser plusieurs indicateurs permet de confirmer les signaux. Aucun indicateur n est infaillible seul. En combinant RSI, MACD, moyennes mobiles, volumes, on obtient une vision plus fiable de la tendance ou d un retournement possible."
+    ],
+
+    "C est quoi un signal haussier ?": [
+        "Un signal haussier indique que le prix pourrait monter. Cela peut etre un croisement de moyennes mobiles, un RSI qui sort d une zone de survente, un breakout d une resistance, ou un croisement MACD positif. Il invite a considerer une position acheteuse."
+    ],
+
+    "C est quoi un signal baissier ?": [
+        "Un signal baissier suggere une possible baisse du prix. Il peut venir d un croisement MACD negatif, d un RSI en zone de surachat qui baisse, ou d une cassure de support. C est souvent une alerte pour vendre ou se proteger."
     ]
+
 
 
 }
