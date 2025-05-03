@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import streamlit as st
-import pandas as pd
 import os
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
 import plotly.graph_objects as go
