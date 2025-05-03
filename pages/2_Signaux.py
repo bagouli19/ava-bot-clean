@@ -132,18 +132,23 @@ if "Date" in df.columns:
         decreasing_line_color="red"
     )])
     fig.update_layout(
-    xaxis_title="Date",
-    yaxis_title="Prix",
-    height=500,
-    xaxis_rangeslider_visible=False
-)
-# Forcer l'affichage des dates en catégorie si vide
-fig.update_xaxes(type='category')xaxis_title="Date", yaxis_title="Prix", height=500, xaxis_rangeslider_visible=False)
+        xaxis_title="Date",
+        yaxis_title="Prix",
+        height=500,
+        xaxis_rangeslider_visible=False
+    )
+    # Forcer l'affichage des dates en catégorie si nécessaire
+    fig.update_xaxes(type='category')
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.info("Pas de colonne Date pour le graphique.")
 
 # Fallback: affichage du cours de clôture en ligne
+st.subheader("📈 Prix de clôture (ligne)")
+line_df = df.set_index("Date")["Close"].sort_index()
+st.line_chart(line_df)
+
+# Actualités financières
 st.subheader("📈 Prix de clôture (ligne)")
 line_df = df.set_index("Date")["Close"].sort_index()
 st.line_chart(line_df)
@@ -176,6 +181,7 @@ elif "Rsi14" in df.columns:
 # Données brutes
 st.subheader("📄 Données récentes")
 st.dataframe(df.tail(10), use_container_width=True)
+
 
 
 
