@@ -86,10 +86,10 @@ fichier_data = f"data/donnees_{ticker.lower()}.csv"
 if os.path.exists(fichier_data):
     df = pd.read_csv(fichier_data)
 
-    # 1) Normaliser les colonnes : minuscules, sans espaces
+    # 1) Colonnes data en minuscules
     df.columns = df.columns.str.strip().str.lower()
 
-    # 2) Renommer explicitement en Title Case pour l'analyse et le plot
+    # 2) Renommage explicite data en Title Case
     df.rename(columns={
         "date": "Date",
         "open": "Open",
@@ -98,15 +98,17 @@ if os.path.exists(fichier_data):
         "close": "Close",
         "volume": "Volume"
     }, inplace=True)
-
-    # 3) Debug rapide (à retirer une fois validé)
-    # st.write("Colonnes finales :", df.columns.tolist())
-
-    # 4) Conversion de Date en datetime si nécessaire
     df["Date"] = pd.to_datetime(df["Date"])
 
-    # 5) Ajout des indicateurs techniques
+    # 3) Ajout des indicateurs techniques (génère macd, rsi, adx en minuscules)
     df = ajouter_indicateurs_techniques(df)
+
+    # 4) Renommage des indicateurs en Title Case
+    df.rename(columns={
+        "macd": "Macd",
+        "rsi": "Rsi",
+        "adx": "Adx"
+    }, inplace=True)
 
     try:
         analyse, suggestion = analyser_signaux_techniques(df)
@@ -141,7 +143,7 @@ if os.path.exists(fichier_data):
         st.subheader("📌 Suggestion de position")
         st.markdown(suggerer_position_et_niveaux(df))
 
-        # --- Graphique en bougies japonaises ---
+       # --- Graphique en bougies japonaises ---
         st.subheader("📈 Graphique en bougies japonaises")
         fig = go.Figure(data=[go.Candlestick(
             x=df["Date"],
@@ -159,6 +161,7 @@ if os.path.exists(fichier_data):
             xaxis_rangeslider_visible=False
         )
         st.plotly_chart(fig, use_container_width=True)
+
 
         # --- Actualités financières ---
         st.subheader("🗞️ Actualités financières récentes")
