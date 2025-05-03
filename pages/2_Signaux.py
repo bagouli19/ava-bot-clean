@@ -87,13 +87,12 @@ if os.path.exists(fichier_data):
     # ✅ On renomme les colonnes si nécessaire pour correspondre à l'analyse technique
     df.columns = [col.strip().capitalize() for col in df.columns]
     df = df.rename(columns={
-        df = df.rename(columns={
-            "open": "open",
-            "high": "high",
-            "low": "low",
-            "close": "close",
-            "volume": "volume",
-            "date": "date"
+        "open": "open",
+        "high": "high",
+        "low": "low",
+        "close": "close",
+        "volume": "volume",
+        "date": "date"
     })
 
     df = ajouter_indicateurs_techniques(df)
