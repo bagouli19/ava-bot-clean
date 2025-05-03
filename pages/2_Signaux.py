@@ -145,8 +145,8 @@ if not os.path.exists(fichier):
         st.subheader("📄 Données récentes")
         st.dataframe(df.tail(10), use_container_width=True)
 
-except Exception as e:
-    st.error(f"Erreur pendant l'analyse : {e}")
+    except Exception as e:
+        st.error(f"Erreur pendant l'analyse : {e}")
 
 
 
