@@ -67,16 +67,36 @@ if not os.path.exists(fichier):
     st.warning(f"❌ Pas de données pour {nom_affichages[ticker]}." )
     st.stop()
 
-# 1) Lecture et prise des 6 colonnes OHLCV
-df_raw = pd.read_csv(fichier, parse_dates=[0], dayfirst=True)
-df = df_raw.iloc[:, :6].copy()
-
-# 2) Renommage explicite
-df.columns = [
-    "Date","Open","High","Low","Close","Volume"
-]
-
-# 3) Conversion des types et purge
+# 1) Lecture du CSV complet
+#    On renomme dynamiquement les colonnes OHLCV par leur nom (ignore la position)
+df = pd.read_csv(fichier, dayfirst=True)
+# Mapping des colonnes en base de leur nom (insensible à la casse)
+mapping = {}
+for orig in df.columns:
+    low = orig.strip().lower()
+    if low in ["date", "datetime"]:
+        mapping[orig] = "Date"
+    elif low in ["open", "open_price"]:
+        mapping[orig] = "Open"
+    elif low in ["high", "high_price"]:
+        mapping[orig] = "High"
+    elif low in ["low", "low_price"]:
+        mapping[orig] = "Low"
+    elif low in ["close", "close_price", "adj close", "adjclose"]:
+        mapping[orig] = "Close"
+    elif low == "volume":
+        mapping[orig] = "Volume"
+# On applique le renommage
+if mapping:
+    df = df.rename(columns=mapping)
+# 2) On garde uniquement les colonnes indispensables
+required = ["Date","Open","High","Low","Close","Volume"]
+missing = [c for c in required if c not in df.columns]
+if missing:
+    st.error(f"Colonnes OHLCV manquantes : {missing}")
+    st.stop()
+# 3) Conversion des types et purge des lignes incomplètes
+df = df[required].copy()
 df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
 for c in ["Open","High","Low","Close","Volume"]:
     df[c] = pd.to_numeric(df[c], errors="coerce")
@@ -164,6 +184,7 @@ try:
 
 except Exception as e:
     st.error(f"Erreur pendant l'analyse : {e}")
+
 
 
 
