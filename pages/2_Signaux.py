@@ -133,7 +133,7 @@ try:
             height=500,
             xaxis_rangeslider_visible=False
         )
-        st.plotly_chart(fig, use_container_width=True)(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
 
     # Actualités
     st.subheader("🗞️ Actualités financières récentes")
@@ -164,6 +164,7 @@ try:
 
 except Exception as e:
     st.error(f"Erreur pendant l'analyse : {e}")
+
 
 
 
