@@ -87,12 +87,13 @@ if os.path.exists(fichier_data):
     # ✅ On renomme les colonnes si nécessaire pour correspondre à l'analyse technique
     df.columns = [col.strip().capitalize() for col in df.columns]
     df = df.rename(columns={
-        "open": "Open",
-        "high": "High",
-        "low": "Low",
-        "close": "Close",
-        "volume": "Volume",
-        "date": "Date"
+        df = df.rename(columns={
+            "open": "open",
+            "high": "high",
+            "low": "low",
+            "close": "close",
+            "volume": "volume",
+            "date": "date"
     })
 
     df = ajouter_indicateurs_techniques(df)
@@ -132,11 +133,12 @@ if os.path.exists(fichier_data):
 
         st.subheader("📈 Graphique en bougies japonaises")
         fig = go.Figure(data=[go.Candlestick(
-            x=df["date"],
-            open=df["open"],
-            high=df["high"],
-            low=df["low"],
-            close=df["close"],
+            fig = go.Figure(data=[go.Candlestick(
+            x=df["Date"],
+            open=df["Open"],
+            high=df["High"],
+            low=df["Low"],
+            close=df["Close"],
             increasing_line_color="green",
             decreasing_line_color="red"
         )])
@@ -147,7 +149,7 @@ if os.path.exists(fichier_data):
             xaxis_rangeslider_visible=False
         )
         st.plotly_chart(fig, use_container_width=True)
-
+       )])
 
 
         # --- Actualités financières ---
