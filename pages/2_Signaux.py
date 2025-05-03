@@ -131,7 +131,7 @@ try:
     st.subheader("📌 Suggestion de position")
     st.markdown(suggerer_position_et_niveaux(df))
 
-        # Candlestick
+    # Candlestick
     st.subheader("📈 Graphique en bougies japonaises")
     # Utilisation des colonnes garanties
     fig = go.Figure(data=[go.Candlestick(
@@ -180,6 +180,7 @@ try:
 
 except Exception as e:
     st.error(f"Erreur pendant l'analyse : {e}")
+
 
 
 
