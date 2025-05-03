@@ -131,7 +131,7 @@ if os.path.exists(fichier_data):
         st.markdown(suggerer_position_et_niveaux(df))
 
         st.subheader("📈 Graphique en bougies japonaises")
-        fig = go.Figure(data=[go.Candlestick(
+            fig = go.Figure(data=[go.Candlestick(
                 fig = go.Figure(data=[go.Candlestick(
                 x=df["Date"],
                 open=df["Open"],
