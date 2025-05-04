@@ -88,7 +88,7 @@ STYLE_FILE      = os.path.join(SCRIPT_DIR, "style_ava.json")
 
 
 # ───────────────────────────────────────────────────────────────────────
-# 3️⃣ Gestion des profils utilisateur
+# 3️⃣ Gestion des profils utilisateur (mémoire personnelle)
 # ───────────────────────────────────────────────────────────────────────
 def load_profiles() -> dict:
     try:
@@ -111,7 +111,7 @@ def set_my_profile(profile: dict):
     profils[user] = profile
     save_profiles(profils)
 
-def memoriser_souvenir(cle: str, valeur: str):
+def memoriser_souvenir_utilisateur(cle: str, valeur: str):
     profil = get_my_profile()
     profil["souvenirs"][cle] = valeur
     set_my_profile(profil)
@@ -145,6 +145,7 @@ if st.sidebar.button("Changer prénom pour 'Alex'"):
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
 
+
 FICHIER_MEMOIRE = "pages/memoire_ava.json"
 
 def charger_memoire_ava() -> dict:
@@ -159,7 +160,7 @@ def sauvegarder_memoire_ava(memoire: dict):
     with open(FICHIER_MEMOIRE, "w", encoding="utf-8") as f:
         json.dump(memoire, f, ensure_ascii=False, indent=2)
 
-def memoriser_souvenir(type_souvenir: str, contenu: str):
+def memoriser_souvenir_global(type_souvenir: str, contenu: str):
     memoire = charger_memoire_ava()
     memoire["souvenirs"].append({
         "type": type_souvenir,
@@ -167,7 +168,7 @@ def memoriser_souvenir(type_souvenir: str, contenu: str):
         "date": datetime.now().strftime("%Y-%m-%d")
     })
     sauvegarder_memoire_ava(memoire)
-    print(f"🧠 Souvenir mémorisé : [{type_souvenir}] {contenu}")
+    print(f"🧠 Souvenir global mémorisé : [{type_souvenir}] {contenu}")
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1391,7 +1392,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         if phrase in question_clean:
             contenu = question_clean.split(phrase)[-1].strip(" .!?")
             if contenu and len(contenu) > 10:
-                memoriser_souvenir("réflexion_utilisateur", contenu)
+                memoriser_souvenir_global("réflexion_utilisateur", contenu)
                 return f"🧠 J’ai noté cette pensée dans mes souvenirs : **{contenu}**"
 
     suggestions = {
@@ -1628,16 +1629,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         if question_clean.startswith(debut_phrase):
             valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
             if valeur:
-                # Mise à jour du profil utilisateur (fichier + session)
+                # Mise à jour du profil utilisateur uniquement
                 profil = get_my_profile()
                 profil["souvenirs"][cle_souvenir] = valeur
                 set_my_profile(profil)
 
-                # Enregistrement en mémoire globale aussi (optionnel)
-                cle_mem_global = f"{cle_souvenir}_{valeur.lower().replace(' ', '_')}"
-                ajouter_souvenir(cle_mem_global, valeur)
+                return f"✨ J'ai bien noté dans ton profil : **{valeur.capitalize()}** ! 🧠"
 
-                return f"✨ J'ai bien noté dans mes souvenirs : **{valeur.capitalize()}** ! 🧠"
     
     # --- 2️⃣ Recherche d'un souvenir dans le profil utilisateur ---
     profil = get_my_profile()
