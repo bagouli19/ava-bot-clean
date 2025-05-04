@@ -161,7 +161,7 @@ def charger_memoire_ava() -> dict:
             return data
     except (FileNotFoundError, json.JSONDecodeError):
         return {"souvenirs": []}
-
+print("📁 Chemin réel d’écriture mémoire :", FICHIER_MEMOIRE)
 def sauvegarder_memoire_ava(memoire: dict):
     """Sauvegarde la mémoire dans le fichier mémoire_ava.json"""
     try:
