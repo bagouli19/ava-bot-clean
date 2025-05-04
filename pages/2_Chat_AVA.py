@@ -147,10 +147,19 @@ if st.sidebar.button("Changer prénom pour 'Alex'"):
 
 FICHIER_MEMOIRE = os.path.join(PROJECT_ROOT, "data", "memoire_ava.json")
 
+# ───────────────────────────────────────────────────────────────────────
+# 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
+# ───────────────────────────────────────────────────────────────────────
+
+FICHIER_MEMOIRE = os.path.join(PROJECT_ROOT, "data", "memoire_ava.json")
+
 def charger_memoire_ava() -> dict:
+    """Charge la mémoire globale depuis le fichier JSON"""
     try:
         with open(FICHIER_MEMOIRE, "r", encoding="utf-8") as f:
             data = json.load(f)
+            if not isinstance(data, dict):
+                data = {}
             if "souvenirs" not in data or not isinstance(data["souvenirs"], list):
                 data["souvenirs"] = []
             return data
@@ -158,12 +167,19 @@ def charger_memoire_ava() -> dict:
         return {"souvenirs": []}
 
 def sauvegarder_memoire_ava(memoire: dict):
-    os.makedirs(os.path.dirname(FICHIER_MEMOIRE), exist_ok=True)
-    with open(FICHIER_MEMOIRE, "w", encoding="utf-8") as f:
-        json.dump(memoire, f, ensure_ascii=False, indent=2)
-    st.sidebar.success("✅ mémoire_ava.json sauvegardé")
+    """Sauvegarde la mémoire dans le fichier mémoire_ava.json"""
+    try:
+        os.makedirs(os.path.dirname(FICHIER_MEMOIRE), exist_ok=True)
+        with open(FICHIER_MEMOIRE, "w", encoding="utf-8") as f:
+            json.dump(memoire, f, ensure_ascii=False, indent=2)
+        print("✅ mémoire_ava.json bien sauvegardé :", FICHIER_MEMOIRE)
+        st.sidebar.success("✅ mémoire_ava.json sauvegardé")
+    except Exception as e:
+        print(f"❌ Erreur lors de la sauvegarde de la mémoire : {e}")
+        st.sidebar.error("❌ Erreur lors de la sauvegarde de la mémoire.")
 
 def memoriser_souvenir_global(type_souvenir: str, contenu: str):
+    """Ajoute un souvenir à la mémoire globale"""
     memoire = charger_memoire_ava()
     if "souvenirs" not in memoire or not isinstance(memoire["souvenirs"], list):
         memoire["souvenirs"] = []
@@ -173,8 +189,9 @@ def memoriser_souvenir_global(type_souvenir: str, contenu: str):
         "contenu": contenu,
         "date": datetime.now().strftime("%Y-%m-%d")
     })
-
     sauvegarder_memoire_ava(memoire)
+    print(f"🧠 Souvenir ajouté : [{type_souvenir}] {contenu}")
+
     
 
 
