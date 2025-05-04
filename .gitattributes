@@ -1,3 +1,4 @@
 *.bin filter=lfs diff=lfs merge=lfs -text
-*.json filter=lfs diff=lfs merge=lfs -text
+**.json filter=lfs diff=lfs merge=lfs -text
+!data/memoire_ava.json
 *.txt filter=lfs diff=lfs merge=lfs -text
