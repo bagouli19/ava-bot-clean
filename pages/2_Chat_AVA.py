@@ -96,6 +96,8 @@ FICHIER_PROFIL = "data/profil_utilisateur.json"
 BRANCHE = "main"
 GITHUB_TOKEN = st.secrets["github"]["token"]  # ⚠️ Assure-toi qu'il est défini
 
+import base64
+
 def charger_profils() -> dict:
     url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{BRANCHE}/{FICHIER_PROFIL}"
     try:
