@@ -1237,6 +1237,7 @@ def repondre_openai(prompt: str) -> str:
 
 
 def trouver_reponse(question: str, model) -> str:
+    message_bot = "..."
     """
     Trouve la réponse la plus adaptée à la question posée.
     """
