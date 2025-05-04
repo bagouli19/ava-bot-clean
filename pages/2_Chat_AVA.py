@@ -2504,6 +2504,9 @@ if prompt:
 
     # 🔘 Bouton test mémoire globale (à usage développeur)
     if st.sidebar.button("🧠 Voir mémoire globale"):
-        memoire = charger_memoire_ava()
-        st.sidebar.write("📂 Contenu actuel de la mémoire :", memoire)
+        try:
+            memoire = charger_memoire_ava()
+            st.sidebar.write("📂 Contenu actuel de la mémoire :", memoire)
+        except Exception as e:
+            st.sidebar.error(f"❌ Erreur lors du chargement de la mémoire : {e}")
 
