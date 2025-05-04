@@ -313,7 +313,7 @@ def obtenir_tendances_shazam(mot_cle):
             return [f"❌ Erreur API : {response.status_code}"]
     except Exception as e:
         return [f"❌ Exception : {str(e)}"]
-print(f"📡 Lancement de la recherche musicale avec le mot-clé : {mot_cle}")
+
 # ───────────────────────────────────────────────────────────────────────
 # 6️⃣ Chargement du modèle sémantique MiniLM
 # ───────────────────────────────────────────────────────────────────────
@@ -1386,7 +1386,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     }
 
     dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
-    print("🟢 Bloc musical déclenché pour le thème :", dernier_theme)
+
 
     if dernier_theme in suggestions:
         message_bot += f"\n{suggestions[dernier_theme]}"
@@ -1394,6 +1394,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # 🎵 Bloc spécial pour la musique (avec mot-clé fixe pour le moment)
     if dernier_theme == "musique":
         mot_cle_aleatoire = random.choice(["pop", "rap", "chill", "drill", "france", "party"])
+        print("🟢 Bloc musical déclenché pour le thème :", dernier_theme)
+        print(f"📡 Lancement de la recherche musicale avec le mot-clé : {mot_cle}")
         tendances = obtenir_tendances_shazam(mot_cle_aleatoire)
         if tendances:
             message_bot += (
