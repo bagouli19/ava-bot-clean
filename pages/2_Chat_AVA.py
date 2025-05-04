@@ -159,6 +159,7 @@ def sauvegarder_memoire_ava(memoire: dict):
     os.makedirs(os.path.dirname(FICHIER_MEMOIRE), exist_ok=True)
     with open(FICHIER_MEMOIRE, "w", encoding="utf-8") as f:
         json.dump(memoire, f, ensure_ascii=False, indent=2)
+    st.sidebar.success("✅ mémoire_ava.json sauvegardé")
 
 def memoriser_souvenir_global(type_souvenir: str, contenu: str):
     memoire = charger_memoire_ava()
@@ -2502,7 +2503,7 @@ if prompt:
         st.markdown(reponse)
 
     # 🔘 Bouton test mémoire globale (à usage développeur)
-    if st.sidebar.button("🧠 Test mémoire globale"):
-        memoriser_souvenir_global("test", "Ceci est un test mémoire globale")
-        st.success("🧠 Souvenir global de test enregistré avec succès !")
+    if st.sidebar.button("🧠 Voir mémoire globale"):
+        memoire = charger_memoire_ava()
+        st.sidebar.write("📂 Contenu actuel de la mémoire :", memoire)
 
