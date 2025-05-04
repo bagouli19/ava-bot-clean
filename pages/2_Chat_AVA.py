@@ -1401,6 +1401,24 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
+    # 🔍 Affichage des souvenirs mémorisés si demandé
+    if question_clean in [
+        "montre moi tes souvenirs",
+        "qu'as tu retenu",
+        "quels souvenirs as tu",
+        "montre tes souvenirs",
+        "qu'as tu mémorisé",
+        "rappelle toi ce que tu as appris"
+    ]:
+        memoire = charger_memoire_ava()
+        souvenirs = memoire.get("souvenirs", [])
+        if not souvenirs:
+            return "📭 Pour l'instant, je n’ai rien mémorisé de particulier."
+        reponse = "🧠 Voici ce que j’ai noté dans ma mémoire globale :\n\n"
+        for s in souvenirs[-5:]:
+            reponse += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
+        return reponse
+
     # 🧠 Bloc mémoire évolutive AVA
     phrases_detectables = [
         "je pense que", 
