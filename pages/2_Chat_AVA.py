@@ -1426,7 +1426,14 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         if phrase in question_clean:
             contenu = question_clean.split(phrase)[-1].strip(" .!?")
             if contenu and len(contenu) > 10:
-                memoriser_souvenir_global("réflexion_utilisateur", contenu)
+                memoire = charger_memoire_ava()
+                memoire["souvenirs"].append({
+                    "type": "réflexion_utilisateur",
+                    "contenu": contenu,
+                    "date": datetime.now().strftime("%Y-%m-%d")
+                })
+                sauvegarder_memoire_ava(memoire)
+                
                 return f"🧠 J’ai noté cette pensée dans mes souvenirs : **{contenu}**"
 
     suggestions = {
