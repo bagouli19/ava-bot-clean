@@ -286,40 +286,32 @@ def verifier_reset_memoire_court_terme(duree_max=300):  # 5 minutes
         memoire_court_terme["dernieres_repliques"] = []
         memoire_court_terme["dernier_sujet"] = ""
 
-
-def obtenir_tendances_shazam():
+def rechercher_musique_shazam(mot_cle):
     url = f"https://shazam-core.p.rapidapi.com/v1/search/suggest?query={mot_cle}"
-    querystring = {
-        "locale": "fr-FR",
-        "pageSize": "5",
-        "startFrom": "0",
-        "listId": "france"
-    }
-
     headers = {
         "X-RapidAPI-Key": st.secrets["shazam"]["api_key"],
         "X-RapidAPI-Host": st.secrets["shazam"]["api_host"]
     }
 
     try:
-        response = requests.get(url, headers=headers, params=querystring)
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             data = response.json()
-            titres = []
-            for i, piste in enumerate(data.get("tracks", []), start=1):
-                titre = piste.get("title", "Titre inconnu")
-                artiste = piste.get("subtitle", "Artiste inconnu")
-                url_youtube = piste.get("url", "")  # souvent un lien Apple/YouTube
+            pistes = data.get("tracks", {}).get("hits", [])[:5]
+            resultats = []
+            for i, piste in enumerate(pistes, start=1):
+                titre = piste["track"]["title"]
+                artiste = piste["track"]["subtitle"]
+                url_audio = piste["track"].get("url", "")
                 ligne = f"**{i}. {titre}** – *{artiste}*"
-                if url_youtube:
-                    ligne += f" [(🔗 Écouter)]({url_youtube})"
-                titres.append(ligne)
-            return titres
+                if url_audio:
+                    ligne += f" [(🔗 Écouter)]({url_audio})"
+                resultats.append(ligne)
+            return resultats
         else:
-            return [f"⚠️ Erreur Shazam ({response.status_code})"]
+            return [f"❌ Erreur API : {response.status_code}"]
     except Exception as e:
-        return [f"⚠️ Exception Shazam : {str(e)}"]
-
+        return [f"❌ Exception : {str(e)}"]
 
 # ───────────────────────────────────────────────────────────────────────
 # 6️⃣ Chargement du modèle sémantique MiniLM
