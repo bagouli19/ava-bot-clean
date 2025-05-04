@@ -1439,7 +1439,14 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 })
                 sauvegarder_memoire_ava(memoire)
 
-                return f"🧠 J’ai noté cette pensée dans mes souvenirs : **{contenu}**"
+                # 🔁 Recharge la mémoire après écriture pour mise à jour immédiate
+                memoire = charger_memoire_ava()
+                derniers_souvenirs = memoire.get("souvenirs", [])[-3:]  # on affiche les 3 derniers
+                retour = "🧠 J’ai noté cette pensée dans mes souvenirs :\n"
+                for s in derniers_souvenirs:
+                    retour += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
+                return retour
+
 
     suggestions = {
         "musique": "Souhaitez-vous que je vous propose une autre chanson ? 🎵",
