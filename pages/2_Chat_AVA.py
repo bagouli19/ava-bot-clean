@@ -1217,6 +1217,39 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
+def obtenir_tendances_shazam():
+    url = "https://shazam.p.rapidapi.com/charts/track"
+    querystring = {
+        "locale": "fr-FR",
+        "pageSize": "5",
+        "startFrom": "0",
+        "listId": "france"
+    }
+
+    headers = {
+        "X-RapidAPI-Key": st.secrets["shazam"]["api_key"],
+        "X-RapidAPI-Host": st.secrets["shazam"]["api_host"]
+    }
+
+    try:
+        response = requests.get(url, headers=headers, params=querystring)
+        if response.status_code == 200:
+            data = response.json()
+            titres = []
+            for i, piste in enumerate(data.get("tracks", []), start=1):
+                titre = piste.get("title", "Titre inconnu")
+                artiste = piste.get("subtitle", "Artiste inconnu")
+                url_youtube = piste.get("url", "")  # souvent un lien Apple/YouTube
+                ligne = f"**{i}. {titre}** – *{artiste}*"
+                if url_youtube:
+                    ligne += f" [(🔗 Écouter)]({url_youtube})"
+                titres.append(ligne)
+            return titres
+        else:
+            return [f"⚠️ Erreur Shazam ({response.status_code})"]
+    except Exception as e:
+        return [f"⚠️ Exception Shazam : {str(e)}"]
+
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
     try:
@@ -1334,9 +1367,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
 
     if dernier_theme in suggestions:
-        message_bot += f"\n{suggestions[dernier_theme]}"
+        message_bot += f"\n{suggestions[dernier_theme]}"   
+    if memoire_court_terme.get("dernier_sujet") == "musique":
+    tendances = obtenir_tendances_shazam()
+    if tendances:
+        message_bot += "\n🎧 Voici les titres en tendance en France :\n\n" + "\n".join(tendances)
 
-    return message_bot if message_bot else None
+     return message_bot if message_bot else None    
 
      # --- Bloc Recettes rapides ---
     recettes = [
