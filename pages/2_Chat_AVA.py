@@ -28,6 +28,7 @@ from newsapi import NewsApiClient
 from forex_python.converter import CurrencyRates, CurrencyCodes
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+import time
 
 
 # — Modules internes
@@ -235,6 +236,29 @@ def ajuster_affection(question: str) -> None:
 
     style["niveau_affection"] = round(affection, 2)
     sauvegarder_style_ava(style)
+
+
+# --- MÉMOIRE À COURT TERME ---
+memoire_court_terme = {
+    "dernieres_repliques": [],
+    "dernieres_questions": [],
+    "dernier_sujet": "",
+    "horodatage": time.time()
+}
+
+def mise_a_jour_memoire_court_terme(question_utilisateur, reponse_ava):
+    memoire_court_terme["dernieres_questions"].append(question_utilisateur)
+    memoire_court_terme["dernieres_repliques"].append(reponse_ava)
+    memoire_court_terme["dernier_sujet"] = question_utilisateur.lower().split()[0] if question_utilisateur else ""
+    memoire_court_terme["horodatage"] = time.time()
+    memoire_court_terme["dernieres_questions"] = memoire_court_terme["dernieres_questions"][-3:]
+    memoire_court_terme["dernieres_repliques"] = memoire_court_terme["dernieres_repliques"][-3:]
+
+def verifier_reset_memoire_court_terme(duree_max=300):  # 5 minutes
+    if time.time() - memoire_court_terme["horodatage"] > duree_max:
+        memoire_court_terme["dernieres_questions"] = []
+        memoire_court_terme["dernieres_repliques"] = []
+        memoire_court_terme["dernier_sujet"] = ""
 
 # ───────────────────────────────────────────────────────────────────────
 # 6️⃣ Chargement du modèle sémantique MiniLM
@@ -1224,6 +1248,8 @@ def trouver_reponse(question: str, model) -> str:
     ajuster_affection(question_raw)
 
     memoriser_souvenir("ville_preferee", "Barcelone")
+    mise_a_jour_memoire_court_terme(question_clean, message_bot)
+    verifier_reset_memoire_court_terme()
         
     # 1️⃣ Salutations (avant tout)
     salut = repondre_salutation(question_clean)
@@ -1291,6 +1317,21 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = None
     """Détecte si la question correspond à un module spécial (salutation, mémoire, etc.)."""
     
+    suggestions = {
+        "musique": "Souhaitez-vous que je vous propose une autre chanson ? 🎵",
+        "voyage": "Si vous souhaitez des idées de destinations, je peux en proposer ! 🌍",
+        "santé": "Pensez à bien vous reposer, je suis là si vous avez besoin d’un petit conseil bien-être. 🌿",
+        "bourse": "Souhaitez-vous une mise à jour rapide sur un actif particulier ? 📈"
+        "amour": "Si vous voulez parler de cœur, je suis là pour écouter sans jugement. 💖",
+        "horoscope": "Souhaitez-vous que je vous partage votre horoscope du jour ? ✨",
+        "motivation": "Envie d’un boost d’énergie ? Je peux vous balancer une punchline futuriste. 🚀",
+        "recette": "Un petit creux ? Je peux vous proposer une recette rapide à tester. 🍳",
+        "temps": "Vous voulez la météo actuelle dans votre ville ? Je peux la retrouver. ☁️",
+        "symptôme": "Si vous avez un petit souci de santé, je peux vous orienter avec douceur. 🩺"
+    }
+
+    if dernier_theme in suggestions:
+        message_bot += f"\n{suggestions[dernier_theme]}"
 
      # --- Bloc Recettes rapides ---
     recettes = [
