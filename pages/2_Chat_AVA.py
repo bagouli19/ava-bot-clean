@@ -285,7 +285,7 @@ def verifier_reset_memoire_court_terme(duree_max=300):  # 5 minutes
         memoire_court_terme["dernieres_questions"] = []
         memoire_court_terme["dernieres_repliques"] = []
         memoire_court_terme["dernier_sujet"] = ""
-print("🟢 Bloc musical déclenché pour le thème :", dernier_theme)
+
 
 def obtenir_tendances_shazam(mot_cle): 
     url = f"https://shazam-core.p.rapidapi.com/v1/search/suggest?query={mot_cle}"
@@ -1386,6 +1386,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     }
 
     dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
+    print("🟢 Bloc musical déclenché pour le thème :", dernier_theme)
 
     if dernier_theme in suggestions:
         message_bot += f"\n{suggestions[dernier_theme]}"
