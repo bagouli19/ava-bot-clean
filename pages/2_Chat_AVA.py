@@ -85,7 +85,6 @@ sys.path.insert(0, os.path.join(PROJECT_ROOT, "knowledge_base"))
 DATA_DIR        = os.path.join(PROJECT_ROOT, "data")
 PROFILE_FILE    = os.path.join(DATA_DIR, f"profil_utilisateur_{user}.json")
 FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json")
-print("📁 Chemin mémoire :", FICHIER_MEMOIRE)
 STYLE_FILE      = os.path.join(SCRIPT_DIR, "style_ava.json")
 
 # ───────────────────────────────────────────────────────────────────────
@@ -142,17 +141,13 @@ if st.sidebar.button("Changer prénom pour 'Alex'"):
     set_my_profile(nouveau_profil)
     st.success("✅ Prénom modifié et profil sauvegardé !")
 
-# ───────────────────────────────────────────────────────────────────────
-# 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
-# ───────────────────────────────────────────────────────────────────────
-
-FICHIER_MEMOIRE = os.path.join(PROJECT_ROOT, "data", "memoire_ava.json")
 
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
 
 FICHIER_MEMOIRE = os.path.join(PROJECT_ROOT, "data", "memoire_ava.json")
+print("📁 Chemin mémoire :", FICHIER_MEMOIRE)
 
 def charger_memoire_ava() -> dict:
     """Charge la mémoire globale depuis le fichier JSON"""
