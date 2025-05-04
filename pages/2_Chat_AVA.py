@@ -145,7 +145,7 @@ if st.sidebar.button("Changer prénom pour 'Alex'"):
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
 
-FICHIER_MEMOIRE = "data/memoire_ava.json"
+FICHIER_MEMOIRE = "pages/memoire_ava.json"
 
 def charger_memoire_ava() -> dict:
     try:
