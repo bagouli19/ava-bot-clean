@@ -88,59 +88,99 @@ FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json")
 STYLE_FILE      = os.path.join(SCRIPT_DIR, "style_ava.json")
 
 # ───────────────────────────────────────────────────────────────────────
-# 3️⃣ Gestion des profils utilisateur (mémoire personnelle)
+# 3️⃣ Gestion des profils utilisateur via GitHub (mémoire personnelle)
 # ───────────────────────────────────────────────────────────────────────
-def load_profiles() -> dict:
+
+GITHUB_REPO = "bagouli19/ava-bot-ultimate"
+FICHIER_PROFIL = "data/profil_utilisateur.json"
+BRANCHE = "main"
+GITHUB_TOKEN = st.secrets["github"]["token"]  # ⚠️ Assure-toi qu'il est défini
+
+def charger_profils() -> dict:
+    url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{BRANCHE}/{FICHIER_PROFIL}"
     try:
-        with open(PROFILE_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.sidebar.warning("⚠️ Impossible de charger le profil utilisateur.")
+            return {}
+    except Exception as e:
+        st.sidebar.error(f"❌ Erreur chargement profil : {e}")
         return {}
 
-def save_profiles(profiles: dict):
-    os.makedirs(os.path.dirname(PROFILE_FILE), exist_ok=True)
-    with open(PROFILE_FILE, "w", encoding="utf-8") as f:
-        json.dump(profiles, f, ensure_ascii=False, indent=2)
+def sauvegarder_profils(profils: dict):
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_PROFIL}"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    try:
+        get_res = requests.get(url, headers=headers)
+        sha = get_res.json().get("sha", "")
+        if not sha:
+            st.sidebar.error("❌ SHA introuvable : impossible de sauvegarder le profil.")
+            return
 
+        content_encoded = base64.b64encode(
+            json.dumps(profils, ensure_ascii=False, indent=2).encode("utf-8")
+        ).decode("utf-8")
+
+        payload = {
+            "message": f"💾 update profil utilisateur {datetime.now().isoformat()}",
+            "content": content_encoded,
+            "sha": sha
+        }
+
+        put_res = requests.put(url, headers=headers, json=payload)
+        if put_res.status_code in [200, 201]:
+            st.sidebar.success("✅ Profil utilisateur mis à jour sur GitHub")
+        else:
+            st.sidebar.error(f"❌ Échec sauvegarde : {put_res.status_code}")
+            st.sidebar.error(put_res.text)
+
+    except Exception as e:
+        st.sidebar.error(f"❌ Erreur API GitHub : {e}")
+
+# 🔁 Fonctions de gestion individuelle
 def get_my_profile() -> dict:
     return st.session_state.profil
 
 def set_my_profile(profile: dict):
     st.session_state.profil = profile
-    profils = load_profiles()
+    profils = charger_profils()
     profils[user] = profile
-    save_profiles(profils)
+    sauvegarder_profils(profils)
 
 def memoriser_souvenir_utilisateur(cle: str, valeur: str):
     profil = get_my_profile()
+    if "souvenirs" not in profil:
+        profil["souvenirs"] = {}
     profil["souvenirs"][cle] = valeur
     set_my_profile(profil)
 
-# Chargement ou création du profil
-all_profiles = load_profiles()
+# Chargement ou création du profil courant
+all_profiles = charger_profils()
 if user not in all_profiles:
     all_profiles[user] = {
         "prenom": st.session_state.utilisateur.capitalize(),
         "souvenirs": {}
     }
-    save_profiles(all_profiles)
+    sauvegarder_profils(all_profiles)
 
 st.session_state.profil = all_profiles[user]
 
-# ✅ Test d'affichage pour vérifier si le profil utilisateur est bien chargé
+# ✅ Affichage de test
 st.write("✅ Profil utilisateur chargé :", st.session_state.profil)
 
-# 🔧 Affiche le profil actuel
 st.sidebar.subheader("🧠 Profil AVA (test)")
 st.sidebar.json(st.session_state.profil)
 
-# 🔘 Bouton pour changer le prénom et tester la sauvegarde
 if st.sidebar.button("Changer prénom pour 'Alex'"):
     nouveau_profil = st.session_state.profil.copy()
     nouveau_profil["prenom"] = "Alex"
     set_my_profile(nouveau_profil)
     st.success("✅ Prénom modifié et profil sauvegardé !")
-
 
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
@@ -1431,7 +1471,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             reponse += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
         return reponse
 
-    # 🧠 Bloc mémoire évolutive AVA
+   
     # 🧠 Bloc mémoire évolutive AVA (autonome)
     def doit_memoriser_automatiquement(phrase: str) -> bool:
         """Détermine si la phrase est pertinente pour la mémoire."""
@@ -1703,26 +1743,30 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "mon plat préféré est": "plat_prefere",
         "mon film préféré est": "film_prefere",
         "mon sport préféré est": "sport_prefere",
+        "ma couleur préférée est": "couleur_preferee",
+        "j'adore la musique": "musique_preferee",
+        "j'aime boire": "boisson_preferee",
+        "mon passe-temps favori est": "passe_temps",
+        "mon animal préféré est": "animal_prefere",
+        "le pays de mes rêves est": "pays_reve"
     }
 
     for debut_phrase, cle_souvenir in patterns_souvenirs.items():
         if question_clean.startswith(debut_phrase):
             valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
             if valeur:
-                # Mise à jour du profil utilisateur uniquement
                 profil = get_my_profile()
+                if "souvenirs" not in profil:
+                    profil["souvenirs"] = {}
                 profil["souvenirs"][cle_souvenir] = valeur
                 set_my_profile(profil)
+                return f"✨ C’est noté dans ton profil : **{valeur.capitalize()}** 🧠"
 
-                return f"✨ J'ai bien noté dans ton profil : **{valeur.capitalize()}** ! 🧠"
-
-    
     # --- 2️⃣ Recherche d'un souvenir dans le profil utilisateur ---
     profil = get_my_profile()
     for cle_souv, contenu in profil.get("souvenirs", {}).items():
         if cle_souv.replace("_", " ") in question_clean or contenu.lower() in question_clean:
-            return f"🧠 Je m'en souviens ! Vous m'avez dit : **{contenu}**"
-    
+            return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
 
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
