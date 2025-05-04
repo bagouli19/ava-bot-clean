@@ -1398,7 +1398,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         print("🟢 Bloc musical déclenché pour le thème :", dernier_theme)
         print(f"📡 Lancement de la recherche musicale avec le mot-clé : {mot_cle_aleatoire}")
         
-        tendances = obtenir_tendances_shazam(mot_cle_aleatoire)
+        tendances = obtenir_titres_populaires_france()
         if tendances:
             message_bot += (
                 f"\n🎧 Voici quelques titres populaires autour de **{mot_cle_aleatoire}** :\n\n"
