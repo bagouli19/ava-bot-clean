@@ -1307,7 +1307,6 @@ def trouver_reponse(question: str, model) -> str:
     incrementer_interactions()
     ajuster_affection(question_raw)
 
-    memoriser_souvenir("ville_preferee", "Barcelone")
     memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
         
     # 1️⃣ Salutations (avant tout)
