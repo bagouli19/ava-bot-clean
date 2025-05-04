@@ -1,16 +1,12 @@
 {
-  "teddy": {
-    "prenom": "Teddy",
-    "chien": "Nox",
-    "plat_prefere": "lasagnes",
-    "film_prefere": "Inception",
-    "sport_prefere": "basket",
-    "couleur_preferee": "bleu",
-    "pays_reve": "Japon",
-    "passe_temps": "créer des IA",
-    "musique_preferee": "techno",
-    "boisson_preferee": "thé glacé",
-    "animal_prefere": "loup",
-    "objectif": "rendre AVA autonome et vivante"
-  },
-}
+    "teddy": {
+      "prenom": "Teddy",
+      "chien": "Nox",
+      "plat_prefere": "lasagnes",
+      "film_prefere": "Inception",
+      "sport_prefere": "basket",
+      "souvenirs": {
+        "couleur_preferee": "bleu"
+      }
+    }
+  }
