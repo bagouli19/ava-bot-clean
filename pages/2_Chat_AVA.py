@@ -2524,13 +2524,7 @@ if prompt:
         st.markdown(reponse)
 
     # 🔘 Bouton test mémoire globale (à usage développeur)
-    if st.sidebar.button("🧪 Forcer mémoire globale"):
-        chemin = FICHIER_MEMOIRE
-        try:
-            with open(chemin, "w", encoding="utf-8") as f:
-                json.dump({"souvenirs": [{"type": "test", "contenu": "fonctionne", "date": "2025-05-04"}]}, f, ensure_ascii=False, indent=2)
-            st.sidebar.success("✅ Écriture directe réussie")
-        except Exception as e:
-            st.sidebar.error(f"❌ Erreur d'écriture : {e}")
+    if st.sidebar.button("🧠 Test mémoire globale"):
+        memoriser_souvenir_global("test", "Ceci est un test mémoire globale")
 
 
