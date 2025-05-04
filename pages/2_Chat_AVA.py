@@ -1387,7 +1387,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "temps": "Vous voulez la météo actuelle dans votre ville ? Je peux la retrouver. ☁️",
         "symptôme": "Si vous avez un petit souci de santé, je peux vous orienter avec douceur. 🩺"
     }
-
+    
+       # 🧠 Récupération mémoire court terme (si dispo)
+    dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
+    
     mots_cles_musique = [
         "musique", "chanson", "son", "titre", "écouter", "playlist", "sons", "propose une musique", "mets-moi une chanson", "donne un son"
     ]
