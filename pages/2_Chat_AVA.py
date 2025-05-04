@@ -1391,10 +1391,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     # 🎵 Bloc spécial pour la musique (avec mot-clé fixe pour le moment)
     if dernier_theme == "musique":
-        mot_cle = "pop"  # ou "france", ou tu peux en extraire un depuis la question plus tard
-        tendances = obtenir_tendances_shazam(mot_cle)
-        if tendances:
-            message_bot += "\n🎧 Voici quelques titres populaires :\n\n" + "\n".join(tendances)
+    mot_cle = "pop"  # Mot-clé par défaut pour déclencher la recherche
+    tendances = obtenir_tendances_shazam(mot_cle)
+    if tendances:
+        message_bot += "\n🎧 Voici quelques titres populaires :\n\n" + "\n".join(tendances)
 
     return message_bot if message_bot else None
 
