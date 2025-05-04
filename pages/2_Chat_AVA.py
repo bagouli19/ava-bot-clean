@@ -1368,12 +1368,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     if dernier_theme in suggestions:
         message_bot += f"\n{suggestions[dernier_theme]}"   
-    if memoire_court_terme.get("dernier_sujet") == "musique":
-    tendances = obtenir_tendances_shazam()
-    if tendances:
-        message_bot += "\n🎧 Voici les titres en tendance en France :\n\n" + "\n".join(tendances)
+    
+    if dernier_theme == "musique":
+        tendances = obtenir_tendances_shazam()
+        if tendances:
+            message_bot += "\n🎧 Voici les titres en tendance en France :\n\n" + "\n".join(tendances)
 
-     return message_bot if message_bot else None    
+    return message_bot if message_bot else None
 
      # --- Bloc Recettes rapides ---
     recettes = [
