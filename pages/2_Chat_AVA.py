@@ -1375,6 +1375,25 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
+    # 🧠 Bloc mémoire évolutive AVA
+    phrases_detectables = [
+        "je pense que", 
+        "je crois que", 
+        "je me souviens que", 
+        "j’ai entendu que", 
+        "il paraît que", 
+        "selon moi", 
+        "ce que j’ai appris", 
+        "j’ai retenu que"
+    ]
+
+    for phrase in phrases_detectables:
+        if phrase in question_clean:
+            contenu = question_clean.split(phrase)[-1].strip(" .!?")
+            if contenu and len(contenu) > 10:
+                memoriser_souvenir("réflexion_utilisateur", contenu)
+                return f"🧠 J’ai noté cette pensée dans mes souvenirs : **{contenu}**"
+
     suggestions = {
         "musique": "Souhaitez-vous que je vous propose une autre chanson ? 🎵",
         "voyage": "Si vous souhaitez des idées de destinations, je peux en proposer ! 🌍",
@@ -1592,25 +1611,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-        
-    # 🧠 Bloc de détection libre pour mémoire évolutive
-    phrases_detectables = [
-        "je pense que", 
-        "je crois que", 
-        "je me souviens que", 
-        "j’ai entendu que", 
-        "il paraît que", 
-        "selon moi", 
-        "ce que j’ai appris", 
-        "j’ai retenu que"
-    ]
 
-    for phrase in phrases_detectables:
-        if phrase in question_clean:
-            contenu = question_clean.split(phrase)[-1].strip(" .!?")
-            if contenu and len(contenu) > 10:
-                memoriser_souvenir("réflexion_utilisateur", contenu)
-                return f"🧠 J’ai noté cette pensée dans mes souvenirs : **{contenu}**"
+    
 
     # --- 1️⃣ Détection et enregistrement automatique de souvenirs dans le profil utilisateur ---
     patterns_souvenirs = {
