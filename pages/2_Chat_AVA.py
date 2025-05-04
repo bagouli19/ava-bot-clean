@@ -85,6 +85,7 @@ sys.path.insert(0, os.path.join(PROJECT_ROOT, "knowledge_base"))
 DATA_DIR        = os.path.join(PROJECT_ROOT, "data")
 PROFILE_FILE    = os.path.join(DATA_DIR, f"profil_utilisateur_{user}.json")
 FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json")
+print("📁 Chemin mémoire :", FICHIER_MEMOIRE)
 STYLE_FILE      = os.path.join(SCRIPT_DIR, "style_ava.json")
 
 # ───────────────────────────────────────────────────────────────────────
@@ -2522,7 +2523,13 @@ if prompt:
         st.markdown(reponse)
 
     # 🔘 Bouton test mémoire globale (à usage développeur)
-    if st.sidebar.button("🧠 Test mémoire globale"):
-        memoriser_souvenir_global("test", "Ceci est un test mémoire globale")
+    if st.sidebar.button("🧪 Forcer mémoire globale"):
+    chemin = FICHIER_MEMOIRE
+    try:
+        with open(chemin, "w", encoding="utf-8") as f:
+            json.dump({"souvenirs": [{"type": "test", "contenu": "fonctionne", "date": "2025-05-04"}]}, f, ensure_ascii=False, indent=2)
+        st.sidebar.success("✅ Écriture directe réussie")
+    except Exception as e:
+        st.sidebar.error(f"❌ Erreur d'écriture : {e}")
 
 
