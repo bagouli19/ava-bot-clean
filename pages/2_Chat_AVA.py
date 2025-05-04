@@ -2506,10 +2506,7 @@ if prompt:
         st.markdown(reponse)
 
     # 🔘 Bouton test mémoire globale (à usage développeur)
-    if st.sidebar.button("🧠 Voir mémoire globale"):
-        try:
-            memoire = charger_memoire_ava()
-            st.sidebar.write("📂 Contenu actuel de la mémoire :", memoire)
-        except Exception as e:
-            st.sidebar.error(f"❌ Erreur lors du chargement de la mémoire : {e}")
+    if st.sidebar.button("🧠 Test mémoire globale"):
+        memoriser_souvenir_global("test", "Ceci est un test mémoire globale")
+        st.success("🧠 Souvenir global de test enregistré avec succès !")
 
