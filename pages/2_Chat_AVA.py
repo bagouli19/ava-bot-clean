@@ -146,11 +146,13 @@ if st.sidebar.button("Changer prénom pour 'Alex'"):
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
 
+import json, os
+from datetime import datetime
+
 FICHIER_MEMOIRE = os.path.join(PROJECT_ROOT, "data", "memoire_ava.json")
-print("📁 Chemin mémoire :", FICHIER_MEMOIRE)
+print("📁 Chemin réel utilisé pour mémoire :", FICHIER_MEMOIRE)
 
 def charger_memoire_ava() -> dict:
-    """Charge la mémoire globale depuis le fichier JSON"""
     try:
         with open(FICHIER_MEMOIRE, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -161,37 +163,25 @@ def charger_memoire_ava() -> dict:
             return data
     except (FileNotFoundError, json.JSONDecodeError):
         return {"souvenirs": []}
-print("📁 Chemin réel d’écriture mémoire :", FICHIER_MEMOIRE)
+
 def sauvegarder_memoire_ava(memoire: dict):
-    """Sauvegarde la mémoire dans le fichier mémoire_ava.json"""
     try:
         os.makedirs(os.path.dirname(FICHIER_MEMOIRE), exist_ok=True)
         with open(FICHIER_MEMOIRE, "w", encoding="utf-8") as f:
             json.dump(memoire, f, ensure_ascii=False, indent=2)
-        print("✅ mémoire_ava.json bien sauvegardé :", FICHIER_MEMOIRE)
-        st.sidebar.success("✅ mémoire_ava.json sauvegardé")
+        print("✅ mémoire_ava.json bien sauvegardé à :", FICHIER_MEMOIRE)
     except Exception as e:
-        print(f"❌ Erreur lors de la sauvegarde de la mémoire : {e}")
-        st.sidebar.error("❌ Erreur lors de la sauvegarde de la mémoire.")
+        print(f"❌ Erreur lors de la sauvegarde de la mémoire globale : {e}")
 
 def memoriser_souvenir_global(type_souvenir: str, contenu: str):
-    """Ajoute un souvenir à la mémoire globale"""
-    try:
-        memoire = charger_memoire_ava()
-        if "souvenirs" not in memoire or not isinstance(memoire["souvenirs"], list):
-            memoire["souvenirs"] = []
-        
-        nouveau_souvenir = {
-            "type": type_souvenir,
-            "contenu": contenu,
-            "date": datetime.now().strftime("%Y-%m-%d")
-        }
-
-        memoire["souvenirs"].append(nouveau_souvenir)
-        sauvegarder_memoire_ava(memoire)
-        print(f"🧠 Souvenir ajouté : [{type_souvenir}] {contenu}")
-    except Exception as e:
-        print(f"❌ Erreur lors de l'ajout du souvenir global : {e}")
+    memoire = charger_memoire_ava()
+    memoire["souvenirs"].append({
+        "type": type_souvenir,
+        "contenu": contenu,
+        "date": datetime.now().strftime("%Y-%m-%d")
+    })
+    sauvegarder_memoire_ava(memoire)
+    print(f"🧠 Souvenir ajouté : [{type_souvenir}] {contenu}")
 
 
     
