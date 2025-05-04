@@ -269,7 +269,7 @@ def extraire_theme(question):
             if mot in synonymes:
                 return theme
     return ""
-
+    
 # Fonction pour mettre à jour la mémoire à court terme
 def mise_a_jour_memoire_court_terme(question_utilisateur, reponse_ava):
     memoire_court_terme["dernieres_questions"].append(question_utilisateur)
@@ -285,6 +285,7 @@ def verifier_reset_memoire_court_terme(duree_max=300):  # 5 minutes
         memoire_court_terme["dernieres_questions"] = []
         memoire_court_terme["dernieres_repliques"] = []
         memoire_court_terme["dernier_sujet"] = ""
+print("🟢 Bloc musical déclenché pour le thème :", dernier_theme)
 
 def obtenir_tendances_shazam(mot_cle): 
     url = f"https://shazam-core.p.rapidapi.com/v1/search/suggest?query={mot_cle}"
@@ -312,7 +313,7 @@ def obtenir_tendances_shazam(mot_cle):
             return [f"❌ Erreur API : {response.status_code}"]
     except Exception as e:
         return [f"❌ Exception : {str(e)}"]
-
+print(f"📡 Lancement de la recherche musicale avec le mot-clé : {mot_cle}")
 # ───────────────────────────────────────────────────────────────────────
 # 6️⃣ Chargement du modèle sémantique MiniLM
 # ───────────────────────────────────────────────────────────────────────
