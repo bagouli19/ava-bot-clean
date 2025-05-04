@@ -1282,8 +1282,7 @@ def trouver_reponse(question: str, model) -> str:
     ajuster_affection(question_raw)
 
     memoriser_souvenir("ville_preferee", "Barcelone")
-    mise_a_jour_memoire_court_terme(question_clean, message_bot)
-    verifier_reset_memoire_court_terme()
+    memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
         
     # 1️⃣ Salutations (avant tout)
     salut = repondre_salutation(question_clean)
