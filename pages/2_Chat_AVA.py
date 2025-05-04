@@ -145,30 +145,30 @@ if st.sidebar.button("Changer prénom pour 'Alex'"):
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
 
-def charger_memoire_globale() -> dict:
-    """Charge la mémoire globale depuis le fichier JSON."""
+FICHIER_MEMOIRE = "data/memoire_ava.json"
+
+def charger_memoire_ava() -> dict:
     try:
-        with open(GLOBAL_MEMOIRE, "r", encoding="utf-8") as f:
+        with open(FICHIER_MEMOIRE, "r", encoding="utf-8") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        return {}
+        return {"souvenirs": []}
 
-def sauvegarder_memoire_globale(memoire: dict):
-    """Sauvegarde la mémoire globale dans le fichier JSON."""
-    os.makedirs(os.path.dirname(GLOBAL_MEMOIRE), exist_ok=True)
-    with open(GLOBAL_MEMOIRE, "w", encoding="utf-8") as f:
+def sauvegarder_memoire_ava(memoire: dict):
+    os.makedirs(os.path.dirname(FICHIER_MEMOIRE), exist_ok=True)
+    with open(FICHIER_MEMOIRE, "w", encoding="utf-8") as f:
         json.dump(memoire, f, ensure_ascii=False, indent=2)
 
-def ajouter_souvenir_global(cle: str, valeur: str):
-    """Ajoute ou met à jour une information dans la mémoire globale."""
-    memoire = charger_memoire_globale()
-    memoire[cle] = valeur
-    sauvegarder_memoire_globale(memoire)
+def memoriser_souvenir(type_souvenir: str, contenu: str):
+    memoire = charger_memoire_ava()
+    memoire["souvenirs"].append({
+        "type": type_souvenir,
+        "contenu": contenu,
+        "date": datetime.now().strftime("%Y-%m-%d")
+    })
+    sauvegarder_memoire_ava(memoire)
+    print(f"🧠 Souvenir mémorisé : [{type_souvenir}] {contenu}")
 
-def retrouver_souvenir_global(cle: str) -> Optional[str]:
-    """Recherche une information dans la mémoire globale."""
-    memoire = charger_memoire_globale()
-    return memoire.get(cle)
 
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
@@ -1592,30 +1592,25 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-    # 🔍 Bloc de détection automatique pour mémoire globale intelligente
-    patterns_mem_globale = {
-        "le bitcoin a atteint": "btc_record",
-        "le pétrole coûte": "prix_petrole",
-        "la fed a annoncé": "annonce_fed",
-        "le sp500 est à": "valeur_sp500",
-        "il fait": "meteo",
-        "la température est": "meteo_temperature",
-        "mon anniversaire est le": "anniversaire_utilisateur",
-        "le président actuel est": "president_actuel",
-        "la lune est visible": "observation_lune",
-        "la conférence commence à": "evenement_horaire",
-        "le film sort le": "sortie_film",
-        "le résultat du match est": "resultat_sport",
-        "la couleur du ciel est": "description_ciel",
-    }
+        
+    # 🧠 Bloc de détection libre pour mémoire évolutive
+    phrases_detectables = [
+        "je pense que", 
+        "je crois que", 
+        "je me souviens que", 
+        "j’ai entendu que", 
+        "il paraît que", 
+        "selon moi", 
+        "ce que j’ai appris", 
+        "j’ai retenu que"
+    ]
 
-    for debut_phrase, cle_souvenir in patterns_mem_globale.items():
-        if debut_phrase in question_clean:
-            valeur = question_clean.split(debut_phrase)[-1].strip(" .!?")
-            if valeur:
-                contenu = f"{debut_phrase} {valeur}"
-                ajouter_souvenir_global(cle_souvenir, contenu)
-                return f"📌 J’ai bien mémorisé : **{contenu}**"
+    for phrase in phrases_detectables:
+        if phrase in question_clean:
+            contenu = question_clean.split(phrase)[-1].strip(" .!?")
+            if contenu and len(contenu) > 10:
+                memoriser_souvenir("réflexion_utilisateur", contenu)
+                return f"🧠 J’ai noté cette pensée dans mes souvenirs : **{contenu}**"
 
     # --- 1️⃣ Détection et enregistrement automatique de souvenirs dans le profil utilisateur ---
     patterns_souvenirs = {
