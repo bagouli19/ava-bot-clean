@@ -286,7 +286,7 @@ def verifier_reset_memoire_court_terme(duree_max=300):  # 5 minutes
         memoire_court_terme["dernieres_repliques"] = []
         memoire_court_terme["dernier_sujet"] = ""
 
-def obtenir_tendances_shazam():
+def obtenir_tendances_shazam(mot_cle): 
     url = f"https://shazam-core.p.rapidapi.com/v1/search/suggest?query={mot_cle}"
     headers = {
         "X-RapidAPI-Key": st.secrets["shazam"]["api_key"],
@@ -1387,12 +1387,14 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
 
     if dernier_theme in suggestions:
-        message_bot += f"\n{suggestions[dernier_theme]}"   
-    
+        message_bot += f"\n{suggestions[dernier_theme]}"
+
+    # 🎵 Bloc spécial pour la musique (avec mot-clé fixe pour le moment)
     if dernier_theme == "musique":
-        tendances = obtenir_tendances_shazam()
+        mot_cle = "pop"  # ou "france", ou tu peux en extraire un depuis la question plus tard
+        tendances = obtenir_tendances_shazam(mot_cle)
         if tendances:
-            message_bot += "\n🎧 Voici les titres en tendance en France :\n\n" + "\n".join(tendances)
+            message_bot += "\n🎧 Voici quelques titres populaires :\n\n" + "\n".join(tendances)
 
     return message_bot if message_bot else None
 
