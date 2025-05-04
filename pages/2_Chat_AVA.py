@@ -172,6 +172,7 @@ def sauvegarder_memoire_ava(memoire: dict):
         print("✅ mémoire_ava.json bien sauvegardé à :", FICHIER_MEMOIRE)
     except Exception as e:
         print(f"❌ Erreur lors de la sauvegarde de la mémoire globale : {e}")
+        print("🧪 DEBUG : JE SUIS BIEN DANS sauvegarder_memoire_ava")
 
 def memoriser_souvenir_global(type_souvenir: str, contenu: str):
     memoire = charger_memoire_ava()
@@ -2532,7 +2533,9 @@ if prompt:
         st.markdown(reponse)
 
     # 🔘 Bouton test mémoire globale (à usage développeur)
-    if st.sidebar.button("🧠 Test mémoire globale"):
-        memoriser_souvenir_global("test", "Ceci est un test mémoire globale")
+    if st.sidebar.button("🔄 Forcer sauvegarde mémoire JSON"):
+        memoire = charger_memoire_ava()
+        sauvegarder_memoire_ava(memoire)
+        st.sidebar.success("✅ Sauvegarde forcée effectuée.")
 
 
