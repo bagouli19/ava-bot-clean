@@ -140,9 +140,7 @@ if st.sidebar.button("Changer prénom pour 'Alex'"):
     nouveau_profil["prenom"] = "Alex"
     set_my_profile(nouveau_profil)
     st.success("✅ Prénom modifié et profil sauvegardé !")
-if st.sidebar.button("🧠 Test mémoire globale"):
-    memoriser_souvenir_global("test", "Ceci est un test mémoire globale")
-    st.success("🧠 Souvenir global de test enregistré avec succès !")
+
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
@@ -2503,5 +2501,8 @@ if prompt:
     with st.chat_message("assistant", avatar="assets/ava_logo.png"):
         st.markdown(reponse)
 
-
+    # 🔘 Bouton test mémoire globale (à usage développeur)
+    if st.sidebar.button("🧠 Test mémoire globale"):
+        memoriser_souvenir_global("test", "Ceci est un test mémoire globale")
+        st.success("🧠 Souvenir global de test enregistré avec succès !")
 
