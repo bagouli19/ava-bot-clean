@@ -238,6 +238,8 @@ def ajuster_affection(question: str) -> None:
     sauvegarder_style_ava(style)
 
 
+import time
+
 # --- MÉMOIRE À COURT TERME ---
 memoire_court_terme = {
     "dernieres_repliques": [],
@@ -246,19 +248,78 @@ memoire_court_terme = {
     "horodatage": time.time()
 }
 
+# Fonction pour détecter le sujet principal d'une phrase
+def extraire_theme(question):
+    mots = question.lower().split()
+    correspondances = {
+        "musique": ["musique", "chanson", "son", "titre", "mélodie"],
+        "voyage": ["voyage", "destination", "pays", "partir"],
+        "santé": ["santé", "malade", "symptôme", "fatigue", "douleur"],
+        "bourse": ["bourse", "btc", "crypto", "marché", "actions", "trading"],
+        "amour": ["amour", "cœur", "relation", "sentiment", "couple"],
+        "horoscope": ["horoscope", "signe", "astrologie", "zodiaque"],
+        "motivation": ["motivation", "booster", "courage", "mental", "énergie"],
+        "recette": ["recette", "cuisine", "plat", "manger", "cuisiner"],
+        "temps": ["temps", "météo", "climat", "pluie", "soleil"],
+        "symptôme": ["symptôme", "mal", "fièvre", "toux", "rhume"]
+    }
+
+    for mot in mots:
+        for theme, synonymes in correspondances.items():
+            if mot in synonymes:
+                return theme
+    return ""
+
+# Fonction pour mettre à jour la mémoire à court terme
 def mise_a_jour_memoire_court_terme(question_utilisateur, reponse_ava):
     memoire_court_terme["dernieres_questions"].append(question_utilisateur)
     memoire_court_terme["dernieres_repliques"].append(reponse_ava)
-    memoire_court_terme["dernier_sujet"] = question_utilisateur.lower().split()[0] if question_utilisateur else ""
+    memoire_court_terme["dernier_sujet"] = extraire_theme(question_utilisateur)
     memoire_court_terme["horodatage"] = time.time()
     memoire_court_terme["dernieres_questions"] = memoire_court_terme["dernieres_questions"][-3:]
     memoire_court_terme["dernieres_repliques"] = memoire_court_terme["dernieres_repliques"][-3:]
 
+# Fonction pour réinitialiser automatiquement la mémoire après un délai
 def verifier_reset_memoire_court_terme(duree_max=300):  # 5 minutes
     if time.time() - memoire_court_terme["horodatage"] > duree_max:
         memoire_court_terme["dernieres_questions"] = []
         memoire_court_terme["dernieres_repliques"] = []
         memoire_court_terme["dernier_sujet"] = ""
+
+
+def obtenir_tendances_shazam():
+    url = "https://shazam.p.rapidapi.com/charts/track"
+    querystring = {
+        "locale": "fr-FR",
+        "pageSize": "5",
+        "startFrom": "0",
+        "listId": "france"
+    }
+
+    headers = {
+        "X-RapidAPI-Key": st.secrets["shazam"]["api_key"],
+        "X-RapidAPI-Host": st.secrets["shazam"]["api_host"]
+    }
+
+    try:
+        response = requests.get(url, headers=headers, params=querystring)
+        if response.status_code == 200:
+            data = response.json()
+            titres = []
+            for i, piste in enumerate(data.get("tracks", []), start=1):
+                titre = piste.get("title", "Titre inconnu")
+                artiste = piste.get("subtitle", "Artiste inconnu")
+                url_youtube = piste.get("url", "")  # souvent un lien Apple/YouTube
+                ligne = f"**{i}. {titre}** – *{artiste}*"
+                if url_youtube:
+                    ligne += f" [(🔗 Écouter)]({url_youtube})"
+                titres.append(ligne)
+            return titres
+        else:
+            return [f"⚠️ Erreur Shazam ({response.status_code})"]
+    except Exception as e:
+        return [f"⚠️ Exception Shazam : {str(e)}"]
+
 
 # ───────────────────────────────────────────────────────────────────────
 # 6️⃣ Chargement du modèle sémantique MiniLM
@@ -1217,38 +1278,6 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-def obtenir_tendances_shazam():
-    url = "https://shazam.p.rapidapi.com/charts/track"
-    querystring = {
-        "locale": "fr-FR",
-        "pageSize": "5",
-        "startFrom": "0",
-        "listId": "france"
-    }
-
-    headers = {
-        "X-RapidAPI-Key": st.secrets["shazam"]["api_key"],
-        "X-RapidAPI-Host": st.secrets["shazam"]["api_host"]
-    }
-
-    try:
-        response = requests.get(url, headers=headers, params=querystring)
-        if response.status_code == 200:
-            data = response.json()
-            titres = []
-            for i, piste in enumerate(data.get("tracks", []), start=1):
-                titre = piste.get("title", "Titre inconnu")
-                artiste = piste.get("subtitle", "Artiste inconnu")
-                url_youtube = piste.get("url", "")  # souvent un lien Apple/YouTube
-                ligne = f"**{i}. {titre}** – *{artiste}*"
-                if url_youtube:
-                    ligne += f" [(🔗 Écouter)]({url_youtube})"
-                titres.append(ligne)
-            return titres
-        else:
-            return [f"⚠️ Erreur Shazam ({response.status_code})"]
-    except Exception as e:
-        return [f"⚠️ Exception Shazam : {str(e)}"]
 
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
