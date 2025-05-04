@@ -170,6 +170,11 @@ def sauvegarder_memoire_ava(memoire: dict):
     }
     get_res = requests.get(url, headers=headers)
     sha = get_res.json().get("sha", "")
+    if not sha:
+        st.sidebar.error("❌ SHA introuvable : impossible de mettre à jour le fichier.")
+        return
+    print(get_res.status_code)
+    print(get_res.text)    
 
     data = {
         "message": f"💾 update mémoire {datetime.now().isoformat()}",
@@ -1433,7 +1438,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                     "date": datetime.now().strftime("%Y-%m-%d")
                 })
                 sauvegarder_memoire_ava(memoire)
-                
+
                 return f"🧠 J’ai noté cette pensée dans mes souvenirs : **{contenu}**"
 
     suggestions = {
