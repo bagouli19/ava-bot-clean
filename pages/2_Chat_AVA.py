@@ -287,32 +287,35 @@ def verifier_reset_memoire_court_terme(duree_max=300):  # 5 minutes
         memoire_court_terme["dernier_sujet"] = ""
 
 
-def obtenir_tendances_shazam(mot_cle): 
-    url = f"https://shazam-core.p.rapidapi.com/v1/search/suggest?query={mot_cle}"
+def obtenir_titres_populaires_france(nb=5):
+    import requests
+    url = "https://shazam-core.p.rapidapi.com/v1/charts/country"
+    querystring = {"country_code": "FR"}
+
     headers = {
         "X-RapidAPI-Key": st.secrets["shazam"]["api_key"],
         "X-RapidAPI-Host": st.secrets["shazam"]["api_host"]
     }
 
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, params=querystring)
         if response.status_code == 200:
             data = response.json()
-            pistes = data.get("tracks", {}).get("hits", [])[:5]
-            resultats = []
-            for i, piste in enumerate(pistes, start=1):
-                titre = piste["track"]["title"]
-                artiste = piste["track"]["subtitle"]
-                url_audio = piste["track"].get("url", "")
+            titres = []
+            for i, item in enumerate(data[:nb], start=1):
+                titre = item.get("attributes", {}).get("name", "Titre inconnu")
+                artiste = item.get("attributes", {}).get("artistName", "Artiste inconnu")
+                url_audio = item.get("attributes", {}).get("url", "")
                 ligne = f"**{i}. {titre}** – *{artiste}*"
                 if url_audio:
-                    ligne += f" [(🔗 Écouter)]({url_audio})"
-                resultats.append(ligne)
-            return resultats
+                    ligne += f" [(🎧 Écouter)]({url_audio})"
+                titres.append(ligne)
+            return titres
         else:
-            return [f"❌ Erreur API : {response.status_code}"]
+            return [f"❌ Erreur HTTP : {response.status_code}"]
     except Exception as e:
         return [f"❌ Exception : {str(e)}"]
+
 
 # ───────────────────────────────────────────────────────────────────────
 # 6️⃣ Chargement du modèle sémantique MiniLM
