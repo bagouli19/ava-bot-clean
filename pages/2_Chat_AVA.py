@@ -1321,7 +1321,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "musique": "Souhaitez-vous que je vous propose une autre chanson ? 🎵",
         "voyage": "Si vous souhaitez des idées de destinations, je peux en proposer ! 🌍",
         "santé": "Pensez à bien vous reposer, je suis là si vous avez besoin d’un petit conseil bien-être. 🌿",
-        "bourse": "Souhaitez-vous une mise à jour rapide sur un actif particulier ? 📈"
+        "bourse": "Souhaitez-vous une mise à jour rapide sur un actif particulier ? 📈",
         "amour": "Si vous voulez parler de cœur, je suis là pour écouter sans jugement. 💖",
         "horoscope": "Souhaitez-vous que je vous partage votre horoscope du jour ? ✨",
         "motivation": "Envie d’un boost d’énergie ? Je peux vous balancer une punchline futuriste. 🚀",
