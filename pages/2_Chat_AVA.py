@@ -162,8 +162,6 @@ def sauvegarder_memoire_ava(memoire: dict):
 
 def memoriser_souvenir_global(type_souvenir: str, contenu: str):
     memoire = charger_memoire_ava()
-    
-    # ✅ Sécurité : si la clé n’existe pas, on l’ajoute
     if "souvenirs" not in memoire or not isinstance(memoire["souvenirs"], list):
         memoire["souvenirs"] = []
 
@@ -174,7 +172,8 @@ def memoriser_souvenir_global(type_souvenir: str, contenu: str):
     })
 
     sauvegarder_memoire_ava(memoire)
-    print(f"🧠 Souvenir global mémorisé : [{type_souvenir}] {contenu}")
+    if st.sidebar.button("🧠 Test mémoire globale"):
+    memoriser_souvenir_global("test", "Ceci est un test mémoire globale")
 
 
 # ───────────────────────────────────────────────────────────────────────
