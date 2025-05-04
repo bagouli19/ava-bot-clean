@@ -1391,15 +1391,17 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if dernier_theme in suggestions:
         message_bot += f"\n{suggestions[dernier_theme]}"
 
-    # 🎵 Bloc spécial pour la musique (avec mot-clé fixe pour le moment)
+    # 🔥 ATTENTION : ce bloc DOIT être au même niveau que les autres, pas dans le précédent if
     if dernier_theme == "musique":
+        import random
         mot_cle_aleatoire = random.choice(["pop", "rap", "chill", "drill", "france", "party"])
         print("🟢 Bloc musical déclenché pour le thème :", dernier_theme)
         print(f"📡 Lancement de la recherche musicale avec le mot-clé : {mot_cle_aleatoire}")
+
         tendances = obtenir_tendances_shazam(mot_cle_aleatoire)
         if tendances:
             message_bot += (
-                f"\n🎧 Je viens de piocher des sons tendances autour de **{mot_cle_aleatoire}** :\n\n"
+                f"\n🎧 Voici quelques titres populaires autour de **{mot_cle_aleatoire}** :\n\n"
                 + "\n".join(tendances)
                 + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
             )
