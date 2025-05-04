@@ -286,7 +286,7 @@ def verifier_reset_memoire_court_terme(duree_max=300):  # 5 minutes
         memoire_court_terme["dernieres_repliques"] = []
         memoire_court_terme["dernier_sujet"] = ""
 
-def rechercher_musique_shazam(mot_cle):
+def obtenir_tendances_shazam():
     url = f"https://shazam-core.p.rapidapi.com/v1/search/suggest?query={mot_cle}"
     headers = {
         "X-RapidAPI-Key": st.secrets["shazam"]["api_key"],
