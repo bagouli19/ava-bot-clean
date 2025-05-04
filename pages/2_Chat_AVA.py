@@ -162,11 +162,17 @@ def sauvegarder_memoire_ava(memoire: dict):
 
 def memoriser_souvenir_global(type_souvenir: str, contenu: str):
     memoire = charger_memoire_ava()
+    
+    # ✅ Sécurité : si la clé n’existe pas, on l’ajoute
+    if "souvenirs" not in memoire or not isinstance(memoire["souvenirs"], list):
+        memoire["souvenirs"] = []
+
     memoire["souvenirs"].append({
         "type": type_souvenir,
         "contenu": contenu,
         "date": datetime.now().strftime("%Y-%m-%d")
     })
+
     sauvegarder_memoire_ava(memoire)
     print(f"🧠 Souvenir global mémorisé : [{type_souvenir}] {contenu}")
 
