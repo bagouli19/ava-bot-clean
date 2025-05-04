@@ -1388,7 +1388,12 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "symptôme": "Si vous avez un petit souci de santé, je peux vous orienter avec douceur. 🩺"
     }
 
-    dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
+    mots_cles_musique = [
+        "musique", "chanson", "son", "titre", "écouter", "playlist", "sons", "propose une musique", "mets-moi une chanson", "donne un son"
+    ]
+
+    # On vérifie si la question contient un mot-clé musique
+    theme_musique_detecte = any(mot in question_clean.lower() for mot in mots_cles_musique)
 
     if dernier_theme in suggestions:
         message_bot += f"\n{suggestions[dernier_theme]}"
