@@ -1331,6 +1331,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "symptôme": "Si vous avez un petit souci de santé, je peux vous orienter avec douceur. 🩺"
     }
 
+    dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
+
     if dernier_theme in suggestions:
         message_bot += f"\n{suggestions[dernier_theme]}"
 
