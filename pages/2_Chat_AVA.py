@@ -176,17 +176,23 @@ def sauvegarder_memoire_ava(memoire: dict):
 
 def memoriser_souvenir_global(type_souvenir: str, contenu: str):
     """Ajoute un souvenir à la mémoire globale"""
-    memoire = charger_memoire_ava()
-    if "souvenirs" not in memoire or not isinstance(memoire["souvenirs"], list):
-        memoire["souvenirs"] = []
+    try:
+        memoire = charger_memoire_ava()
+        if "souvenirs" not in memoire or not isinstance(memoire["souvenirs"], list):
+            memoire["souvenirs"] = []
+        
+        nouveau_souvenir = {
+            "type": type_souvenir,
+            "contenu": contenu,
+            "date": datetime.now().strftime("%Y-%m-%d")
+        }
 
-    memoire["souvenirs"].append({
-        "type": type_souvenir,
-        "contenu": contenu,
-        "date": datetime.now().strftime("%Y-%m-%d")
-    })
-    sauvegarder_memoire_ava(memoire)
-    print(f"🧠 Souvenir ajouté : [{type_souvenir}] {contenu}")
+        memoire["souvenirs"].append(nouveau_souvenir)
+        sauvegarder_memoire_ava(memoire)
+        print(f"🧠 Souvenir ajouté : [{type_souvenir}] {contenu}")
+    except Exception as e:
+        print(f"❌ Erreur lors de l'ajout du souvenir global : {e}")
+
 
     
 
