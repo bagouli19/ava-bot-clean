@@ -151,7 +151,10 @@ FICHIER_MEMOIRE = "pages/memoire_ava.json"
 def charger_memoire_ava() -> dict:
     try:
         with open(FICHIER_MEMOIRE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            if "souvenirs" not in data or not isinstance(data["souvenirs"], list):
+                data["souvenirs"] = []
+            return data
     except (FileNotFoundError, json.JSONDecodeError):
         return {"souvenirs": []}
 
