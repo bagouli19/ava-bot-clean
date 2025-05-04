@@ -82,10 +82,10 @@ SCRIPT_DIR      = os.path.dirname(__file__)
 PROJECT_ROOT    = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
 sys.path.insert(0, os.path.join(PROJECT_ROOT, "knowledge_base"))
 
-PROFILE_FILE    = os.path.join(SCRIPT_DIR, f"profil_utilisateur_{user}.json")
-GLOBAL_MEMOIRE  = os.path.join(SCRIPT_DIR, "memoire_ava.json")
+DATA_DIR        = os.path.join(PROJECT_ROOT, "data")
+PROFILE_FILE    = os.path.join(DATA_DIR, f"profil_utilisateur_{user}.json")
+FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json")
 STYLE_FILE      = os.path.join(SCRIPT_DIR, "style_ava.json")
-
 
 # ───────────────────────────────────────────────────────────────────────
 # 3️⃣ Gestion des profils utilisateur (mémoire personnelle)
@@ -145,8 +145,7 @@ if st.sidebar.button("Changer prénom pour 'Alex'"):
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
 
-
-FICHIER_MEMOIRE = "pages/memoire_ava.json"
+FICHIER_MEMOIRE = os.path.join(PROJECT_ROOT, "data", "memoire_ava.json")
 
 def charger_memoire_ava() -> dict:
     try:
