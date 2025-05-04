@@ -1395,7 +1395,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if dernier_theme == "musique":
         mot_cle_aleatoire = random.choice(["pop", "rap", "chill", "drill", "france", "party"])
         print("🟢 Bloc musical déclenché pour le thème :", dernier_theme)
-        print(f"📡 Lancement de la recherche musicale avec le mot-clé : {mot_cle}")
+        print(f"📡 Lancement de la recherche musicale avec le mot-clé : {mot_cle_aleatoire}")
         tendances = obtenir_tendances_shazam(mot_cle_aleatoire)
         if tendances:
             message_bot += (
