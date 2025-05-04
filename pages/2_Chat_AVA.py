@@ -1369,9 +1369,9 @@ def trouver_reponse(question: str, model) -> str:
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
-    message_bot = "" 
-    """Détecte si la question correspond à un module spécial (salutation, mémoire, etc.)."""
-    
+    import random
+    message_bot = ""
+
     suggestions = {
         "musique": "Souhaitez-vous que je vous propose une autre chanson ? 🎵",
         "voyage": "Si vous souhaitez des idées de destinations, je peux en proposer ! 🌍",
@@ -1387,17 +1387,14 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
 
-
     if dernier_theme in suggestions:
         message_bot += f"\n{suggestions[dernier_theme]}"
 
-    # 🔥 ATTENTION : ce bloc DOIT être au même niveau que les autres, pas dans le précédent if
     if dernier_theme == "musique":
-        import random
         mot_cle_aleatoire = random.choice(["pop", "rap", "chill", "drill", "france", "party"])
         print("🟢 Bloc musical déclenché pour le thème :", dernier_theme)
         print(f"📡 Lancement de la recherche musicale avec le mot-clé : {mot_cle_aleatoire}")
-
+        
         tendances = obtenir_tendances_shazam(mot_cle_aleatoire)
         if tendances:
             message_bot += (
