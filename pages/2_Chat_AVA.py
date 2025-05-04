@@ -146,43 +146,43 @@ if st.sidebar.button("Changer prénom pour 'Alex'"):
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
 
-import json, os
+import requests, json, base64
 from datetime import datetime
 
-FICHIER_MEMOIRE = os.path.join(PROJECT_ROOT, "data", "memoire_ava.json")
-print("📁 Chemin réel utilisé pour mémoire :", FICHIER_MEMOIRE)
+GITHUB_REPO = "bagouli19/ava-bot-ultimate"
+FICHIER_MEMOIRE = "data/memoire_ava.json"
+BRANCHE = "main"
+GITHUB_TOKEN = st.secrets["github"]["token"]  # ⚠️ Ajoute ce token dans `.streamlit/secrets.toml`
 
 def charger_memoire_ava() -> dict:
-    try:
-        with open(FICHIER_MEMOIRE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            if not isinstance(data, dict):
-                data = {}
-            if "souvenirs" not in data or not isinstance(data["souvenirs"], list):
-                data["souvenirs"] = []
-            return data
-    except (FileNotFoundError, json.JSONDecodeError):
+    url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{BRANCHE}/{FICHIER_MEMOIRE}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
         return {"souvenirs": []}
 
 def sauvegarder_memoire_ava(memoire: dict):
-    try:
-        os.makedirs(os.path.dirname(FICHIER_MEMOIRE), exist_ok=True)
-        with open(FICHIER_MEMOIRE, "w", encoding="utf-8") as f:
-            json.dump(memoire, f, ensure_ascii=False, indent=2)
-        print("✅ mémoire_ava.json bien sauvegardé à :", FICHIER_MEMOIRE)
-    except Exception as e:
-        print(f"❌ Erreur lors de la sauvegarde de la mémoire globale : {e}")
-        print("🧪 DEBUG : JE SUIS BIEN DANS sauvegarder_memoire_ava")
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE}"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    get_res = requests.get(url, headers=headers)
+    sha = get_res.json().get("sha", "")
 
-def memoriser_souvenir_global(type_souvenir: str, contenu: str):
-    memoire = charger_memoire_ava()
-    memoire["souvenirs"].append({
-        "type": type_souvenir,
-        "contenu": contenu,
-        "date": datetime.now().strftime("%Y-%m-%d")
-    })
-    sauvegarder_memoire_ava(memoire)
-    print(f"🧠 Souvenir ajouté : [{type_souvenir}] {contenu}")
+    data = {
+        "message": f"💾 update mémoire {datetime.now().isoformat()}",
+        "content": base64.b64encode(json.dumps(memoire, ensure_ascii=False, indent=2).encode()).decode(),
+        "sha": sha
+    }
+
+    put_res = requests.put(url, headers=headers, json=data)
+    if put_res.status_code in [200, 201]:
+        st.sidebar.success("✅ mémoire_ava.json mise à jour sur GitHub")
+    else:
+        st.sidebar.error("❌ Échec de la mise à jour sur GitHub")
+
 
 
     
