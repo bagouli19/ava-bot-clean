@@ -288,7 +288,7 @@ def verifier_reset_memoire_court_terme(duree_max=300):  # 5 minutes
 
 
 def obtenir_tendances_shazam():
-    url = "https://shazam.p.rapidapi.com/charts/track"
+    url = "'https://shazam.p.rapidapi.com/artists/get-latest-release?id=73406786&l=en-"
     querystring = {
         "locale": "fr-FR",
         "pageSize": "5",
