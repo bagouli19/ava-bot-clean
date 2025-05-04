@@ -1336,6 +1336,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if dernier_theme in suggestions:
         message_bot += f"\n{suggestions[dernier_theme]}"
 
+    return message_bot if message_bot else None
+
      # --- Bloc Recettes rapides ---
     recettes = [
         "🥪 **Sandwich thon-avocat** : pain complet, thon, avocat écrasé, citron, sel, poivre. 5 minutes chrono !",
