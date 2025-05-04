@@ -1315,7 +1315,7 @@ def trouver_reponse(question: str, model) -> str:
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
-    message_bot = None
+    message_bot = "" 
     """Détecte si la question correspond à un module spécial (salutation, mémoire, etc.)."""
     
     suggestions = {
