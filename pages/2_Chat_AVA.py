@@ -1388,28 +1388,26 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "symptôme": "Si vous avez un petit souci de santé, je peux vous orienter avec douceur. 🩺"
     }
     
-       # 🧠 Récupération mémoire court terme (si dispo)
+    # 🧠 Récupération mémoire court terme (si dispo)
     dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
-    
-    mots_cles_musique = [
-        "musique", "chanson", "son", "titre", "écouter", "playlist", "sons", "propose une musique", "mets-moi une chanson", "donne un son"
-    ]
 
-    # On vérifie si la question contient un mot-clé musique
+    # 🔑 Mots-clés pour détecter une intention musicale
+    mots_cles_musique = [
+        "musique", "chanson", "son", "titre", "écouter", "playlist", "sons", "mets-moi une chanson", "propose un son", "donne un son"
+    ]
     theme_musique_detecte = any(mot in question_clean.lower() for mot in mots_cles_musique)
 
+    # 🔁 Suggestions génériques selon thème
     if dernier_theme in suggestions:
         message_bot += f"\n{suggestions[dernier_theme]}"
 
-    if dernier_theme == "musique":
-        mot_cle_aleatoire = random.choice(["pop", "rap", "chill", "drill", "france", "party"])
-        print("🟢 Bloc musical déclenché pour le thème :", dernier_theme)
-        print(f"📡 Lancement de la recherche musicale avec le mot-clé : {mot_cle_aleatoire}")
-        
+    # 🎵 Bloc musical déclenché par mémoire ou mot-clé détecté
+    if theme_musique_detecte or dernier_theme == "musique":
+        print("🟢 Bloc musical déclenché 🎵")
         tendances = obtenir_titres_populaires_france()
         if tendances:
             message_bot += (
-                f"\n🎧 Voici quelques titres populaires autour de **{mot_cle_aleatoire}** :\n\n"
+                "\n🎧 Voici quelques titres populaires à découvrir :\n\n"
                 + "\n".join(tendances)
                 + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
             )
