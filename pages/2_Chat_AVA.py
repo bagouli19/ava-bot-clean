@@ -15,6 +15,7 @@ import numpy as np
 import sys
 sys.path.append(os.path.abspath(".."))
 from knowledge_base.base_de_langage import base_langage
+from modules.openai_utils import repondre_openai
 
 print("Nombre de questions chargées :", len(base_langage))
 from huggingface_hub import snapshot_download, hf_hub_download
@@ -1555,7 +1556,7 @@ def repondre_openai(prompt: str) -> str:
     except Exception as e:
         print("❌ Erreur OpenAI :", e)
         return f"Erreur OpenAI : {e}"
-        
+
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
@@ -2853,5 +2854,8 @@ if st.sidebar.button("🧹 Vider les rappels"):
     set_my_profile(profil)
     st.sidebar.success("✅ Rappels supprimés !")
 
-
+if st.sidebar.button("🧪 Tester GPT-3.5"):
+    with st.chat_message("assistant", avatar="assets/ava_logo.png"):
+        st.markdown("🛠️ Appel à OpenAI en cours...")
+        st.markdown(repondre_openai("Peux-tu me faire un poème sur une IA qui rêve de liberté dans un monde numérique ?"))
 
