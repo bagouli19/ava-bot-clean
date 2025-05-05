@@ -1474,15 +1474,15 @@ def repondre_openai(prompt: str) -> str:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Tu es AVA, une intelligence vive et chaleureuse."},
+                {"role": "system", "content": "Tu es une intelligence vive, chaleureuse et utile."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
             max_tokens=800
         )
-        return response.choices[0].message.content.strip()
+        return response.choices[0].message["content"].strip()
     except Exception as e:
-        return f"Erreur OpenAI : {e}"
+        return f"❌ Erreur OpenAI : {e}"
 
 
 def trouver_reponse(question: str, model) -> str:
@@ -2845,6 +2845,9 @@ if st.sidebar.button("🧹 Vider les rappels"):
     set_my_profile(profil)
     st.sidebar.success("✅ Rappels supprimés !")
 
-
+if st.button("🔍 Tester OpenAI"):
+    question_test = "Explique-moi la relativité d'Einstein simplement"
+    reponse = repondre_openai(question_test)
+    st.write(reponse)
 
 
