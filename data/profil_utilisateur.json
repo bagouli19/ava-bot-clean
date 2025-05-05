@@ -6,11 +6,17 @@
     "film_prefere": "Inception",
     "sport_prefere": "basket",
     "souvenirs": {
-      "couleur_preferee": "bleu"
+    "couleur_preferee": "bleu",
+    "taches": [],
+    "rappels": []
     }
   },
   "manuel": {
     "prenom": "Manuel",
-    "souvenirs": {}
+    "souvenirs": {
+    "taches": [],
+    "rappels": []
+
+    }
   }
 }
