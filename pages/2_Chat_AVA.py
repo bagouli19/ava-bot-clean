@@ -1482,8 +1482,8 @@ def repondre_openai(prompt: str) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question.strip()
     question_clean = nettoyer_texte(question_raw)
-    # 🔥 Test forcé : toujours appeler GPT-3.5 si la question contient "poème" ou "explique"
-    # 🔥 Test forcé OpenAI
+
+    # 🔥 Test forcé : toujours appeler GPT-3.5 si "force_gpt" est présent
     if "force_gpt" in question_clean:
         try:
             print("⚙️ Appel à GPT-3.5 Turbo (forcé)")
@@ -1507,26 +1507,25 @@ def trouver_reponse(question: str, model) -> str:
         print("💬 Réponse : module spécial")
         return reponse_speciale.strip()
 
-    # 3️⃣ Exact match culture générale
+    # 3️⃣ Exact match dans la base culturelle
     if question_clean in base_culture_nettoyee:
         print("💬 Réponse : match exact culture générale")
         return base_culture_nettoyee[question_clean]
 
-    #fuzzy
+    # 4️⃣ Fuzzy matching
     match = difflib.get_close_matches(
         question_clean,
         base_culture_nettoyee.keys(),
         n=1,
-        cutoff=0.95  # 🔒 seuil plus strict
+        cutoff=0.95  # seuil strict
     )
     if match:
-        # ⚠️ Ne pas renvoyer une réponse si la similarité est trop approximative
         phrase_match = match[0]
-        if len(phrase_match.split()) >= 4 and phrase_match in base_culture_nettoyee:
+        if len(phrase_match.split()) >= 4:
+            print("💬 Réponse : fuzzy match")
             return base_culture_nettoyee[phrase_match]
 
-
-        # 5️⃣ Recherche sémantique avec BERT
+    # 5️⃣ Sémantique BERT
     try:
         keys = list(base_culture_nettoyee.keys())
         q_emb = model.encode([question_clean])
@@ -1534,26 +1533,26 @@ def trouver_reponse(question: str, model) -> str:
         sims = cosine_similarity(q_emb, keys_emb)[0]
         best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
         if best_score > 0.7:
+            print("💬 Réponse : BERT similarity")
             return base_culture_nettoyee[keys[best_idx]]
     except Exception as e:
         st.warning(f"⚠️ Erreur BERT : {e}")
 
-    # 6️⃣ Fallback vers OpenAI
+    # 6️⃣ Fallback OpenAI
     try:
-        print("⚙️ Appel à GPT-3.5 Turbo en cours...")
+        print("⚙️ Appel à GPT-3.5 Turbo en fallback...")
         reponse_openai = repondre_openai(question_clean)
         if isinstance(reponse_openai, str) and reponse_openai.strip():
             return reponse_openai.strip()
-        else:
-            return "🤔 Je n’ai pas trouvé de réponse précise à cette question via OpenAI."
     except Exception as e:
         return f"❌ Une erreur est survenue avec OpenAI : {e}"
 
-    # 7️⃣ Dernier recours
+    # 7️⃣ Dernier secours
     return (
         "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
         "N'hésitez pas à reformuler ou à demander un autre sujet !"
     )
+
     
 
 # --- Modules personnalisés (à enrichir) ---
