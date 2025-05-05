@@ -1590,10 +1590,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     question_clean = question.lower().strip()
 
-    # 🔑 Détection des questions générales
     mots_web = [
-         "qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher", "peux-tu trouver", "cherche",
-         "recherche web", "infos sur", "informations sur", "explique moi", "trouve"
+        "qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher", "peux-tu trouver", "cherche",
+        "recherche web", "infos sur", "informations sur", "explique moi", "trouve"
     ]
 
     if any(kw in question_clean for kw in mots_web):
@@ -1603,16 +1602,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             from modules.recherche_web import recherche_web_duckduckgo
             reponse_web = recherche_web_duckduckgo(question_clean)
 
-            if isinstance(reponse_web, str) and reponse_web.strip():
-                if "❌" not in reponse_web and "aucun résultat" not in reponse_web.lower():
-                    return reponse_web
-                else:
-                    return "🤷 Je n'ai rien trouvé de vraiment pertinent cette fois, mais je continue à apprendre !"
+            if reponse_web and "❌" not in reponse_web and "aucun résultat" not in reponse_web.lower():
+                return reponse_web
             else:
                 return "🤷 Je n'ai rien trouvé de vraiment pertinent cette fois, mais je continue à apprendre !"
-
         except Exception as e:
             return f"❌ Erreur lors de la recherche web : {e}"
+
 
                                                                                 
 
