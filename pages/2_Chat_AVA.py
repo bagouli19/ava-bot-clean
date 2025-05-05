@@ -2739,8 +2739,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
     
 
-   # 3. Sinon, chercher une réponse par similarité avec BERT
-   reponse_semantique = trouver_reponse_semantique(question_clean, base_culture, model)
+    # 3. Sinon, chercher une réponse par similarité avec BERT
+    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture, model)
     if reponse_semantique:
         return reponse_semantique
 
