@@ -1563,9 +1563,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
 
     # 🌐 Recherche web intelligente (option gratuite)
-    # Priorité : recherche web si mots-clés de question explicite
-    question_clean = question.lower()
-
+    question_clean = question.lower().strip()
+    
     # 🔍 FORCÉ - Recherche Wikipédia / DuckDuckGo AVANT toute autre logique
     mots_web = ["qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher",
                 "trouve", "cherche", "recherche web", "informations sur", "infos sur", "explique moi"]
