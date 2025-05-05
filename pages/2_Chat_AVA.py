@@ -1403,32 +1403,38 @@ wikipedia.set_lang("fr")  # Tu peux changer en "en" si besoin
 
 def recherche_wikipedia(question: str) -> str:
     try:
+        sujets_forces = {
+            "le soleil": "Soleil",
+            "soleil": "Soleil",
+            "alan turing": "Alan Turing",
+            "napoléon": "Napoléon Ier",
+            "machine learning": "Apprentissage automatique"
+        }
+
+        # Force un titre précis si la question contient une clé connue
+        for cle, titre_wiki in sujets_forces.items():
+            if cle in question.lower():
+                page = wikipedia.page(titre_wiki)
+                resume = wikipedia.summary(page.title, sentences=2)
+                return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+
+        # Sinon comportement classique
         resultats = wikipedia.search(question)
         if not resultats:
             return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
 
         mots_question = question.lower().split()
-
-        # 1️⃣ Recherche exacte
         for titre in resultats:
-            if question.lower() in titre.lower():
+            if any(mot in titre.lower() for mot in mots_question):
                 page = wikipedia.page(titre)
                 resume = wikipedia.summary(page.title, sentences=2)
                 return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
 
-        # 2️⃣ Recherche partielle : un mot de la question dans le titre
-        for titre in resultats:
-            titre_min = titre.lower()
-            if any(mot in titre_min for mot in mots_question):
-                page = wikipedia.page(titre)
-                resume = wikipedia.summary(page.title, sentences=2)
-                return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
-
-        # 3️⃣ Sinon, ne renvoie rien
         return "❌ Aucun résultat Wikipédia pertinent trouvé malgré la recherche."
-        
+
     except Exception as e:
         return f"❌ Erreur Wikipedia : {e}"
+
 
 
 def repondre_openai(prompt: str) -> str:
