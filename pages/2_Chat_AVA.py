@@ -1378,33 +1378,21 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-def recherche_web_duckduckgo(question: str) -> str:
-    params = {
-        "q": question,
-        "format": "json",
-        "no_html": 1,
-        "skip_disambig": 1
-    }
+# ─────────────────────────────────────────────
+# 🔍 Fonction centrale pour résumés Wikipédia
+# ─────────────────────────────────────────────
+def obtenir_resume_wikipedia_depuis_titre(titre_wiki: str) -> str:
     try:
-        response = requests.get("https://api.duckduckgo.com/", params=params)
-        data = response.json()
-        abstract = data.get("AbstractText", "").strip()
-        url = data.get("AbstractURL", "").strip()
-
-        # 🔎 Si réponse vide ou trop courte → Fallback vers Wikipédia
-        if not abstract or len(abstract) < 30:
-            return recherche_wikipedia(question)
-
-        return f"🔎 Résultat web : {abstract}"
+        page = wikipedia.page(titre_wiki)
+        resume = wikipedia.summary(page.title, sentences=2)
+        return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
     except Exception as e:
-        return f"❌ Erreur pendant la recherche web : {e}"
+        return f"❌ Erreur Wikipédia : Impossible de charger la page \"{titre_wiki}\" → {e}"
 
-wikipedia.set_lang("fr")  # Tu peux changer en "en" si besoin
-
+# ─────────────────────────────────────────────
+# 🌐 Fonction de recherche Wikipedia améliorée
+# ─────────────────────────────────────────────
 def recherche_wikipedia(question: str) -> str:
-    import streamlit as st
-    import wikipedia
-
     wikipedia.set_lang("fr")
     question_clean = question.lower()
     st.warning(f"🔎 Question reçue : {question_clean}")
@@ -1422,13 +1410,13 @@ def recherche_wikipedia(question: str) -> str:
         "la terre": "Terre (planète)"
     }
 
-    # 🔒 Forçage manuel s'il y a correspondance exacte
+    # 🔒 Titre forcé si mot clé détecté
     for cle, titre_wiki in sujets_forces.items():
         if cle in question_clean:
             st.info(f"🔒 Titre forcé Wikipédia : {titre_wiki}")
             return obtenir_resume_wikipedia_depuis_titre(titre_wiki)
 
-    # 🔍 Sinon : recherche dynamique
+    # 🔍 Recherche dynamique
     try:
         resultats = wikipedia.search(question_clean)
         if not resultats:
@@ -1444,6 +1432,28 @@ def recherche_wikipedia(question: str) -> str:
     except Exception as e:
         return f"❌ Erreur inattendue dans recherche_wikipedia : {e}"
 
+# ─────────────────────────────────────────────
+# 🔁 Fallback via DuckDuckGo + Wikipédia
+# ─────────────────────────────────────────────
+def recherche_web_duckduckgo(question: str) -> str:
+    params = {
+        "q": question,
+        "format": "json",
+        "no_html": 1,
+        "skip_disambig": 1
+    }
+    try:
+        response = requests.get("https://api.duckduckgo.com/", params=params)
+        data = response.json()
+        abstract = data.get("AbstractText", "").strip()
+
+        # 🔁 Fallback vers Wikipédia si réponse vide
+        if not abstract or len(abstract) < 30:
+            return recherche_wikipedia(question)
+
+        return f"🔎 Résultat web : {abstract}"
+    except Exception as e:
+        return f"❌ Erreur pendant la recherche web : {e}"
 
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
