@@ -38,8 +38,7 @@ from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_t
 from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
-import openai
-global model
+
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1457,12 +1456,6 @@ def recherche_web_duckduckgo(question: str) -> str:
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
 
-
-import openai
-import os
-
-# Assurez-vous que la clé API est bien définie dans Streamlit ou dans les variables d'environnement
-openai.api_key = st.secrets["openai"]["api_key"] if "openai" in st.secrets else os.getenv("OPENAI_API_KEY")
 
 import openai
 import streamlit as st
