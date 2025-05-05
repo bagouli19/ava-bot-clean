@@ -1558,7 +1558,11 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
 
     # 🌐 Recherche web intelligente (option gratuite)
-    if any(kw in question_clean for kw in ["cherche", "trouve", "informations sur", "recherche web", "sais-tu", "peux-tu chercher"]):
+    if any(kw in question_clean for kw in [
+        "cherche", "trouve", "informations sur",
+        "recherche web", "sais-tu", "peux-tu chercher",
+        "qui est", "qu'est-ce que", "qu'est ce que", "explique moi"
+    ]):
         return recherche_web_duckduckgo(question_clean)
 
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
