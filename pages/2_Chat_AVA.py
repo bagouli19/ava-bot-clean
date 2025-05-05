@@ -1559,8 +1559,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
+    # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [
-        "qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher", "peux-tu trouver", "cherche",
+        "qui est", "qu est ce que", "c est quoi", "peux tu chercher", "peux tu trouver", "cherche",
         "recherche web", "infos sur", "informations sur", "explique moi", "trouve"
     ]
 
@@ -1575,6 +1576,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 return "🤷 Je n'ai rien trouvé de vraiment pertinent cette fois, mais je continue à apprendre !"
         except Exception as e:
             return f"❌ Erreur lors de la recherche web : {e}"
+
 
 
 
