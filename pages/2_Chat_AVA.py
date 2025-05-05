@@ -1565,15 +1565,16 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # 🌐 Recherche web intelligente (option gratuite)
     question_clean = question.lower().strip()
     
-    # 🔍 FORCÉ - Recherche Wikipédia / DuckDuckGo AVANT toute autre logique
+    # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = ["qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher",
                 "trouve", "cherche", "recherche web", "informations sur", "infos sur", "explique moi"]
-    
+
     if any(kw in question_clean for kw in mots_web):
-        reponse_web = recherche_wikipedia(question_clean)
+        from modules.recherche_web import recherche_web_duckduckgo
+        reponse_web = recherche_web_duckduckgo(question_clean)
         if reponse_web and "❌" not in reponse_web:
             return reponse_web
-
+            
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
         "rappelle-moi de",
