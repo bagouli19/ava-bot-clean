@@ -1404,12 +1404,12 @@ wikipedia.set_lang("fr")  # Tu peux changer en "en" si besoin
 def recherche_wikipedia(question: str) -> str:
     try:
         sujets_forces = {
-        "le soleil": "Soleil",
-        "soleil": "Soleil",  # ← corrige bien ici (et pas "solie")
-        "alan turing": "Alan Turing",
-        "napoléon": "Napoléon Ier",
-        "machine learning": "Apprentissage automatique"
-    }
+            "le soleil": "Soleil",
+            "soleil": "Soleil",
+            "alan turing": "Alan Turing",
+            "napoléon": "Napoléon Ier",
+            "machine learning": "Apprentissage automatique"
+        }
 
         # Force un titre précis si la question contient une clé connue
         for cle, titre_wiki in sujets_forces.items():
