@@ -1382,12 +1382,15 @@ def format_actus(
 # 🔍 Fonction centrale pour résumés Wikipédia
 # ─────────────────────────────────────────────
 def obtenir_resume_wikipedia_depuis_titre(titre_wiki: str) -> str:
+    import wikipedia
     try:
-        page = wikipedia.page(titre_wiki)
-        resume = wikipedia.summary(page.title, sentences=2)
+        wikipedia.set_lang("fr")
+        page = wikipedia.page(title=titre_wiki, auto_suggest=False)
+        resume = wikipedia.summary(page.title, sentences=2, auto_suggest=False)
         return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
     except Exception as e:
         return f"❌ Erreur Wikipédia : Impossible de charger la page \"{titre_wiki}\" → {e}"
+
 
 # ─────────────────────────────────────────────
 # 🌐 Fonction de recherche Wikipedia améliorée
