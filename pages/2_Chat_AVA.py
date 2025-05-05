@@ -2863,5 +2863,10 @@ if st.sidebar.button("🧹 Vider les rappels"):
     set_my_profile(profil)
     st.sidebar.success("✅ Rappels supprimés !")
 
-
+if st.sidebar.button("🧪 Tester GPT-3.5 Turbo (poème)"):
+    with st.chat_message("assistant", avatar="assets/ava_logo.png"):
+        st.markdown("🛠️ Appel à OpenAI en cours...")
+        from test_openai_direct import repondre_openai
+        prompt_test = "Peux-tu me faire un poème sur une IA qui rêve de liberté dans un monde numérique ?"
+        st.markdown(repondre_openai(prompt_test))
 
