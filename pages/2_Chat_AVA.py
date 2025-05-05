@@ -1548,13 +1548,6 @@ def trouver_reponse(question: str, model) -> str:
         "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
         "N'hésitez pas à reformuler ou à demander un autre sujet !"
     )
-
-
-# --- Modules personnalisés (à enrichir) ---
-def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
-    import random
-    message_bot = ""
-        
     # Forçage OpenAI si certaines formulations longues sont détectées
     if any(kw in question_clean for kw in ["peux-tu me faire un poème", "écris-moi un texte", "donne-moi une explication complète", "raconte une histoire", "fais une dissertation"]):
         try:
@@ -1562,7 +1555,12 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return repondre_openai(question_clean)
         except Exception as e:
             return f"❌ Erreur GPT-3.5 : {e}"
-            
+
+# --- Modules personnalisés (à enrichir) ---
+def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
+    import random
+    message_bot = ""
+        
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [
         "qui est", "qu est ce que", "c est quoi", "peux tu chercher", "peux tu trouver", "cherche",
