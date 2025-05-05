@@ -1590,18 +1590,26 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     question_clean = question.lower().strip()
 
-    # 🔍 Bloc prioritaire : recherche web ou Wikipédia
-    mots_web = ["qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher",
-                "trouve", "cherche", "recherche web", "informations sur", "infos sur", "explique moi"]
+    # 🔑 Détection des questions générales
+    mots_web = [
+        "qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher", "peux-tu trouver", "cherche",
+        "recherche web", "infos sur", "informations sur", "explique moi", "trouve"
+    ]
 
     if any(kw in question_clean for kw in mots_web):
-        from modules.recherche_web import recherche_web_duckduckgo
-        reponse_web = recherche_web_duckduckgo(question_clean)
-        if reponse_web and "❌" not in reponse_web:
-            return reponse_web
-        print(recherche_web_duckduckgo("c'est quoi le métaverse Facebook"))                                                                                 
+        st.info("🔎 Je cherche des infos en ligne, un instant...")
 
+        try:
+            from modules.recherche_web import recherche_web_duckduckgo
+            reponse_web = recherche_web_duckduckgo(question_clean)
 
+            if reponse_web and "❌" not in reponse_web and "aucun résultat" not in reponse_web.lower():
+                return reponse_web
+            else:
+                return "🤷 Je n'ai rien trouvé de vraiment pertinent cette fois, mais je continue à apprendre !"
+        except Exception as e:
+            return f"❌ Erreur lors de la recherche web : {e}"
+                                                                                
 
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
