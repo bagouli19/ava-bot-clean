@@ -1480,7 +1480,7 @@ def repondre_openai(prompt: str) -> str:
             temperature=0.7,
             max_tokens=800
         )
-        return response.choices[0].message["content"].strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         return f"❌ Erreur OpenAI : {e}"
 
@@ -2739,15 +2739,15 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
     
 
-    # 3. Sinon, chercher une réponse par similarité avec BERT
-    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture, model)
+   # 3. Sinon, chercher une réponse par similarité avec BERT
+   reponse_semantique = trouver_reponse_semantique(question_clean, base_culture, model)
     if reponse_semantique:
         return reponse_semantique
 
     # 4. Sinon, utiliser OpenAI en secours
     try:
         reponse_openai = repondre_openai(question_clean)
-        if reponse_openai and reponse_openai.strip():
+        if isinstance(reponse_openai, str) and reponse_openai.strip():
             return reponse_openai.strip()
         else:
             return "🤔 Je n’ai pas trouvé de réponse précise à cette question via OpenAI."
