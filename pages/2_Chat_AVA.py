@@ -48,8 +48,6 @@ global model
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
-
 try:
     with open("base_connaissances.json", "r", encoding="utf-8") as f:
         base_connaissances = json.load(f)
