@@ -1482,6 +1482,13 @@ def repondre_openai(prompt: str) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question.strip()
     question_clean = nettoyer_texte(question_raw)
+    # 🔥 Test forcé : toujours appeler GPT-3.5 si la question contient "poème" ou "explique"
+    if "poème" in question_clean or "explique" in question_clean:
+        try:
+            print("⚙️ Appel OpenAI forcé (test)")
+            return repondre_openai(question_clean)
+        except Exception as e:
+            return f"❌ Erreur GPT-3.5 : {e}"
     print("🔍 Question nettoyée :", question_clean)
 
     incrementer_interactions()
@@ -1554,19 +1561,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    # 🔥 Forçage GPT-3.5 pour certaines formulations longues et créatives
-    formulations_openai = [
-        "peux-tu me faire un poème", "écris-moi un poème", "écris un poème",
-        "raconte-moi une histoire", "explique-moi en détail", "donne-moi une explication",
-        "fais une dissertation", "imagine un scénario"
-    ]
-    if any(kw in question_clean for kw in formulations_openai):
-        try:
-            print("⚙️ Forçage OpenAI déclenché")
-            return repondre_openai(question_clean)
-        except Exception as e:
-            return f"❌ Erreur GPT-3.5 : {e}" 
-              
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [
         "qui est", "qu est ce que", "c est quoi", "peux tu chercher", "peux tu trouver", "cherche",
