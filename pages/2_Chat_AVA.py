@@ -1405,55 +1405,44 @@ def recherche_wikipedia(question: str) -> str:
     import streamlit as st
     import wikipedia
 
+    wikipedia.set_lang("fr")
+    question_clean = question.lower()
+    st.warning(f"🔎 Question reçue : {question_clean}")
+
+    sujets_forces = {
+        "le soleil": "Soleil",
+        "soleil": "Soleil",
+        "alan turing": "Alan Turing",
+        "napoléon": "Napoléon Ier",
+        "machine learning": "Apprentissage automatique",
+        "albert einstein": "Albert Einstein",
+        "le cerveau": "Cerveau",
+        "la gravité": "Gravitation",
+        "la lune": "Lune",
+        "la terre": "Terre (planète)"
+    }
+
+    # 🔒 Forçage manuel s'il y a correspondance exacte
+    for cle, titre_wiki in sujets_forces.items():
+        if cle in question_clean:
+            st.info(f"🔒 Titre forcé Wikipédia : {titre_wiki}")
+            return obtenir_resume_wikipedia_depuis_titre(titre_wiki)
+
+    # 🔍 Sinon : recherche dynamique
     try:
-        sujets_forces = {
-            "le soleil": "Soleil",
-            "soleil": "Soleil",
-            "alan turing": "Alan Turing",
-            "napoléon": "Napoléon Ier",
-            "machine learning": "Apprentissage automatique",
-            "albert einstein": "Albert Einstein",
-            "le cerveau": "Cerveau",
-            "la gravité": "Gravitation",
-            "la lune": "Lune",
-            "la terre": "Terre (planète)"
-        }
-
-        question_clean = question.lower()
-        st.warning(f"🔎 Question reçue : {question_clean}")
-
-        # 🔒 Forçage de titre s'il y a correspondance exacte
-        for cle, titre_wiki in sujets_forces.items():
-            if cle in question_clean:
-                st.info(f"🔒 Titre forcé Wikipédia : {titre_wiki}")
-                try:
-                    page = wikipedia.page(titre_wiki)
-                    resume = wikipedia.summary(page.title, sentences=2)
-                    return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
-                except Exception as e:
-                    return f"❌ Erreur Wikipédia sur \"{titre_wiki}\" : {e}"
-
-        # 🔍 Sinon recherche libre
         resultats = wikipedia.search(question_clean)
         if not resultats:
             return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
 
         mots_question = question_clean.split()
         for titre in resultats:
-            titre_min = titre.lower()
-            if any(mot in titre_min for mot in mots_question):
-                try:
-                    page = wikipedia.page(titre)
-                    resume = wikipedia.summary(page.title, sentences=2)
-                    return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
-                except Exception as e:
-                    return f"❌ Erreur Wikipédia sur \"{titre}\" : {e}"
+            if any(mot in titre.lower() for mot in mots_question):
+                return obtenir_resume_wikipedia_depuis_titre(titre)
 
         return "❌ Aucun résultat Wikipédia pertinent trouvé malgré la recherche."
 
     except Exception as e:
         return f"❌ Erreur inattendue dans recherche_wikipedia : {e}"
-
 
 
 def repondre_openai(prompt: str) -> str:
