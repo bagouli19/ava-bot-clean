@@ -1581,31 +1581,29 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    # 🌐 Recherche web intelligente (option gratuite)
+    # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     question_clean = question.lower().strip()
 
-    # 🔍 Bloc prioritaire : recherche web ou Wikipédia
+    # 🔑 Détection des questions générales
     mots_web = [
-        "qui est", "qu'est-ce que", "qu’est-ce que", "c'est quoi", "peux-tu chercher",
-        "trouve", "cherche", "recherche web", "informations sur", "infos sur", "explique moi"
+        "qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher", "peux-tu trouver", "cherche",
+        "recherche web", "infos sur", "informations sur", "explique moi", "trouve"
     ]
 
     if any(kw in question_clean for kw in mots_web):
-        from modules.recherche_web import recherche_web_duckduckgo
+        st.info("🔎 Je cherche des infos en ligne, un instant...")
 
-        # 🔔 Affiche une notification dans le chat AVA (si contexte Streamlit actif)
         try:
-            st.chat_message("assistant", avatar="assets/ava_logo.png").markdown("🔎 Je cherche des infos en ligne, un instant...")
-        except:
-            pass  # Sécurité si la fonction est appelée hors Streamlit
+            from modules.recherche_web import recherche_web_duckduckgo
+            reponse_web = recherche_web_duckduckgo(question_clean)
 
-        # Lance la recherche
-        reponse_web = recherche_web_duckduckgo(question_clean)
+            if reponse_web and "❌" not in reponse_web and "aucun résultat" not in reponse_web.lower():
+                return reponse_web
+            else:
+                return "🤷 Je n'ai rien trouvé de vraiment pertinent cette fois, mais je continue à apprendre !"
+        except Exception as e:
+            return f"❌ Erreur lors de la recherche web : {e}"
 
-        if reponse_web and "❌" not in reponse_web:
-            return reponse_web
-        else:
-            return "🤷 Je n'ai rien trouvé de vraiment pertinent cette fois, mais je continue à apprendre !"
 
 
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
