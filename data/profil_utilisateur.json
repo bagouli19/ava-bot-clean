@@ -22,6 +22,12 @@
         "contenu": "ajoute aller chez le coiffeur a ma liste",
         "date": "2025-05-05"
       }
+    ],
+    "rappels": [
+      {
+        "contenu": "prendre mon rendez vous demain",
+        "date": "2025-05-05"
+      }
     ]
   }
 }
