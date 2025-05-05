@@ -1401,16 +1401,19 @@ def recherche_wikipedia(question: str) -> str:
     try:
         wikipedia.set_lang("fr")
         sujets_forces = {
-            "le soleil": "Soleil",
-            "soleil": "Soleil",
-            "alan turing": "Alan Turing",
-            "napoléon": "Napoléon Ier",
-            "machine learning": "Apprentissage automatique",
-            "albert einstein": "Albert Einstein",
-            "le cerveau": "Cerveau",
-            "la gravité": "Gravitation",
-            "la lune": "Lune",
-            "la terre": "Terre (planète)"
+                "le soleil": "Soleil",
+                "soleil": "Soleil",
+                "alan turing": "Alan Turing",
+                "napoléon": "Napoléon Ier",
+                "machine learning": "Apprentissage automatique",
+                "albert einstein": "Albert Einstein",
+                "le cerveau": "Cerveau",
+                "la gravité": "Gravitation",
+                "la lune": "Lune",
+                "la terre": "Terre (planète)",
+                "blockchain": "Blockchain",                # ✅ AJOUT ICI
+                "la blockchain": "Blockchain",             # ✅ Variante fréquente
+                "c'est quoi la blockchain": "Blockchain" 
         }
 
         question_clean = question.lower()
