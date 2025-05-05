@@ -1512,7 +1512,7 @@ def trouver_reponse(question: str, model) -> str:
         print("💬 Réponse : fuzzy match culture générale")
         return base_culture_nettoyee[match[0]]
 
-    # 5️⃣ Recherche sémantique avec BERT
+        # 5️⃣ Recherche sémantique avec BERT
     try:
         keys = list(base_culture_nettoyee.keys())
         q_emb = model.encode([question_clean])
@@ -1520,24 +1520,22 @@ def trouver_reponse(question: str, model) -> str:
         sims = cosine_similarity(q_emb, keys_emb)[0]
         best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
         if best_score > 0.7:
-            print("💬 Réponse : BERT sémantique (score =", best_score, ")")
             return base_culture_nettoyee[keys[best_idx]]
     except Exception as e:
-        print("⚠️ Erreur BERT :", e)
+        st.warning(f"⚠️ Erreur BERT : {e}")
 
-    # 6️⃣ Fallback OpenAI
+    # 6️⃣ Fallback vers OpenAI
     try:
         print("⚙️ Appel à GPT-3.5 Turbo en cours...")
         reponse_openai = repondre_openai(question_clean)
         if isinstance(reponse_openai, str) and reponse_openai.strip():
-            print("✅ Réponse OpenAI utilisée.")
             return reponse_openai.strip()
+        else:
+            return "🤔 Je n’ai pas trouvé de réponse précise à cette question via OpenAI."
     except Exception as e:
-        print("❌ Erreur OpenAI :", e)
         return f"❌ Une erreur est survenue avec OpenAI : {e}"
 
     # 7️⃣ Dernier recours
-    print("🔚 Aucune réponse trouvée")
     return (
         "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
         "N'hésitez pas à reformuler ou à demander un autre sujet !"
