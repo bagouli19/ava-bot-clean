@@ -433,6 +433,30 @@ def load_bert_model():
 
     # debug : liste de MODEL_PATH
     st.write("Contenu de MODEL_PATH :", os.listdir(MODEL_PATH))
+    # Vérification de l'intégrité des fichiers essentiels
+    required_files = [
+        "config.json",
+        "modules.json",
+        "tokenizer_config.json",
+        "sentence_bert_config.json",
+        "tokenizer.json",
+        "vocab.txt",
+        "pytorch_model.bin"
+    ]
+
+    fichiers_vides = []
+    for f in required_files:
+        chemin = os.path.join(MODEL_PATH, f)
+        if not os.path.exists(chemin):
+            fichiers_vides.append(f"❌ Manquant : {f}")
+        elif os.path.getsize(chemin) == 0:
+            fichiers_vides.append(f"⚠️ Vide : {f}")
+
+    if fichiers_vides:
+        st.error("❌ Le modèle BERT est incomplet ou corrompu :")
+        for erreur in fichiers_vides:
+            st.error(erreur)
+        st.stop()
 
     # 3️⃣ Chargement du modèle
     try:
