@@ -46,29 +46,6 @@ from dotenv import load_dotenv
 # ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
-# ⚠️ Test prioritaire de GPT-3.5 Turbo (force tout appel ici pour debug)
-def repondre_openai(prompt: str) -> str:
-    import openai
-    openai.api_key = st.secrets["OPENAI_API_KEY"]
-
-    print(f"👉 Appel OpenAI avec : {prompt}")
-    try:
-        resp = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Tu es une IA chaleureuse, vive et curieuse."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=800,
-        )
-        print("✅ OpenAI a répondu")
-        return resp.choices[0].message.content.strip()
-    except Exception as e:
-        print("❌ Erreur OpenAI :", e)
-        return f"Erreur OpenAI : {e}"
-
-
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
@@ -1557,7 +1534,28 @@ def trouver_reponse(question: str, model) -> str:
     
 
     
+# ⚠️ Test prioritaire de GPT-3.5 Turbo (force tout appel ici pour debug)
+def repondre_openai(prompt: str) -> str:
+    import openai
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
 
+    print(f"👉 Appel OpenAI avec : {prompt}")
+    try:
+        resp = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Tu es une IA chaleureuse, vive et curieuse."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=800,
+        )
+        print("✅ OpenAI a répondu")
+        return resp.choices[0].message.content.strip()
+    except Exception as e:
+        print("❌ Erreur OpenAI :", e)
+        return f"Erreur OpenAI : {e}"
+        
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
