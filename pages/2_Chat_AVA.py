@@ -402,7 +402,6 @@ def obtenir_titres_populaires_france(nb=5):
 # 6️⃣ Chargement du modèle sémantique MiniLM
 # ───────────────────────────────────────────────────────────────────────
 from huggingface_hub import snapshot_download, hf_hub_download
-import streamlit as st
 
 PROJECT_ROOT = os.getcwd()
 MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
@@ -414,27 +413,27 @@ def load_bert_model():
     config_file = os.path.join(MODEL_PATH, "config.json")
     pt_file     = os.path.join(MODEL_PATH, "pytorch_model.bin")
 
-    # 1️⃣ Si le dossier n'existe pas encore, on télécharge tout
+    # 1️⃣ Téléchargement complet si config.json manquant
     if not os.path.isfile(config_file):
         st.warning("📂 config.json introuvable → téléchargement du modèle complet…")
         snapshot_download(
             repo_id="sentence-transformers/bert-base-nli-mean-tokens",
             local_dir=MODEL_PATH,
-            local_dir_use_symlinks=False,
+            local_dir_use_symlinks=False,  # ⚠️ force l'écriture réelle
             token=st.secrets.get("HUGGINGFACE_TOKEN", None)
         )
 
-    # 2️⃣ Si les poids PyTorch manquent, on les télécharge aussi
+    # 2️⃣ Téléchargement manuel du fichier des poids s’il manque
     if not os.path.isfile(pt_file):
         st.warning("📥 Téléchargement des poids PyTorch manquants…")
         hf_hub_download(
             repo_id="sentence-transformers/bert-base-nli-mean-tokens",
             filename="pytorch_model.bin",
-            cache_dir=MODEL_PATH,
+            cache_dir=MODEL_PATH,  # ⚠️ on le force aussi ici
             token=st.secrets.get("HUGGINGFACE_TOKEN", None)
         )
 
-    # 3️⃣ Vérification que tous les fichiers importants sont présents
+    # 3️⃣ Vérifie que les fichiers critiques existent et sont non vides
     required_files = [
         "config.json", "modules.json", "tokenizer_config.json",
         "sentence_bert_config.json", "tokenizer.json", "vocab.txt", "pytorch_model.bin"
@@ -459,9 +458,10 @@ def load_bert_model():
         return SentenceTransformer(MODEL_PATH)
     except Exception as e:
         st.error("❌ Un bug dans la matrice ! AVA n’a pas pu charger son modèle BERT.")
-        st.info("➡️ Vérifie que tous les fichiers du modèle sont valides (aucun vide ou manquant).")
+        st.info("➡️ Vérifie que tous les fichiers du modèle sont valides.")
         st.code(str(e))
         st.stop()
+
 
 model = load_bert_model()
 
