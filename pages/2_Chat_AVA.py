@@ -1566,11 +1566,12 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # Priorité : recherche web si mots-clés de question explicite
     question_clean = question.lower()
 
+    # 🔍 Recherche web prioritaire
     if any(m in question_clean for m in [
         "qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher",
-        "trouve", "cherche", "recherche web", "infos sur", "explique moi"
+        "trouve", "cherche", "recherche web", "informations sur", "infos sur", "explique moi"
     ]):
-        reponse_web = recherche_wikipedia(question_clean)  # ça basculera automatiquement vers DuckDuckGo si besoin
+        reponse_web = recherche_wikipedia(question_clean)
         if reponse_web:
             return reponse_web
 
