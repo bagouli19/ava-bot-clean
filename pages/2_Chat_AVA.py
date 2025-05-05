@@ -1395,49 +1395,55 @@ def obtenir_resume_wikipedia_depuis_titre(titre_wiki: str) -> str:
 # ─────────────────────────────────────────────
 # 🌐 Fonction de recherche Wikipedia améliorée
 # ─────────────────────────────────────────────
-def recherche_wikipedia(question: str) -> str:
-    import wikipedia
+import wikipedia
 
+wikipedia.set_lang("fr")  # Utilisation du français
+
+def recherche_wikipedia(question: str) -> str:
     try:
-        wikipedia.set_lang("fr")
+        question_clean = question.lower().strip()
+
+        # 🔒 Titre précis pour certains sujets récurrents
         sujets_forces = {
-                "le soleil": "Soleil",
-                "soleil": "Soleil",
-                "alan turing": "Alan Turing",
-                "napoléon": "Napoléon Ier",
-                "machine learning": "Apprentissage automatique",
-                "albert einstein": "Albert Einstein",
-                "le cerveau": "Cerveau",
-                "la gravité": "Gravitation",
-                "la lune": "Lune",
-                "la terre": "Terre (planète)",
-                "blockchain": "Blockchain",                # ✅ AJOUT ICI
-                "la blockchain": "Blockchain",             # ✅ Variante fréquente
-                "c'est quoi la blockchain": "Blockchain" 
+            "blockchain": "Blockchain",
+            "tesla": "Tesla Inc.",
+            "alan turing": "Alan Turing",
+            "le soleil": "Soleil",
+            "napoléon": "Napoléon Ier",
+            "intelligence artificielle": "Intelligence artificielle",
+            "isaac newton": "Isaac Newton",
+            "internet": "Internet",
+            "climat": "Changement climatique",
         }
 
-        question_clean = question.lower()
+        for mot, titre_precis in sujets_forces.items():
+            if mot in question_clean:
+                try:
+                    page = wikipedia.page(titre_precis)
+                    resume = wikipedia.summary(titre_precis, sentences=2)
+                    return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+                except Exception as e:
+                    return f"❌ Erreur Wikipédia : Impossible de charger la page \"{titre_precis}\" → {e}"
 
-        for cle, titre_wiki in sujets_forces.items():
-            if cle in question_clean:
-                return obtenir_resume_wikipedia_depuis_titre(titre_wiki)
-
-        # Recherche automatique
+        # 🔍 Recherche libre sinon
         resultats = wikipedia.search(question_clean)
         if not resultats:
-            return recherche_web_duckduckgo(question)  # 🔁 Fallback si aucun résultat
+            return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
 
-        mots_question = question_clean.split()
         for titre in resultats:
-            titre_min = titre.lower()
-            if any(mot in titre_min for mot in mots_question):
-                return obtenir_resume_wikipedia_depuis_titre(titre)
+            if any(mot in titre.lower() for mot in question_clean.split()):
+                try:
+                    page = wikipedia.page(titre)
+                    resume = wikipedia.summary(titre, sentences=2)
+                    return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+                except:
+                    continue
 
-        # Aucun titre pertinent
-        return recherche_web_duckduckgo(question)  # 🔁 Fallback si aucun titre ne matche vraiment
+        return "❌ Aucun résultat Wikipédia pertinent trouvé malgré la recherche."
 
     except Exception as e:
-        return f"❌ Erreur inattendue dans recherche_wikipedia : {e}"
+        return f"❌ Erreur inattendue Wikipédia : {e}"
+
 
 # ─────────────────────────────────────────────
 # 🔁 Fallback via DuckDuckGo + Wikipédia
