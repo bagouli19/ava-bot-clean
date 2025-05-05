@@ -1466,23 +1466,25 @@ import os
 # Assurez-vous que la clé API est bien définie dans Streamlit ou dans les variables d'environnement
 openai.api_key = st.secrets["openai"]["api_key"] if "openai" in st.secrets else os.getenv("OPENAI_API_KEY")
 
+import openai
+import streamlit as st
+
+openai.api_key = st.secrets["openai"]["api_key"]
+
 def repondre_openai(prompt: str) -> str:
-    print(f"👉 Appel OpenAI avec : {prompt}")
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Tu es une intelligence vive, chaleureuse et utile. Réponds de manière naturelle, précise et détaillée."},
+                {"role": "system", "content": "Tu es AVA, une intelligence vive et chaleureuse."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=900,
+            max_tokens=800
         )
-        print("✅ OpenAI a répondu")
         return response.choices[0].message.content.strip()
     except Exception as e:
-        print(f"❌ Erreur OpenAI : {e}")
-        return f"⚠️ Erreur OpenAI : {e}"
+        return f"Erreur OpenAI : {e}"
 
 
 def trouver_reponse(question: str, model) -> str:
