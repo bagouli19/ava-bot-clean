@@ -1403,23 +1403,23 @@ wikipedia.set_lang("fr")  # Tu peux changer en "en" si besoin
 
 def recherche_wikipedia(question: str) -> str:
     try:
+        mots_question = question.lower().split()
         resultats = wikipedia.search(question)
         if not resultats:
             return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
 
-        # 🎯 Filtrage amélioré pour éviter les mauvaises interprétations
-        mots_cles = ["soleil", "étoile", "astronomie", "physique", "informatique", "turing", "intelligence", "mathématicien"]
-
+        # 🧠 Essaie de trouver une correspondance entre la question et les résultats
         for titre in resultats:
-            if any(mot in titre.lower() for mot in mots_cles):
+            titre_min = titre.lower()
+            if any(mot in titre_min for mot in mots_question):
                 page = wikipedia.page(titre)
                 resume = wikipedia.summary(page.title, sentences=2)
                 return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
 
-        # 🕵️ Si rien ne correspond, on prend quand même le 1er
+        # 🔁 Sinon, prend le 1er mais indique qu’il pourrait être imprécis
         page = wikipedia.page(resultats[0])
         resume = wikipedia.summary(page.title, sentences=2)
-        return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+        return f"⚠️ Résultat approximatif (le sujet exact n’a pas été trouvé) :\n\n📚 {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
 
     except Exception as e:
         return f"❌ Erreur Wikipedia : {e}"
