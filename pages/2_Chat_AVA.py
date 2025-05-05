@@ -1505,7 +1505,7 @@ def trouver_reponse(question: str, model) -> str:
     if question_clean in base_culture_nettoyee:
         print("💬 Réponse : match exact culture générale")
         return base_culture_nettoyee[question_clean]
-        
+
     #fuzzy
     match = difflib.get_close_matches(
         question_clean,
@@ -2805,7 +2805,15 @@ if prompt:
         sauvegarder_memoire_ava(memoire)
         st.sidebar.success("✅ Sauvegarde forcée effectuée.")
     
-
+# 🔧 TEST : Appel direct à GPT-3.5 Turbo si question commence par "force openai:"
+if prompt and prompt.lower().startswith("force openai:"):
+    question_openai = prompt.replace("force openai:", "").strip()
+    try:
+        reponse = repondre_openai(question_openai)
+        st.chat_message("assistant", avatar="assets/ava_logo.png").markdown(reponse)
+    except Exception as e:
+        st.error(f"❌ Erreur GPT-3.5 : {e}")
+    st.stop()  # on arrête ici pour ne pas passer dans les autres blocs
 
 st.sidebar.subheader("🧾 Rappels et tâches")
 
