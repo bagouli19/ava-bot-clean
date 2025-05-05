@@ -1460,65 +1460,60 @@ def recherche_web_duckduckgo(question: str) -> str:
         return f"❌ Erreur pendant la recherche web : {e}"
 
 
+import openai
+import os
+
+# Assurez-vous que la clé API est bien définie dans Streamlit ou dans les variables d'environnement
+openai.api_key = st.secrets["openai"]["api_key"] if "openai" in st.secrets else os.getenv("OPENAI_API_KEY")
+
 def repondre_openai(prompt: str) -> str:
-    print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
+    print(f"👉 Appel OpenAI avec : {prompt}")
     try:
-        resp = openai.ChatCompletion.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Tu es une intelligence vive, chaleureuse et utile. Réponds de manière naturelle et détaillée."},
+                {"role": "system", "content": "Tu es une intelligence vive, chaleureuse et utile. Réponds de manière naturelle, précise et détaillée."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
             max_tokens=900,
         )
         print("✅ OpenAI a répondu")
-        return resp.choices[0].message.content.strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
-        print("❌ Erreur OpenAI :", e)
-        return f"Erreur OpenAI : {e}"
+        print(f"❌ Erreur OpenAI : {e}")
+        return f"⚠️ Erreur OpenAI : {e}"
 
 
 def trouver_reponse(question: str, model) -> str:
-    message_bot = "..."
-    """
-    Trouve la réponse la plus adaptée à la question posée.
-    """
-    # 0️⃣ Normalisation « universelle »
     question_raw   = question.strip()
     question_clean = nettoyer_texte(question_raw)
 
     incrementer_interactions()
     ajuster_affection(question_raw)
-
     memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
-        
-    # 1️⃣ Salutations (avant tout)
+
+    # 1️⃣ Salutations
     salut = repondre_salutation(question_clean)
     if salut:
         return salut
 
+    # 2️⃣ Recherche dans la base de langage
     base_langage_clean = {
-        nettoyer_texte(phrase): reponses
-        for phrase, reponses in base_langage.items()
+        nettoyer_texte(phrase): reponses for phrase, reponses in base_langage.items()
     }
+    if question_clean in base_langage_clean:
+        return random.choice(base_langage_clean[question_clean])
 
-    # Tentez un fuzzy-match si aucune inclusion exacte
-    if base_langage_clean:
-        # 1) inclusion stricte
-        if question_clean in base_langage_clean:
-            return random.choice(base_langage_clean[question_clean])
-
-    # 2️⃣ Modules spéciaux (recettes, calcul, météo, souvenirs…)
+    # 3️⃣ Modules spéciaux (recettes, météo, souvenirs, etc.)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale:
         return reponse_speciale.strip()
 
-    # 3️⃣ Recherche exacte dans la culture générale
+    # 4️⃣ Base culturelle exacte ou fuzzy
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # 4️⃣ Fuzzy matching dans la culture générale
     match = difflib.get_close_matches(
         question_clean,
         base_culture_nettoyee.keys(),
@@ -1528,22 +1523,22 @@ def trouver_reponse(question: str, model) -> str:
     if match:
         return base_culture_nettoyee[match[0]]
 
-    # 5️⃣ Recherche sémantique avec BERT
+    # 5️⃣ Recherche sémantique via BERT
     try:
-        keys       = list(base_culture_nettoyee.keys())
-        q_emb      = model.encode([question_clean])
-        keys_emb   = model.encode(keys)
-        sims       = cosine_similarity(q_emb, keys_emb)[0]
+        keys = list(base_culture_nettoyee.keys())
+        q_emb = model.encode([question_clean])
+        keys_emb = model.encode(keys)
+        sims = cosine_similarity(q_emb, keys_emb)[0]
         best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
         if best_score > 0.7:
             return base_culture_nettoyee[keys[best_idx]]
     except Exception:
         pass
 
-    # 6️⃣ Secours OpenAI
+    # 6️⃣ Fallback OpenAI
     try:
         reponse_openai = repondre_openai(question_clean)
-        if isinstance(reponse_openai, str) and reponse_openai.strip():
+        if reponse_openai.strip():
             return reponse_openai
     except Exception as e:
         return f"⚠️ Une erreur est survenue avec OpenAI : {e}"
@@ -1551,8 +1546,9 @@ def trouver_reponse(question: str, model) -> str:
     # 7️⃣ Dernier recours
     return (
         "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
-        "N'hésitez pas à reformuler ou à demander un autre sujet !"
+        "N'hésitez pas à reformuler ou à poser une autre question !"
     )
+
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
@@ -2747,11 +2743,16 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     reponse_semantique = trouver_reponse_semantique(question_clean, base_culture, model)
     if reponse_semantique:
         return reponse_semantique
+
+    # 4. Sinon, utiliser OpenAI en secours
     try:
         reponse_openai = repondre_openai(question_clean)
-        return reponse_openai
+        if reponse_openai and reponse_openai.strip():
+            return reponse_openai.strip()
+        else:
+            return "🤔 Je n’ai pas trouvé de réponse précise à cette question via OpenAI."
     except Exception as e:
-        return "Je suis désolée, une erreur est survenue avec OpenAI."
+        return f"❌ Je suis désolée, une erreur est survenue avec OpenAI : {e}"
 
     
     # --- FIN de gerer_modules_speciaux ---
