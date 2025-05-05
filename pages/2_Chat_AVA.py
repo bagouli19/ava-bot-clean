@@ -1469,11 +1469,24 @@ def repondre_openai(prompt: str) -> str:
         print("❌ Erreur OpenAI :", e)
         return f"Erreur OpenAI : {e}"
 
+def est_reponse_vide_ou_generique(reponse: str) -> bool:
+    if not reponse or not isinstance(reponse, str):
+        return True
+    reponse = reponse.lower().strip()
+    reponses_nulles = [
+        "🌍 il y a actuellement 195 pays reconnus dans le monde.",
+        "🌙 les chauves-souris, hiboux ou encore félins sont actifs principalement la nuit.",
+        "💉 le premier vaccin contre la variole a été développé par edward jenner en 1796.",
+        "🧮 un algorithme est une suite d’instructions permettant de résoudre un problème ou d’effectuer une tâche de manière logique.",
+    ]
+    return reponse in reponses_nulles or len(reponse.split()) < 8
+
+
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question.strip()
     question_clean = nettoyer_texte(question_raw)
 
-    # 🔥 GPT forcé si "force_gpt" dans la question
+    # 🔥 Appel forcé GPT-3.5 si demandé explicitement
     if "force_gpt" in question_clean:
         try:
             print("⚙️ Appel à GPT-3.5 Turbo (forcé)")
@@ -1487,19 +1500,13 @@ def trouver_reponse(question: str, model) -> str:
 
     # 1️⃣ Salutations
     salut = repondre_salutation(question_clean)
-    if salut:
+    if salut and not est_reponse_vide_ou_generique(salut):
         return salut
 
     # 2️⃣ Modules spéciaux
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
-    if reponse_speciale:
-        if reponse_speciale.lower().strip() in [
-            "🌍 il y a actuellement 195 pays reconnus dans le monde.",
-            "🌙 les chauves-souris, hiboux ou encore félins sont actifs principalement la nuit.",
-        ] or len(reponse_speciale.split()) < 10:
-            reponse_speciale = None
-        else:
-            return reponse_speciale.strip()
+    if reponse_speciale and not est_reponse_vide_ou_generique(reponse_speciale):
+        return
 
     # 3️⃣ Réponse exacte (culture générale)
     if question_clean in base_culture_nettoyee:
