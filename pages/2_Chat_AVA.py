@@ -2705,5 +2705,26 @@ if prompt:
         memoire = charger_memoire_ava()
         sauvegarder_memoire_ava(memoire)
         st.sidebar.success("✅ Sauvegarde forcée effectuée.")
+    
+    st.sidebar.subheader("🧾 Rappels et tâches")
+
+if st.sidebar.button("📋 Voir mes tâches"):
+    profil = get_my_profile()
+    taches = profil.get("taches", [])
+    if not taches:
+        st.sidebar.info("📭 Liste de tâches vide.")
+    else:
+        for t in taches:
+            st.sidebar.markdown(f"- {t['contenu']} ({t['date']})")
+
+if st.sidebar.button("🔔 Voir mes rappels"):
+    profil = get_my_profile()
+    rappels = profil.get("rappels", [])
+    if not rappels:
+        st.sidebar.info("🔕 Aucun rappel pour l’instant.")
+    else:
+        for r in rappels:
+            st.sidebar.markdown(f"- {r['contenu']} ({r['date']})")
+
 
 
