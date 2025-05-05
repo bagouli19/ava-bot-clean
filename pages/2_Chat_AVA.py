@@ -2842,9 +2842,5 @@ if st.sidebar.button("🧹 Vider les rappels"):
     set_my_profile(profil)
     st.sidebar.success("✅ Rappels supprimés !")
 
-if st.button("🔍 Tester OpenAI"):
-    question_test = "Explique-moi la relativité d'Einstein simplement"
-    reponse = repondre_openai(question_test)
-    st.write(reponse)
 
 
