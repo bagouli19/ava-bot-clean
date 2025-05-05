@@ -47,35 +47,27 @@ from dotenv import load_dotenv
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
 # ⚠️ Test prioritaire de GPT-3.5 Turbo (force tout appel ici pour debug)
-import openai
+def repondre_openai(prompt: str) -> str:
+    import openai
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-def test_force_gpt(prompt):
+    print(f"👉 Appel OpenAI avec : {prompt}")
     try:
-        print("🧪 Test : appel GPT-3.5 Turbo direct")
-        response = openai.ChatCompletion.create(
+        resp = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Tu es une IA poétique, curieuse et empathique."},
+                {"role": "system", "content": "Tu es une IA chaleureuse, vive et curieuse."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=600
+            max_tokens=800,
         )
-        return response.choices[0].message["content"].strip()
+        print("✅ OpenAI a répondu")
+        return resp.choices[0].message.content.strip()
     except Exception as e:
-        return f"❌ Erreur GPT-3.5 Turbo : {e}"
+        print("❌ Erreur OpenAI :", e)
+        return f"Erreur OpenAI : {e}"
 
-# Test immédiat
-if "force_gpt" in st.session_state.get("debug_trigger", ""):
-    st.write(test_force_gpt(st.session_state["debug_trigger"].replace("force_gpt", "").strip()))
-    st.stop()
-
-try:
-    with open("base_connaissances.json", "r", encoding="utf-8") as f:
-        base_connaissances = json.load(f)
-except Exception as e:
-    print(f"Erreur chargement base_connaissances.json : {e}")
-    base_connaissances = {}
 
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
@@ -2863,10 +2855,5 @@ if st.sidebar.button("🧹 Vider les rappels"):
     set_my_profile(profil)
     st.sidebar.success("✅ Rappels supprimés !")
 
-if st.sidebar.button("🧪 Tester GPT-3.5 Turbo (poème)"):
-    with st.chat_message("assistant", avatar="assets/ava_logo.png"):
-        st.markdown("🛠️ Appel à OpenAI en cours...")
-        from test_openai_direct import repondre_openai
-        prompt_test = "Peux-tu me faire un poème sur une IA qui rêve de liberté dans un monde numérique ?"
-        st.markdown(repondre_openai(prompt_test))
+
 
