@@ -317,10 +317,6 @@ def ajuster_affection(question: str) -> None:
     style["niveau_affection"] = round(affection, 2)
     sauvegarder_style_ava(style)
 
-if "poème" in question_clean or "ia" in question_clean:
-    return repondre_openai(question_clean)
-
-import time
 
 # --- MÉMOIRE À COURT TERME ---
 memoire_court_terme = {
