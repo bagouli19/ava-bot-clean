@@ -1483,6 +1483,8 @@ def trouver_reponse(question: str, model) -> str:
     question_raw   = question.strip()
     question_clean = nettoyer_texte(question_raw)
 
+    print("🔍 Question nettoyée :", question_clean)
+
     incrementer_interactions()
     ajuster_affection(question_raw)
     memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
@@ -1490,31 +1492,24 @@ def trouver_reponse(question: str, model) -> str:
     # 1️⃣ Salutations
     salut = repondre_salutation(question_clean)
     if salut:
+        print("💬 Réponse : salutation")
         return salut
 
-    # 2️⃣ Recherche dans la base de langage
-    base_langage_clean = {
-        nettoyer_texte(phrase): reponses for phrase, reponses in base_langage.items()
-    }
-    if question_clean in base_langage_clean:
-        return random.choice(base_langage_clean[question_clean])
-
-    # 3️⃣ Modules spéciaux (recettes, météo, souvenirs, etc.)
+    # 2️⃣ Modules spéciaux (météo, rappels, quiz…)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
-    if reponse_speciale and "🤷" not in reponse_speciale and "aucun résultat" not in reponse_speciale.lower():
+    if reponse_speciale:
+        print("💬 Réponse : module spécial")
         return reponse_speciale.strip()
 
-    # 4️⃣ Base culturelle exacte ou fuzzy
+    # 3️⃣ Exact match culture générale
     if question_clean in base_culture_nettoyee:
+        print("💬 Réponse : match exact culture générale")
         return base_culture_nettoyee[question_clean]
 
-    match = difflib.get_close_matches(
-        question_clean,
-        base_culture_nettoyee.keys(),
-        n=1,
-        cutoff=0.85
-    )
+    # 4️⃣ Fuzzy match culture générale
+    match = difflib.get_close_matches(question_clean, base_culture_nettoyee.keys(), n=1, cutoff=0.85)
     if match:
+        print("💬 Réponse : fuzzy match culture générale")
         return base_culture_nettoyee[match[0]]
 
     # 5️⃣ Recherche sémantique avec BERT
@@ -1525,22 +1520,24 @@ def trouver_reponse(question: str, model) -> str:
         sims = cosine_similarity(q_emb, keys_emb)[0]
         best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
         if best_score > 0.7:
+            print("💬 Réponse : BERT sémantique (score =", best_score, ")")
             return base_culture_nettoyee[keys[best_idx]]
     except Exception as e:
-        st.warning(f"⚠️ Erreur BERT : {e}")
+        print("⚠️ Erreur BERT :", e)
 
-    # 6️⃣ Fallback vers OpenAI
+    # 6️⃣ Fallback OpenAI
     try:
         print("⚙️ Appel à GPT-3.5 Turbo en cours...")
         reponse_openai = repondre_openai(question_clean)
         if isinstance(reponse_openai, str) and reponse_openai.strip():
+            print("✅ Réponse OpenAI utilisée.")
             return reponse_openai.strip()
-        else:
-            return "🤔 Je n’ai pas trouvé de réponse précise à cette question via OpenAI."
     except Exception as e:
+        print("❌ Erreur OpenAI :", e)
         return f"❌ Une erreur est survenue avec OpenAI : {e}"
 
     # 7️⃣ Dernier recours
+    print("🔚 Aucune réponse trouvée")
     return (
         "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
         "N'hésitez pas à reformuler ou à demander un autre sujet !"
