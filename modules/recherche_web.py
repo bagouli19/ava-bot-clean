@@ -1,38 +1,37 @@
-import requests
-import wikipedia
-
-wikipedia.set_lang("fr")
-
-def recherche_wikipedia(question: str) -> str:
-    try:
-        resultats = wikipedia.search(question)
-        if not resultats:
-            return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
-        page = wikipedia.page(resultats[0])
-        resume = wikipedia.summary(page.title, sentences=2)
-        return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
-    except Exception as e:
-        return f"❌ Erreur Wikipédia : {e}"
-
 def recherche_web_duckduckgo(question: str) -> str:
+    import requests, wikipedia
+    wikipedia.set_lang("fr")
+
+    params = {
+        "q": question,
+        "format": "json",
+        "no_html": 1,
+        "skip_disambig": 1
+    }
+
     try:
-        params = {
-            "q": question,
-            "format": "json",
-            "no_html": 1,
-            "skip_disambig": 1
-        }
         response = requests.get("https://api.duckduckgo.com/", params=params)
         data = response.json()
 
         abstract = data.get("AbstractText", "").strip()
         url = data.get("AbstractURL", "").strip()
 
-        # Si la réponse est vide ou trop courte, on bascule vers Wikipédia
+        # 🔁 Si réponse vide → fallback Wikipédia amélioré
         if not abstract or len(abstract) < 30:
-            return recherche_wikipedia(question)
+            resultats = wikipedia.search(question)
+            if resultats:
+                for titre in resultats:
+                    try:
+                        page = wikipedia.page(titre)
+                        resume = wikipedia.summary(page.title, sentences=2)
+                        return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+                    except:
+                        continue
+            return "❌ Je n’ai trouvé aucune information pertinente sur ce sujet."
 
-        return f"🔎 Résultat web : {abstract}\n\n🔗 [Source]({url})" if url else f"🔎 Résultat web : {abstract}"
+        return f"🌐 Résultat DuckDuckGo : {abstract}\n\n🔗 {url}" if url else f"🌐 Résultat DuckDuckGo : {abstract}"
+
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
+
 
