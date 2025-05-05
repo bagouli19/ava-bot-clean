@@ -401,18 +401,22 @@ def obtenir_titres_populaires_france(nb=5):
 # ───────────────────────────────────────────────────────────────────────
 # 6️⃣ Chargement du modèle sémantique MiniLM
 # ───────────────────────────────────────────────────────────────────────
+from huggingface_hub import snapshot_download, hf_hub_download
+import streamlit as st
+
+PROJECT_ROOT = os.getcwd()
 MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
-st.write(">>> MODEL_PATH =", MODEL_PATH)
 
 @st.cache_resource
 def load_bert_model():
-    MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
+    st.warning("🔁 Vérification du modèle local BERT en cours…")
+
     config_file = os.path.join(MODEL_PATH, "config.json")
     pt_file     = os.path.join(MODEL_PATH, "pytorch_model.bin")
 
-    # 1️⃣ Si le dossier n'existe pas encore, clone le repo HF (config+tokenizer+IR)
+    # 1️⃣ Si le dossier n'existe pas encore, on télécharge tout
     if not os.path.isfile(config_file):
-        st.info("⬇️ Téléchargement des fichiers du modèle BERT…")
+        st.warning("📂 config.json introuvable → téléchargement du modèle complet…")
         snapshot_download(
             repo_id="sentence-transformers/bert-base-nli-mean-tokens",
             local_dir=MODEL_PATH,
@@ -420,10 +424,9 @@ def load_bert_model():
             token=st.secrets.get("HUGGINGFACE_TOKEN", None)
         )
 
-    # 2️⃣ Si les poids PyTorch manquent, on les récupère via hf_hub_download
+    # 2️⃣ Si les poids PyTorch manquent, on les télécharge aussi
     if not os.path.isfile(pt_file):
-        st.info("⬇️ Téléchargement des poids PyTorch manquants…")
-        # télécharge pytorch_model.bin dans MODEL_PATH
+        st.warning("📥 Téléchargement des poids PyTorch manquants…")
         hf_hub_download(
             repo_id="sentence-transformers/bert-base-nli-mean-tokens",
             filename="pytorch_model.bin",
@@ -431,19 +434,11 @@ def load_bert_model():
             token=st.secrets.get("HUGGINGFACE_TOKEN", None)
         )
 
-    # debug : liste de MODEL_PATH
-    st.write("Contenu de MODEL_PATH :", os.listdir(MODEL_PATH))
-    # Vérification de l'intégrité des fichiers essentiels
+    # 3️⃣ Vérification que tous les fichiers importants sont présents
     required_files = [
-        "config.json",
-        "modules.json",
-        "tokenizer_config.json",
-        "sentence_bert_config.json",
-        "tokenizer.json",
-        "vocab.txt",
-        "pytorch_model.bin"
+        "config.json", "modules.json", "tokenizer_config.json",
+        "sentence_bert_config.json", "tokenizer.json", "vocab.txt", "pytorch_model.bin"
     ]
-
     fichiers_vides = []
     for f in required_files:
         chemin = os.path.join(MODEL_PATH, f)
@@ -454,16 +449,18 @@ def load_bert_model():
 
     if fichiers_vides:
         st.error("❌ Le modèle BERT est incomplet ou corrompu :")
-        for erreur in fichiers_vides:
-            st.error(erreur)
+        for err in fichiers_vides:
+            st.error(err)
         st.stop()
 
-    # 3️⃣ Chargement du modèle
+    # 4️⃣ Chargement final du modèle
     try:
         st.success("✅ Modèle BERT chargé avec succès.")
         return SentenceTransformer(MODEL_PATH)
     except Exception as e:
-        st.error(f"❌ Échec lors du chargement final du modèle BERT : {e}")
+        st.error("❌ Un bug dans la matrice ! AVA n’a pas pu charger son modèle BERT.")
+        st.info("➡️ Vérifie que tous les fichiers du modèle sont valides (aucun vide ou manquant).")
+        st.code(str(e))
         st.stop()
 
 model = load_bert_model()
