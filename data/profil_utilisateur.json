@@ -6,17 +6,22 @@
     "film_prefere": "Inception",
     "sport_prefere": "basket",
     "souvenirs": {
-    "couleur_preferee": "bleu",
-    "taches": [],
-    "rappels": []
+      "couleur_preferee": "bleu",
+      "taches": [],
+      "rappels": []
     }
   },
   "manuel": {
     "prenom": "Manuel",
     "souvenirs": {
-    "taches": [],
-    "rappels": []
-
-    }
+      "taches": [],
+      "rappels": []
+    },
+    "taches": [
+      {
+        "contenu": "ajoute aller chez le coiffeur a ma liste",
+        "date": "2025-05-05"
+      }
+    ]
   }
 }
