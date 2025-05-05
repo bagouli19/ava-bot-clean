@@ -1499,7 +1499,7 @@ def trouver_reponse(question: str, model) -> str:
 
     # 3️⃣ Modules spéciaux (recettes, météo, souvenirs, etc.)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
-    if reponse_speciale:
+    if reponse_speciale and "🤷" not in reponse_speciale and "aucun résultat" not in reponse_speciale.lower():
         return reponse_speciale.strip()
 
     # 4️⃣ Base culturelle exacte ou fuzzy
