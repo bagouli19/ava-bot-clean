@@ -1579,18 +1579,31 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
 
     # 🌐 Recherche web intelligente (option gratuite)
-    question_clean = question.lower().strip()
+question_clean = question.lower().strip()
 
-    # 🔍 Bloc prioritaire : recherche web ou Wikipédia
-    mots_web = ["qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher",
-                "trouve", "cherche", "recherche web", "informations sur", "infos sur", "explique moi"]
+# 🔍 Bloc prioritaire : recherche web ou Wikipédia
+mots_web = [
+    "qui est", "qu'est-ce que", "qu’est-ce que", "c'est quoi", "peux-tu chercher",
+    "trouve", "cherche", "recherche web", "informations sur", "infos sur", "explique moi"
+]
 
-    if any(kw in question_clean for kw in mots_web):
-        from modules.recherche_web import recherche_web_duckduckgo
-        reponse_web = recherche_web_duckduckgo(question_clean)
-        if reponse_web and "❌" not in reponse_web:
-            return reponse_web
-        print(recherche_web_duckduckgo("c'est quoi le métaverse Facebook"))
+if any(kw in question_clean for kw in mots_web):
+    from modules.recherche_web import recherche_web_duckduckgo
+
+    # 🔔 Affiche une notification dans le chat AVA (si contexte Streamlit actif)
+    try:
+        st.chat_message("assistant", avatar="assets/ava_logo.png").markdown("🔎 Je cherche des infos en ligne, un instant...")
+    except:
+        pass  # Sécurité si la fonction est appelée hors Streamlit
+
+    # Lance la recherche
+    reponse_web = recherche_web_duckduckgo(question_clean)
+
+    if reponse_web and "❌" not in reponse_web:
+        return reponse_web
+    else:
+        return "🤷 Je n'ai rien trouvé de vraiment pertinent cette fois, mais je continue à apprendre !"
+
 
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
