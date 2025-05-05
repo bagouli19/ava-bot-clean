@@ -1377,7 +1377,25 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-        
+def recherche_web_duckduckgo(question: str) -> str:
+    """Interroge l’API DuckDuckGo pour obtenir une réponse rapide à une question."""
+    params = {
+        "q": question,
+        "format": "json",
+        "no_html": 1,
+        "skip_disambig": 1
+    }
+    try:
+        response = requests.get("https://api.duckduckgo.com/", params=params)
+        data = response.json()
+        reponse = data.get("AbstractText")
+
+        if reponse:
+            return f"🔎 Résultat web : {reponse}"
+        else:
+            return "❌ Je n’ai rien trouvé de précis avec DuckDuckGo pour cette recherche."
+    except Exception as e:
+        return f"❌ Erreur pendant la recherche web : {e}"       
 
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
@@ -1477,6 +1495,10 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
+
+    # 🌐 Recherche web intelligente (option gratuite)
+    if any(kw in question_clean for kw in ["cherche", "trouve", "informations sur", "recherche web", "sais-tu", "peux-tu chercher"]):
+        return recherche_web_duckduckgo(question_clean)
 
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
