@@ -46,6 +46,29 @@ from dotenv import load_dotenv
 # ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
+# ⚠️ Test prioritaire de GPT-3.5 Turbo (force tout appel ici pour debug)
+import openai
+
+def test_force_gpt(prompt):
+    try:
+        print("🧪 Test : appel GPT-3.5 Turbo direct")
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Tu es une IA poétique, curieuse et empathique."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=600
+        )
+        return response.choices[0].message["content"].strip()
+    except Exception as e:
+        return f"❌ Erreur GPT-3.5 Turbo : {e}"
+
+# Test immédiat
+if "force_gpt" in st.session_state.get("debug_trigger", ""):
+    st.write(test_force_gpt(st.session_state["debug_trigger"].replace("force_gpt", "").strip()))
+    st.stop()
 
 try:
     with open("base_connaissances.json", "r", encoding="utf-8") as f:
@@ -1455,30 +1478,6 @@ def recherche_web_duckduckgo(question: str) -> str:
         return f"❌ Erreur pendant la recherche web : {e}"
 
 
-def repondre_openai(prompt: str) -> str:
-    import openai
-    openai.api_key = st.secrets["OPENAI_API_KEY"]
-
-    print(f"👉 Appel OpenAI avec : {prompt}")
-    try:
-        resp = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Tu es une IA chaleureuse, vive et curieuse."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=800,
-        )
-        print("✅ OpenAI a répondu")
-        return resp.choices[0].message.content.strip()
-    except Exception as e:
-        print("❌ Erreur OpenAI :", e)
-        return f"Erreur OpenAI : {e}"
-
-
-
-
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question.strip()
     question_clean = nettoyer_texte(question_raw)
@@ -1511,7 +1510,7 @@ def trouver_reponse(question: str, model) -> str:
     if question_clean in base_culture_nettoyee:
         print("💬 Réponse : match exact culture générale")
         return base_culture_nettoyee[question_clean]
-        
+
     # 3️⃣ Requête créative → forcer GPT-3.5
     motifs_creatifs = ["poème", "explique", "écris", "raconte", "rédige", "invente", "imagine"]
     if any(m in question_clean for m in motifs_creatifs):
