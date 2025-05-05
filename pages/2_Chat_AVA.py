@@ -1403,12 +1403,20 @@ wikipedia.set_lang("fr")  # Tu peux changer en "en" si besoin
 
 def recherche_wikipedia(question: str) -> str:
     try:
-        mots_question = question.lower().split()
         resultats = wikipedia.search(question)
         if not resultats:
             return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
 
-        # 🧠 Essaie de trouver une correspondance entre la question et les résultats
+        mots_question = question.lower().split()
+
+        # 1️⃣ Recherche exacte
+        for titre in resultats:
+            if question.lower() in titre.lower():
+                page = wikipedia.page(titre)
+                resume = wikipedia.summary(page.title, sentences=2)
+                return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+
+        # 2️⃣ Recherche partielle : un mot de la question dans le titre
         for titre in resultats:
             titre_min = titre.lower()
             if any(mot in titre_min for mot in mots_question):
@@ -1416,13 +1424,12 @@ def recherche_wikipedia(question: str) -> str:
                 resume = wikipedia.summary(page.title, sentences=2)
                 return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
 
-        # 🔁 Sinon, prend le 1er mais indique qu’il pourrait être imprécis
-        page = wikipedia.page(resultats[0])
-        resume = wikipedia.summary(page.title, sentences=2)
-        return f"⚠️ Résultat approximatif (le sujet exact n’a pas été trouvé) :\n\n📚 {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
-
+        # 3️⃣ Sinon, ne renvoie rien
+        return "❌ Aucun résultat Wikipédia pertinent trouvé malgré la recherche."
+        
     except Exception as e:
         return f"❌ Erreur Wikipedia : {e}"
+
 
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
