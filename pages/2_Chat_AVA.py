@@ -1529,21 +1529,14 @@ def trouver_reponse(question: str, model) -> str:
             return base_culture_nettoyee[keys[best_idx]]
     except Exception:
         pass
-
-    # 6️⃣ Secours OpenAI (appel GPT-3.5 Turbo)
+    # 6️⃣ Secours OpenAI
     try:
+        print("⚙️ Appel à GPT-3.5 Turbo en cours...")
         reponse_openai = repondre_openai(question_clean)
         if reponse_openai and reponse_openai.strip():
-            return reponse_openai.strip()
+            return reponse_openai
     except Exception as e:
-        return f"❌ Une erreur est survenue avec OpenAI : {e}"
-
-    # 7️⃣ Dernier recours absolu
-    return (
-        "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
-        "N'hésitez pas à reformuler ou à demander un autre sujet !"
-    )
-
+        return f"❌ Erreur OpenAI : {e}"
     
 
 
