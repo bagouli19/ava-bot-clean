@@ -1402,39 +1402,57 @@ def recherche_web_duckduckgo(question: str) -> str:
 wikipedia.set_lang("fr")  # Tu peux changer en "en" si besoin
 
 def recherche_wikipedia(question: str) -> str:
-    st.warning(f"🔎 Question reçue : {question}")
+    import streamlit as st
+    import wikipedia
+
     try:
         sujets_forces = {
             "le soleil": "Soleil",
             "soleil": "Soleil",
             "alan turing": "Alan Turing",
             "napoléon": "Napoléon Ier",
-            "machine learning": "Apprentissage automatique"
+            "machine learning": "Apprentissage automatique",
+            "albert einstein": "Albert Einstein",
+            "le cerveau": "Cerveau",
+            "la gravité": "Gravitation",
+            "la lune": "Lune",
+            "la terre": "Terre (planète)"
         }
 
-        # Force un titre précis si la question contient une clé connue
-        for cle, titre_wiki in sujets_forces.items():
-            if cle in question.lower():
-                page = wikipedia.page(titre_wiki)
-                resume = wikipedia.summary(page.title, sentences=2)
-                return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+        question_clean = question.lower()
+        st.warning(f"🔎 Question reçue : {question_clean}")
 
-        # Sinon comportement classique
-        resultats = wikipedia.search(question)
+        # 🔒 Forçage de titre s'il y a correspondance exacte
+        for cle, titre_wiki in sujets_forces.items():
+            if cle in question_clean:
+                st.info(f"🔒 Titre forcé Wikipédia : {titre_wiki}")
+                try:
+                    page = wikipedia.page(titre_wiki)
+                    resume = wikipedia.summary(page.title, sentences=2)
+                    return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+                except Exception as e:
+                    return f"❌ Erreur Wikipédia sur \"{titre_wiki}\" : {e}"
+
+        # 🔍 Sinon recherche libre
+        resultats = wikipedia.search(question_clean)
         if not resultats:
             return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
 
-        mots_question = question.lower().split()
+        mots_question = question_clean.split()
         for titre in resultats:
-            if any(mot in titre.lower() for mot in mots_question):
-                page = wikipedia.page(titre)
-                resume = wikipedia.summary(page.title, sentences=2)
-                return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+            titre_min = titre.lower()
+            if any(mot in titre_min for mot in mots_question):
+                try:
+                    page = wikipedia.page(titre)
+                    resume = wikipedia.summary(page.title, sentences=2)
+                    return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+                except Exception as e:
+                    return f"❌ Erreur Wikipédia sur \"{titre}\" : {e}"
 
         return "❌ Aucun résultat Wikipédia pertinent trouvé malgré la recherche."
 
     except Exception as e:
-        return f"❌ Erreur Wikipedia : {e}"
+        return f"❌ Erreur inattendue dans recherche_wikipedia : {e}"
 
 
 
