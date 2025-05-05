@@ -1376,7 +1376,44 @@ def format_actus(
         texte += f"{i}. 🔹 [{titre}]({url})\n"
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
+    
+# --- 💡 Détection et enregistrement des rappels ---
+    if any(phrase in question_clean for phrase in ["rappelle-moi", "n'oublie pas de", "souviens-toi de"]):
+        profil = get_my_profile()
+        if "rappels" not in profil:
+            profil["rappels"] = []
+        contenu = question_clean.split("de")[-1].strip(" .!?")
+        if contenu:
+            profil["rappels"].append({"contenu": contenu, "date": datetime.now().strftime("%Y-%m-%d")})
+            set_my_profile(profil)
+            return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
 
+    # --- 📝 Détection et enregistrement de tâches à faire ---
+    if any(phrase in question_clean for phrase in ["ajoute", "rajoute", "note", "mets dans ma liste"]):
+        profil = get_my_profile()
+        if "taches" not in profil:
+            profil["taches"] = []
+        contenu = question_clean.split("de")[-1].strip(" .!?")
+        if contenu:
+            profil["taches"].append({"contenu": contenu, "date": datetime.now().strftime("%Y-%m-%d")})
+            set_my_profile(profil)
+            return f"🗒️ J’ai ajouté à votre liste : **{contenu}**."
+
+    # --- 🧾 Affichage des rappels ou tâches ---
+    if "rappels" in question_clean or "à me rappeler" in question_clean:
+        profil = get_my_profile()
+        rappels = profil.get("rappels", [])
+        if not rappels:
+            return "🔕 Vous n’avez aucun rappel pour l’instant."
+        return "🔔 Vos rappels enregistrés :\n" + "\n".join([f"- {r['contenu']} ({r['date']})" for r in rappels])
+
+    if "liste" in question_clean or "mes tâches" in question_clean or "tâches" in question_clean:
+        profil = get_my_profile()
+        taches = profil.get("taches", [])
+        if not taches:
+            return "📭 Votre liste de tâches est vide pour le moment."
+        return "📝 Voici votre liste de tâches :\n" + "\n".join([f"- {t['contenu']} ({t['date']})" for t in taches])
+        
 
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
@@ -1791,43 +1828,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     for cle_souv, contenu in profil.get("souvenirs", {}).items():
         if cle_souv.replace("_", " ") in question_clean or contenu.lower() in question_clean:
             return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
-    # --- 💡 Détection et enregistrement des rappels ---
-    if any(phrase in question_clean for phrase in ["rappelle-moi", "n'oublie pas de", "souviens-toi de"]):
-        profil = get_my_profile()
-        if "rappels" not in profil:
-            profil["rappels"] = []
-        contenu = question_clean.split("de")[-1].strip(" .!?")
-        if contenu:
-            profil["rappels"].append({"contenu": contenu, "date": datetime.now().strftime("%Y-%m-%d")})
-            set_my_profile(profil)
-            return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
-
-    # --- 📝 Détection et enregistrement de tâches à faire ---
-    if any(phrase in question_clean for phrase in ["ajoute", "rajoute", "note", "mets dans ma liste"]):
-        profil = get_my_profile()
-        if "taches" not in profil:
-            profil["taches"] = []
-        contenu = question_clean.split("de")[-1].strip(" .!?")
-        if contenu:
-            profil["taches"].append({"contenu": contenu, "date": datetime.now().strftime("%Y-%m-%d")})
-            set_my_profile(profil)
-            return f"🗒️ J’ai ajouté à votre liste : **{contenu}**."
-
-    # --- 🧾 Affichage des rappels ou tâches ---
-    if "rappels" in question_clean or "à me rappeler" in question_clean:
-        profil = get_my_profile()
-        rappels = profil.get("rappels", [])
-        if not rappels:
-            return "🔕 Vous n’avez aucun rappel pour l’instant."
-        return "🔔 Vos rappels enregistrés :\n" + "\n".join([f"- {r['contenu']} ({r['date']})" for r in rappels])
-
-    if "liste" in question_clean or "mes tâches" in question_clean or "tâches" in question_clean:
-        profil = get_my_profile()
-        taches = profil.get("taches", [])
-        if not taches:
-            return "📭 Votre liste de tâches est vide pour le moment."
-        return "📝 Voici votre liste de tâches :\n" + "\n".join([f"- {t['contenu']} ({t['date']})" for t in taches])
-        
+    
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
         try:
