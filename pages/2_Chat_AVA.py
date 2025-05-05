@@ -1574,6 +1574,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         reponse_web = recherche_web_duckduckgo(question_clean)
         if reponse_web and "❌" not in reponse_web:
             return reponse_web
+        print(recherche_web_duckduckgo("c'est quoi le métaverse Facebook"))
             
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
