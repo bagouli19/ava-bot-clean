@@ -29,6 +29,7 @@ from forex_python.converter import CurrencyRates, CurrencyCodes
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import time
+import pyttsx3
 
 
 # — Modules internes
@@ -1376,6 +1377,15 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
+def faire_parler_ava(message: str):
+    try:
+        engine = pyttsx3.init()
+        engine.setProperty('rate', 165)  # Vitesse de lecture (tu peux ajuster)
+        engine.setProperty('volume', 1)  # Volume maximum
+        engine.say(message)
+        engine.runAndWait()
+    except Exception as e:
+        print("Erreur synthèse vocale :", e)
 
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
@@ -2644,7 +2654,9 @@ if prompt:
     # Affichage immédiat du message d'AVA
     with st.chat_message("assistant", avatar="assets/ava_logo.png"):
         st.markdown(reponse)
-
+    # 🔊 Synthèse vocale : AVA parle
+    faire_parler_ava(reponse)
+    
     # 🔘 Bouton test mémoire globale (à usage développeur)
     if st.sidebar.button("🔄 Forcer sauvegarde mémoire JSON"):
         memoire = charger_memoire_ava()
