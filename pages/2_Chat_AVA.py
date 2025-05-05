@@ -1473,10 +1473,10 @@ def trouver_reponse(question: str, model) -> str:
     question_raw   = question.strip()
     question_clean = nettoyer_texte(question_raw)
 
-    # 🔥 Appel OpenAI forcé si "force_gpt"
+    # 🔥 GPT forcé si "force_gpt" dans la question
     if "force_gpt" in question_clean:
         try:
-            st.info("🛠️ Appel à OpenAI (forcé)")
+            print("⚙️ Appel à GPT-3.5 Turbo (forcé)")
             return repondre_openai(question_clean.replace("force_gpt", "").strip())
         except Exception as e:
             return f"❌ Erreur GPT-3.5 : {e}"
@@ -1493,39 +1493,44 @@ def trouver_reponse(question: str, model) -> str:
     # 2️⃣ Modules spéciaux
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale:
-        return reponse_speciale.strip()
+        if reponse_speciale.lower().strip() in [
+            "🌍 il y a actuellement 195 pays reconnus dans le monde.",
+            "🌙 les chauves-souris, hiboux ou encore félins sont actifs principalement la nuit.",
+        ] or len(reponse_speciale.split()) < 10:
+            reponse_speciale = None
+        else:
+            return reponse_speciale.strip()
 
-    # 3️⃣ Match exact culture générale
+    # 3️⃣ Réponse exacte (culture générale)
     if question_clean in base_culture_nettoyee:
-        return base_culture_nettoyee[question_clean]
+        rep = base_culture_nettoyee[question_clean]
+        if len(rep.split()) >= 10:
+            return rep
 
-    # 4️⃣ Fuzzy match (plus strict pour éviter les faux positifs)
-    match = difflib.get_close_matches(
-        question_clean,
-        base_culture_nettoyee.keys(),
-        n=1,
-        cutoff=0.95
-    )
+    # 4️⃣ Fuzzy match
+    match = difflib.get_close_matches(question_clean, base_culture_nettoyee.keys(), n=1, cutoff=0.95)
     if match:
-        phrase_match = match[0]
-        if len(phrase_match.split()) >= 4:
-            return base_culture_nettoyee[phrase_match]
+        rep = base_culture_nettoyee.get(match[0], "")
+        if len(rep.split()) >= 10:
+            return rep
 
-    # 5️⃣ Sémantique BERT (seuil plus élevé)
+    # 5️⃣ BERT (sémantique)
     try:
-        keys = list(base_culture_nettoyee.keys())
-        q_emb = model.encode([question_clean])
+        keys     = list(base_culture_nettoyee.keys())
+        q_emb    = model.encode([question_clean])
         keys_emb = model.encode(keys)
-        sims = cosine_similarity(q_emb, keys_emb)[0]
+        sims     = cosine_similarity(q_emb, keys_emb)[0]
         best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
-        if best_score > 0.75:
-            return base_culture_nettoyee[keys[best_idx]]
+        if best_score > 0.7:
+            rep = base_culture_nettoyee[keys[best_idx]]
+            if len(rep.split()) >= 10:
+                return rep
     except Exception as e:
         st.warning(f"⚠️ Erreur BERT : {e}")
 
-    # 6️⃣ Fallback vers OpenAI GPT-3.5 Turbo
+    # 6️⃣ Fallback vers OpenAI
     try:
-        st.info("🛠️ Appel à OpenAI en cours...")
+        print("⚙️ Appel à GPT-3.5 Turbo en cours...")
         reponse_openai = repondre_openai(question_clean)
         if isinstance(reponse_openai, str) and reponse_openai.strip():
             return reponse_openai.strip()
@@ -1534,7 +1539,11 @@ def trouver_reponse(question: str, model) -> str:
     except Exception as e:
         return f"❌ Une erreur est survenue avec OpenAI : {e}"
 
-    return "🤔 Je n'ai pas trouvé de réponse claire à votre question. Vous pouvez reformuler si besoin !"
+    # 7️⃣ Dernier secours
+    return (
+        "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
+        "N'hésitez pas à reformuler ou à demander un autre sujet !"
+    )
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
