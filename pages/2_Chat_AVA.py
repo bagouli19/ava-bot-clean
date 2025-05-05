@@ -1565,6 +1565,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # 🌐 Recherche web intelligente (option gratuite)
     question_clean = question.lower().strip()
     
+    # ⛔ TEST TEMPORAIRE : Détection Web prioritaire visible
+    if "soleil" in question_clean:
+        return "✅ Bloc recherche web activé pour test 🔍"
+        
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = ["qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher",
                 "trouve", "cherche", "recherche web", "informations sur", "infos sur", "explique moi"]
@@ -1575,7 +1579,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         if reponse_web and "❌" not in reponse_web:
             return reponse_web
         print(recherche_web_duckduckgo("c'est quoi le métaverse Facebook"))
-            
+
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
         "rappelle-moi de",
