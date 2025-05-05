@@ -1455,28 +1455,27 @@ def recherche_web_duckduckgo(question: str) -> str:
         return f"❌ Erreur pendant la recherche web : {e}"
 
 
-import openai
-import streamlit as st
-
-openai.api_key = st.secrets["openai"]["api_key"]
-
 def repondre_openai(prompt: str) -> str:
-    st.info("⚙️ Appel à GPT-3.5 Turbo en cours...")  # Affichage Streamlit
-    print(f"👉 Appel à OpenAI avec : {prompt}")      # Affichage console
+    import openai
+    openai.api_key = st.secrets["openai"]["api_key"]  # ou ton .env
 
+    print(f"👉 Appel OpenAI avec : {prompt}")
     try:
-        response = openai.ChatCompletion.create(
+        resp = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Tu es une intelligence vive, chaleureuse et utile."},
+                {"role": "system", "content": "Tu es une IA chaleureuse, vive et curieuse."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=800
+            max_tokens=800,
         )
-        return response.choices[0].message["content"].strip()
+        print("✅ OpenAI a répondu")
+        return resp.choices[0].message.content.strip()
     except Exception as e:
-        return f"❌ Erreur OpenAI : {e}"
+        print("❌ Erreur OpenAI :", e)
+        return f"Erreur OpenAI : {e}"
+
 
 
 
@@ -2006,9 +2005,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         except Exception as e:
             return "⚠️ Je n'arrive pas à récupérer l'horoscope pour le moment. Réessayez plus tard."
-
-
-
         
     
     # --- Bloc Faits Insolites ---
@@ -2740,6 +2736,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "🤔 Je n’ai pas trouvé de réponse précise à cette question via OpenAI."
     except Exception as e:
         return f"❌ Je suis désolée, une erreur est survenue avec OpenAI : {e}"
+
 
     
     # --- FIN de gerer_modules_speciaux ---
