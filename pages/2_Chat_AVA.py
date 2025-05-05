@@ -1563,12 +1563,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 return "🤷 Je n'ai rien trouvé de vraiment pertinent cette fois, mais je continue à apprendre !"
         except Exception as e:
             return f"❌ Erreur lors de la recherche web : {e}"
-
-
-
-
-                                                                                
-
+                                                                        
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
         "rappelle-moi de",
