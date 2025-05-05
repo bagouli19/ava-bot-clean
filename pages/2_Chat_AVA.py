@@ -1457,7 +1457,7 @@ def recherche_web_duckduckgo(question: str) -> str:
 
 def repondre_openai(prompt: str) -> str:
     import openai
-    openai.api_key = st.secrets["openai"]["api_key"]  # ou ton .env
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
 
     print(f"👉 Appel OpenAI avec : {prompt}")
     try:
