@@ -31,7 +31,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import time
 import pyttsx3
 import wikipedia
-
+from modules.recherche_web import recherche_web_duckduckgo
 
 # — Modules internes
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
@@ -1439,13 +1439,12 @@ def recherche_wikipedia(question: str) -> str:
 # ─────────────────────────────────────────────
 # 🔁 Fallback via DuckDuckGo + Wikipédia
 # ─────────────────────────────────────────────
+import requests
+import wikipedia
+
+wikipedia.set_lang("fr")
+
 def recherche_web_duckduckgo(question: str) -> str:
-    import requests
-    import wikipedia
-
-    # Assure la langue FR pour Wikipédia
-    wikipedia.set_lang("fr")
-
     params = {
         "q": question,
         "format": "json",
@@ -1460,8 +1459,8 @@ def recherche_web_duckduckgo(question: str) -> str:
         abstract = data.get("AbstractText", "").strip()
         url = data.get("AbstractURL", "").strip()
 
-        # 🔁 Si réponse vide → fallback Wikipédia
         if not abstract or len(abstract) < 30:
+            # 🔁 Fallback vers Wikipédia
             try:
                 resultats = wikipedia.search(question)
                 if resultats:
@@ -1477,6 +1476,7 @@ def recherche_web_duckduckgo(question: str) -> str:
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
+
 
 
 def repondre_openai(prompt: str) -> str:
