@@ -1482,7 +1482,6 @@ def repondre_openai(prompt: str) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question.strip()
     question_clean = nettoyer_texte(question_raw)
-
     print("🔍 Question nettoyée :", question_clean)
 
     incrementer_interactions()
@@ -1548,19 +1547,26 @@ def trouver_reponse(question: str, model) -> str:
         "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
         "N'hésitez pas à reformuler ou à demander un autre sujet !"
     )
-    # Forçage OpenAI si certaines formulations longues sont détectées
-    if any(kw in question_clean for kw in ["peux-tu me faire un poème", "écris-moi un texte", "donne-moi une explication complète", "raconte une histoire", "fais une dissertation"]):
-        try:
-            print("⚙️ Forçage : appel direct à GPT-3.5 Turbo.")
-            return repondre_openai(question_clean)
-        except Exception as e:
-            return f"❌ Erreur GPT-3.5 : {e}"
+    
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
-        
+
+    # 🔥 Forçage GPT-3.5 pour certaines formulations longues et créatives
+    formulations_openai = [
+        "peux-tu me faire un poème", "écris-moi un poème", "écris un poème",
+        "raconte-moi une histoire", "explique-moi en détail", "donne-moi une explication",
+        "fais une dissertation", "imagine un scénario"
+    ]
+    if any(kw in question_clean for kw in formulations_openai):
+        try:
+            print("⚙️ Forçage OpenAI déclenché")
+            return repondre_openai(question_clean)
+        except Exception as e:
+            return f"❌ Erreur GPT-3.5 : {e}" 
+              
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [
         "qui est", "qu est ce que", "c est quoi", "peux tu chercher", "peux tu trouver", "cherche",
