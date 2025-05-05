@@ -1529,14 +1529,15 @@ def trouver_reponse(question: str, model) -> str:
             return base_culture_nettoyee[keys[best_idx]]
     except Exception:
         pass
+
     # 6️⃣ Secours OpenAI
     try:
         print("⚙️ Appel à GPT-3.5 Turbo en cours...")
         reponse_openai = repondre_openai(question_clean)
-        if reponse_openai and reponse_openai.strip():
-            return reponse_openai
+        if isinstance(reponse_openai, str) and reponse_openai.strip():
+            return reponse_openai.strip()
     except Exception as e:
-        return f"❌ Erreur OpenAI : {e}"
+        return f"⚠️ Une erreur est survenue avec OpenAI : {e}"
     
 
 
@@ -2736,6 +2737,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     # 4. Sinon, utiliser OpenAI en secours
     try:
+        print("⚙️ Appel à GPT-3.5 Turbo en cours...")
         reponse_openai = repondre_openai(question_clean)
         if isinstance(reponse_openai, str) and reponse_openai.strip():
             return reponse_openai.strip()
