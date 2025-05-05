@@ -1441,27 +1441,43 @@ def recherche_wikipedia(question: str) -> str:
 # ─────────────────────────────────────────────
 def recherche_web_duckduckgo(question: str) -> str:
     import requests
+    import wikipedia
+
+    # Assure la langue FR pour Wikipédia
+    wikipedia.set_lang("fr")
+
+    params = {
+        "q": question,
+        "format": "json",
+        "no_html": 1,
+        "skip_disambig": 1
+    }
+
     try:
-        params = {
-            "q": question,
-            "format": "json",
-            "no_html": 1,
-            "skip_disambig": 1
-        }
         response = requests.get("https://api.duckduckgo.com/", params=params)
         data = response.json()
 
         abstract = data.get("AbstractText", "").strip()
         url = data.get("AbstractURL", "").strip()
 
-        if abstract and len(abstract) > 30:
-            lien = f"\n\n🔗 [Lire plus]({url})" if url else ""
-            return f"🌐 Résultat DuckDuckGo : {abstract}{lien}"
-        else:
-            return "🔍 DuckDuckGo n’a trouvé aucun résumé pertinent."
+        # 🔁 Si réponse vide → fallback Wikipédia
+        if not abstract or len(abstract) < 30:
+            try:
+                resultats = wikipedia.search(question)
+                if resultats:
+                    page = wikipedia.page(resultats[0])
+                    resume = wikipedia.summary(page.title, sentences=2)
+                    return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+                else:
+                    return "❌ Je n’ai trouvé aucune information pertinente sur ce sujet."
+            except Exception as e:
+                return f"❌ Erreur Wikipédia : {e}"
+
+        return f"🌐 Résultat DuckDuckGo : {abstract}\n\n🔗 {url}" if url else f"🌐 Résultat DuckDuckGo : {abstract}"
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
+
 
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
@@ -1564,11 +1580,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     # 🌐 Recherche web intelligente (option gratuite)
     question_clean = question.lower().strip()
-    
-    # ⛔ TEST TEMPORAIRE : Détection Web prioritaire visible
-    if "soleil" in question_clean:
-        return "✅ Bloc recherche web activé pour test 🔍"
-        
+
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = ["qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher",
                 "trouve", "cherche", "recherche web", "informations sur", "infos sur", "explique moi"]
