@@ -1407,13 +1407,20 @@ def recherche_wikipedia(question: str) -> str:
         if not resultats:
             return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
         
-        # Prend le 1er résultat de la recherche
+        # 🧠 Filtrage intelligent si plusieurs résultats
+        for titre in resultats:
+            if "soleil" in titre.lower() or "étoile" in titre.lower() or "astrophysique" in titre.lower():
+                page = wikipedia.page(titre)
+                resume = wikipedia.summary(page.title, sentences=2)
+                return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
+        
+        # Si aucun filtrage spécial, prend le premier
         page = wikipedia.page(resultats[0])
         resume = wikipedia.summary(page.title, sentences=2)
-        return f"📚 Résumé Wikipédia : {resume}"
+        return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
     except Exception as e:
         return f"❌ Erreur Wikipedia : {e}"
-
+        
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
     try:
