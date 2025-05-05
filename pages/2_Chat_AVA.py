@@ -1478,23 +1478,32 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    # --- 💡 Détection et enregistrement des rappels ---
-    if any(phrase in question_clean for phrase in ["rappelle-moi", "n'oublie pas", "souviens-toi"]):
-        profil = get_my_profile()
-        if "rappels" not in profil:
-            profil["rappels"] = []
-    
-        # Tentative d'extraction intelligente du contenu
-        contenu = question_clean
-        for intro in ["rappelle-moi de", "rappelle-moi que", "n'oublie pas de", "souviens-toi de"]:
-            if intro in question_clean:
-                contenu = question_clean.split(intro)[-1].strip(" .!?")
-                break
+    # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
+    formulations_rappel = [
+        "rappelle-moi de",
+        "rappelle moi de",
+        "n'oublie pas de",
+        "souviens-toi de",
+        "souviens toi de"
+    ]
 
-        if contenu and len(contenu) > 5:
-            profil["rappels"].append({"contenu": contenu, "date": datetime.now().strftime("%Y-%m-%d")})
-            set_my_profile(profil)
-            return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
+    for intro in formulations_rappel:
+        if intro in question_clean:
+            contenu = question_clean.split(intro)[-1].strip(" .!?")
+            if contenu and len(contenu) > 5:
+                profil = get_my_profile()
+                if "rappels" not in profil:
+                    profil["rappels"] = []
+                profil["rappels"].append({
+                    "contenu": contenu,
+                    "date": datetime.now().strftime("%Y-%m-%d")
+                })
+                set_my_profile(profil)
+                return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
+            if contenu and len(contenu) > 5:
+                profil["rappels"].append({"contenu": contenu, "date": datetime.now().strftime("%Y-%m-%d")})
+                set_my_profile(profil)
+                return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
 
     # --- 📝 Détection et enregistrement de tâches à faire ---
     if any(phrase in question_clean for phrase in ["ajoute", "rajoute", "note", "mets dans ma liste"]):
