@@ -1435,27 +1435,31 @@ def recherche_wikipedia(question: str) -> str:
 
     except Exception as e:
         return f"❌ Erreur inattendue dans recherche_wikipedia : {e}"
-        
+
 # ─────────────────────────────────────────────
 # 🔁 Fallback via DuckDuckGo + Wikipédia
 # ─────────────────────────────────────────────
 def recherche_web_duckduckgo(question: str) -> str:
-    params = {
-        "q": question,
-        "format": "json",
-        "no_html": 1,
-        "skip_disambig": 1
-    }
+    import requests
     try:
+        params = {
+            "q": question,
+            "format": "json",
+            "no_html": 1,
+            "skip_disambig": 1
+        }
         response = requests.get("https://api.duckduckgo.com/", params=params)
         data = response.json()
+
         abstract = data.get("AbstractText", "").strip()
+        url = data.get("AbstractURL", "").strip()
 
-        # 🔁 Fallback vers Wikipédia si réponse vide
-        if not abstract or len(abstract) < 30:
-            return recherche_wikipedia(question)
+        if abstract and len(abstract) > 30:
+            lien = f"\n\n🔗 [Lire plus]({url})" if url else ""
+            return f"🌐 Résultat DuckDuckGo : {abstract}{lien}"
+        else:
+            return "🔍 DuckDuckGo n’a trouvé aucun résumé pertinent."
 
-        return f"🔎 Résultat web : {abstract}"
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
 
