@@ -1,12 +1,16 @@
 {
-    "teddy": {
-      "prenom": "Teddy",
-      "chien": "Nox",
-      "plat_prefere": "lasagnes",
-      "film_prefere": "Inception",
-      "sport_prefere": "basket",
-      "souvenirs": {
-        "couleur_preferee": "bleu"
-      }
+  "teddy": {
+    "prenom": "Teddy",
+    "chien": "Nox",
+    "plat_prefere": "lasagnes",
+    "film_prefere": "Inception",
+    "sport_prefere": "basket",
+    "souvenirs": {
+      "couleur_preferee": "bleu"
     }
+  },
+  "manuel": {
+    "prenom": "Manuel",
+    "souvenirs": {}
   }
+}
