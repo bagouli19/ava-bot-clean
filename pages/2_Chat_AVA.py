@@ -317,6 +317,8 @@ def ajuster_affection(question: str) -> None:
     style["niveau_affection"] = round(affection, 2)
     sauvegarder_style_ava(style)
 
+if "poème" in question_clean or "ia" in question_clean:
+    return repondre_openai(question_clean)
 
 import time
 
@@ -1463,6 +1465,7 @@ import streamlit as st
 openai.api_key = st.secrets["openai"]["api_key"]
 
 def repondre_openai(prompt: str) -> str:
+    st.warning("⚙️ Appel à GPT-3.5 Turbo en cours...")
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -1473,7 +1476,7 @@ def repondre_openai(prompt: str) -> str:
             temperature=0.7,
             max_tokens=800
         )
-        return response.choices[0].message.content.strip()
+        return response.choices[0].message["content"].strip()
     except Exception as e:
         return f"❌ Erreur OpenAI : {e}"
 
