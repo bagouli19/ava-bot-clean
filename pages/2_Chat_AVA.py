@@ -2706,25 +2706,40 @@ if prompt:
         sauvegarder_memoire_ava(memoire)
         st.sidebar.success("✅ Sauvegarde forcée effectuée.")
     
+
+
     st.sidebar.subheader("🧾 Rappels et tâches")
 
-if st.sidebar.button("📋 Voir mes tâches"):
-    profil = get_my_profile()
-    taches = profil.get("taches", [])
-    if not taches:
-        st.sidebar.info("📭 Liste de tâches vide.")
-    else:
-        for t in taches:
-            st.sidebar.markdown(f"- {t['contenu']} ({t['date']})")
+    if st.sidebar.button("📋 Voir mes tâches"):
+        profil = get_my_profile()
+        taches = profil.get("taches", [])
+        if not taches:
+            st.sidebar.info("📭 Liste de tâches vide.")
+        else:
+            for t in taches:
+                st.sidebar.markdown(f"- {t['contenu']} ({t['date']})")
 
-if st.sidebar.button("🔔 Voir mes rappels"):
-    profil = get_my_profile()
-    rappels = profil.get("rappels", [])
-    if not rappels:
-        st.sidebar.info("🔕 Aucun rappel pour l’instant.")
-    else:
-        for r in rappels:
-            st.sidebar.markdown(f"- {r['contenu']} ({r['date']})")
+    if st.sidebar.button("🗑️ Vider la liste des tâches"):
+        profil = get_my_profile()
+        profil["taches"] = []
+        set_my_profile(profil)
+        st.sidebar.success("✅ Tâches supprimées !")
+
+    if st.sidebar.button("🔔 Voir mes rappels"):
+        profil = get_my_profile()
+        rappels = profil.get("rappels", [])
+        if not rappels:
+            st.sidebar.info("🔕 Aucun rappel pour l’instant.")
+        else:
+            for r in rappels:
+                st.sidebar.markdown(f"- {r['contenu']} ({r['date']})")
+
+    if st.sidebar.button("🧹 Vider les rappels"):
+        profil = get_my_profile()
+        profil["rappels"] = []
+        set_my_profile(profil)
+        st.sidebar.success("✅ Rappels supprimés !")
+
 
 
 
