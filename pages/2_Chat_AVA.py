@@ -1505,12 +1505,20 @@ def trouver_reponse(question: str, model) -> str:
     if question_clean in base_culture_nettoyee:
         print("💬 Réponse : match exact culture générale")
         return base_culture_nettoyee[question_clean]
-
-    # 4️⃣ Fuzzy match culture générale
-    match = difflib.get_close_matches(question_clean, base_culture_nettoyee.keys(), n=1, cutoff=0.85)
+        
+    #fuzzy
+    match = difflib.get_close_matches(
+        question_clean,
+        base_culture_nettoyee.keys(),
+        n=1,
+        cutoff=0.95  # 🔒 seuil plus strict
+    )
     if match:
-        print("💬 Réponse : fuzzy match culture générale")
-        return base_culture_nettoyee[match[0]]
+        # ⚠️ Ne pas renvoyer une réponse si la similarité est trop approximative
+        phrase_match = match[0]
+        if len(phrase_match.split()) >= 4 and phrase_match in base_culture_nettoyee:
+            return base_culture_nettoyee[phrase_match]
+
 
         # 5️⃣ Recherche sémantique avec BERT
     try:
