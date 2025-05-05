@@ -1461,7 +1461,9 @@ import streamlit as st
 openai.api_key = st.secrets["openai"]["api_key"]
 
 def repondre_openai(prompt: str) -> str:
-    st.warning("⚙️ Appel à GPT-3.5 Turbo en cours...")
+    st.info("⚙️ Appel à GPT-3.5 Turbo en cours...")  # Affichage Streamlit
+    print(f"👉 Appel à OpenAI avec : {prompt}")      # Affichage console
+
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -1475,6 +1477,7 @@ def repondre_openai(prompt: str) -> str:
         return response.choices[0].message["content"].strip()
     except Exception as e:
         return f"❌ Erreur OpenAI : {e}"
+
 
 
 def trouver_reponse(question: str, model) -> str:
@@ -1527,19 +1530,21 @@ def trouver_reponse(question: str, model) -> str:
     except Exception:
         pass
 
-    # 6️⃣ Dernier secours : GPT-3.5 Turbo via OpenAI
+    # 6️⃣ Secours OpenAI (appel GPT-3.5 Turbo)
     try:
         reponse_openai = repondre_openai(question_clean)
-        if isinstance(reponse_openai, str) and reponse_openai.strip():
+        if reponse_openai and reponse_openai.strip():
             return reponse_openai.strip()
     except Exception as e:
-        return f"❌ Erreur OpenAI : {e}"
+        return f"❌ Une erreur est survenue avec OpenAI : {e}"
 
-    # 7️⃣ Dernier recours
+    # 7️⃣ Dernier recours absolu
     return (
         "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
-        "N'hésitez pas à reformuler ou à poser une autre question !"
+        "N'hésitez pas à reformuler ou à demander un autre sujet !"
     )
+
+    
 
 
 # --- Modules personnalisés (à enrichir) ---
