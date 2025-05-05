@@ -1378,32 +1378,32 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
+import requests
+import wikipedia
+
+# ─────────────────────────────────────────────
+# 🌍 Configuration générale
+# ─────────────────────────────────────────────
+wikipedia.set_lang("fr")
+
 # ─────────────────────────────────────────────
 # 🔍 Fonction centrale pour résumés Wikipédia
 # ─────────────────────────────────────────────
 def obtenir_resume_wikipedia_depuis_titre(titre_wiki: str) -> str:
-    import wikipedia
     try:
-        wikipedia.set_lang("fr")
         page = wikipedia.page(title=titre_wiki, auto_suggest=False)
         resume = wikipedia.summary(page.title, sentences=2, auto_suggest=False)
         return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
     except Exception as e:
         return f"❌ Erreur Wikipédia : Impossible de charger la page \"{titre_wiki}\" → {e}"
 
-
 # ─────────────────────────────────────────────
-# 🌐 Fonction de recherche Wikipedia améliorée
+# 📘 Recherche Wikipédia améliorée
 # ─────────────────────────────────────────────
-import wikipedia
-
-wikipedia.set_lang("fr")  # Utilisation du français
-
 def recherche_wikipedia(question: str) -> str:
     try:
         question_clean = question.lower().strip()
 
-        # 🔒 Titre précis pour certains sujets récurrents
         sujets_forces = {
             "blockchain": "Blockchain",
             "tesla": "Tesla Inc.",
@@ -1418,74 +1418,46 @@ def recherche_wikipedia(question: str) -> str:
 
         for mot, titre_precis in sujets_forces.items():
             if mot in question_clean:
-                try:
-                    page = wikipedia.page(titre_precis)
-                    resume = wikipedia.summary(titre_precis, sentences=2)
-                    return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
-                except Exception as e:
-                    return f"❌ Erreur Wikipédia : Impossible de charger la page \"{titre_precis}\" → {e}"
+                return obtenir_resume_wikipedia_depuis_titre(titre_precis)
 
-        # 🔍 Recherche libre sinon
         resultats = wikipedia.search(question_clean)
         if not resultats:
             return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
 
         for titre in resultats:
             if any(mot in titre.lower() for mot in question_clean.split()):
-                try:
-                    page = wikipedia.page(titre)
-                    resume = wikipedia.summary(titre, sentences=2)
-                    return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
-                except:
-                    continue
+                return obtenir_resume_wikipedia_depuis_titre(titre)
 
         return "❌ Aucun résultat Wikipédia pertinent trouvé malgré la recherche."
 
     except Exception as e:
         return f"❌ Erreur inattendue Wikipédia : {e}"
 
-
 # ─────────────────────────────────────────────
-# 🔁 Fallback via DuckDuckGo + Wikipédia
+# 🌐 Recherche web DuckDuckGo avec fallback
 # ─────────────────────────────────────────────
-import requests
-import wikipedia
-
-wikipedia.set_lang("fr")
-
 def recherche_web_duckduckgo(question: str) -> str:
-    params = {
-        "q": question,
-        "format": "json",
-        "no_html": 1,
-        "skip_disambig": 1
-    }
-
     try:
+        params = {
+            "q": question,
+            "format": "json",
+            "no_html": 1,
+            "skip_disambig": 1
+        }
         response = requests.get("https://api.duckduckgo.com/", params=params)
         data = response.json()
 
         abstract = data.get("AbstractText", "").strip()
         url = data.get("AbstractURL", "").strip()
 
-        # 🔁 Si réponse vide ou trop courte → Fallback Wikipédia
+        # Fallback vers Wikipédia si réponse trop courte ou vide
         if not abstract or len(abstract) < 30:
-            resultats = wikipedia.search(question)
-            if resultats:
-                try:
-                    page = wikipedia.page(resultats[0])
-                    resume = wikipedia.summary(page.title, sentences=2)
-                    return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
-                except Exception as e:
-                    return f"❌ Erreur Wikipédia : {e}"
-            else:
-                return "❌ Je n’ai trouvé aucune information pertinente sur ce sujet."
+            return recherche_wikipedia(question)
 
         return f"🌐 Résultat DuckDuckGo : {abstract}\n\n🔗 {url}" if url else f"🌐 Résultat DuckDuckGo : {abstract}"
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
-
 
 
 def repondre_openai(prompt: str) -> str:
@@ -1587,9 +1559,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    # 🔍 Bloc prioritaire : recherche web ou Wikipédia
-    question_clean = question.lower().strip()
-
     mots_web = [
         "qui est", "qu'est-ce que", "c'est quoi", "peux-tu chercher", "peux-tu trouver", "cherche",
         "recherche web", "infos sur", "informations sur", "explique moi", "trouve"
@@ -1597,17 +1566,16 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     if any(kw in question_clean for kw in mots_web):
         st.info("🔎 Je cherche des infos en ligne, un instant...")
-
         try:
             from modules.recherche_web import recherche_web_duckduckgo
             reponse_web = recherche_web_duckduckgo(question_clean)
-
             if reponse_web and "❌" not in reponse_web and "aucun résultat" not in reponse_web.lower():
                 return reponse_web
             else:
                 return "🤷 Je n'ai rien trouvé de vraiment pertinent cette fois, mais je continue à apprendre !"
         except Exception as e:
             return f"❌ Erreur lors de la recherche web : {e}"
+
 
 
                                                                                 
