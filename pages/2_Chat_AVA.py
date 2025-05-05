@@ -30,6 +30,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import time
 import pyttsx3
+import wikipedia
 
 
 # — Modules internes
@@ -1398,7 +1399,21 @@ def recherche_web_duckduckgo(question: str) -> str:
             return "❌ Je n’ai rien trouvé de précis avec DuckDuckGo pour cette recherche."
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
+        
+wikipedia.set_lang("fr")  # Tu peux changer en "en" si besoin
 
+def recherche_wikipedia(question: str) -> str:
+    try:
+        resultats = wikipedia.search(question)
+        if not resultats:
+            return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
+        
+        # Prend le 1er résultat de la recherche
+        page = wikipedia.page(resultats[0])
+        resume = wikipedia.summary(page.title, sentences=2)
+        return f"📚 Résumé Wikipédia : {resume}"
+    except Exception as e:
+        return f"❌ Erreur Wikipedia : {e}"
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
     try:
