@@ -1511,6 +1511,17 @@ def trouver_reponse(question: str, model) -> str:
     if question_clean in base_culture_nettoyee:
         print("💬 Réponse : match exact culture générale")
         return base_culture_nettoyee[question_clean]
+        
+    # 3️⃣ Requête créative → forcer GPT-3.5
+    motifs_creatifs = ["poème", "explique", "écris", "raconte", "rédige", "invente", "imagine"]
+    if any(m in question_clean for m in motifs_creatifs):
+        try:
+            print("⚙️ Requête créative détectée → Appel à GPT-3.5 Turbo")
+            reponse_openai = repondre_openai(question_clean)
+            if reponse_openai and reponse_openai.strip():
+                return reponse_openai.strip()
+        except Exception as e:
+            return f"❌ Erreur GPT-3.5 : {e}"
 
     # 4️⃣ Fuzzy matching
     match = difflib.get_close_matches(
@@ -1552,16 +1563,7 @@ def trouver_reponse(question: str, model) -> str:
         "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
         "N'hésitez pas à reformuler ou à demander un autre sujet !"
     )
-    # 3️⃣ Requête créative → forcer GPT-3.5
-    motifs_creatifs = ["poème", "explique", "écris", "raconte", "rédige", "invente", "imagine"]
-    if any(m in question_clean for m in motifs_creatifs):
-        try:
-            print("⚙️ Requête créative détectée → Appel à GPT-3.5 Turbo")
-            reponse_openai = repondre_openai(question_clean)
-            if reponse_openai and reponse_openai.strip():
-                return reponse_openai.strip()
-        except Exception as e:
-            return f"❌ Erreur GPT-3.5 : {e}"
+    
 
     
 
