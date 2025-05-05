@@ -1527,13 +1527,13 @@ def trouver_reponse(question: str, model) -> str:
     except Exception:
         pass
 
-    # 6️⃣ Fallback OpenAI
+    # 6️⃣ Dernier secours : GPT-3.5 Turbo via OpenAI
     try:
         reponse_openai = repondre_openai(question_clean)
-        if reponse_openai.strip():
-            return reponse_openai
+        if isinstance(reponse_openai, str) and reponse_openai.strip():
+            return reponse_openai.strip()
     except Exception as e:
-        return f"⚠️ Une erreur est survenue avec OpenAI : {e}"
+        return f"❌ Erreur OpenAI : {e}"
 
     # 7️⃣ Dernier recours
     return (
