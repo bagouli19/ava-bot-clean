@@ -1402,6 +1402,7 @@ def recherche_web_duckduckgo(question: str) -> str:
 wikipedia.set_lang("fr")  # Tu peux changer en "en" si besoin
 
 def recherche_wikipedia(question: str) -> str:
+    st.warning(f"🔎 Question reçue : {question}")
     try:
         sujets_forces = {
             "le soleil": "Soleil",
