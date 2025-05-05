@@ -1378,7 +1378,6 @@ def format_actus(
     return texte
 
 def recherche_web_duckduckgo(question: str) -> str:
-    """Interroge l’API DuckDuckGo pour obtenir une réponse rapide à une question."""
     params = {
         "q": question,
         "format": "json",
@@ -1388,14 +1387,17 @@ def recherche_web_duckduckgo(question: str) -> str:
     try:
         response = requests.get("https://api.duckduckgo.com/", params=params)
         data = response.json()
-        reponse = data.get("AbstractText")
+        abstract = data.get("AbstractText")
+        url = data.get("AbstractURL")
 
-        if reponse:
-            return f"🔎 Résultat web : {reponse}"
+        if abstract:
+            return f"🔎 Résultat web : {abstract}"
+        elif url:
+            return f"🌐 Je n’ai pas trouvé de réponse directe, mais voici un lien utile : {url}"
         else:
             return "❌ Je n’ai rien trouvé de précis avec DuckDuckGo pour cette recherche."
     except Exception as e:
-        return f"❌ Erreur pendant la recherche web : {e}"       
+        return f"❌ Erreur pendant la recherche web : {e}"
 
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
