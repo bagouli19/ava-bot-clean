@@ -1388,18 +1388,17 @@ def recherche_web_duckduckgo(question: str) -> str:
     try:
         response = requests.get("https://api.duckduckgo.com/", params=params)
         data = response.json()
-        abstract = data.get("AbstractText")
-        url = data.get("AbstractURL")
+        abstract = data.get("AbstractText", "").strip()
+        url = data.get("AbstractURL", "").strip()
 
-        if abstract:
-            return f"🔎 Résultat web : {abstract}"
-        elif url:
-            return f"🌐 Je n’ai pas trouvé de réponse directe, mais voici un lien utile : {url}"
-        else:
-            return "❌ Je n’ai rien trouvé de précis avec DuckDuckGo pour cette recherche."
+        # 🔎 Si réponse vide ou trop courte → Fallback vers Wikipédia
+        if not abstract or len(abstract) < 30:
+            return recherche_wikipedia(question)
+
+        return f"🔎 Résultat web : {abstract}"
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
-        
+
 wikipedia.set_lang("fr")  # Tu peux changer en "en" si besoin
 
 def recherche_wikipedia(question: str) -> str:
@@ -1414,6 +1413,7 @@ def recherche_wikipedia(question: str) -> str:
         return f"📚 Résumé Wikipédia : {resume}"
     except Exception as e:
         return f"❌ Erreur Wikipedia : {e}"
+
 def repondre_openai(prompt: str) -> str:
     print(f"👉 Appel OpenAI avec : {prompt}")  # LOG ici
     try:
