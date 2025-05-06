@@ -1447,7 +1447,6 @@ def recherche_web_duckduckgo(question: str) -> str:
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
 
-import openai 
 import streamlit as st
 import openai
 import difflib
@@ -1460,14 +1459,22 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 def nettoyer_texte(text: str) -> str:
     return text.lower().strip()
 
-# Vérifie si une réponse est vide ou trop générique
+# Liste de réponses nulles ou trop génériques à filtrer
+reponses_nulles = [
+    "🌍 il y a actuellement 195 pays reconnus dans le monde.",
+    "🌙 les chauves-souris, hiboux ou encore félins sont actifs principalement la nuit.",
+    "💉 le premier vaccin contre la variole a été développé par edward jenner en 1796.",
+    "🧮 un algorithme est une suite d’instructions permettant de résoudre un problème ou d’effectuer une tâche de manière logique.",
+]
+
+# Vérifie si une réponse est vide, générique ou répertoriée comme nulle
 def est_reponse_vide_ou_generique(reponse: str) -> bool:
     if not reponse or not isinstance(reponse, str):
         return True
     texte = reponse.lower().strip()
-    if len(texte.split()) < 8:
+    # trop courte ou correspond à une réponse nulle
+    if len(texte.split()) < 8 or texte in reponses_nulles:
         return True
-    # Ajoutez ici d'autres filtres de réponses nulles si besoin
     return False
 
 # Fonction d'appel à l'API OpenAI
