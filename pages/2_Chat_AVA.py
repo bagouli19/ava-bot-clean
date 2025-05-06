@@ -39,7 +39,7 @@ from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_t
 from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
-from modules.score_scraper import obtenir_score_google
+from modules.score_scraper import obtenir_score_bing
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1581,15 +1581,15 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if "score" in question_clean.lower() or "résultat" in question_clean.lower() or "a gagné" in question_clean.lower():
         try:
             equipe = question_clean.replace("qui a gagné", "").replace("score", "").replace("résultat", "").strip()
-            score = obtenir_score_google(equipe)
+            score = obtenir_score_bing(equipe)
 
-            if "❌" in score.lower() or "aucun score" in score.lower():
-                # Fallback sur recherche web
+            if "❌" in score.lower():
                 message_bot = recherche_web_duckduckgo(f"Score football {equipe}")
             else:
-                message_bot = score
+                message_bot = f"Voici ce que j’ai trouvé pour vous ⚽ :\n\n{score}"
         except Exception as e:
             message_bot = "❌ Une erreur est survenue lors de la recherche du score."
+
 
 
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia

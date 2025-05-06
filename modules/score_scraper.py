@@ -1,10 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 
-def obtenir_score_google(equipe: str) -> str:
+def obtenir_score_bing(equipe: str) -> str:
     try:
         query = f"{equipe} score"
-        url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
+        url = f"https://www.bing.com/search?q={query.replace(' ', '+')}"
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         }
@@ -12,13 +12,18 @@ def obtenir_score_google(equipe: str) -> str:
         response = requests.get(url, headers=headers, timeout=5)
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Recherche dans les titres de liens de résultats classiques
-        result_links = soup.find_all("h3")
-        for link in result_links:
-            texte = link.get_text()
-            if " - " in texte and any(char.isdigit() for char in texte):
-                return f"📊 Dernier score détecté : {texte.strip()}"
+        # Recherche du score dans les résumés de Bing
+        cards = soup.find_all("li", class_="b_algo")
 
-        return f"❌ Aucun score détecté pour {equipe.capitalize()} sur Google."
+        for card in cards:
+            texte = card.get_text()
+            if " - " in texte and any(char.isdigit() for char in texte):
+                lignes = texte.split("\n")
+                for ligne in lignes:
+                    if " - " in ligne and any(char.isdigit() for char in ligne):
+                        return f"📊 Résultat trouvé (Bing) : {ligne.strip()}"
+
+        return f"❌ Aucun score détecté pour {equipe.capitalize()} sur Bing."
     except Exception as e:
-        return f"❌ Erreur (score_scraper) : {e}"
+        return f"❌ Erreur (bing_scraper) : {e}"
+
