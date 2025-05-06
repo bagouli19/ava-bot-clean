@@ -39,7 +39,7 @@ from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_t
 from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
-
+from modules.football_scraper import obtenir_resultat_match_web
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1430,6 +1430,7 @@ def recherche_web_duckduckgo(question: str) -> str:
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
 
+
 import streamlit as st
 import openai
 import difflib
@@ -1546,6 +1547,9 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
+
+    if "score" in qc or "résultat" in qc or "a gagné" in qc:
+    message_bot = obtenir_resultat_match_web(qc)
 
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [
