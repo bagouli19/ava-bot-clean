@@ -2840,6 +2840,5 @@ if st.sidebar.button("🧪 Tester GPT-3.5"):
         st.markdown("🛠️ Appel à OpenAI en cours...")
         st.markdown(repondre_openai("Peux-tu me faire un poème sur une IA qui rêve de liberté dans un monde numérique ?"))
 
-#   m o d i f   t e s t  
- #   c o m m i t   d e   t e s t  
- 
+# modif test
+# commit de test
