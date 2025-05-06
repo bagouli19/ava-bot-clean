@@ -1468,6 +1468,11 @@ def est_reponse_vide_ou_generique(reponse: str) -> bool:
     return len(reponse.strip().split()) < 3
 
 # --------------------------
+# Gestion des modules spéciaux (utilise la fonction déjà implémentée)
+# Ne pas redéfinir ici, on appellera gerer_modules_speciaux telle quelle
+# Assure-toi que gerer_modules_speciaux est importée ou définie ailleurs dans le code
+
+# --------------------------
 # Bases de connaissances
 # --------------------------
 # Base linguistique: salutations et formules courantes
@@ -1564,6 +1569,16 @@ def trouver_reponse(question: str, model) -> str:
     # Étape 6: Recherche sémantique avec BERT
     bert_resp = repondre_bert(question_clean, base_culture_nettoyee, model)
     if bert_resp and not est_reponse_vide_ou_generique(bert_resp):
+        return bert_resp.strip()
+
+    # Étape 7: Fallback automatique vers OpenAI
+    openai_resp = repondre_openai(question_clean)
+    if openai_resp and not est_reponse_vide_ou_generique(openai_resp):
+        return openai_resp.strip()
+
+    # Étape 8: Aucun résultat trouvé
+    return "🤔 Je n'ai pas trouvé de réponse précise."
+
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
