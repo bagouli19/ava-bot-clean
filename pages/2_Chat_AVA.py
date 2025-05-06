@@ -1448,6 +1448,11 @@ def recherche_web_duckduckgo(question: str) -> str:
         return f"❌ Erreur pendant la recherche web : {e}"
 
 import openai 
+import streamlit as st
+import openai
+import difflib
+from sklearn.metrics.pairwise import cosine_similarity
+
 # Initialisation de l'API OpenAI
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -1456,18 +1461,14 @@ def nettoyer_texte(text: str) -> str:
     return text.lower().strip()
 
 # Vérifie si une réponse est vide ou trop générique
-reponses_nulles = [
-    "🌍 il y a actuellement 195 pays reconnus dans le monde.",
-    "🌙 les chauves-souris, hiboux ou encore félins sont actifs principalement la nuit.",
-    "💉 le premier vaccin contre la variole a été développé par edward jenner en 1796.",
-    "🧮 un algorithme est une suite d’instructions permettant de résoudre un problème ou d’effectuer une tâche de manière logique.",
-]
-
 def est_reponse_vide_ou_generique(reponse: str) -> bool:
     if not reponse or not isinstance(reponse, str):
         return True
     texte = reponse.lower().strip()
-    return texte in reponses_nulles or len(texte.split()) < 8
+    if len(texte.split()) < 8:
+        return True
+    # Ajoutez ici d'autres filtres de réponses nulles si besoin
+    return False
 
 # Fonction d'appel à l'API OpenAI
 def repondre_openai(prompt: str) -> str:
@@ -1491,6 +1492,11 @@ def repondre_openai(prompt: str) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw = question.strip()
     question_clean = nettoyer_texte(question_raw)
+
+    # 🔥 Gestion de "force_gpt": bypass de la base de culture
+    if "force_gpt" in question_clean:
+        prompt = question_clean.replace("force_gpt", "").strip()
+        return repondre_openai(prompt)
 
     # Mémorisation et interactions
     incrementer_interactions()
@@ -1537,10 +1543,14 @@ def trouver_reponse(question: str, model) -> str:
             if not est_reponse_vide_ou_generique(resp):
                 return resp
     except Exception as e:
-        st.warning(f"⚠️ Erreur BERT : {e}")
+        st.warning(f"⚠️ Erreur BERT (fallback OpenAI) : {e}")
 
     # 6️⃣ Fallback automatique vers OpenAI
-    return repondre_openai(question_raw) or "🤔 Je n'ai pas de réponse précise."
+    reponse = repondre_openai(question_clean)
+    if reponse:
+        return reponse
+
+    return "🤔 Je n'ai pas de réponse précise."
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
