@@ -1468,28 +1468,6 @@ def est_reponse_vide_ou_generique(reponse: str) -> bool:
     return len(reponse.strip().split()) < 3
 
 # --------------------------
-# Gestion des modules spéciaux (utilise la fonction déjà implémentée)
-# Ne pas redéfinir ici, on appellera gerer_modules_speciaux telle quelle
-# Assure-toi que gerer_modules_speciaux est importée ou définie ailleurs dans le code
-
-# --------------------------
-# Bases de connaissances
-# --------------------------
-# Base linguistique: salutations et formules courantes
-base_language = {
-    "bonjour": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
-    "salut": "Salut ! Que puis-je faire pour toi ?",
-    "bonsoir": "Bonsoir ! Qu'est-ce que je peux faire pour vous ?",
-    "bonne nuit": "Bonne nuit ! Faites de beaux rêves.",
-    "merci": "De rien ! N'hésitez pas si vous avez d'autres questions.",
-    "s'il te plaît": "Bien sûr, avec plaisir !",
-}
-base_language_nettoyee = { nettoyer_texte(k): v for k, v in base_language.items() }
-
-# Base culturelle (exact match, fuzzy, sémantique) préchargée ailleurs
-# base_culture_nettoyee = {...}
-
-# --------------------------
 # Appels API et BERT
 # --------------------------
 
@@ -1543,9 +1521,9 @@ def trouver_reponse(question: str, model) -> str:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    # 2️⃣ Salutations et formules courantes
-    if question_clean in base_language_nettoyee:
-        return base_language_nettoyee[question_clean]
+    # Étape 2 : Salutations courantes
+    if question_clean in SALUTATIONS_CLEAN:
+        return SALUTATIONS_CLEAN[question_clean]
 
     # 3️⃣ Modules spéciaux
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
