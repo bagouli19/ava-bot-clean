@@ -1430,6 +1430,35 @@ def recherche_web_duckduckgo(question: str) -> str:
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
 
+def obtenir_score_google(equipe: str) -> str:
+    try:
+        query = f"{equipe} score"
+        url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        }
+
+        response = requests.get(url, headers=headers, timeout=5)
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Recherche dans les blocs de score
+        score_blocks = soup.find_all("div", class_="BNeawe tAd8D AP7Wnd")
+
+        for block in score_blocks:
+            texte = block.get_text()
+            if " - " in texte and any(char.isdigit() for char in texte):
+                return f"📊 Résultat trouvé : {texte.strip()}"
+
+        # Fallback sur les titres
+        titles = soup.find_all("div", class_="BNeawe s3v9rd AP7Wnd")
+        for title in titles:
+            texte = title.get_text()
+            if " - " in texte and any(char.isdigit() for char in texte):
+                return f"📊 Résultat (titre) : {texte.strip()}"
+
+        return f"❌ Aucun score récent trouvé pour {equipe.capitalize()}."
+    except Exception as e:
+        return "❌ Erreur lors de la récupération du score depuis Google."
 
 import streamlit as st
 import openai
@@ -1551,7 +1580,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     #résultat foot 
     if "score" in question_clean.lower() or "résultat" in question_clean.lower() or "a gagné" in question_clean.lower():
         equipe = question_clean.replace("qui a gagné", "").replace("score", "").replace("résultat", "").strip()
-        message_bot = obtenir_score_google(equipe)
+        score = obtenir_score_google(equipe)
+
+        if "❌" in score or "aucun score" in score.lower():
+            # Fallback sur recherche web généraliste
+            message_bot = recherche_web_duckduckgo(f"Score football {equipe}")
+        else:
+            message_bot = score
 
 
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
