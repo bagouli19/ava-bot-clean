@@ -1515,57 +1515,56 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
-     
+
     incrementer_interactions()
     ajuster_affection(question_raw)
     memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
- 
+
     # 1️⃣ Mode forcé GPT
     if "force_gpt" in question_clean:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    # Vérifie les salutations simples (base externe)
-    base_language_nettoyee = { nettoyer_texte(k): v for k, v in base_langage.items() }
-    if question_clean in base_language_nettoyee:
-        return base_language_nettoyee[question_clean]
-
-    # 🔁 Bloc Salutations courantes (avec variantes)
+    # 2️⃣ Bloc Salutations personnalisées (le plus complet)
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
         return reponse_salut
 
+    # 3️⃣ Base de langage externe simple
+    if question_clean in base_langage:
+        return base_langage[question_clean]
 
-    # 3️⃣ Modules spéciaux
+    # 4️⃣ Modules spéciaux (météo, rappel, quiz, etc.)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
-    if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
+    if isinstance(reponse_speciale, str) and reponse_speciale.strip():
         return reponse_speciale.strip()
 
-    # 4️⃣ Culture générale : correspondance exacte
+    # 5️⃣ Culture générale : correspondance exacte
     if question_clean in base_culture_nettoyee:
         reponse = base_culture_nettoyee[question_clean]
         if not est_reponse_vide_ou_generique(reponse):
             return reponse.strip()
 
-    # 5️⃣ Culture générale : fuzzy matching
+    # 6️⃣ Culture générale : fuzzy matching
     match = difflib.get_close_matches(question_clean, base_culture_nettoyee.keys(), n=1, cutoff=0.9)
     if match:
         reponse = base_culture_nettoyee[match[0]]
         if not est_reponse_vide_ou_generique(reponse):
             return reponse.strip()
 
-    # 6️⃣ Recherche sémantique avec BERT
+    # 7️⃣ Recherche sémantique avec BERT
     reponse_bert = repondre_bert(question_clean, base_culture_nettoyee, model)
     if reponse_bert and not est_reponse_vide_ou_generique(reponse_bert):
         return reponse_bert.strip()
 
-    # 7️⃣ Fallback OpenAI
+    # 8️⃣ Fallback OpenAI automatique
     reponse_openai = repondre_openai(question_clean)
     if reponse_openai and not est_reponse_vide_ou_generique(reponse_openai):
         return reponse_openai.strip()
 
-    # 8️⃣ Rien trouvé
+    # 9️⃣ Échec total
     return "🤔 Je n'ai pas trouvé de réponse précise. N'hésitez pas à reformuler !"
+
 
 
 # --- Modules personnalisés (à enrichir) ---
