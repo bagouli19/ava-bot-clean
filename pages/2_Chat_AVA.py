@@ -1484,16 +1484,16 @@ def est_reponse_vide_ou_generique(reponse: str) -> bool:
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question.strip()
     question_clean = nettoyer_texte(question_raw)
-    print(f"🧠 Question reçue : {question_clean}")
 
-    # 🔥 Force GPT si demandé explicitement
+    # 🔥 Appel forcé à OpenAI si "force_gpt" est dans la question
     if "force_gpt" in question_clean:
         try:
-            print("⚙️ Appel forcé à GPT-3.5 Turbo...")
+            print("⚙️ Appel à GPT-3.5 Turbo (forcé)")
             return repondre_openai(question_clean.replace("force_gpt", "").strip())
         except Exception as e:
-            return f"❌ Erreur GPT-3.5 (forcé) : {e}"
+            return f"❌ Erreur GPT-3.5 : {e}"
 
+    # 🔁 Interactions
     incrementer_interactions()
     ajuster_affection(question_raw)
     memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
@@ -1501,21 +1501,18 @@ def trouver_reponse(question: str, model) -> str:
     # 1️⃣ Salutations
     salut = repondre_salutation(question_clean)
     if salut:
-        print("💬 Réponse : salutation")
         return salut
 
-    # 2️⃣ Modules spéciaux (météo, rappels, quiz…)
+    # 2️⃣ Modules spéciaux (analyse, météo, rappels…)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale:
-        print("💬 Réponse : module spécial")
         return reponse_speciale.strip()
 
-    # 3️⃣ Match exact dans la base culturelle
+    # 3️⃣ Exact match dans la base culturelle
     if question_clean in base_culture_nettoyee:
-        print("💬 Réponse : base culturelle exacte")
         return base_culture_nettoyee[question_clean]
 
-    # 4️⃣ Fuzzy match si aucune réponse exacte
+    # 4️⃣ Fuzzy matching stricte
     match = difflib.get_close_matches(
         question_clean,
         base_culture_nettoyee.keys(),
@@ -1524,40 +1521,33 @@ def trouver_reponse(question: str, model) -> str:
     )
     if match:
         phrase_match = match[0]
-        if len(phrase_match.split()) >= 4 and phrase_match in base_culture_nettoyee:
-            print("💬 Réponse : fuzzy match")
+        if len(phrase_match.split()) >= 4:
             return base_culture_nettoyee[phrase_match]
 
     # 5️⃣ Recherche sémantique avec BERT
     try:
-        print("🧠 Recherche BERT en cours...")
-        keys     = list(base_culture_nettoyee.keys())
-        q_emb    = model.encode([question_clean])
+        keys = list(base_culture_nettoyee.keys())
+        q_emb = model.encode([question_clean])
         keys_emb = model.encode(keys)
-        sims     = cosine_similarity(q_emb, keys_emb)[0]
+        sims = cosine_similarity(q_emb, keys_emb)[0]
         best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
         if best_score > 0.7:
-            print(f"💬 Réponse : BERT (score {best_score:.2f})")
             return base_culture_nettoyee[keys[best_idx]]
     except Exception as e:
-        print(f"⚠️ Erreur BERT : {e}")
+        st.warning(f"⚠️ Erreur BERT : {e}")
 
-    # 6️⃣ Fallback OpenAI si rien n’a répondu
+    # 6️⃣ Fallback OpenAI si rien n'a été satisfaisant
     try:
-        print("⚙️ Appel à GPT-3.5 Turbo (fallback automatique)...")
+        print("⚙️ Appel à GPT-3.5 Turbo en fallback...")
         reponse_openai = repondre_openai(question_clean)
-        if isinstance(reponse_openai, str) and reponse_openai.strip():
+        if reponse_openai and isinstance(reponse_openai, str) and reponse_openai.strip():
             return reponse_openai.strip()
-        else:
-            return "🤔 Je n’ai pas trouvé de réponse précise à cette question via OpenAI."
     except Exception as e:
-        return f"❌ Une erreur est survenue avec OpenAI : {e}"
+        return f"❌ Erreur OpenAI : {e}"
 
-    # 7️⃣ Dernier recours
-    return (
-        "🤔 Je n'ai pas trouvé de réponse précise à votre question. "
-        "N'hésitez pas à reformuler ou à demander un autre sujet !"
-    )
+    # 7️⃣ Aucun résultat
+    return "🤔 Je n'ai pas trouvé de réponse précise à votre question. N'hésitez pas à reformuler !"
+
 
 
 # --- Modules personnalisés (à enrichir) ---
