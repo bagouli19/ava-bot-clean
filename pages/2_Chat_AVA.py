@@ -1492,7 +1492,7 @@ def repondre_openai(prompt: str) -> str:
         return ""
 
 # Fonction principale de traitement
- def trouver_reponse(question: str, model) -> str:
+def trouver_reponse(question: str, model) -> str:
     question_raw = question.strip()
     question_clean = nettoyer_texte(question_raw)
 
