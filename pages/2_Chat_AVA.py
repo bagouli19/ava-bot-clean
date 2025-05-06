@@ -1446,7 +1446,7 @@ def recherche_web_duckduckgo(question: str) -> str:
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
-        
+
 import openai 
 # Initialisation de l'API OpenAI
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -1541,8 +1541,6 @@ def trouver_reponse(question: str, model) -> str:
 
     # 6️⃣ Fallback automatique vers OpenAI
     return repondre_openai(question_raw) or "🤔 Je n'ai pas de réponse précise."
-
-
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
@@ -2725,23 +2723,28 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
     
 
-    # 3. Sinon, chercher une réponse par similarité avec BERT
-    reponse_semantique = trouver_reponse_semantique(question_clean, base_culture, model)
-    if reponse_semantique:
-        return reponse_semantique
-
-    # 4. Sinon, utiliser OpenAI en secours
+   # 3️⃣ Recherche sémantique avec BERT
     try:
-        print("⚙️ Appel à GPT-3.5 Turbo en cours...")
+        # on utilise bien la base déjà nettoyée pour la similarité
+        reponse_semantique = trouver_reponse_semantique(question_clean,
+                                                        base_culture_nettoyee,
+                                                        model)
+        # on rejette si trop générique ou vide
+        if reponse_semantique and not est_reponse_vide_ou_generique(reponse_semantique):
+            return reponse_semantique.strip()
+    except Exception as e:
+        st.warning(f"⚠️ Erreur BERT (fallback OpenAI) : {e}")
+
+    # 4️⃣ Fallback automatique vers OpenAI
+    try:
+        print("⚙️ Appel à GPT-3.5 Turbo en cours…")
         reponse_openai = repondre_openai(question_clean)
-        if isinstance(reponse_openai, str) and reponse_openai.strip():
+        if reponse_openai and reponse_openai.strip():
             return reponse_openai.strip()
-        else:
-            return "🤔 Je n’ai pas trouvé de réponse précise à cette question via OpenAI."
+        # si la réponse est vide ou nulle
+        return "🤔 Je n’ai pas trouvé de réponse précise via OpenAI."
     except Exception as e:
         return f"❌ Je suis désolée, une erreur est survenue avec OpenAI : {e}"
-
-
     
     # --- FIN de gerer_modules_speciaux ---
     if message_bot:
