@@ -1508,7 +1508,6 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 # --------------------------
 # Pipeline de réponse
 # --------------------------
-base_language_nettoyee = {nettoyer_texte(k): v for k, v in base_langage.items()}
 
 def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
@@ -1534,7 +1533,7 @@ def trouver_reponse(question: str, model) -> str:
     # 3️⃣ Culture générale
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
-        
+
     # 4 Phrases classiques dans la base de langage
     if question_clean in base_language_nettoyee:
         return base_language_nettoyee[question_clean]
