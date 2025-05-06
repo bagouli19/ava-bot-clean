@@ -1448,9 +1448,8 @@ def recherche_web_duckduckgo(question: str) -> str:
         return f"❌ Erreur pendant la recherche web : {e}"
 
 # ⚠️ Test prioritaire de GPT-3.5 Turbo (force tout appel ici pour debug)
-def repondre_openai(prompt: str) -> str:
-    import openai
-    openai.api_key = st.secrets["OPENAI_API_KEY"]
+import openai
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
     def repondre_openai(prompt: str) -> str:
     try:
@@ -1468,6 +1467,7 @@ def repondre_openai(prompt: str) -> str:
     except Exception as e:
         return f"❌ Erreur GPT-3.5 : {e}"
 
+    
 def est_reponse_vide_ou_generique(reponse: str) -> bool:
     if not reponse or not isinstance(reponse, str):
         return True
