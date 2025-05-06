@@ -1446,15 +1446,34 @@ def recherche_web_duckduckgo(question: str) -> str:
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
-
-# ⚠️ Test prioritaire de GPT-3.5 Turbo (force tout appel ici pour debug)
-import openai
+        
+import openai 
+# Initialisation de l'API OpenAI
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
+# Nettoyage de texte (à adapter si besoin)
+def nettoyer_texte(text: str) -> str:
+    return text.lower().strip()
+
+# Vérifie si une réponse est vide ou trop générique
+reponses_nulles = [
+    "🌍 il y a actuellement 195 pays reconnus dans le monde.",
+    "🌙 les chauves-souris, hiboux ou encore félins sont actifs principalement la nuit.",
+    "💉 le premier vaccin contre la variole a été développé par edward jenner en 1796.",
+    "🧮 un algorithme est une suite d’instructions permettant de résoudre un problème ou d’effectuer une tâche de manière logique.",
+]
+
+def est_reponse_vide_ou_generique(reponse: str) -> bool:
+    if not reponse or not isinstance(reponse, str):
+        return True
+    texte = reponse.lower().strip()
+    return texte in reponses_nulles or len(texte.split()) < 8
+
+# Fonction d'appel à l'API OpenAI
 def repondre_openai(prompt: str) -> str:
     try:
         st.info("🛠️ Appel à OpenAI en cours...")
-        response = openai.ChatCompletion.create(
+        resp = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "Tu es une intelligence vive, chaleureuse et utile."},
@@ -1463,66 +1482,48 @@ def repondre_openai(prompt: str) -> str:
             temperature=0.7,
             max_tokens=900
         )
-        return response.choices[0].message["content"].strip()
+        return resp.choices[0].message["content"].strip()
     except Exception as e:
-        return f"❌ Erreur GPT-3.5 : {e}"
+        st.error(f"❌ Erreur GPT-3.5 : {e}")
+        return ""
 
-    
-def est_reponse_vide_ou_generique(reponse: str) -> bool:
-    if not reponse or not isinstance(reponse, str):
-        return True
-    reponse = reponse.lower().strip()
-    reponses_nulles = [
-        "🌍 il y a actuellement 195 pays reconnus dans le monde.",
-        "🌙 les chauves-souris, hiboux ou encore félins sont actifs principalement la nuit.",
-        "💉 le premier vaccin contre la variole a été développé par edward jenner en 1796.",
-        "🧮 un algorithme est une suite d’instructions permettant de résoudre un problème ou d’effectuer une tâche de manière logique.",
-    ]
-    return reponse in reponses_nulles or len(reponse.split()) < 8
-
-
+# Fonction principale de traitement
 def trouver_reponse(question: str, model) -> str:
-    question_raw   = question.strip()
+    question_raw = question.strip()
     question_clean = nettoyer_texte(question_raw)
 
-    # 🔥 Appel forcé à OpenAI si "force_gpt" est dans la question
-    if "force_gpt" in question_clean:
-        try:
-            print("⚙️ Appel à GPT-3.5 Turbo (forcé)")
-            return repondre_openai(question_clean.replace("force_gpt", "").strip())
-        except Exception as e:
-            return f"❌ Erreur GPT-3.5 : {e}"
-
-    # 🔁 Interactions
+    # Mémorisation et interactions
     incrementer_interactions()
     ajuster_affection(question_raw)
-    memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
+    memoire_court_terme['dernier_sujet'] = question_clean.split()[0] if question_clean else ''
 
     # 1️⃣ Salutations
     salut = repondre_salutation(question_clean)
     if salut:
-        return salut
+        return salut.strip()
 
     # 2️⃣ Modules spéciaux (analyse, météo, rappels…)
-    reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
-    if reponse_speciale:
-        return reponse_speciale.strip()
+    special = gerer_modules_speciaux(question_raw, question_clean, model)
+    if special:
+        return special.strip()
 
-    # 3️⃣ Exact match dans la base culturelle
+    # 3️⃣ Correspondance exacte dans la base culturelle
     if question_clean in base_culture_nettoyee:
-        return base_culture_nettoyee[question_clean]
+        resp = base_culture_nettoyee[question_clean]
+        if not est_reponse_vide_ou_generique(resp):
+            return resp
 
-    # 4️⃣ Fuzzy matching stricte
+    # 4️⃣ Fuzzy matching strict
     match = difflib.get_close_matches(
         question_clean,
-        base_culture_nettoyee.keys(),
+        list(base_culture_nettoyee.keys()),
         n=1,
         cutoff=0.95
     )
     if match:
-        phrase_match = match[0]
-        if len(phrase_match.split()) >= 4:
-            return base_culture_nettoyee[phrase_match]
+        resp = base_culture_nettoyee[match[0]]
+        if not est_reponse_vide_ou_generique(resp):
+            return resp
 
     # 5️⃣ Recherche sémantique avec BERT
     try:
@@ -1532,21 +1533,14 @@ def trouver_reponse(question: str, model) -> str:
         sims = cosine_similarity(q_emb, keys_emb)[0]
         best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
         if best_score > 0.7:
-            return base_culture_nettoyee[keys[best_idx]]
+            resp = base_culture_nettoyee[keys[best_idx]]
+            if not est_reponse_vide_ou_generique(resp):
+                return resp
     except Exception as e:
         st.warning(f"⚠️ Erreur BERT : {e}")
 
-    # 6️⃣ Fallback OpenAI si rien n'a été satisfaisant
-    try:
-        print("⚙️ Appel à GPT-3.5 Turbo en fallback...")
-        reponse_openai = repondre_openai(question_clean)
-        if reponse_openai and isinstance(reponse_openai, str) and reponse_openai.strip():
-            return reponse_openai.strip()
-    except Exception as e:
-        return f"❌ Erreur OpenAI : {e}"
-
-    # 7️⃣ Aucun résultat
-    return "🤔 Je n'ai pas trouvé de réponse précise à votre question. N'hésitez pas à reformuler !"
+    # 6️⃣ Fallback automatique vers OpenAI
+    return repondre_openai(question_raw) or "🤔 Je n'ai pas de réponse précise."
 
 
 
