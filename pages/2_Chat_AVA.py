@@ -1536,12 +1536,7 @@ def trouver_reponse(question: str, model) -> str:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    # 2️⃣ Salutations via repondre_salutation
-    salut = repondre_salutation(question_clean)
-    if isinstance(salut, str) and salut.strip():
-        return salut.strip()
-
-    # 3️⃣ Formules courantes de la base_language
+    
     if question_clean in base_language_nettoyee:
         return base_language_nettoyee[question_clean]
 
@@ -1575,6 +1570,7 @@ def trouver_reponse(question: str, model) -> str:
 
     # 9️⃣ Aucun résultat
     return "🤔 Je n'ai pas trouvé de réponse précise."
+
 
 
 
