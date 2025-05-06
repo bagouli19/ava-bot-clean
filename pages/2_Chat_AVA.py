@@ -506,7 +506,7 @@ def nettoyer_texte(texte: str) -> str:
     t = re.sub(r"\s+", " ", t).strip()
     return t
 
- # --- Bloc Salutations courantes --- 
+# --- Bloc Salutations courantes --- 
 SALUTATIONS_COURANTES = {
 # SALUTATIONS
         "salut": "Salut ! Comment puis-je vous aider aujourd'hui ?",
@@ -794,7 +794,8 @@ SALUTATIONS_COURANTES = {
 # On normalise les clés une seule fois
 SALUTATIONS_CLEAN = {nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()}
 
-def repondre_salutation(question_clean: str) -> Optional[str]:
+def repondre_salutation(question: str) -> Optional[str]:
+    question_clean = nettoyer_texte(question)
     return SALUTATIONS_CLEAN.get(question_clean, None)
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
