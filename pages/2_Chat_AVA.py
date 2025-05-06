@@ -1452,22 +1452,21 @@ def repondre_openai(prompt: str) -> str:
     import openai
     openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-    print(f"👉 Appel OpenAI avec : {prompt}")
+    def repondre_openai(prompt: str) -> str:
     try:
-        resp = openai.ChatCompletion.create(
+        st.info("🛠️ Appel à OpenAI en cours...")
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Tu es une IA chaleureuse, vive et curieuse."},
+                {"role": "system", "content": "Tu es une intelligence vive, chaleureuse et utile."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=800,
+            max_tokens=900
         )
-        print("✅ OpenAI a répondu")
-        return resp.choices[0].message.content.strip()
+        return response.choices[0].message["content"].strip()
     except Exception as e:
-        print("❌ Erreur OpenAI :", e)
-        return f"Erreur OpenAI : {e}"
+        return f"❌ Erreur GPT-3.5 : {e}"
 
 def est_reponse_vide_ou_generique(reponse: str) -> bool:
     if not reponse or not isinstance(reponse, str):
@@ -1535,14 +1534,12 @@ def trouver_reponse(question: str, model) -> str:
     except Exception as e:
         st.warning(f"⚠️ Erreur BERT : {e}")
 
-    # 6️⃣ Fallback vers OpenAI
+    # 6️⃣ Fallback GPT-3.5
     try:
         print("⚙️ Appel à GPT-3.5 Turbo en cours...")
         reponse_openai = repondre_openai(question_clean)
         if isinstance(reponse_openai, str) and reponse_openai.strip():
             return reponse_openai.strip()
-        else:
-            return "🤔 Je n’ai pas trouvé de réponse précise à cette question via OpenAI."
     except Exception as e:
         return f"❌ Une erreur est survenue avec OpenAI : {e}"
 
