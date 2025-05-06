@@ -1,6 +1,5 @@
 import requests
 
-
 def recherche_web_duckduckgo(question: str) -> str:
     try:
         params = {
@@ -18,11 +17,11 @@ def recherche_web_duckduckgo(question: str) -> str:
         if abstract and len(abstract) > 30:
             return f"🔍 J’ai trouvé ça pour vous :\n\n{abstract}\n\n🔗 {url}" if url else f"🔍 J’ai trouvé ça pour vous :\n\n{abstract}"
 
-        # Si trop court ou vide → utiliser Wikipédia si dispo
-        return recherche_wikipedia(question)
+        return "🤷 Je n'ai pas trouvé d'information claire, reformulez si besoin."
 
     except Exception as e:
-        return f"❌ Erreur pendant la recherche DuckDuckGo : {e}"
+        return f"❌ Erreur DuckDuckGo : {e}"
+
 
 
 
