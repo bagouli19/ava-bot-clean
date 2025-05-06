@@ -1511,6 +1511,7 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 # --------------------------
 # Pipeline de réponse
 # --------------------------
+base_language_nettoyee = {nettoyer_texte(k): v for k, v in base_langage.items()}
 
 def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
