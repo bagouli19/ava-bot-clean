@@ -1515,15 +1515,35 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
-
+     
+    incrementer_interactions()
+    ajuster_affection(question_raw)
+    memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
+ 
     # 1️⃣ Mode forcé GPT
     if "force_gpt" in question_clean:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    # Étape 1 : Vérifie si la question correspond à une salutation connue
+    # Vérifie les salutations simples (base externe)
+    base_language_nettoyee = { nettoyer_texte(k): v for k, v in base_langage.items() }
+    if question_clean in base_language_nettoyee:
+        return base_language_nettoyee[question_clean]
+
+    # Vérifie les phrases de salutation courantes enrichies
     if question_clean in SALUTATIONS_CLEAN:
-       return SALUTATIONS_CLEAN[question_clean]
+        return SALUTATIONS_CLEAN[question_clean]
+
+    # Bloc de détection plus souple (si la phrase contient un mot-clé de salutation)
+    salutations_possibles = ["salut", "bonjour", "bonsoir", "coucou", "yo", "hello", "hi", "re"]
+    if any(salut in question_clean for salut in salutations_possibles):
+        return random.choice([
+            "Salut ! Comment puis-je vous aider aujourd’hui ? 🤖",
+            "Coucou ! Besoin d’un conseil ou d’une info ? 😊",
+            "Hello ! Prêt(e) à découvrir plein de choses ensemble ? 🚀",
+            "Yo ! Que puis-je faire pour vous aujourd'hui ? 👋",
+            "Bonjour ! Que puis-je faire pour égayer votre journée ? ☀️",
+        ])
 
     # 3️⃣ Modules spéciaux
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
