@@ -249,13 +249,26 @@ def sauvegarder_memoire_ava(memoire: dict):
 
 def charger_style_ava() -> dict:
     """
-    Charge le fichier STYLE_FILE contenant les paramètres de style d'AVA.
-    En cas d'absence ou d'erreur, retourne les valeurs par défaut.
+    Charge les paramètres de style d'AVA depuis GitHub.
     """
+    url = "https://raw.githubusercontent.com/TonUser/TonRepo/main/style_ava.json"
     try:
-        with open(STYLE_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"Erreur chargement style AVA : {response.status_code}")
+            return {
+                "ton": "neutre",
+                "langage": "classique",
+                "niveau_humour": 0.3,
+                "niveau_spontane": 0.3,
+                "niveau_libre_arbitre": 0.3,
+                "compteur_interactions": 0,
+                "niveau_affection": 0.5
+            }
+    except Exception as e:
+        print("Exception lors du chargement style AVA :", e)
         return {
             "ton": "neutre",
             "langage": "classique",
@@ -265,51 +278,22 @@ def charger_style_ava() -> dict:
             "compteur_interactions": 0,
             "niveau_affection": 0.5
         }
-
 def sauvegarder_style_ava(style: dict) -> None:
     """
-    Sauvegarde les paramètres de style d'AVA dans STYLE_FILE.
-    Crée le dossier parent si nécessaire.
+    Sauvegarde en local uniquement si l'application est en mode local.
     """
-    os.makedirs(os.path.dirname(STYLE_FILE), exist_ok=True)
-    with open(STYLE_FILE, "w", encoding="utf-8") as f:
-        json.dump(style, f, ensure_ascii=False, indent=4)
-
-def incrementer_interactions() -> None:
+    if MODE_LOCAL:  # à définir selon ton usage
+        os.makedirs(os.path.dirname(STYLE_FILE), exist_ok=True)
+        with open(STYLE_FILE, "w", encoding="utf-8") as f:
+            json.dump(style, f, ensure_ascii=False, indent=4)
+def reponse_malicieuse_possible(contexte: str) -> bool:
     """
-    Incrémente le compteur d'interactions.
-    Tous les 20 échanges, augmente légèrement l'humour, la spontanéité et le libre-arbitre.
+    Détermine si AVA peut se permettre une touche de malice dans sa réponse.
     """
     style = charger_style_ava()
-    style["compteur_interactions"] = style.get("compteur_interactions", 0) + 1
-
-    if style["compteur_interactions"] % 20 == 0:
-        style["niveau_spontane"] = min(style.get("niveau_spontane", 0) + 0.05, 1.0)
-        style["niveau_humour"] = min(style.get("niveau_humour", 0) + 0.05, 1.0)
-        style["niveau_libre_arbitre"] = min(style.get("niveau_libre_arbitre", 0) + 0.03, 1.0)
-
-    sauvegarder_style_ava(style)
-
-def ajuster_affection(question: str) -> None:
-    """
-    Ajuste le niveau d'affection d'AVA selon les mots détectés dans la question.
-    Mots gentils → + affection ; mots durs → - affection.
-    """
-    style = charger_style_ava()
-    affection = style.get("niveau_affection", 0.5)
-    text = question.lower()
-
-    mots_gentils = ["merci", "tu es géniale", "bravo", "je t’aime", "trop forte"]
-    mots_durs    = ["t’es nulle", "aucune utilité", "tu sers à rien", "je te déteste"]
-
-    if any(m in text for m in mots_gentils):
-        affection = min(1.0, affection + 0.05)
-    elif any(m in text for m in mots_durs):
-        affection = max(0.0, affection - 0.05)
-
-    style["niveau_affection"] = round(affection, 2)
-    sauvegarder_style_ava(style)
-
+    niveau_malice = style.get("niveau_malice", 0.0)
+    mots_clés = ["jeu", "taquine", "devine", "secret", "plaisanter", "drôle", "humour"]
+    return niveau_malice > 0.3 and any(m in contexte.lower() for m in mots_clés)
 
 # --- MÉMOIRE À COURT TERME ---
 memoire_court_terme = {
