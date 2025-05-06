@@ -1537,7 +1537,8 @@ def trouver_reponse(question: str, model) -> str:
         return reponse_salut
 
     # 3️⃣ Base de langage classique
-    base_language_nettoyee = {nettoyer_texte(k): v for k, v in base_langage.items()}
+    # Vérifie les phrases exactes dans la base de langage
+    base_language_nettoyee = { nettoyer_texte(k): v for k, v in base_langage.items() }
     if question_clean in base_language_nettoyee:
         return base_language_nettoyee[question_clean]
 
@@ -1564,7 +1565,7 @@ def trouver_reponse(question: str, model) -> str:
     if reponse_bert and not est_reponse_vide_ou_generique(reponse_bert):
         return reponse_bert.strip()
 
-    # 8️⃣ Fallback GPT (seulement si tout a échoué)
+    # 7️⃣ Fallback OpenAI
     reponse_openai = repondre_openai(question_clean)
     if reponse_openai and not est_reponse_vide_ou_generique(reponse_openai):
         return reponse_openai.strip()
