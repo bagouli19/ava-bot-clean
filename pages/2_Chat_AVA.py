@@ -1455,19 +1455,18 @@ from sklearn.metrics.pairwise import cosine_similarity
 # --------------------------
 # Fonctions utilitaires
 # --------------------------
-# Nettoyage de texte
 
 def nettoyer_texte(text: str) -> str:
     return text.lower().strip()
-
-# Vérification des réponses génériques/trop courtes
 
 def est_reponse_vide_ou_generique(reponse: str) -> bool:
     if not reponse or not isinstance(reponse, str):
         return True
     return len(reponse.strip().split()) < 3
 
-# Appel à l'API OpenAI
+# --------------------------
+# Appels API et BERT
+# --------------------------
 
 def repondre_openai(prompt: str) -> str:
     try:
@@ -1486,7 +1485,6 @@ def repondre_openai(prompt: str) -> str:
         st.error(f"❌ Erreur OpenAI : {e}")
         return ""
 
-# Recherche sémantique avec BERT
 
 def repondre_bert(question_clean: str, base: dict, model) -> str:
     try:
@@ -1497,14 +1495,14 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
         best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
         if best_score >= 0.75:
             return base[keys[best_idx]]
-    except Exception as e:
-        st.warning(f"⚠️ Erreur BERT: {e}")
+    except Exception:
+        pass
     return ""
 
 # --------------------------
 # Bases de connaissances
 # --------------------------
-# Base de langage: salutations et formules courantes
+
 base_language = {
     "bonjour": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
     "salut": "Salut ! Que puis-je faire pour toi ?",
@@ -1513,30 +1511,35 @@ base_language = {
     "merci": "De rien ! N'hésitez pas si vous avez d'autres questions.",
     "s'il te plaît": "Bien sûr, avec plaisir !",
 }
-base_language_nettoyee = { nettoyer_texte(k): v for k, v in base_language.items() }
+base_language_nettoyee = {nettoyer_texte(k): v for k, v in base_language.items()}
 
-# Base culturelle: exact match et fuzzy (préchargée ailleurs)
-# base_culture_nettoyee = { ... }
+# base_culture_nettoyee préchargée ailleurs
 
 # --------------------------
-# Initialisation OpenAI
+# Initialisations
 # --------------------------
+
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # --------------------------
-# Pipeline de réponse
+# Pipeline principal
 # --------------------------
+
 def trouver_reponse(question: str, model) -> str:
-    # Préparation
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
 
-    # 1️⃣ Bypass total si force_gpt
+    # 1️⃣ Bypass "force_gpt"
     if "force_gpt" in question_clean:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    
+    # 2️⃣ Salutations via repondre_salutation
+    salut = repondre_salutation(question_clean)
+    if isinstance(salut, str) and salut.strip():
+        return salut.strip()
+
+    # 3️⃣ Formules courantes (base_language)
     if question_clean in base_language_nettoyee:
         return base_language_nettoyee[question_clean]
 
@@ -1545,34 +1548,7 @@ def trouver_reponse(question: str, model) -> str:
     if isinstance(special, str) and special.strip():
         return special.strip()
 
-    # 5️⃣ Base culturelle: exact match
-    if question_clean in base_culture_nettoyee:
-        resp = base_culture_nettoyee[question_clean]
-        if not est_reponse_vide_ou_generique(resp):
-            return resp.strip()
-
-    # 6️⃣ Base culturelle: fuzzy matching
-    match = difflib.get_close_matches(question_clean, list(base_culture_nettoyee.keys()), n=1, cutoff=0.90)
-    if match:
-        resp = base_culture_nettoyee[match[0]]
-        if not est_reponse_vide_ou_generique(resp):
-            return resp.strip()
-
-    # 7️⃣ Recherche sémantique (BERT)
-    resp = repondre_bert(question_clean, base_culture_nettoyee, model)
-    if resp and not est_reponse_vide_ou_generique(resp):
-        return resp.strip()
-
-    # 8️⃣ Fallback automatique vers OpenAI
-    openai_resp = repondre_openai(question_clean)
-    if openai_resp and not est_reponse_vide_ou_generique(openai_resp):
-        return openai_resp
-
-    # 9️⃣ Aucun résultat
-    return "🤔 Je n'ai pas trouvé de réponse précise."
-
-
-
+    # 5️⃣ Base culturelle: exac
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
