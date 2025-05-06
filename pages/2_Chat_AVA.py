@@ -526,7 +526,7 @@ SALUTATIONS_COURANTES = {
         "re !": "Ah vous revoilà ! Prêt(e) pour une nouvelle session ? 😄",
     
         # ÉTAT / HUMEUR
-        "salut ça va ?": "Je vais bien, merci de demander ! Et vous ?",
+        "ça va": "Je vais bien, merci de demander ! Et vous ?",
         "ça va ?": "Je vais très bien, et vous ?",
         "ça va bien ?": "Oui, tout roule de mon côté !",
         "ca va": "Je vais nickel 👌 Et toi ?",
