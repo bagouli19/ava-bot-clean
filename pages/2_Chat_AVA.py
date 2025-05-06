@@ -14,7 +14,7 @@ import difflib
 import numpy as np
 import sys
 sys.path.append(os.path.abspath(".."))
-from knowledge_base.base_de_langage import base_langage
+from knowledge_base.base_de_langage import base_langage, SALUTATIONS_CLEAN
 from modules.openai_utils import repondre_openai
 
 print("Nombre de questions chargées :", len(base_langage))
@@ -795,8 +795,14 @@ SALUTATIONS_COURANTES = {
 SALUTATIONS_CLEAN = {nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()}
 
 def repondre_salutation(question_clean: str) -> Optional[str]:
-    """Si la question est une salutation connue, retourne la réponse adaptée."""
-    return SALUTATIONS_CLEAN.get(question_clean)
+    """
+    Cherche une salutation partielle dans SALUTATIONS_CLEAN.
+    Si une clé est incluse dans la question, retourne sa réponse.
+    """
+    for cle, reponse in SALUTATIONS_CLEAN.items():
+        if cle in question_clean:
+            return reponse
+    return None
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
@@ -1525,10 +1531,10 @@ def trouver_reponse(question: str, model) -> str:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    # 2️⃣ Salutations courantes (match exact)
+    # Salutations prioritaires
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
-        return reponse_salut.strip()
+        return reponse_salut
 
     # 3️⃣ Base de langage classique
     base_language_nettoyee = {nettoyer_texte(k): v for k, v in base_langage.items()}
@@ -1565,8 +1571,6 @@ def trouver_reponse(question: str, model) -> str:
 
     # 9️⃣ Aucun résultat
     return "🤔 Je n'ai pas trouvé de réponse précise. N'hésitez pas à reformuler !"
-
-
 
 
 # --- Modules personnalisés (à enrichir) ---
