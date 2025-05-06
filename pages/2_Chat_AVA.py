@@ -1455,7 +1455,14 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Fonctions utilitaires
 # --------------------------
 
+def chercher_reponse_base_langage(question):
+    question_clean = question.lower()
+    correspondances = difflib.get_close_matches(question_clean, base_langage.keys(), n=1, cutoff=0.8)
 
+    if correspondances:
+        reponses_possibles = base_langage[correspondances[0]]
+        return random.choice(reponses_possibles)
+    return None
 # Vérifie si une réponse est vide ou trop générique
 
 def est_reponse_vide_ou_generique(reponse: str) -> bool:
@@ -1535,8 +1542,9 @@ def trouver_reponse(question: str, model) -> str:
         return base_culture_nettoyee[question_clean]
 
     # 4 Phrases classiques dans la base de langage
-    if question_clean in base_language_nettoyee:
-        return base_language_nettoyee[question_clean]
+    reponse_langage = chercher_reponse_base_langage(question)
+    if reponse_langage:
+        return reponse_langage
 
     # Modules spéciaux
     print("🧩 Passage aux modules spéciaux")
