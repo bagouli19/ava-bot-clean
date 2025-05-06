@@ -1492,7 +1492,7 @@ def repondre_openai(prompt: str) -> str:
         return ""
 
 # Fonction principale de traitement
-def trouver_reponse(question: str, model) -> str:
+ def trouver_reponse(question: str, model) -> str:
     question_raw = question.strip()
     question_clean = nettoyer_texte(question_raw)
 
@@ -1516,18 +1516,13 @@ def trouver_reponse(question: str, model) -> str:
     if special:
         return special.strip()
 
-    # 3️⃣ Fallback prioritaire vers OpenAI
-    reponse_gpt = repondre_openai(question_clean)
-    if reponse_gpt and not est_reponse_vide_ou_generique(reponse_gpt):
-        return reponse_gpt
-
-    # 4️⃣ Correspondance exacte dans la base culturelle
+    # 3️⃣ Correspondance exacte dans la base culturelle
     if question_clean in base_culture_nettoyee:
         resp = base_culture_nettoyee[question_clean]
         if not est_reponse_vide_ou_generique(resp):
-            return resp
+            return resp.strip()
 
-    # 5️⃣ Fuzzy matching strict
+    # 4️⃣ Fuzzy matching strict
     match = difflib.get_close_matches(
         question_clean,
         list(base_culture_nettoyee.keys()),
@@ -1537,9 +1532,9 @@ def trouver_reponse(question: str, model) -> str:
     if match:
         resp = base_culture_nettoyee[match[0]]
         if not est_reponse_vide_ou_generique(resp):
-            return resp
+            return resp.strip()
 
-    # 6️⃣ Recherche sémantique avec BERT
+    # 5️⃣ Recherche sémantique avec BERT
     try:
         keys = list(base_culture_nettoyee.keys())
         q_emb = model.encode([question_clean])
@@ -1549,12 +1544,16 @@ def trouver_reponse(question: str, model) -> str:
         if best_score > 0.7:
             resp = base_culture_nettoyee[keys[best_idx]]
             if not est_reponse_vide_ou_generique(resp):
-                return resp
+                return resp.strip()
     except Exception as e:
-        st.warning(f"⚠️ Erreur BERT (fallback culturel) : {e}")
+        st.warning(f"⚠️ Erreur BERT, on passe au fallback : {e}")
 
-    # 7️⃣ Dernier recours: OpenAI sans filtrage
-    return repondre_openai(question_clean) or "🤔 Je n'ai pas de réponse précise."
+    # 6️⃣ Fallback automatique vers OpenAI
+    response_gpt = repondre_openai(question_clean)
+    if response_gpt and not est_reponse_vide_ou_generique(response_gpt):
+        return response_gpt.strip()
+
+    return "🤔 Je n'ai pas de réponse précise."
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
