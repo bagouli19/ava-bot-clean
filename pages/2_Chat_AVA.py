@@ -1459,10 +1459,30 @@ from sklearn.metrics.pairwise import cosine_similarity
 def nettoyer_texte(text: str) -> str:
     return text.lower().strip()
 
+# Vérifie si une réponse est vide ou trop générique
+
 def est_reponse_vide_ou_generique(reponse: str) -> bool:
     if not reponse or not isinstance(reponse, str):
         return True
+    # Considérons vides ou très courtes (<3 mots)
     return len(reponse.strip().split()) < 3
+
+# --------------------------
+# Bases de connaissances
+# --------------------------
+# Base linguistique: salutations et formules courantes
+base_language = {
+    "bonjour": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+    "salut": "Salut ! Que puis-je faire pour toi ?",
+    "bonsoir": "Bonsoir ! Qu'est-ce que je peux faire pour vous ?",
+    "bonne nuit": "Bonne nuit ! Faites de beaux rêves.",
+    "merci": "De rien ! N'hésitez pas si vous avez d'autres questions.",
+    "s'il te plaît": "Bien sûr, avec plaisir !",
+}
+base_language_nettoyee = { nettoyer_texte(k): v for k, v in base_language.items() }
+
+# Base culturelle (exact match, fuzzy, sémantique) préchargée ailleurs
+# base_culture_nettoyee = {...}
 
 # --------------------------
 # Appels API et BERT
@@ -1500,55 +1520,50 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
     return ""
 
 # --------------------------
-# Bases de connaissances
-# --------------------------
-
-base_language = {
-    "bonjour": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
-    "salut": "Salut ! Que puis-je faire pour toi ?",
-    "bonsoir": "Bonsoir ! Qu'est-ce que je peux faire pour vous ?",
-    "bonne nuit": "Bonne nuit ! Faites de beaux rêves.",
-    "merci": "De rien ! N'hésitez pas si vous avez d'autres questions.",
-    "s'il te plaît": "Bien sûr, avec plaisir !",
-}
-base_language_nettoyee = {nettoyer_texte(k): v for k, v in base_language.items()}
-
-# base_culture_nettoyee préchargée ailleurs
-
-# --------------------------
-# Initialisations
+# Initialisation API
 # --------------------------
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # --------------------------
-# Pipeline principal
+# Pipeline de réponse
 # --------------------------
 
 def trouver_reponse(question: str, model) -> str:
+    # Préparation de la question
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
 
-    # 1️⃣ Bypass "force_gpt"
+    # Étape 1: Bypass total si 'force_gpt' présent
     if "force_gpt" in question_clean:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    # 2️⃣ Salutations via repondre_salutation
-    salut = repondre_salutation(question_clean)
-    if isinstance(salut, str) and salut.strip():
-        return salut.strip()
-
-    # 3️⃣ Formules courantes (base_language)
+    # Étape 2: Vérifier les salutations/formules courantes
     if question_clean in base_language_nettoyee:
         return base_language_nettoyee[question_clean]
 
-    # 4️⃣ Modules spéciaux (analyse, météo, rappels…)
+    # Étape 3: Modules spéciaux (météo, rappels, etc.)
     special = gerer_modules_speciaux(question_raw, question_clean, model)
     if isinstance(special, str) and special.strip():
         return special.strip()
 
-    # 5️⃣ Base culturelle: exac
+    # Étape 4: Base culturelle – correspondance exacte
+    if question_clean in base_culture_nettoyee:
+        resp = base_culture_nettoyee[question_clean]
+        if not est_reponse_vide_ou_generique(resp):
+            return resp.strip()
+
+    # Étape 5: Base culturelle – fuzzy matching
+    match = difflib.get_close_matches(question_clean, list(base_culture_nettoyee.keys()), n=1, cutoff=0.90)
+    if match:
+        resp = base_culture_nettoyee[match[0]]
+        if not est_reponse_vide_ou_generique(resp):
+            return resp.strip()
+
+    # Étape 6: Recherche sémantique avec BERT
+    bert_resp = repondre_bert(question_clean, base_culture_nettoyee, model)
+    if bert_resp and not est_reponse_vide_ou_generique(bert_resp):
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
