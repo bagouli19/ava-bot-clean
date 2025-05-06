@@ -1516,54 +1516,43 @@ def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
 
+    print("🧪 Question nettoyée :", question_clean)
+
     incrementer_interactions()
     ajuster_affection(question_raw)
     memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
 
-    # 1️⃣ Mode forcé GPT
     if "force_gpt" in question_clean:
         prompt = question_clean.replace("force_gpt", "").strip()
+        print("🔁 Appel GPT forcé")
         return repondre_openai(prompt)
 
-    # 1️⃣ Salutations très courantes
+    # Salutations
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
+        print("👋 Réponse salutation trouvée")
         return reponse_salut
 
-    # 2️⃣ Phrases classiques dans la base de langage
+    # Base de langage
     if question_clean in base_language_nettoyee:
+        print("📘 Réponse base langage trouvée")
         return base_language_nettoyee[question_clean]
 
-    # 4️⃣ Modules spéciaux
+    # Modules spéciaux
+    print("🧩 Passage aux modules spéciaux")
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
+        print("✅ Réponse module spécial")
         return reponse_speciale.strip()
 
-    # 5️⃣ Culture générale (match exact)
-    if question_clean in base_culture_nettoyee:
-        reponse = base_culture_nettoyee[question_clean]
-        if not est_reponse_vide_ou_generique(reponse):
-            return reponse.strip()
-
-    # 6️⃣ Culture générale (fuzzy matching)
-    match = difflib.get_close_matches(question_clean, base_culture_nettoyee.keys(), n=1, cutoff=0.9)
-    if match:
-        reponse = base_culture_nettoyee[match[0]]
-        if not est_reponse_vide_ou_generique(reponse):
-            return reponse.strip()
-
-    # 7️⃣ BERT
-    reponse_bert = repondre_bert(question_clean, base_culture_nettoyee, model)
-    if reponse_bert and not est_reponse_vide_ou_generique(reponse_bert):
-        return reponse_bert.strip()
-
-    # 8️⃣ GPT fallback
+    # GPT fallback
+    print("🤖 Fallback GPT")
     reponse_openai = repondre_openai(question_clean)
-    if reponse_openai and not est_reponse_vide_ou_generique(reponse_openai):
+    if reponse_openai:
         return reponse_openai.strip()
 
-    # 9️⃣ Rien trouvé
-    return "🤔 Je n'ai pas trouvé de réponse précise. N'hésitez pas à reformuler !"
+    return "🤔 Je n'ai pas trouvé de réponse précise."
+
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
