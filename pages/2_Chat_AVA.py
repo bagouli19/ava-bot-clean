@@ -1549,7 +1549,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
 
     if "score" in qc or "résultat" in qc or "a gagné" in qc:
-    message_bot = obtenir_resultat_match_web(qc)
+        message_bot = obtenir_resultat_match_web(qc)
 
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [
