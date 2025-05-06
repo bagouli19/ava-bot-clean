@@ -1455,8 +1455,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Fonctions utilitaires
 # --------------------------
 
-def nettoyer_texte(text: str) -> str:
-    return text.lower().strip()
 
 # Vérifie si une réponse est vide ou trop générique
 
