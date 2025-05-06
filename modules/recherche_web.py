@@ -1,5 +1,5 @@
 import requests
-from modules.wikipedia_fallback import recherche_wikipedia  # Si tu utilises un fallback, sinon retire cette ligne
+
 
 def recherche_web_duckduckgo(question: str) -> str:
     try:
