@@ -1455,21 +1455,21 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Initialisation de l'API OpenAI
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# Nettoyage de texte (à adapter si besoin)
+# Nettoyage de texte
+
 def nettoyer_texte(text: str) -> str:
     return text.lower().strip()
 
 # Vérifie si une réponse est vide ou trop générique
+
 def est_reponse_vide_ou_generique(reponse: str) -> bool:
     if not reponse or not isinstance(reponse, str):
         return True
     texte = reponse.lower().strip()
-    # Filtrer phrases vides, trop courtes ou réponses génériques connues
-    if len(texte.split()) < 3:
-        return True
-    return False
+    return len(texte.split()) < 3
 
 # Appel à l'API OpenAI
+
 def repondre_openai(prompt: str) -> str:
     try:
         st.info("🛠️ Appel à OpenAI en cours...")
@@ -1488,6 +1488,7 @@ def repondre_openai(prompt: str) -> str:
         return ""
 
 # Recherche sémantique avec BERT
+
 def repondre_bert(question_clean: str, base: dict, model) -> str:
     try:
         keys = list(base.keys())
@@ -1502,6 +1503,7 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
     return ""
 
 # Fonction principale
+
 def trouver_reponse(question: str, model) -> str:
     question_raw = question.strip()
     question_clean = nettoyer_texte(question_raw)
@@ -1510,41 +1512,45 @@ def trouver_reponse(question: str, model) -> str:
     if "force_gpt" in question_clean:
         return repondre_openai(question_clean.replace("force_gpt", "").strip())
 
-    # 2️⃣ Salutations
+    # 2️⃣ Salutations via fonction dédiée
     salut = repondre_salutation(question_clean)
     if salut:
-        return salut
+        return salut.strip()
 
-    # 3️⃣ Modules spéciaux
+    # 3️⃣ Base linguistique (salutations courantes, politesse)
+    # base_language_nettoyee doit être un dict préchargé
+    if question_clean in base_language_nettoyee:
+        return base_language_nettoyee[question_clean].strip()
+
+    # 4️⃣ Modules spéciaux (analyse, météo, rappels…)
     special = gerer_modules_speciaux(question_raw, question_clean, model)
     if special:
-        return special
+        return special.strip()
 
-    # 4️⃣ Base culturelle: exact + fuzzy
-    # exact
+    # 5️⃣ Base culturelle: exact + fuzzy
     if question_clean in base_culture_nettoyee:
         resp = base_culture_nettoyee[question_clean]
         if not est_reponse_vide_ou_generique(resp):
-            return resp
-    # fuzzy
-    match = difflib.get_close_matches(question_clean, base_culture_nettoyee.keys(), n=1, cutoff=0.90)
+            return resp.strip()
+    match = difflib.get_close_matches(question_clean, list(base_culture_nettoyee.keys()), n=1, cutoff=0.90)
     if match:
         resp = base_culture_nettoyee[match[0]]
         if not est_reponse_vide_ou_generique(resp):
-            return resp
+            return resp.strip()
 
-    # 5️⃣ BERT semantic
+    # 6️⃣ BERT sémantique
     resp = repondre_bert(question_clean, base_culture_nettoyee, model)
     if resp and not est_reponse_vide_ou_generique(resp):
-        return resp
+        return resp.strip()
 
-    # 6️⃣ Fallback OpenAI
+    # 7️⃣ Fallback OpenAI
     resp = repondre_openai(question_clean)
     if resp:
         return resp
 
-    # 7️⃣ Aucun résultat
+    # 8️⃣ Aucun résultat
     return "🤔 Je n'ai pas trouvé de réponse précise."
+
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
