@@ -1531,10 +1531,9 @@ def trouver_reponse(question: str, model) -> str:
         print("👋 Réponse salutation trouvée")
         return reponse_salut
 
-    # Base de langage
-    if question_clean in base_language_nettoyee:
-        print("📘 Réponse base langage trouvée")
-        return base_language_nettoyee[question_clean]
+    # 3️⃣ Culture générale
+    if question_clean in base_culture_nettoyee:
+        return base_culture_nettoyee[question_clean]
 
     # Modules spéciaux
     print("🧩 Passage aux modules spéciaux")
