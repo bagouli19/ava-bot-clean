@@ -1548,8 +1548,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    if "score" in qc or "résultat" in qc or "a gagné" in qc:
-        message_bot = obtenir_resultat_match_web(qc)
+    #résultat foot 
+    if "score" in qc.lower() or "résultat" in qc.lower() or "a gagné" in qc.lower():
+        equipe = qc.replace("qui a gagné", "").replace("score", "").replace("résultat", "").strip()
+        message_bot = recherche_web_duckduckgo(f"Score football {equipe}")
 
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [
