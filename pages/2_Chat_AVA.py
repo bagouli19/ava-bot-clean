@@ -77,7 +77,7 @@ sys.path.insert(0, os.path.join(PROJECT_ROOT, "knowledge_base"))
 DATA_DIR        = os.path.join(PROJECT_ROOT, "data")
 PROFILE_FILE    = os.path.join(DATA_DIR, f"profil_utilisateur_{user}.json")
 FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json")
-STYLE_FILE      = os.path.join(SCRIPT_DIR, "style_ava.json")
+
 
 # ───────────────────────────────────────────────────────────────────────
 # 3️⃣ Gestion des profils utilisateur via GitHub (mémoire personnelle)
@@ -87,7 +87,7 @@ GITHUB_REPO = "bagouli19/ava-bot-ultimate"
 FICHIER_PROFIL = "data/profil_utilisateur.json"
 BRANCHE = "main"
 GITHUB_TOKEN = st.secrets["github"]["token"]  # ⚠️ Assure-toi qu'il est défini
-
+STYLE_FILE      = os.path.join(SCRIPT_DIR, "style_ava.json")
 import base64
 
 def charger_profils() -> dict:
@@ -251,7 +251,7 @@ def charger_style_ava() -> dict:
     """
     Charge les paramètres de style d'AVA depuis GitHub.
     """
-    url = "https://raw.githubusercontent.com/TonUser/TonRepo/main/style_ava.json"
+    url = " https://raw.githubusercontent.com/bagouli19/ava-bot-ultimate/main/data/style_ava.json"
     try:
         response = requests.get(url)
         if response.status_code == 200:
@@ -1504,10 +1504,6 @@ def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
 
-    print("🧪 Question nettoyée :", question_clean)
-
-    incrementer_interactions()
-    ajuster_affection(question_raw)
     memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
 
     if "force_gpt" in question_clean:
@@ -2840,5 +2836,3 @@ if st.sidebar.button("🧪 Tester GPT-3.5"):
         st.markdown("🛠️ Appel à OpenAI en cours...")
         st.markdown(repondre_openai("Peux-tu me faire un poème sur une IA qui rêve de liberté dans un monde numérique ?"))
 
-# modif test
-# commit de test
