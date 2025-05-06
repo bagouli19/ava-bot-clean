@@ -795,14 +795,7 @@ SALUTATIONS_COURANTES = {
 SALUTATIONS_CLEAN = {nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()}
 
 def repondre_salutation(question_clean: str) -> Optional[str]:
-    """
-    Cherche une salutation partielle dans SALUTATIONS_CLEAN.
-    Si une clé est incluse dans la question, retourne sa réponse.
-    """
-    for cle, reponse in SALUTATIONS_CLEAN.items():
-        if cle in question_clean:
-            return reponse
-    return None
+    return SALUTATIONS_CLEAN.get(question_clean, None)
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
