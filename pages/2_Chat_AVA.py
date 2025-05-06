@@ -1531,12 +1531,12 @@ def trouver_reponse(question: str, model) -> str:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    # 2️⃣ Salutations courantes (gérées dans le script)
+    print("📌 Étape : salutation")
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
         return reponse_salut
 
-    # 3️⃣ Base de langage simple (importée de base_de_langage.py)
+    print("📌 Étape : base langage")
     try:
         from knowledge_base.base_de_langage import base_langage
         base_language_nettoyee = { nettoyer_texte(k): v for k, v in base_langage.items() }
