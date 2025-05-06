@@ -1577,6 +1577,7 @@ def trouver_reponse(question: str, model) -> str:
     return "🤔 Je n'ai pas trouvé de réponse précise."
 
 
+
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
