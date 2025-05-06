@@ -1452,22 +1452,6 @@ import openai
 import difflib
 from sklearn.metrics.pairwise import cosine_similarity
 
-# **Définitions des bases**
-# Base linguistique: salutations et formules courantes
-base_language = {
-    "bonjour": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
-    "salut": "Salut ! Que puis-je faire pour toi ?",
-    "bonsoir": "Bonsoir ! Qu'est-ce que je peux faire pour vous ?",
-    "bonne nuit": "Bonne nuit ! Faites de beaux rêves.",
-    "merci": "De rien ! N'hésitez pas si vous avez d'autres questions.",
-    "s'il te plaît": "Bien sûr, avec plaisir !",
-}
-# Base linguistique nettoyée
-base_language_nettoyee = {nettoyer_texte(k): v for k, v in base_language.items()}
-
-# Initialisation de l'API OpenAI
-openai.api_key = st.secrets["OPENAI_API_KEY"]
-
 # Nettoyage de texte
 
 def nettoyer_texte(text: str) -> str:
@@ -1480,6 +1464,25 @@ def est_reponse_vide_ou_generique(reponse: str) -> bool:
         return True
     texte = reponse.lower().strip()
     return len(texte.split()) < 3
+
+# **Définitions des bases**
+# Base linguistique: salutations et formules courantes
+base_language = {
+    "bonjour": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+    "salut": "Salut ! Que puis-je faire pour toi ?",
+    "bonsoir": "Bonsoir ! Qu'est-ce que je peux faire pour vous ?",
+    "bonne nuit": "Bonne nuit ! Faites de beaux rêves.",
+    "merci": "De rien ! N'hésitez pas si vous avez d'autres questions.",
+    "s'il te plaît": "Bien sûr, avec plaisir !",
+}
+# Base linguistique nettoyée
+base_language_nettoyee = { nettoyer_texte(k): v for k, v in base_language.items() }
+
+# Base culturelle (à précharger ailleurs)
+# base_culture_nettoyee = {...
+
+# Initialisation de l'API OpenAI
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Appel à l'API OpenAI
 
@@ -1521,19 +1524,19 @@ def trouver_reponse(question: str, model) -> str:
     question_raw = question.strip()
     question_clean = nettoyer_texte(question_raw)
 
-    # 1️⃣ Bypass complet
+    # 1️⃣ Bypass complet via "force_gpt"
     if "force_gpt" in question_clean:
-        return repondre_openai(question_clean.replace("force_gpt", "").strip())
+        prompt = question_clean.replace("force_gpt", "").strip()
+        return repondre_openai(prompt)
 
-    # 2️⃣ Salutations via fonction dédiée
+    # 2️⃣ Salutations et formules courantes
+    if question_clean in base_language_nettoyee:
+        return base_language_nettoyee[question_clean]
+
+    # 3️⃣ Salutations via fonction dédiée
     salut = repondre_salutation(question_clean)
     if salut:
         return salut.strip()
-
-    # 3️⃣ Base linguistique (salutations courantes, politesse)
-    # base_language_nettoyee doit être un dict préchargé
-    if question_clean in base_language_nettoyee:
-        return base_language_nettoyee[question_clean].strip()
 
     # 4️⃣ Modules spéciaux (analyse, météo, rappels…)
     special = gerer_modules_speciaux(question_raw, question_clean, model)
@@ -1551,7 +1554,7 @@ def trouver_reponse(question: str, model) -> str:
         if not est_reponse_vide_ou_generique(resp):
             return resp.strip()
 
-    # 6️⃣ BERT sémantique
+    # 6️⃣ Recherche sémantique avec BERT
     resp = repondre_bert(question_clean, base_culture_nettoyee, model)
     if resp and not est_reponse_vide_ou_generique(resp):
         return resp.strip()
