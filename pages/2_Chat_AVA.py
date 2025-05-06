@@ -1452,6 +1452,19 @@ import openai
 import difflib
 from sklearn.metrics.pairwise import cosine_similarity
 
+# **Définitions des bases**
+# Base linguistique: salutations et formules courantes
+base_language = {
+    "bonjour": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+    "salut": "Salut ! Que puis-je faire pour toi ?",
+    "bonsoir": "Bonsoir ! Qu'est-ce que je peux faire pour vous ?",
+    "bonne nuit": "Bonne nuit ! Faites de beaux rêves.",
+    "merci": "De rien ! N'hésitez pas si vous avez d'autres questions.",
+    "s'il te plaît": "Bien sûr, avec plaisir !",
+}
+# Base linguistique nettoyée
+base_language_nettoyee = {nettoyer_texte(k): v for k, v in base_language.items()}
+
 # Initialisation de l'API OpenAI
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -1550,6 +1563,7 @@ def trouver_reponse(question: str, model) -> str:
 
     # 8️⃣ Aucun résultat
     return "🤔 Je n'ai pas trouvé de réponse précise."
+
 
 
 # --- Modules personnalisés (à enrichir) ---
