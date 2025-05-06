@@ -1534,16 +1534,6 @@ def trouver_reponse(question: str, model) -> str:
     if question_clean in SALUTATIONS_CLEAN:
         return SALUTATIONS_CLEAN[question_clean]
 
-    # Bloc de détection plus souple (si la phrase contient un mot-clé de salutation)
-    salutations_possibles = ["salut", "bonjour", "bonsoir", "coucou", "yo", "hello", "hi", "re"]
-    if any(salut in question_clean for salut in salutations_possibles):
-        return random.choice([
-            "Salut ! Comment puis-je vous aider aujourd’hui ? 🤖",
-            "Coucou ! Besoin d’un conseil ou d’une info ? 😊",
-            "Hello ! Prêt(e) à découvrir plein de choses ensemble ? 🚀",
-            "Yo ! Que puis-je faire pour vous aujourd'hui ? 👋",
-            "Bonjour ! Que puis-je faire pour égayer votre journée ? ☀️",
-        ])
 
     # 3️⃣ Modules spéciaux
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
