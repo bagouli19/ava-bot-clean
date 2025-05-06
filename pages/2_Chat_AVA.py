@@ -1530,9 +1530,10 @@ def trouver_reponse(question: str, model) -> str:
     if question_clean in base_language_nettoyee:
         return base_language_nettoyee[question_clean]
 
-    # Vérifie les phrases de salutation courantes enrichies
-    if question_clean in SALUTATIONS_CLEAN:
-        return SALUTATIONS_CLEAN[question_clean]
+    # 🔁 Bloc Salutations courantes (avec variantes)
+    reponse_salut = repondre_salutation(question_clean)
+    if reponse_salut:
+        return reponse_salut
 
 
     # 3️⃣ Modules spéciaux
