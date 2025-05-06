@@ -1550,8 +1550,11 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     #résultat foot 
     if "score" in question_clean.lower() or "résultat" in question_clean.lower() or "a gagné" in question_clean.lower():
-        equipe = question_clean.replace("qui a gagné", "").replace("score", "").replace("résultat", "").strip()
-        message_bot = recherche_web_duckduckgo(f"Score football {equipe}")
+        try:
+            equipe = question_clean.replace("qui a gagné", "").replace("score", "").replace("résultat", "").strip()
+            message_bot = recherche_web_duckduckgo(f"Score football {equipe}")
+        except Exception as e:
+            message_bot = "Désolé, je n'ai pas pu récupérer le score du match pour le moment ⚽."
 
 
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
