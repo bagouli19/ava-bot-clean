@@ -39,7 +39,7 @@ from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_t
 from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
-from modules.score_api import obtenir_score_api
+
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1421,44 +1421,14 @@ def recherche_web_duckduckgo(question: str) -> str:
         abstract = data.get("AbstractText", "").strip()
         url = data.get("AbstractURL", "").strip()
 
-        # Fallback vers Wikipédia si réponse trop courte ou vide
-        if not abstract or len(abstract) < 30:
-            return recherche_wikipedia(question)
+        if abstract and len(abstract) > 30:
+            return f"🌐 Résultat DuckDuckGo : {abstract}\n\n🔗 {url}" if url else f"🌐 Résultat DuckDuckGo : {abstract}"
 
-        return f"🌐 Résultat DuckDuckGo : {abstract}\n\n🔗 {url}" if url else f"🌐 Résultat DuckDuckGo : {abstract}"
+        return "🤷 Je n'ai pas trouvé d'information précise, mais tu peux reformuler ou être plus spécifique."
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web : {e}"
 
-def obtenir_score_google(equipe: str) -> str:
-    try:
-        query = f"{equipe} score"
-        url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-        }
-
-        response = requests.get(url, headers=headers, timeout=5)
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        # Recherche dans les blocs de score
-        score_blocks = soup.find_all("div", class_="BNeawe tAd8D AP7Wnd")
-
-        for block in score_blocks:
-            texte = block.get_text()
-            if " - " in texte and any(char.isdigit() for char in texte):
-                return f"📊 Résultat trouvé : {texte.strip()}"
-
-        # Fallback sur les titres
-        titles = soup.find_all("div", class_="BNeawe s3v9rd AP7Wnd")
-        for title in titles:
-            texte = title.get_text()
-            if " - " in texte and any(char.isdigit() for char in texte):
-                return f"📊 Résultat (titre) : {texte.strip()}"
-
-        return f"❌ Aucun score récent trouvé pour {equipe.capitalize()}."
-    except Exception as e:
-        return "❌ Erreur lors de la récupération du score depuis Google."
 
 import streamlit as st
 import openai
@@ -1577,14 +1547,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    #résultat foot 
-    if "score" in question_clean.lower() or "résultat" in question_clean.lower() or "a gagné" in question_clean.lower():
-        try:
-            equipe = question_clean.replace("qui a gagné", "").replace("score", "").replace("résultat", "").strip()
-            message_bot = obtenir_score_api(nom_equipe=equipe)
-        except Exception:
-            message_bot = "❌ Une erreur est survenue lors de la recherche du score via l’API."
-
+    # Détection de requête ouverte ou généraliste
+    if any(mot in question_clean.lower() for mot in ["cherche", "trouve", "résultat", "score", "infos sur", "actualités", "qui est", "que signifie", "qu'est-ce que"]):
+        message_bot = recherche_web_duckduckgo(question_clean)
 
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [
