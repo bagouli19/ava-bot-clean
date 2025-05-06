@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
 def obtenir_score_bing(equipe: str) -> str:
     try:
@@ -12,18 +13,17 @@ def obtenir_score_bing(equipe: str) -> str:
         response = requests.get(url, headers=headers, timeout=5)
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Recherche du score dans les résumés de Bing
+        # Recherche dans les résumés visibles
         cards = soup.find_all("li", class_="b_algo")
-
         for card in cards:
-            texte = card.get_text()
-            if " - " in texte and any(char.isdigit() for char in texte):
-                lignes = texte.split("\n")
-                for ligne in lignes:
-                    if " - " in ligne and any(char.isdigit() for char in ligne):
-                        return f"📊 Résultat trouvé (Bing) : {ligne.strip()}"
+            texte = card.get_text(separator="\n")
+            lignes = texte.split("\n")
+            for ligne in lignes:
+                if re.search(r"\b\d{1,2}\s*-\s*\d{1,2}\b", ligne):
+                    return f"📊 Score détecté : {ligne.strip()}"
 
-        return f"❌ Aucun score détecté pour {equipe.capitalize()} sur Bing."
+        return f"❌ Aucun score lisible détecté pour {equipe.capitalize()}."
     except Exception as e:
         return f"❌ Erreur (bing_scraper) : {e}"
+
 
