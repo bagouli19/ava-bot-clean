@@ -794,9 +794,8 @@ SALUTATIONS_COURANTES = {
 # On normalise les clés une seule fois
 SALUTATIONS_CLEAN = {nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()}
 
-def repondre_salutation(question: str) -> Optional[str]:
-    question_clean = nettoyer_texte(question)
-    return SALUTATIONS_CLEAN.get(question_clean, None)
+def repondre_salutation(question_clean: str) -> Optional[str]:
+    return SALUTATIONS_CLEAN.get(question_clean)
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
