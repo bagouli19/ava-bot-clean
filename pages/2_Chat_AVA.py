@@ -14,7 +14,7 @@ import difflib
 import numpy as np
 import sys
 sys.path.append(os.path.abspath(".."))
-from knowledge_base.base_de_langage import base_langage
+from knowledge_base.base_de_langage import SALUTATIONS_CLEAN
 from modules.openai_utils import repondre_openai
 
 print("Nombre de questions chargées :", len(base_langage))
@@ -1521,9 +1521,9 @@ def trouver_reponse(question: str, model) -> str:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    # Étape 2 : Salutations courantes
+    # Étape 1 : Vérifie si la question correspond à une salutation connue
     if question_clean in SALUTATIONS_CLEAN:
-        return SALUTATIONS_CLEAN[question_clean]
+       return SALUTATIONS_CLEAN[question_clean]
 
     # 3️⃣ Modules spéciaux
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
