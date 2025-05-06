@@ -12,14 +12,19 @@ def obtenir_score_google(equipe: str) -> str:
         response = requests.get(url, headers=headers, timeout=5)
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Recherche dans les blocs d'infos Google
-        score_bloc = soup.find_all("div", class_="BNeawe deIvCb AP7Wnd")
-        if score_bloc:
-            for bloc in score_bloc:
-                texte = bloc.get_text()
-                if " - " in texte and any(c.isdigit() for c in texte):
-                    return f"📊 Dernier résultat trouvé : {texte.strip()}"
+        score_blocks = soup.find_all("div", class_="BNeawe tAd8D AP7Wnd")
 
-        return "Je n’ai pas trouvé de score récent pour cette équipe sur Google."
+        for block in score_blocks:
+            texte = block.get_text()
+            if " - " in texte and any(char.isdigit() for char in texte):
+                return f"📊 Résultat trouvé : {texte.strip()}"
+
+        titles = soup.find_all("div", class_="BNeawe s3v9rd AP7Wnd")
+        for title in titles:
+            texte = title.get_text()
+            if " - " in texte and any(char.isdigit() for char in texte):
+                return f"📊 Résultat (titre) : {texte.strip()}"
+
+        return f"❌ Aucun score récent trouvé pour {equipe.capitalize()}."
     except Exception as e:
-        return "❌ Erreur lors de la récupération du score depuis Google."
+        return f"❌ Erreur (score_scraper) : {e}"
