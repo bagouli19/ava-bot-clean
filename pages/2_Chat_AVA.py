@@ -1459,20 +1459,6 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 def nettoyer_texte(text: str) -> str:
     return text.lower().strip()
 
-# Liste de réponses nulles ou trop génériques à filtrer
-reponses_nulles = [
-    "🌍 il y a actuellement 195 pays reconnus dans le monde.",
-    "🌙 les chauves-souris, hiboux ou encore félins sont actifs principalement la nuit.",
-    "💉 le premier vaccin contre la variole a été développé par edward jenner en 1796.",
-    "🧮 un algorithme est une suite d’instructions permettant de résoudre un problème ou d’effectuer une tâche de manière logique.",
-]
-
-def est_reponse_vide_ou_generique(reponse: str) -> bool:
-    if not reponse or not isinstance(reponse, str):
-        return True
-    texte = reponse.lower().strip()
-    return len(texte.split()) < 8 or texte in reponses_nulles
-
 # Fonction d'appel à l'API OpenAI
 def repondre_openai(prompt: str) -> str:
     try:
@@ -1493,36 +1479,30 @@ def repondre_openai(prompt: str) -> str:
 
 # Fonction principale de traitement
 def trouver_reponse(question: str, model) -> str:
+    # Préparation de la question
     question_raw = question.strip()
     question_clean = nettoyer_texte(question_raw)
 
-    # gestion de "force_gpt" pour bypass complet
+    # 1️⃣ Cas spécial: force bypass base culturelle
     if "force_gpt" in question_clean:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    # mémorisation et interactions
-    incrementer_interactions()
-    ajuster_affection(question_raw)
-    memoire_court_terme['dernier_sujet'] = question_clean.split()[0] if question_clean else ''
-
-    # 1️⃣ Salutations
+    # 2️⃣ Salutations
     salut = repondre_salutation(question_clean)
     if salut:
         return salut.strip()
 
-    # 2️⃣ Modules spéciaux (analyse, météo, rappels…)
+    # 3️⃣ Modules spéciaux (analyse, météo, rappels…)
     special = gerer_modules_speciaux(question_raw, question_clean, model)
     if special:
         return special.strip()
 
-    # 3️⃣ Correspondance exacte dans la base culturelle
+    # 4️⃣ Correspondance exacte dans la base culturelle
     if question_clean in base_culture_nettoyee:
-        resp = base_culture_nettoyee[question_clean]
-        if not est_reponse_vide_ou_generique(resp):
-            return resp.strip()
+        return base_culture_nettoyee[question_clean].strip()
 
-    # 4️⃣ Fuzzy matching strict
+    # 5️⃣ Fuzzy matching strict
     match = difflib.get_close_matches(
         question_clean,
         list(base_culture_nettoyee.keys()),
@@ -1530,11 +1510,9 @@ def trouver_reponse(question: str, model) -> str:
         cutoff=0.95
     )
     if match:
-        resp = base_culture_nettoyee[match[0]]
-        if not est_reponse_vide_ou_generique(resp):
-            return resp.strip()
+        return base_culture_nettoyee[match[0]].strip()
 
-    # 5️⃣ Recherche sémantique avec BERT
+    # 6️⃣ Recherche sémantique avec BERT
     try:
         keys = list(base_culture_nettoyee.keys())
         q_emb = model.encode([question_clean])
@@ -1542,17 +1520,17 @@ def trouver_reponse(question: str, model) -> str:
         sims = cosine_similarity(q_emb, keys_emb)[0]
         best_idx, best_score = max(enumerate(sims), key=lambda x: x[1])
         if best_score > 0.7:
-            resp = base_culture_nettoyee[keys[best_idx]]
-            if not est_reponse_vide_ou_generique(resp):
-                return resp.strip()
-    except Exception as e:
-        st.warning(f"⚠️ Erreur BERT, on passe au fallback : {e}")
+            return base_culture_nettoyee[keys[best_idx]].strip()
+    except Exception:
+        # on ne bloque pas si BERT échoue
+        pass
 
-    # 6️⃣ Fallback automatique vers OpenAI
-    response_gpt = repondre_openai(question_clean)
-    if response_gpt and not est_reponse_vide_ou_generique(response_gpt):
-        return response_gpt.strip()
-
+    # 7️⃣ Fallback automatique vers OpenAI
+    reponse = repondre_openai(question_clean)
+    if reponse:
+        return reponse
+    
+    # 8️⃣ Aucun résultat
     return "🤔 Je n'ai pas de réponse précise."
 
 # --- Modules personnalisés (à enrichir) ---
