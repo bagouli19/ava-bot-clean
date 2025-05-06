@@ -1525,19 +1525,14 @@ def trouver_reponse(question: str, model) -> str:
         prompt = question_clean.replace("force_gpt", "").strip()
         return repondre_openai(prompt)
 
-    print("📌 Étape : salutation")
+    # 1️⃣ Salutations très courantes
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
         return reponse_salut
 
-    print("📌 Étape : base langage")
-    try:
-        from knowledge_base.base_de_langage import base_langage
-        base_language_nettoyee = { nettoyer_texte(k): v for k, v in base_langage.items() }
-        if question_clean in base_language_nettoyee:
-            return base_language_nettoyee[question_clean]
-    except Exception as e:
-        print(f"⚠️ Erreur base_langage : {e}")
+    # 2️⃣ Phrases classiques dans la base de langage
+    if question_clean in base_language_nettoyee:
+        return base_language_nettoyee[question_clean]
 
     # 4️⃣ Modules spéciaux
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
