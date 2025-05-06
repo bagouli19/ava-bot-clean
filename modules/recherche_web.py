@@ -1,37 +1,28 @@
+import requests
+from modules.wikipedia_fallback import recherche_wikipedia  # Si tu utilises un fallback, sinon retire cette ligne
+
 def recherche_web_duckduckgo(question: str) -> str:
-    import requests, wikipedia
-    wikipedia.set_lang("fr")
-
-    params = {
-        "q": question,
-        "format": "json",
-        "no_html": 1,
-        "skip_disambig": 1
-    }
-
     try:
+        params = {
+            "q": question,
+            "format": "json",
+            "no_html": 1,
+            "skip_disambig": 1
+        }
         response = requests.get("https://api.duckduckgo.com/", params=params)
         data = response.json()
 
         abstract = data.get("AbstractText", "").strip()
         url = data.get("AbstractURL", "").strip()
 
-        # 🔁 Si réponse vide → fallback Wikipédia amélioré
-        if not abstract or len(abstract) < 30:
-            resultats = wikipedia.search(question)
-            if resultats:
-                for titre in resultats:
-                    try:
-                        page = wikipedia.page(titre)
-                        resume = wikipedia.summary(page.title, sentences=2)
-                        return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
-                    except:
-                        continue
-            return "❌ Je n’ai trouvé aucune information pertinente sur ce sujet."
+        if abstract and len(abstract) > 30:
+            return f"🔍 J’ai trouvé ça pour vous :\n\n{abstract}\n\n🔗 {url}" if url else f"🔍 J’ai trouvé ça pour vous :\n\n{abstract}"
 
-        return f"🌐 Résultat DuckDuckGo : {abstract}\n\n🔗 {url}" if url else f"🌐 Résultat DuckDuckGo : {abstract}"
+        # Si trop court ou vide → utiliser Wikipédia si dispo
+        return recherche_wikipedia(question)
 
     except Exception as e:
-        return f"❌ Erreur pendant la recherche web : {e}"
+        return f"❌ Erreur pendant la recherche DuckDuckGo : {e}"
+
 
 
