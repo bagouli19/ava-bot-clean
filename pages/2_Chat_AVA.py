@@ -1470,7 +1470,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # Détection de requête ouverte ou généraliste
     print("✅ gerer_modules_speciaux appelée :", question_clean)
     
-     # ⚽️ Détection de recherche de score de football
+    # ⚽️ Détection de recherche de score de football
     if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
         print("✅ Recherche de score de football détectée :", question_clean)
         from modules.recherche_web import recherche_score_football
