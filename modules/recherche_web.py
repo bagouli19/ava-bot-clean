@@ -16,7 +16,8 @@ def recherche_web_bing(question: str) -> str:
             message = "🔍 J'ai trouvé ça pour vous :\n\n"
             for i, resultat in enumerate(resultats[:3]):  # Limite à 3 résultats
                 titre = resultat.find("h2").get_text(strip=True) if resultat.find("h2") else "Titre indisponible"
-                lien = resultat.find("a")["href"] if resultat.find("a") else "Lien indisponible"
+                lien = resultat.find("a")["href"] if resultat.find("a") and resultat.find("a").has_attr("href") else "Lien indisponible"
+                
                 message += f"{i+1}. 📌 {titre}\n🔗 {lien}\n\n"
 
             return message.strip()
@@ -25,6 +26,7 @@ def recherche_web_bing(question: str) -> str:
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web Bing : {e}"
+
 
 
 
