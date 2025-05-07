@@ -14,9 +14,9 @@ def recherche_web_bing(question: str) -> str:
 
         if resultats:
             message = "🔍 J'ai trouvé ça pour vous (Bing) :\n\n"
-            for i, resultat in enumerate(resultats[:3]):  # Limite à 3 résultats
+            for i, resultat in enumerate(resultats[:3]):
                 titre = resultat.find("h2").get_text(strip=True) if resultat.find("h2") else "Titre indisponible"
-                lien = resultat.find("a")["href"] if resultat.find("a") and resultat.find("a").has_attr("href") else "Lien indisponible"
+                lien = resultat.find("a")["href"] if resultat.find("a") else "Lien indisponible"
                 message += f"{i+1}. 📌 {titre}\n🔗 {lien}\n\n"
 
             return message.strip()
@@ -25,7 +25,6 @@ def recherche_web_bing(question: str) -> str:
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web Bing : {e}"
-
 
 
 def recherche_web_google(question: str) -> str:
@@ -37,7 +36,7 @@ def recherche_web_google(question: str) -> str:
         response = requests.get(url, headers=headers, timeout=5)
         
         soup = BeautifulSoup(response.text, "html.parser")
-        resultats = soup.find_all("div", class_="tF2Cxc")  # Google résultat standard
+        resultats = soup.find_all("div", class_="tF2Cxc")
 
         if resultats:
             message = "🔍 J'ai trouvé ça pour vous (Google) :\n\n"
@@ -97,24 +96,22 @@ def recherche_score_football(equipe: str) -> str:
         return f"❌ Erreur pendant la recherche des scores : {e}"
 
 def recherche_web_universelle(question: str) -> str:
+    print("✅ Recherche universelle lancée :", question)
+    
     # 🌐 Priorité 1 : Bing
-    print("✅ Recherche avec Bing en priorité.")
     result_bing = recherche_web_bing(question)
     if "🤷" not in result_bing and "❌" not in result_bing:
         return result_bing
 
     # 🌐 Priorité 2 : Google si Bing échoue
-    print("✅ Bing a échoué, tentative avec Google.")
     result_google = recherche_web_google(question)
     if "🤷" not in result_google and "❌" not in result_google:
         return result_google
 
     # 🌐 Priorité 3 : Wikipédia si Bing et Google échouent
-    print("✅ Google a échoué, tentative avec Wikipédia.")
     result_wikipedia = recherche_web_wikipedia(question)
     if "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
         return result_wikipedia
 
     # ❌ Si les trois échouent
     return "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
-
