@@ -1473,18 +1473,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
 
     # Détection de requête ouverte ou généraliste
-    print("✅ gerer_modules_speciaux appelée :", question_clean)
-    
-    # ⚽️ Détection de recherche de score de football
-    if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
-        print("✅ Recherche de score de football détectée :", question_clean)
-        from modules.recherche_web import recherche_score_football
-        equipe = question_clean.replace("score", "").replace("résultat", "").replace("a gagné", "").strip()
-        message_bot = recherche_score_football(equipe)
-        print("✅ Résultat score de football :", message_bot)
-        return message_bot
-
-    
+    print("✅ gerer_modules_speciaux appelée :", question_clean)   
     # 🔍 Bloc prioritaire : recherche universelle
     if any(mot in question_clean.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition", "dernières nouvelles", "actualités sur", "infos sur"]):
         print("✅ Recherche universelle détectée pour :", question_clean)
@@ -1519,7 +1508,15 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         except Exception as e:
             print(f"❌ Erreur pendant la recherche universelle : {e}")
             message_bot = "❌ Une erreur est survenue pendant la recherche."
-
+            
+    # ⚽️ Détection de recherche de score de football
+    if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
+        print("✅ Recherche de score de football détectée :", question_clean)
+        from modules.recherche_web import recherche_score_football
+        equipe = question_clean.replace("score", "").replace("résultat", "").replace("a gagné", "").strip()
+        message_bot = recherche_score_football(equipe)
+        print("✅ Résultat score de football :", message_bot)
+       
         return message_bot
 
 
