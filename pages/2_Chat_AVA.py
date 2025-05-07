@@ -51,11 +51,9 @@ from dotenv import load_dotenv
 # ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
-
-# Chargement des clés API Google depuis les secrets de Streamlit Cloud
 # Chargement des clés API Google depuis les secrets de Streamlit
-GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
-GOOGLE_SEARCH_ENGINE_ID = st.secrets.get("GOOGLE_SEARCH_ENGINE_ID")
+GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY", None)
+GOOGLE_SEARCH_ENGINE_ID = st.secrets.get("GOOGLE_SEARCH_ENGINE_ID", None)
 
 # Vérification des clés API
 if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
