@@ -1504,11 +1504,11 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
     
     if "recherche" in question_clean.lower() or "google" in question_clean.lower():
-    requete = question_clean.replace("recherche", "").replace("google", "").strip()
-    if len(requete) > 0:
-        message_bot = rechercher_sur_google(requete)
-    else:
-        message_bot = "Dites-moi ce que vous souhaitez que je recherche sur Google."
+        requete = question_clean.replace("recherche", "").replace("google", "").strip()
+        if len(requete) > 0:
+            message_bot = rechercher_sur_google(requete)
+        else:
+            message_bot = "Dites-moi ce que vous souhaitez que je recherche sur Google."
 
     # Détection de requête ouverte ou généraliste
     print("✅ gerer_modules_speciaux appelée :", question_clean)   
