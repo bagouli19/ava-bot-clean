@@ -52,14 +52,12 @@ from dotenv import load_dotenv
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
 
-# Charger les secrets depuis Streamlit Cloud (API Google)
-try:
-    GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
-    GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
-except KeyError:
+# Chargement des clés API Google depuis les secrets de Streamlit Cloud
+GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
+GOOGLE_SEARCH_ENGINE_ID = st.secrets.get("GOOGLE_SEARCH_ENGINE_ID")
+
+if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
     st.error("Les clés API Google ne sont pas configurées correctement.")
-    GOOGLE_API_KEY = None
-    GOOGLE_SEARCH_ENGINE_ID = None
 
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
@@ -1369,7 +1367,7 @@ def rechercher_sur_google(query):
     Fonction pour effectuer une recherche Google avec l'API Custom Search.
     """
     global GOOGLE_API_KEY, GOOGLE_SEARCH_ENGINE_ID
-    
+
     if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
         return "Erreur : Les clés API Google ne sont pas configurées."
 
@@ -1379,7 +1377,7 @@ def rechercher_sur_google(query):
             "key": GOOGLE_API_KEY,
             "cx": GOOGLE_SEARCH_ENGINE_ID,
             "q": query,
-            "num": 5  # Nombre de résultats (modifie si besoin)
+            "num": 5
         }
         response = requests.get(url, params=params)
         data = response.json()
