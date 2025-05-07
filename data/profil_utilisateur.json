@@ -17,7 +17,12 @@
       "taches": [],
       "rappels": []
     },
-    "taches": [],
+    "taches": [
+      {
+        "contenu": "mets dans ma liste aller au coiffeur",
+        "date": "2025-05-07"
+      }
+    ],
     "rappels": [
       {
         "contenu": "prendre mon rendez vous demain",
