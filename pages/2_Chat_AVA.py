@@ -33,6 +33,7 @@ import time
 import pyttsx3
 import wikipedia
 from modules.recherche_web import recherche_web_bing
+from bs4 import BeautifulSoup
 
 # — Modules internes
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
@@ -73,7 +74,6 @@ user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
 SCRIPT_DIR      = os.path.dirname(__file__)
 PROJECT_ROOT    = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
 sys.path.insert(0, os.path.join(PROJECT_ROOT, "knowledge_base"))
-sys.path.append(os.path.abspath(".."))  # Assure que "modules" est bien accessible
 
 DATA_DIR        = os.path.join(PROJECT_ROOT, "data")
 PROFILE_FILE    = os.path.join(DATA_DIR, f"profil_utilisateur_{user}.json")
@@ -1544,7 +1544,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             message_bot = "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
         
         return message_bot  # ✅ Le return est ici, dans la condition de recherche web
-        
+
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [
         "qui est", "qu est ce que", "c est quoi", "peux tu chercher", "peux tu trouver", "cherche",
