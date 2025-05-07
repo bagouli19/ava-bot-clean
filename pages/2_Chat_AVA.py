@@ -33,13 +33,12 @@ import time
 import pyttsx3
 from bs4 import BeautifulSoup
 from modules.recherche_web import (
-    recherche_web_universelle,
-    recherche_web_google,
     recherche_web_bing,
+    recherche_web_google,
     recherche_web_wikipedia,
-    recherche_web_google_news
+    recherche_web_google_news,
+    recherche_web_universelle
 )
-
 # — Modules internes
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
 from fonctions_chat   import obtenir_reponse_ava

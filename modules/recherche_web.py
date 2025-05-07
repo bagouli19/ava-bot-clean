@@ -101,31 +101,37 @@ def recherche_web_universelle(question: str) -> str:
         print("✅ Recherche de personnalité détectée.")
 
         # ✅ Étape 1 : Recherche avec Bing
-        print("✅ Recherche Bing en cours...")
+        print("✅ [1] Recherche Bing en cours pour :", question)
         result_bing = recherche_web_bing(question)
+        print("✅ [1] Résultat Bing brut :", result_bing)
+        
         if result_bing and "🤷" not in result_bing and "❌" not in result_bing:
-            print("✅ Résultat Bing :", result_bing)
+            print("✅ [1] Résultat Bing réussi.")
             return result_bing
         else:
-            print("❌ Bing a échoué ou n'a pas trouvé de résultat.")
+            print("❌ [1] Bing a échoué ou n'a pas trouvé de résultat.")
 
         # ✅ Étape 2 : Recherche avec Google
-        print("✅ Recherche Google en cours...")
+        print("✅ [2] Recherche Google en cours pour :", question)
         result_google = recherche_web_google(question)
+        print("✅ [2] Résultat Google brut :", result_google)
+        
         if result_google and "🤷" not in result_google and "❌" not in result_google:
-            print("✅ Résultat Google :", result_google)
+            print("✅ [2] Résultat Google réussi.")
             return result_google
         else:
-            print("❌ Google a échoué ou n'a pas trouvé de résultat.")
+            print("❌ [2] Google a échoué ou n'a pas trouvé de résultat.")
 
         # ✅ Étape 3 : Recherche avec Wikipédia
-        print("✅ Recherche Wikipédia en cours...")
+        print("✅ [3] Recherche Wikipédia en cours pour :", question)
         result_wikipedia = recherche_web_wikipedia(question)
+        print("✅ [3] Résultat Wikipédia brut :", result_wikipedia)
+        
         if result_wikipedia and "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
-            print("✅ Résultat Wikipédia :", result_wikipedia)
+            print("✅ [3] Résultat Wikipédia réussi.")
             return result_wikipedia
         else:
-            print("❌ Wikipédia a échoué ou n'a pas trouvé de résultat.")
+            print("❌ [3] Wikipédia a échoué ou n'a pas trouvé de résultat.")
 
         # ❌ Si toutes les sources échouent
         print("❌ Aucun résultat trouvé pour cette personnalité.")
@@ -133,38 +139,47 @@ def recherche_web_universelle(question: str) -> str:
 
     # ✅ Priorité 2 : Recherche d'actualités avec Google News
     if any(mot in question.lower() for mot in ["nouvelles", "actualités", "dernier", "dernière", "récent", "récentes"]):
-        print("✅ Recherche d'actualités détectée, utilisation de Google News.")
+        print("✅ [4] Recherche d'actualités détectée, utilisation de Google News.")
         result_news = recherche_web_google_news(question)
+        print("✅ [4] Résultat Google News brut :", result_news)
+        
         if result_news and "🤷" not in result_news and "❌" not in result_news:
-            print("✅ Résultat Google News :", result_news)
+            print("✅ [4] Résultat Google News réussi.")
             return result_news
         else:
-            print("❌ Google News a échoué ou n'a pas trouvé de résultat.")
+            print("❌ [4] Google News a échoué ou n'a pas trouvé de résultat.")
 
     # ✅ Priorité 3 : Recherche générale avec Bing
-    print("✅ Recherche générale Bing en cours...")
+    print("✅ [5] Recherche générale Bing en cours pour :", question)
     result_bing = recherche_web_bing(question)
+    print("✅ [5] Résultat Bing général brut :", result_bing)
+    
     if result_bing and "🤷" not in result_bing and "❌" not in result_bing:
-        print("✅ Résultat Bing :", result_bing)
+        print("✅ [5] Résultat Bing général réussi.")
         return result_bing
 
     # ✅ Priorité 4 : Recherche générale avec Google
-    print("✅ Recherche générale Google en cours...")
+    print("✅ [6] Recherche générale Google en cours pour :", question)
     result_google = recherche_web_google(question)
+    print("✅ [6] Résultat Google général brut :", result_google)
+    
     if result_google and "🤷" not in result_google and "❌" not in result_google:
-        print("✅ Résultat Google :", result_google)
+        print("✅ [6] Résultat Google général réussi.")
         return result_google
 
     # ✅ Priorité 5 : Recherche générale avec Wikipédia
-    print("✅ Recherche générale Wikipédia en cours...")
+    print("✅ [7] Recherche générale Wikipédia en cours pour :", question)
     result_wikipedia = recherche_web_wikipedia(question)
+    print("✅ [7] Résultat Wikipédia général brut :", result_wikipedia)
+    
     if result_wikipedia and "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
-        print("✅ Résultat Wikipédia :", result_wikipedia)
+        print("✅ [7] Résultat Wikipédia général réussi.")
         return result_wikipedia
 
     # ❌ Si aucune source ne fonctionne
     print("❌ Aucun résultat clair trouvé dans les sources.")
     return "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
+
 
 
 
