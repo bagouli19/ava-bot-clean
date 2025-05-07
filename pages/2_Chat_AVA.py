@@ -1489,8 +1489,19 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if any(mot in question_clean.lower() for mot in ["cherche", "trouve", "qui est", "qu'est-ce que", "définition", "infos", "nouvelle", "actualités"]):
         print("✅ Recherche web détectée :", question_clean)
         from modules.recherche_web import recherche_web_universelle
-        message_bot = recherche_web_universelle(question_clean)
-        print("✅ Résultat recherche universelle :", message_bot)
+        try:
+            print("✅ Appel à recherche_web_universelle...")
+            message_bot = recherche_web_universelle(question_clean)
+            print("✅ Résultat recherche universelle :", message_bot)
+        except Exception as e:
+            print(f"❌ Erreur dans recherche_web_universelle : {e}")
+            message_bot = "❌ Une erreur est survenue pendant la recherche web."
+
+        # 🔧 Sécurité : si aucun résultat n'est trouvé
+        if not message_bot or "🤷" in message_bot:
+            print("❌ Aucun résultat clair trouvé, fallback OpenAI")
+            message_bot = "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
+        
         return message_bot
 
 
