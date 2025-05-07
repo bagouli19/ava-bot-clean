@@ -33,6 +33,7 @@ import time
 import pyttsx3
 import wikipedia
 from modules.recherche_web import recherche_web_duckduckgo
+print("✅ recherche_web_duckduckgo chargée :", callable(recherche_web_duckduckgo))
 
 # — Modules internes
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
@@ -73,6 +74,7 @@ user = re.sub(r"[^a-zA-Z0-9]", "", st.session_state.utilisateur.strip().lower())
 SCRIPT_DIR      = os.path.dirname(__file__)
 PROJECT_ROOT    = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
 sys.path.insert(0, os.path.join(PROJECT_ROOT, "knowledge_base"))
+sys.path.append(os.path.abspath(".."))  # Assure que "modules" est bien accessible
 
 DATA_DIR        = os.path.join(PROJECT_ROOT, "data")
 PROFILE_FILE    = os.path.join(DATA_DIR, f"profil_utilisateur_{user}.json")
