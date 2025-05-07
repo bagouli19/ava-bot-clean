@@ -31,8 +31,14 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import time
 import pyttsx3
-from modules.recherche_web import recherche_web_universelle 
 from bs4 import BeautifulSoup
+from modules.recherche_web import (
+    recherche_web_universelle,
+    recherche_web_google,
+    recherche_web_bing,
+    recherche_web_wikipedia,
+    recherche_web_google_news
+)
 
 # — Modules internes
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
