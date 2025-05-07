@@ -1524,8 +1524,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     # Détection de requête ouverte ou généraliste
     if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
-    print("✅ Recherche score détectée :", question_clean)
-    message_bot = recherche_web_duckduckgo(question_clean)
+        print("✅ Recherche score détectée :", question_clean)
+        message_bot = recherche_web_duckduckgo(question_clean)
+        print("✅ Résultat recherche web : ", message_bot)
     
 
     print("✅ gerer_modules_speciaux appelée")
