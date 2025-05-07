@@ -1470,19 +1470,23 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # Détection de requête ouverte ou généraliste
     print("✅ gerer_modules_speciaux appelée :", question_clean)
     
-    # 🌐 Détection de recherche web intelligente
-    if any(mot in question_clean.lower() for mot in ["score", "résultat", "cherche", "trouve", "qui est", "qu'est-ce que", "définition", "infos", "nouvelle", "actualités"]):
-        print("✅ Recherche web détectée :", question_clean)
-        try:
-            from modules.recherche_web import recherche_web_universelle
-            print("✅ Appel recherche_web_universelle :")
-            message_bot = recherche_web_universelle(question_clean)
-            print("✅ Résultat recherche universelle :", message_bot)
-        except Exception as e:
-            print(f"❌ Erreur dans recherche_web_universelle : {e}")
-            message_bot = "❌ Une erreur est survenue pendant la recherche web."
-        
+     # ⚽️ Détection de recherche de score de football
+    if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
+        print("✅ Recherche de score de football détectée :", question_clean)
+        from modules.recherche_web import recherche_score_football
+        equipe = question_clean.replace("score", "").replace("résultat", "").replace("a gagné", "").strip()
+        message_bot = recherche_score_football(equipe)
+        print("✅ Résultat score de football :", message_bot)
         return message_bot
+
+    # 🌐 Détection de recherche web universelle
+    if any(mot in question_clean.lower() for mot in ["cherche", "trouve", "qui est", "qu'est-ce que", "définition", "infos", "nouvelle", "actualités"]):
+        print("✅ Recherche web détectée :", question_clean)
+        from modules.recherche_web import recherche_web_universelle
+        message_bot = recherche_web_universelle(question_clean)
+        print("✅ Résultat recherche universelle :", message_bot)
+        return message_bot
+
 
                                                                         
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
