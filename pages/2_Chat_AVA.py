@@ -1468,7 +1468,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
 
     # Détection de requête ouverte ou généraliste
-     print("✅ gerer_modules_speciaux appelée :", question_clean)
+    print("✅ gerer_modules_speciaux appelée :", question_clean)
     
     # 🌐 Détection de recherche web intelligente
     if any(mot in question_clean.lower() for mot in ["score", "résultat", "cherche", "trouve", "qui est", "qu'est-ce que", "définition", "infos", "nouvelle", "actualités"]):
