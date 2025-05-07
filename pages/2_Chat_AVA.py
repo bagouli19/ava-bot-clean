@@ -34,7 +34,6 @@ import pyttsx3
 from bs4 import BeautifulSoup
 from modules.recherche_web import (
     recherche_web_bing,
-    recherche_web_google,
     recherche_web_wikipedia,
     recherche_web_google_news,
     recherche_web_universelle
@@ -1478,21 +1477,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if any(mot in question_clean.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition", "dernières nouvelles", "actualités sur", "infos sur"]):
         print("✅ Recherche universelle détectée pour :", question_clean)
         try:
-            from modules.recherche_web import (
-                recherche_web_bing,
-                recherche_web_google,
-                recherche_web_wikipedia
-            )
-
             # ✅ Priorité 1 : Bing
             message_bot = recherche_web_bing(question_clean)
             print("✅ Résultat recherche Bing :", message_bot)
-
-            # ✅ Priorité 2 : Google si Bing échoue
-            if not message_bot or "🤷" in message_bot:
-                print("❌ Bing n'a pas trouvé, tentative Google")
-                message_bot = recherche_web_google(question_clean)
-                print("✅ Résultat recherche Google :", message_bot)
         
             # ✅ Priorité 3 : Wikipédia si les deux échouent
             if not message_bot or "🤷" in message_bot:
@@ -1508,7 +1495,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         except Exception as e:
             print(f"❌ Erreur pendant la recherche universelle : {e}")
             message_bot = "❌ Une erreur est survenue pendant la recherche."
-            
+
     # ⚽️ Détection de recherche de score de football
     if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
         print("✅ Recherche de score de football détectée :", question_clean)
