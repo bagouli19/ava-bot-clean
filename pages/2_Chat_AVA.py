@@ -1523,13 +1523,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
 
     # Détection de requête ouverte ou généraliste
-    if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
-        print("✅ Recherche score détectée :", question_clean)
-        message_bot = recherche_web_duckduckgo(question_clean)
-        print("✅ Résultat recherche web : ", message_bot)
-    
-
-    print("✅ gerer_modules_speciaux appelée")
+        print("✅ gerer_modules_speciaux appelée")
     
     if "cherche" in question_clean.lower() or "trouve" in question_clean.lower() or "résultat" in question_clean.lower():
         print("✅ Recherche web détectée :", question_clean)
@@ -1540,6 +1534,12 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             message_bot = "❌ Une erreur est survenue pendant la recherche web."
 
     return message_bot
+
+    if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
+        print("✅ Recherche score détectée :", question_clean)
+        message_bot = recherche_web_duckduckgo(question_clean)
+        print("✅ Résultat recherche web : ", message_bot)
+    
 
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [
