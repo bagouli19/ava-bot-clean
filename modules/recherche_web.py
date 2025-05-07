@@ -13,7 +13,7 @@ def recherche_web_bing(question: str) -> str:
         resultats = soup.find_all("li", class_="b_algo")
 
         if resultats:
-            message = "🔍 J'ai trouvé ça pour vous :\n\n"
+            message = "🔍 J'ai trouvé ça pour vous (Bing) :\n\n"
             for i, resultat in enumerate(resultats[:3]):  # Limite à 3 résultats
                 titre = resultat.find("h2").get_text(strip=True) if resultat.find("h2") else "Titre indisponible"
                 lien = resultat.find("a")["href"] if resultat.find("a") and resultat.find("a").has_attr("href") else "Lien indisponible"
@@ -21,7 +21,7 @@ def recherche_web_bing(question: str) -> str:
 
             return message.strip()
 
-        return "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
+        return "🤷 Je n'ai pas trouvé d'information claire sur Bing."
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web Bing : {e}"
@@ -39,17 +39,31 @@ def recherche_web_google(question: str) -> str:
         resultats = soup.find_all("h3")
 
         if resultats:
-            message = "🔍 J'ai trouvé ça pour vous :\n\n"
-            for i, resultat in enumerate(resultats[:3]):  # Limite à 3 résultats
+            message = "🔍 J'ai trouvé ça pour vous (Google) :\n\n"
+            for i, resultat in enumerate(resultats[:3]):
                 titre = resultat.get_text(strip=True)
                 message += f"{i+1}. 📌 {titre}\n"
 
             return message.strip()
 
-        return "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
+        return "🤷 Je n'ai pas trouvé d'information claire sur Google."
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web Google : {e}"
+
+
+def recherche_web_wikipedia(question: str) -> str:
+    try:
+        url = f"https://fr.wikipedia.org/wiki/{question.replace(' ', '_')}"
+        response = requests.get(url, timeout=5)
+        
+        if response.status_code == 200:
+            return f"🌐 J'ai trouvé un article Wikipédia pour vous :\n🔗 {url}"
+        else:
+            return "🤷 Je n'ai pas trouvé de page Wikipédia correspondante."
+
+    except Exception as e:
+        return f"❌ Erreur pendant la recherche sur Wikipédia : {e}"
 
 
 def recherche_web_universelle(question: str) -> str:
@@ -59,11 +73,18 @@ def recherche_web_universelle(question: str) -> str:
     if "🤷" not in result_bing and "❌" not in result_bing:
         return result_bing
 
-    # 🌐 Si Bing échoue, basculer sur Google
+    # 🌐 Priorité 2 : Google si Bing échoue
     print("✅ Bing a échoué, tentative avec Google.")
     result_google = recherche_web_google(question)
     if "🤷" not in result_google and "❌" not in result_google:
         return result_google
 
-    # ❌ Si les deux échouent
+    # 🌐 Priorité 3 : Wikipédia si Bing et Google échouent
+    print("✅ Google a échoué, tentative avec Wikipédia.")
+    result_wikipedia = recherche_web_wikipedia(question)
+    if "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
+        return result_wikipedia
+
+    # ❌ Si les trois échouent
     return "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
+

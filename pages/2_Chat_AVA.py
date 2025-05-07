@@ -31,7 +31,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import time
 import pyttsx3
-from modules.recherche_web import recherche_web_bing
+from modules.recherche_web import recherche_web_universelle 
 from bs4 import BeautifulSoup
 
 # — Modules internes
