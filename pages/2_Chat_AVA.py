@@ -1484,23 +1484,22 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         print("✅ Résultat score de football :", message_bot)
         return message_bot
 
-    # 🌐 Détection de recherche web universelle
-    if any(mot in question_clean.lower() for mot in ["cherche", "trouve", "qui est", "qu'est-ce que", "définition", "infos", "nouvelle", "actualités"]):
-        print("✅ Recherche web détectée :", question_clean)
-        from modules.recherche_web import recherche_web_universelle
+    # 🔍 Bloc prioritaire : recherche universelle
+    if any(mot in question_clean.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition"]):
+        print("✅ Recherche universelle détectée pour :", question_clean)
         try:
-            print("✅ Appel à recherche_web_universelle...")
+            # Utilisation directe de la recherche universelle (Bing en priorité)
             message_bot = recherche_web_universelle(question_clean)
             print("✅ Résultat recherche universelle :", message_bot)
         except Exception as e:
-            print(f"❌ Erreur dans recherche_web_universelle : {e}")
-            message_bot = "❌ Une erreur est survenue pendant la recherche web."
+            print(f"❌ Erreur pendant la recherche universelle : {e}")
+            message_bot = "❌ Une erreur est survenue pendant la recherche."
 
         # 🔧 Sécurité : si aucun résultat n'est trouvé
         if not message_bot or "🤷" in message_bot:
-            print("❌ Aucun résultat clair trouvé, fallback OpenAI")
-            message_bot = "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
-        
+            print("❌ Aucun résultat clair trouvé, fallback Bing")
+            message_bot = recherche_web_bing(question_clean)
+    
         return message_bot
 
 
