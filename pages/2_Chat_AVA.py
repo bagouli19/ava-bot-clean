@@ -1473,9 +1473,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-    elif question_clean.lower().startswith("cherche ") or question_clean.lower().startswith("recherche "):
-        recherche_term = question_clean[7:].strip()  # Supprime "cherche" ou "recherche"
-        message_bot = recherche_google(recherche_term)
+    if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
+        st.error("Les clés API Google ne sont pas correctement configurées.")
 
     # Détection de requête ouverte ou généraliste
     print("✅ gerer_modules_speciaux appelée :", question_clean)   
