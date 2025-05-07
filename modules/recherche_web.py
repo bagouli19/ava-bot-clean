@@ -27,30 +27,30 @@ def recherche_web_bing(question: str) -> str:
         return f"❌ Erreur pendant la recherche web Bing : {e}"
 
 
-def recherche_web_google(question: str) -> str:
+def recherche_web_google_news(question: str) -> str:
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
-        url = f"https://www.google.com/search?q={question.replace(' ', '+')}"
+        url = f"https://news.google.com/search?q={question.replace(' ', '+')}&hl=fr"
         response = requests.get(url, headers=headers, timeout=5)
         
         soup = BeautifulSoup(response.text, "html.parser")
-        resultats = soup.find_all("div", class_="tF2Cxc")
+        resultats = soup.find_all("article", limit=3)
 
         if resultats:
-            message = "🔍 J'ai trouvé ça pour vous (Google) :\n\n"
-            for i, resultat in enumerate(resultats[:3]):
-                titre = resultat.find("h3").get_text(strip=True) if resultat.find("h3") else "Titre indisponible"
-                lien = resultat.find("a")["href"] if resultat.find("a") else "Lien indisponible"
+            message = "📰 J'ai trouvé des actualités pour vous (Google News) :\n\n"
+            for i, article in enumerate(resultats):
+                titre = article.find("h3").get_text(strip=True) if article.find("h3") else "Titre indisponible"
+                lien = "https://news.google.com" + article.find("a")["href"][1:] if article.find("a") else "Lien indisponible"
                 message += f"{i+1}. 📌 {titre}\n🔗 {lien}\n\n"
 
             return message.strip()
 
-        return "🤷 Je n'ai pas trouvé d'information claire sur Google."
+        return "🤷 Je n'ai pas trouvé d'actualités claires sur Google News."
 
     except Exception as e:
-        return f"❌ Erreur pendant la recherche web Google : {e}"
+        return f"❌ Erreur pendant la recherche Google News : {e}"
 
 
 def recherche_web_wikipedia(question: str) -> str:
@@ -97,8 +97,15 @@ def recherche_score_football(equipe: str) -> str:
 
 def recherche_web_universelle(question: str) -> str:
     print("✅ Recherche universelle lancée :", question)
-    
-    # 🌐 Priorité 1 : Bing
+
+    # 🔎 Si la question concerne les actualités
+    if any(mot in question.lower() for mot in ["nouvelles", "actualités", "dernier", "dernière", "récent", "récentes"]):
+        print("✅ Recherche d'actualités détectée.")
+        result_google_news = recherche_web_google_news(question)
+        if "🤷" not in result_google_news and "❌" not in result_google_news:
+            return result_google_news
+
+    # 🌐 Priorité 1 : Bing pour les informations générales
     result_bing = recherche_web_bing(question)
     if "🤷" not in result_bing and "❌" not in result_bing:
         return result_bing
