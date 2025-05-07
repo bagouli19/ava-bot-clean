@@ -1480,14 +1480,15 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             print("✅ Résultat recherche Bing :", message_bot)
         except Exception as e:
             print(f"❌ Erreur dans recherche_web_bing : {e}")
-            message_bot = "❌ Une erreur est survenue pendant la recherche web."
+            message_bot = f"❌ Une erreur est survenue pendant la recherche web : {e}"
         
         # 🔧 Sécurité : si aucun résultat n'est trouvé
         if not message_bot or "🤷" in message_bot:
             print("❌ Aucun résultat clair trouvé, fallback OpenAI")
             message_bot = "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
         
-        return message_bot  # ✅ Le return est ici, dans la condition de recherche web
+        print("✅ Message final envoyé par AVA :", message_bot)
+        return message_bot
 
                                                                         
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
