@@ -32,8 +32,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import time
 import pyttsx3
 import wikipedia
-from modules.recherche_web import recherche_web_duckduckgo
-print("✅ recherche_web_duckduckgo chargée :", callable(recherche_web_duckduckgo))
+from modules.recherche_web import recherche_web_bing
 
 # — Modules internes
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
@@ -1527,21 +1526,20 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # Détection de requête ouverte ou généraliste
     print("✅ gerer_modules_speciaux appelée")
     
-    if "cherche" in question_clean.lower() or "trouve" in question_clean.lower() or "résultat" in question_clean.lower():
+    # 🌐 Détection de recherche web intelligente
+    if any(mot in question_clean.lower() for mot in ["score", "résultat", "cherche", "trouve", "qui est", "qu'est-ce que", "définition", "infos", "nouvelle", "actualités"]):
         print("✅ Recherche web détectée :", question_clean)
         try:
-            message_bot = recherche_web_duckduckgo(question_clean)
+            from modules.recherche_web import recherche_web_bing
+            message_bot = recherche_web_bing(question_clean)
         except Exception as e:
-            print(f"❌ Erreur dans recherche_web_duckduckgo : {e}")
+            print(f"❌ Erreur dans recherche_web_bing : {e}")
             message_bot = "❌ Une erreur est survenue pendant la recherche web."
 
-    return message_bot
-
-    if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
-        print("✅ Recherche score détectée :", question_clean)
-        message_bot = recherche_web_duckduckgo(question_clean)
-        print("✅ Résultat recherche web : ", message_bot)
+        return message_bot
     
+    # 📝 Si aucune recherche web détectée, retour par défaut
+    return None
 
     # 🔍 Bloc prioritaire : recherche web ou Wikipédia
     mots_web = [

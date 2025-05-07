@@ -1,26 +1,34 @@
 import requests
+from bs4 import BeautifulSoup
 
-def recherche_web_duckduckgo(question: str) -> str:
+def recherche_web_bing(question: str) -> str:
     try:
-        params = {
-            "q": question,
-            "format": "json",
-            "no_html": 1,
-            "skip_disambig": 1
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
-        response = requests.get("https://api.duckduckgo.com/", params=params)
-        data = response.json()
+        url = f"https://www.bing.com/search?q={question.replace(' ', '+')}"
+        response = requests.get(url, headers=headers, timeout=5)
+        
+        soup = BeautifulSoup(response.text, "html.parser")
+        resultats = soup.find_all("li", class_="b_algo")  # Résultats de Bing
 
-        abstract = data.get("AbstractText", "").strip()
-        url = data.get("AbstractURL", "").strip()
+        if resultats:
+            message = "🔍 J'ai trouvé ça pour vous :\n\n"
+            for i, resultat in enumerate(resultats[:3]):  # Limite à 3 résultats
+                titre = resultat.find("h2").get_text(strip=True) if resultat.find("h2") else "Titre indisponible"
+                lien = resultat.find("a")["href"] if resultat.find("a") else "Lien indisponible"
+                message += f"{i+1}. 📌 {titre}\n🔗 {lien}\n\n"
 
-        if abstract and len(abstract) > 30:
-            return f"🔍 J’ai trouvé ça pour vous :\n\n{abstract}\n\n🔗 {url}" if url else f"🔍 J’ai trouvé ça pour vous :\n\n{abstract}"
+            return message.strip()
 
-        return "🤷 Je n'ai pas trouvé d'information claire, reformulez si besoin."
+        return "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
 
     except Exception as e:
-        return f"❌ Erreur DuckDuckGo : {e}"
+        return f"❌ Erreur pendant la recherche web Bing : {e}"
+
+
+
+
 
 
 
