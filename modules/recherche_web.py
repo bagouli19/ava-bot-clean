@@ -66,6 +66,29 @@ def recherche_web_wikipedia(question: str) -> str:
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche sur Wikipédia : {e}"
+        
+def recherche_score_football(equipe: str) -> str:
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        }
+        
+        # Recherche directe sur Flashscore
+        url_flashscore = f"https://www.flashscore.fr/recherche/?q={equipe.replace(' ', '+')}"
+        response_flash = requests.get(url_flashscore, headers=headers, timeout=5)
+        if response_flash.status_code == 200:
+            return f"⚽ Résultats sur Flashscore :\n🔗 {url_flashscore}"
+
+        # Recherche sur Sofascore si Flashscore échoue
+        url_sofascore = f"https://www.sofascore.com/fr/recherche/{equipe.replace(' ', '-')}"
+        response_sofa = requests.get(url_sofascore, headers=headers, timeout=5)
+        if response_sofa.status_code == 200:
+            return f"⚽ Résultats sur Sofascore :\n🔗 {url_sofascore}"
+
+        return "🤷 Je n'ai pas trouvé d'information sur les scores de cette équipe."
+
+    except Exception as e:
+        return f"❌ Erreur pendant la recherche des scores : {e}"
 
 
 def recherche_web_universelle(question: str) -> str:
