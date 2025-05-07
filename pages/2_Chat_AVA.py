@@ -53,11 +53,14 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 
 
 # Chargement des clés API Google depuis les secrets de Streamlit Cloud
+# Chargement des clés API Google depuis les secrets de Streamlit
 GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
 GOOGLE_SEARCH_ENGINE_ID = st.secrets.get("GOOGLE_SEARCH_ENGINE_ID")
 
+# Vérification des clés API
 if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
-    st.error("Les clés API Google ne sont pas configurées correctement.")
+    st.error("Erreur : Les clés API Google ne sont pas configurées correctement.")
+    raise ValueError("Les clés API Google ne sont pas configurées correctement.")
 
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
@@ -1362,25 +1365,24 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-def rechercher_sur_google(question):
-    if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
-        return "Erreur : Les clés API Google ne sont pas configurées."
+import requests
 
-    url = f"https://www.googleapis.com/customsearch/v1?q={question}&key={GOOGLE_API_KEY}&cx={GOOGLE_SEARCH_ENGINE_ID}"
+def rechercher_sur_google(query):
+    if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
+        return "Erreur : Les clés API Google ne sont pas configurées correctement."
+
+    url = f"https://www.googleapis.com/customsearch/v1?q={query}&key={GOOGLE_API_KEY}&cx={GOOGLE_SEARCH_ENGINE_ID}"
     try:
         response = requests.get(url)
         data = response.json()
         if "items" in data:
-            resultats = []
-            for item in data["items"][:3]:  # Limite à 3 résultats
-                titre = item.get("title")
-                lien = item.get("link")
-                resultats.append(f"{titre}\n{lien}")
-            return "\n\n".join(resultats)
+            results = [item["title"] + ": " + item["link"] for item in data["items"][:3]]
+            return "\n".join(results)
         else:
             return "Aucun résultat trouvé."
     except Exception as e:
         return f"Erreur lors de la recherche Google : {str(e)}"
+
 
 import streamlit as st
 import openai
