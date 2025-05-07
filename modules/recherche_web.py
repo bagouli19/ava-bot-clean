@@ -27,6 +27,7 @@ def recherche_web_bing(question: str) -> str:
         return f"❌ Erreur pendant la recherche web Bing : {e}"
 
 
+
 def recherche_web_google(question: str) -> str:
     try:
         headers = {
@@ -36,13 +37,14 @@ def recherche_web_google(question: str) -> str:
         response = requests.get(url, headers=headers, timeout=5)
         
         soup = BeautifulSoup(response.text, "html.parser")
-        resultats = soup.find_all("h3")
+        resultats = soup.find_all("div", class_="tF2Cxc")  # Google résultat standard
 
         if resultats:
             message = "🔍 J'ai trouvé ça pour vous (Google) :\n\n"
             for i, resultat in enumerate(resultats[:3]):
-                titre = resultat.get_text(strip=True)
-                message += f"{i+1}. 📌 {titre}\n"
+                titre = resultat.find("h3").get_text(strip=True) if resultat.find("h3") else "Titre indisponible"
+                lien = resultat.find("a")["href"] if resultat.find("a") else "Lien indisponible"
+                message += f"{i+1}. 📌 {titre}\n🔗 {lien}\n\n"
 
             return message.strip()
 
