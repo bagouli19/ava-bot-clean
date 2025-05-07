@@ -31,7 +31,6 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import time
 import pyttsx3
-import wikipedia
 from modules.recherche_web import recherche_web_bing
 from bs4 import BeautifulSoup
 
@@ -1350,61 +1349,6 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-import requests
-import wikipedia
-
-# ─────────────────────────────────────────────
-# 🌍 Configuration générale
-# ─────────────────────────────────────────────
-wikipedia.set_lang("fr")
-
-# ─────────────────────────────────────────────
-# 🔍 Fonction centrale pour résumés Wikipédia
-# ─────────────────────────────────────────────
-def obtenir_resume_wikipedia_depuis_titre(titre_wiki: str) -> str:
-    try:
-        page = wikipedia.page(title=titre_wiki, auto_suggest=False)
-        resume = wikipedia.summary(page.title, sentences=2, auto_suggest=False)
-        return f"📚 Résumé Wikipédia : {resume}\n\n🔗 [Lire plus sur Wikipédia]({page.url})"
-    except Exception as e:
-        return f"❌ Erreur Wikipédia : Impossible de charger la page \"{titre_wiki}\" → {e}"
-
-# ─────────────────────────────────────────────
-# 📘 Recherche Wikipédia améliorée
-# ─────────────────────────────────────────────
-def recherche_wikipedia(question: str) -> str:
-    try:
-        question_clean = question.lower().strip()
-
-        sujets_forces = {
-            "blockchain": "Blockchain",
-            "tesla": "Tesla Inc.",
-            "alan turing": "Alan Turing",
-            "le soleil": "Soleil",
-            "napoléon": "Napoléon Ier",
-            "intelligence artificielle": "Intelligence artificielle",
-            "isaac newton": "Isaac Newton",
-            "internet": "Internet",
-            "climat": "Changement climatique",
-        }
-
-        for mot, titre_precis in sujets_forces.items():
-            if mot in question_clean:
-                return obtenir_resume_wikipedia_depuis_titre(titre_precis)
-
-        resultats = wikipedia.search(question_clean)
-        if not resultats:
-            return "🔍 Wikipédia n’a trouvé aucun résultat pertinent."
-
-        for titre in resultats:
-            if any(mot in titre.lower() for mot in question_clean.split()):
-                return obtenir_resume_wikipedia_depuis_titre(titre)
-
-        return "❌ Aucun résultat Wikipédia pertinent trouvé malgré la recherche."
-
-    except Exception as e:
-        return f"❌ Erreur inattendue Wikipédia : {e}"
-
 
 import streamlit as st
 import openai
@@ -1545,23 +1489,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         
         return message_bot  # ✅ Le return est ici, dans la condition de recherche web
 
-    # 🔍 Bloc prioritaire : recherche web ou Wikipédia
-    mots_web = [
-        "qui est", "qu est ce que", "c est quoi", "peux tu chercher", "peux tu trouver", "cherche",
-        "recherche web", "infos sur", "informations sur", "explique moi", "trouve"
-    ]
-
-    if any(kw in question_clean for kw in mots_web):
-        st.info("🔎 Je cherche des infos en ligne, un instant...")
-        try:
-            from modules.recherche_web import recherche_web_duckduckgo
-            reponse_web = recherche_web_duckduckgo(question_clean)
-            if reponse_web and "❌" not in reponse_web and "aucun résultat" not in reponse_web.lower():
-                return reponse_web
-            else:
-                return "🤷 Je n'ai rien trouvé de vraiment pertinent cette fois, mais je continue à apprendre !"
-        except Exception as e:
-            return f"❌ Erreur lors de la recherche web : {e}"
                                                                         
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
