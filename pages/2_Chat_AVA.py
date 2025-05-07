@@ -53,11 +53,13 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 
 
 # Charger les secrets depuis Streamlit Cloud (API Google)
-if "GOOGLE_API_KEY" in st.secrets and "GOOGLE_SEARCH_ENGINE_ID" in st.secrets:
+try:
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
-else:
+except KeyError:
     st.error("Les clés API Google ne sont pas configurées correctement.")
+    GOOGLE_API_KEY = None
+    GOOGLE_SEARCH_ENGINE_ID = None
 
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
@@ -1366,6 +1368,8 @@ def rechercher_sur_google(query):
     """
     Fonction pour effectuer une recherche Google avec l'API Custom Search.
     """
+    global GOOGLE_API_KEY, GOOGLE_SEARCH_ENGINE_ID
+    
     if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
         return "Erreur : Les clés API Google ne sont pas configurées."
 
@@ -1390,7 +1394,6 @@ def rechercher_sur_google(query):
             return "Désolé, je n'ai pas trouvé de résultat pertinent sur Google."
     except Exception as e:
         return f"Erreur lors de la recherche Google : {str(e)}"
-
 
 import streamlit as st
 import openai
