@@ -1532,6 +1532,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         try:
             from modules.recherche_web import recherche_web_bing
             message_bot = recherche_web_bing(question_clean)
+            print("✅ Résultat recherche Bing :", message_bot)
         except Exception as e:
             print(f"❌ Erreur dans recherche_web_bing : {e}")
             message_bot = "❌ Une erreur est survenue pendant la recherche web."

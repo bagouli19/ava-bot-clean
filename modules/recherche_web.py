@@ -10,7 +10,7 @@ def recherche_web_bing(question: str) -> str:
         response = requests.get(url, headers=headers, timeout=5)
         
         soup = BeautifulSoup(response.text, "html.parser")
-        resultats = soup.find_all("li", class_="b_algo")  # Résultats de Bing
+        resultats = soup.find_all("li", class_="b_algo")
 
         if resultats:
             message = "🔍 J'ai trouvé ça pour vous :\n\n"
@@ -25,6 +25,7 @@ def recherche_web_bing(question: str) -> str:
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche web Bing : {e}"
+
 
 
 
