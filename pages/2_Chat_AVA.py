@@ -56,9 +56,6 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
 
-if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
-    st.error("Les clés API Google ne sont pas configurées correctement.")
-
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
@@ -1362,34 +1359,23 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-def rechercher_sur_google(query):
-    """
-    Fonction pour effectuer une recherche Google avec l'API Custom Search.
-    """
-    global GOOGLE_API_KEY, GOOGLE_SEARCH_ENGINE_ID
-
+def rechercher_sur_google(question):
     if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
         return "Erreur : Les clés API Google ne sont pas configurées."
 
+    url = f"https://www.googleapis.com/customsearch/v1?q={question}&key={GOOGLE_API_KEY}&cx={GOOGLE_SEARCH_ENGINE_ID}"
     try:
-        url = "https://www.googleapis.com/customsearch/v1"
-        params = {
-            "key": GOOGLE_API_KEY,
-            "cx": GOOGLE_SEARCH_ENGINE_ID,
-            "q": query,
-            "num": 5
-        }
-        response = requests.get(url, params=params)
+        response = requests.get(url)
         data = response.json()
-
         if "items" in data:
-            resultats = [
-                f"{item['title']} : {item['link']}"
-                for item in data["items"]
-            ]
-            return "\n".join(resultats)
+            resultats = []
+            for item in data["items"][:3]:  # Limite à 3 résultats
+                titre = item.get("title")
+                lien = item.get("link")
+                resultats.append(f"{titre}\n{lien}")
+            return "\n\n".join(resultats)
         else:
-            return "Désolé, je n'ai pas trouvé de résultat pertinent sur Google."
+            return "Aucun résultat trouvé."
     except Exception as e:
         return f"Erreur lors de la recherche Google : {str(e)}"
 
