@@ -79,7 +79,7 @@ def recherche_web_google_news(question: str) -> str:
         if resultats:
             message = "📰 J'ai trouvé des actualités pour vous (Google News) :\n\n"
             for i, article in enumerate(resultats):
-                titre = article.find("h3").get_text(strip=True) if article.find("h3") else "Titre indisponible"
+                titre = article.find("a").get_text(strip=True) if article.find("a") else "Titre indisponible"
                 lien = "https://news.google.com" + article.find("a")["href"][1:] if article.find("a") else "Lien indisponible"
                 message += f"{i+1}. 📌 {titre}\n🔗 {lien}\n\n"
 
@@ -89,6 +89,7 @@ def recherche_web_google_news(question: str) -> str:
 
     except Exception as e:
         return f"❌ Erreur pendant la recherche Google News : {e}"
+
 
 
 # 🔍 Recherche universelle (Bing > Google > Wikipédia)
@@ -103,26 +104,27 @@ def recherche_web_universelle(question: str) -> str:
             print("✅ Résultat Google News :", result_news)
             return result_news
 
-    # ✅ Priorité 2 : Recherche d'informations générales avec Bing
+    # ✅ Priorité 2 : Recherche de personnalités avec Wikipédia (si c'est un nom de personne)
+    if any(mot in question.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition"]):
+        print("✅ Recherche de personnalité ou de définition détectée, utilisation de Wikipédia.")
+        result_wikipedia = recherche_web_wikipedia(question)
+        if "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
+            print("✅ Résultat Wikipédia :", result_wikipedia)
+            return result_wikipedia
+
+    # ✅ Priorité 3 : Recherche générale avec Bing
     print("✅ Recherche Bing en cours...")
     result_bing = recherche_web_bing(question)
     if "🤷" not in result_bing and "❌" not in result_bing:
         print("✅ Résultat Bing :", result_bing)
         return result_bing
 
-    # ✅ Priorité 3 : Recherche précise avec Google
+    # ✅ Priorité 4 : Recherche précise avec Google
     print("✅ Recherche Google en cours...")
     result_google = recherche_web_google(question)
     if "🤷" not in result_google and "❌" not in result_google:
         print("✅ Résultat Google :", result_google)
         return result_google
-
-    # ✅ Priorité 4 : Connaissances générales avec Wikipédia
-    print("✅ Recherche Wikipédia en cours...")
-    result_wikipedia = recherche_web_wikipedia(question)
-    if "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
-        print("✅ Résultat Wikipédia :", result_wikipedia)
-        return result_wikipedia
 
     # ❌ Si aucune source ne fonctionne
     print("❌ Aucun résultat clair trouvé dans les sources.")
