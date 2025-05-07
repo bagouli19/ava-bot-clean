@@ -51,12 +51,14 @@ from dotenv import load_dotenv
 # ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
+
 # Charger les secrets depuis Streamlit Cloud (API Google)
 try:
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
 except KeyError:
     st.error("Les clés API Google ne sont pas configurées correctement.")
+
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
@@ -2823,4 +2825,5 @@ if __name__ == "__main__":
     st.title("Test de la Recherche Google avec AVA")
     question = st.text_input("Tapez votre question ici (précédez par 'recherche' ou 'google') :")
     if question:
-        re
+        reponse = rechercher_sur_google(question)
+        st.write("Réponse d'AVA :", reponse)
