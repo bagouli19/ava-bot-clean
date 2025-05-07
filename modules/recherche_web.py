@@ -103,23 +103,29 @@ def recherche_web_universelle(question: str) -> str:
         # ✅ Essai avec Bing
         print("✅ Recherche Bing en cours...")
         result_bing = recherche_web_bing(question)
-        if "🤷" not in result_bing and "❌" not in result_bing:
+        if result_bing and "🤷" not in result_bing and "❌" not in result_bing:
             print("✅ Résultat Bing :", result_bing)
             return result_bing
+        else:
+            print("❌ Bing a échoué ou n'a pas trouvé de résultat.")
 
         # ✅ Si Bing échoue, Google doit prendre le relais
-        print("✅ Bing a échoué. Utilisation de Google.")
+        print("✅ Utilisation de Google.")
         result_google = recherche_web_google(question)
-        if "🤷" not in result_google and "❌" not in result_google:
+        if result_google and "🤷" not in result_google and "❌" not in result_google:
             print("✅ Résultat Google :", result_google)
             return result_google
+        else:
+            print("❌ Google a échoué ou n'a pas trouvé de résultat.")
 
         # ✅ Si Google échoue, Wikipédia est utilisé
-        print("✅ Google a échoué. Utilisation de Wikipédia.")
+        print("✅ Utilisation de Wikipédia.")
         result_wikipedia = recherche_web_wikipedia(question)
-        if "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
+        if result_wikipedia and "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
             print("✅ Résultat Wikipédia :", result_wikipedia)
             return result_wikipedia
+        else:
+            print("❌ Wikipédia a échoué ou n'a pas trouvé de résultat.")
 
         # ❌ Si les trois échouent
         print("❌ Aucun résultat trouvé pour cette personnalité.")
@@ -129,29 +135,29 @@ def recherche_web_universelle(question: str) -> str:
     if any(mot in question.lower() for mot in ["nouvelles", "actualités", "dernier", "dernière", "récent", "récentes"]):
         print("✅ Recherche d'actualités détectée, utilisation de Google News.")
         result_news = recherche_web_google_news(question)
-        if "🤷" not in result_news and "❌" not in result_news:
+        if result_news and "🤷" not in result_news and "❌" not in result_news:
             print("✅ Résultat Google News :", result_news)
             return result_news
+        else:
+            print("❌ Google News a échoué ou n'a pas trouvé de résultat.")
 
     # ✅ Priorité 3 : Recherche générale avec Bing
     print("✅ Recherche Bing en cours...")
     result_bing = recherche_web_bing(question)
-    if "🤷" not in result_bing and "❌" not in result_bing:
+    if result_bing and "🤷" not in result_bing and "❌" not in result_bing:
         print("✅ Résultat Bing :", result_bing)
         return result_bing
 
     # ✅ Priorité 4 : Recherche précise avec Google
     print("✅ Recherche Google en cours...")
     result_google = recherche_web_google(question)
-    if "🤷" not in result_google and "❌" not in result_google:
+    if result_google and "🤷" not in result_google and "❌" not in result_google:
         print("✅ Résultat Google :", result_google)
         return result_google
 
     # ❌ Si aucune source ne fonctionne
     print("❌ Aucun résultat clair trouvé dans les sources.")
     return "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
-
-
 
 
 def recherche_score_football(equipe: str) -> str:
