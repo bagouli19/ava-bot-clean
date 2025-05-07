@@ -80,7 +80,9 @@ sys.path.insert(0, os.path.join(PROJECT_ROOT, "knowledge_base"))
 
 DATA_DIR        = os.path.join(PROJECT_ROOT, "data")
 PROFILE_FILE    = os.path.join(DATA_DIR, f"profil_utilisateur_{user}.json")
-FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json")
+FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json" )
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
+GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1470,6 +1472,10 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
+    
+    elif question_clean.lower().startswith("cherche ") or question_clean.lower().startswith("recherche "):
+        recherche_term = question_clean[7:].strip()  # Supprime "cherche" ou "recherche"
+        message_bot = recherche_google(recherche_term)
 
     # Détection de requête ouverte ou généraliste
     print("✅ gerer_modules_speciaux appelée :", question_clean)   
