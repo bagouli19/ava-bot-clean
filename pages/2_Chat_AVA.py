@@ -1485,42 +1485,43 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return message_bot
 
     # 🔍 Bloc prioritaire : recherche universelle
-    if any(mot in question_clean.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition", "dernières nouvelles", "actualités sur", "infos sur"]):
-        print("✅ Recherche universelle détectée pour :", question_clean)
-        try:
-            from modules.recherche_web import (
-                recherche_web_bing,
-                recherche_web_google,
-                recherche_web_wikipedia,
-                recherche_web_universelle
-            )
+    # 🔍 Bloc prioritaire : recherche universelle
+if any(mot in question_clean.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition", "dernières nouvelles", "actualités sur", "infos sur"]):
+    print("✅ Recherche universelle détectée pour :", question_clean)
+    try:
+        from modules.recherche_web import (
+            recherche_web_bing,
+            recherche_web_google,
+            recherche_web_wikipedia
+        )
 
-            # ✅ Priorité 1 : Bing
-            message_bot = recherche_web_bing(question_clean)
-            print("✅ Résultat recherche Bing :", message_bot)
+        # ✅ Priorité 1 : Bing
+        message_bot = recherche_web_bing(question_clean)
+        print("✅ Résultat recherche Bing :", message_bot)
 
-            # ✅ Priorité 2 : Google si Bing échoue
-            if not message_bot or "🤷" in message_bot:
-                print("❌ Bing n'a pas trouvé, tentative Google")
-                message_bot = recherche_web_google(question_clean)
-                print("✅ Résultat recherche Google :", message_bot)
+        # ✅ Priorité 2 : Google si Bing échoue
+        if not message_bot or "🤷" in message_bot:
+            print("❌ Bing n'a pas trouvé, tentative Google")
+            message_bot = recherche_web_google(question_clean)
+            print("✅ Résultat recherche Google :", message_bot)
         
-            # ✅ Priorité 3 : Wikipédia si les deux échouent
-            if not message_bot or "🤷" in message_bot:
-                print("❌ Google n'a pas trouvé, tentative Wikipédia")
-                message_bot = recherche_web_wikipedia(question_clean)
-                print("✅ Résultat recherche Wikipédia :", message_bot)
+        # ✅ Priorité 3 : Wikipédia si les deux échouent
+        if not message_bot or "🤷" in message_bot:
+            print("❌ Google n'a pas trouvé, tentative Wikipédia")
+            message_bot = recherche_web_wikipedia(question_clean)
+            print("✅ Résultat recherche Wikipédia :", message_bot)
 
-            # ❌ Fallback : Aucun résultat
-            if not message_bot or "🤷" in message_bot:
-                print("❌ Aucun résultat clair trouvé, fallback message")
-                message_bot = "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
+        # ❌ Fallback : Aucun résultat
+        if not message_bot or "🤷" in message_bot:
+            print("❌ Aucun résultat clair trouvé, fallback message")
+            message_bot = "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
 
-        except Exception as e:
-            print(f"❌ Erreur pendant la recherche universelle : {e}")
-            message_bot = "❌ Une erreur est survenue pendant la recherche."
+    except Exception as e:
+        print(f"❌ Erreur pendant la recherche universelle : {e}")
+        message_bot = "❌ Une erreur est survenue pendant la recherche."
 
-        return message_bot
+    return message_bot
+
 
 
                                                                         
