@@ -96,21 +96,38 @@ def recherche_web_google_news(question: str) -> str:
 def recherche_web_universelle(question: str) -> str:
     print("✅ Recherche universelle lancée :", question)
     
-    # ✅ Priorité 1 : Recherche d'actualités avec Google News
+    # ✅ Priorité 1 : Recherche de personnalités ou de définitions avec Bing
+    if any(mot in question.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition"]):
+        print("✅ Recherche de personnalité ou de définition détectée, utilisation de Bing.")
+        result_bing = recherche_web_bing(question)
+        if "🤷" not in result_bing and "❌" not in result_bing:
+            print("✅ Résultat Bing :", result_bing)
+            return result_bing
+
+        # ✅ Si Bing échoue, on passe à Google
+        print("✅ Bing n'a pas trouvé de résultat clair, utilisation de Google.")
+        result_google = recherche_web_google(question)
+        if "🤷" not in result_google and "❌" not in result_google:
+            print("✅ Résultat Google :", result_google)
+            return result_google
+
+        # ✅ Si Google échoue, on passe à Wikipédia
+        print("✅ Google n'a pas trouvé de résultat clair, utilisation de Wikipédia.")
+        result_wikipedia = recherche_web_wikipedia(question)
+        if "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
+            print("✅ Résultat Wikipédia :", result_wikipedia)
+            return result_wikipedia
+
+        # ❌ Si les trois échouent
+        return "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
+
+    # ✅ Priorité 2 : Recherche d'actualités avec Google News
     if any(mot in question.lower() for mot in ["nouvelles", "actualités", "dernier", "dernière", "récent", "récentes"]):
         print("✅ Recherche d'actualités détectée, utilisation de Google News.")
         result_news = recherche_web_google_news(question)
         if "🤷" not in result_news and "❌" not in result_news:
             print("✅ Résultat Google News :", result_news)
             return result_news
-
-    # ✅ Priorité 2 : Recherche de personnalités avec Wikipédia (si c'est un nom de personne)
-    if any(mot in question.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition"]):
-        print("✅ Recherche de personnalité ou de définition détectée, utilisation de Wikipédia.")
-        result_wikipedia = recherche_web_wikipedia(question)
-        if "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
-            print("✅ Résultat Wikipédia :", result_wikipedia)
-            return result_wikipedia
 
     # ✅ Priorité 3 : Recherche générale avec Bing
     print("✅ Recherche Bing en cours...")
