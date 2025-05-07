@@ -1404,31 +1404,6 @@ def recherche_wikipedia(question: str) -> str:
     except Exception as e:
         return f"❌ Erreur inattendue Wikipédia : {e}"
 
-# ─────────────────────────────────────────────
-# 🌐 Recherche web DuckDuckGo avec fallback
-# ─────────────────────────────────────────────
-def recherche_web_duckduckgo(question: str) -> str:
-    try:
-        params = {
-            "q": question,
-            "format": "json",
-            "no_html": 1,
-            "skip_disambig": 1
-        }
-        response = requests.get("https://api.duckduckgo.com/", params=params)
-        data = response.json()
-
-        abstract = data.get("AbstractText", "").strip()
-        url = data.get("AbstractURL", "").strip()
-
-        if abstract and len(abstract) > 30:
-            return f"🌐 Résultat DuckDuckGo : {abstract}\n\n🔗 {url}" if url else f"🌐 Résultat DuckDuckGo : {abstract}"
-
-        return "🤷 Je n'ai pas trouvé d'information précise, mais tu peux reformuler ou être plus spécifique."
-
-    except Exception as e:
-        return f"❌ Erreur pendant la recherche web : {e}"
-
 
 import streamlit as st
 import openai
