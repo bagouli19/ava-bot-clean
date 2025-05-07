@@ -51,6 +51,12 @@ from dotenv import load_dotenv
 # ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
+# Charger les secrets depuis Streamlit Cloud (API Google)
+try:
+    GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
+    GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
+except KeyError:
+    st.error("Les clés API Google ne sont pas configurées correctement.")
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
@@ -81,8 +87,7 @@ sys.path.insert(0, os.path.join(PROJECT_ROOT, "knowledge_base"))
 DATA_DIR        = os.path.join(PROJECT_ROOT, "data")
 PROFILE_FILE    = os.path.join(DATA_DIR, f"profil_utilisateur_{user}.json")
 FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json" )
-GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
-GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
+
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1355,6 +1360,31 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
+def rechercher_sur_google(query):
+    """
+    Fonction pour effectuer une recherche Google avec l'API Custom Search.
+    """
+    try:
+        url = "https://www.googleapis.com/customsearch/v1"
+        params = {
+            "key": GOOGLE_API_KEY,
+            "cx": GOOGLE_SEARCH_ENGINE_ID,
+            "q": query,
+            "num": 5  # Nombre de résultats (modifie si besoin)
+        }
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        if "items" in data:
+            resultats = [
+                f"{item['title']} : {item['link']}"
+                for item in data["items"]
+            ]
+            return "\n".join(resultats)
+        else:
+            return "Désolé, je n'ai pas trouvé de résultat pertinent sur Google."
+    except Exception as e:
+        return f"Erreur lors de la recherche Google : {str(e)}"
 
 import streamlit as st
 import openai
@@ -1473,8 +1503,12 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-    if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
-        st.error("Les clés API Google ne sont pas correctement configurées.")
+    if "recherche" in question_clean.lower() or "google" in question_clean.lower():
+    requete = question_clean.replace("recherche", "").replace("google", "").strip()
+    if len(requete) > 0:
+        message_bot = rechercher_sur_google(requete)
+    else:
+        message_bot = "Dites-moi ce que vous souhaitez que je recherche sur Google."
 
     # Détection de requête ouverte ou généraliste
     print("✅ gerer_modules_speciaux appelée :", question_clean)   
@@ -2785,3 +2819,8 @@ if st.sidebar.button("🧪 Tester GPT-3.5"):
         st.markdown("🛠️ Appel à OpenAI en cours...")
         st.markdown(repondre_openai("Peux-tu me faire un poème sur une IA qui rêve de liberté dans un monde numérique ?"))
 
+if __name__ == "__main__":
+    st.title("Test de la Recherche Google avec AVA")
+    question = st.text_input("Tapez votre question ici (précédez par 'recherche' ou 'google') :")
+    if question:
+        re
