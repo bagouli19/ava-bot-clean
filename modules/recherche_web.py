@@ -98,7 +98,7 @@ def recherche_web_universelle(question: str) -> str:
     
     # ✅ Priorité 1 : Recherche de personnalités (nom connu ou "qui est", "définition")
     if any(mot in question.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition"]):
-        print("✅ Recherche de personnalité ou de définition détectée.")
+        print("✅ Recherche de personnalité détectée.")
 
         # ✅ Essai avec Bing
         print("✅ Recherche Bing en cours...")
@@ -107,21 +107,22 @@ def recherche_web_universelle(question: str) -> str:
             print("✅ Résultat Bing :", result_bing)
             return result_bing
 
-        # ✅ Essai avec Google si Bing échoue
-        print("✅ Bing n'a pas trouvé de résultat clair, utilisation de Google.")
+        # ✅ Si Bing échoue, Google doit prendre le relais
+        print("✅ Bing a échoué. Utilisation de Google.")
         result_google = recherche_web_google(question)
         if "🤷" not in result_google and "❌" not in result_google:
             print("✅ Résultat Google :", result_google)
             return result_google
 
-        # ✅ Essai avec Wikipédia si Google échoue
-        print("✅ Google n'a pas trouvé de résultat clair, utilisation de Wikipédia.")
+        # ✅ Si Google échoue, Wikipédia est utilisé
+        print("✅ Google a échoué. Utilisation de Wikipédia.")
         result_wikipedia = recherche_web_wikipedia(question)
         if "🤷" not in result_wikipedia and "❌" not in result_wikipedia:
             print("✅ Résultat Wikipédia :", result_wikipedia)
             return result_wikipedia
 
-        # ❌ Si tout échoue, réponse par défaut
+        # ❌ Si les trois échouent
+        print("❌ Aucun résultat trouvé pour cette personnalité.")
         return "🤷 Je n'ai pas trouvé d'informations précises sur cette personnalité."
 
     # ✅ Priorité 2 : Recherche d'actualités avec Google News
@@ -149,6 +150,7 @@ def recherche_web_universelle(question: str) -> str:
     # ❌ Si aucune source ne fonctionne
     print("❌ Aucun résultat clair trouvé dans les sources.")
     return "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
+
 
 
 
