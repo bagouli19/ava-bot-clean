@@ -94,7 +94,6 @@ def rechercher_sur_google(question):
         return f"Erreur lors de la recherche Google : {e}"
 
 
-
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
