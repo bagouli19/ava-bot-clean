@@ -58,13 +58,17 @@ try:
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
 except KeyError:
-    st.error("Les clés API Google ne sont pas correctement configurées.")
+    st.error("Les clés API Google ne sont pas correctement configurées dans les secrets Streamlit.")
     raise ValueError("Les clés API Google ne sont pas correctement définies.")
 
 # Vérification des clés
 if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
-    st.error("Les clés API Google ne sont pas correctement configurées.")
-    raise ValueError("Les clés API Google ne sont pas correctement définies.")
+    st.error("Les clés API Google sont vides ou mal définies.")
+    raise ValueError(f"Clé API Google : {GOOGLE_API_KEY}\nID Moteur de Recherche : {GOOGLE_SEARCH_ENGINE_ID}")
+
+# Afficher les clés pour vérifier leur chargement (temporairement)
+st.write(f"Clé API Google : {GOOGLE_API_KEY}")
+st.write(f"ID Moteur de Recherche : {GOOGLE_SEARCH_ENGINE_ID}")
 
 # Fonction de recherche Google
 def rechercher_sur_google(question):
@@ -88,6 +92,7 @@ def rechercher_sur_google(question):
         return reponse
     except Exception as e:
         return f"Erreur lors de la recherche Google : {e}"
+
 
 
 # ───────────────────────────────────────────────────────────────────────
