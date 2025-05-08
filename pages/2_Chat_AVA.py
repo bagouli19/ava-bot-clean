@@ -228,7 +228,7 @@ import streamlit as st
 GITHUB_REPO = "bagouli19/ava-bot-ultimate"
 FICHIER_MEMOIRE = "data/memoire_ava.json"
 BRANCHE = "main"
-GITHUB_TOKEN = st.secrets["github"]["token"]  # ⚠️ Stocké dans .streamlit/secrets.toml
+GITHUB_TOKEN = st.secrets["github"]["GITHUB_TOKEN"]
 
 def charger_memoire_ava() -> dict:
     """Charge la mémoire AVA depuis GitHub (fichier JSON brut)."""
