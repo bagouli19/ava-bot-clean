@@ -57,8 +57,8 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 try:
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
-except KeyError:
-    st.error("Les clés API Google ne sont pas correctement configurées dans les secrets Streamlit.")
+except KeyError as e:
+    st.error(f"Les clés API Google ne sont pas correctement configurées dans les secrets Streamlit : {e}")
     raise ValueError("Les clés API Google ne sont pas correctement définies.")
 
 # Vérification des clés
