@@ -56,14 +56,14 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 try:
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
-except KeyError as e:
-    st.error(f"Erreur de configuration des clés API Google : {e}")
-    raise ValueError("Les clés API Google ne sont pas configurées correctement.")
+except KeyError:
+    st.error("Erreur : Les clés API Google ne sont pas correctement configurées.")
+    raise ValueError("Les clés API Google ne sont pas correctement configurées.")
 
 # Vérification que les clés sont bien chargées
 if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
     raise ValueError("Les clés API Google ne sont pas correctement définies.")
-
+    
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
@@ -1369,9 +1369,8 @@ def format_actus(
 
 import requests
 
-# Exemple de fonction de recherche Google
 def rechercher_sur_google(query):
-    url = f"https://www.googleapis.com/customsearch/v1"
+    url = "https://www.googleapis.com/customsearch/v1"
     params = {
         "key": GOOGLE_API_KEY,
         "cx": GOOGLE_SEARCH_ENGINE_ID,
