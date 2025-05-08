@@ -49,6 +49,7 @@ st.stop()
 # ───────────────────────────────────────────────────────────────────────
 # Configuration de la page
 # ───────────────────────────────────────────────────────────────────────
+
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
 # Chargement des clés API depuis les secrets Streamlit
