@@ -52,8 +52,6 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 
 # Chargement des clés API depuis les secrets Streamlit
 try:
-    OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-    openai.api_key  = OPENAI_API_KEY
     GOOGLE_API_KEY          = st.secrets["github"]["GOOGLE_API_KEY"]
     GOOGLE_SEARCH_ENGINE_ID = st.secrets["github"]["GOOGLE_SEARCH_ENGINE_ID"]
     GITHUB_TOKEN            = st.secrets["github"]["GITHUB_TOKEN"]
@@ -1395,6 +1393,9 @@ import streamlit as st
 import openai
 import difflib
 from sklearn.metrics.pairwise import cosine_similarity
+
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+openai.api_key  = OPENAI_API_KEY
 
 # --------------------------
 # Fonctions utilitaires
