@@ -43,8 +43,7 @@ from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_t
 from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
-st.write("🔍 Clés chargées :", list(st.secrets.keys()))
-st.stop()
+
 
 # ───────────────────────────────────────────────────────────────────────
 # Configuration de la page
