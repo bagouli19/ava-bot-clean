@@ -52,13 +52,11 @@ from dotenv import load_dotenv
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
 
-# Chargement des clés API Google depuis les secrets de Streamlit
-GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
-GOOGLE_SEARCH_ENGINE_ID = st.secrets.get("GOOGLE_SEARCH_ENGINE_ID")
+# Chargement des clés API depuis les secrets Streamlit
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
+GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
 
-# Vérification des clés API
 if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
-    st.error("Erreur : Les clés API Google ne sont pas configurées correctement.")
     raise ValueError("Les clés API Google ne sont pas configurées correctement.")
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1366,21 +1364,27 @@ def format_actus(
 
 import requests
 
-def rechercher_sur_google(query):
-    if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
-        return "Erreur : Les clés API Google ne sont pas configurées correctement."
-
-    url = f"https://www.googleapis.com/customsearch/v1?q={query}&key={GOOGLE_API_KEY}&cx={GOOGLE_SEARCH_ENGINE_ID}"
+def rechercher_sur_google(question):
     try:
-        response = requests.get(url)
+        url = f"https://www.googleapis.com/customsearch/v1"
+        params = {
+            "key": GOOGLE_API_KEY,
+            "cx": GOOGLE_SEARCH_ENGINE_ID,
+            "q": question,
+            "num": 3  # Nombre de résultats souhaités
+        }
+        response = requests.get(url, params=params)
         data = response.json()
+        
         if "items" in data:
-            results = [item["title"] + ": " + item["link"] for item in data["items"][:3]]
-            return "\n".join(results)
+            results = data["items"]
+            response_text = "\n\n".join([f"- {item['title']}\n{item['link']}" for item in results])
+            return response_text if response_text else "Aucun résultat trouvé."
         else:
             return "Aucun résultat trouvé."
     except Exception as e:
         return f"Erreur lors de la recherche Google : {str(e)}"
+
 
 
 import streamlit as st
