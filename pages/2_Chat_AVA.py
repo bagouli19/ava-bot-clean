@@ -51,6 +51,16 @@ from dotenv import load_dotenv
 # ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
+# Construire un dict ne contenant que les noms de clés et de sous-clés
+structure = {}
+for key, val in st.secrets.items():
+    if isinstance(val, dict):
+        structure[key] = list(val.keys())
+    else:
+        structure[key] = None
+
+st.write("🔍 Structure de st.secrets :", structure)
+st.stop()
 
 # Chargement des clés API depuis les secrets Streamlit
 try:
