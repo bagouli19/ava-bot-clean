@@ -1453,7 +1453,7 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 # Initialisation API
 # --------------------------
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+OPENAI_API_KEY          = st.secrets["OPENAI_API_KEY"]
 
 # --------------------------
 # Pipeline de réponse
