@@ -62,8 +62,9 @@ except KeyError:
 
 # Vérification que les clés sont bien chargées
 if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
+    st.error("Les clés API Google ne sont pas correctement configurées.")
     raise ValueError("Les clés API Google ne sont pas correctement définies.")
-    
+
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
@@ -1387,13 +1388,14 @@ def rechercher_sur_google(query):
     except Exception as e:
         return [f"Erreur lors de la recherche Google : {e}"]
 
-# Test : Utilisation de la fonction
+# Test direct (facultatif)
 st.write("Test Google :")
 query = st.text_input("Entrez votre recherche :")
 if query:
     resultats = rechercher_sur_google(query)
     for resultat in resultats:
         st.write(resultat)
+
 
 
 
