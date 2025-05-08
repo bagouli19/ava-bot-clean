@@ -54,10 +54,15 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 
 # Chargement sécurisé des clés API Google
 try:
-    GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
-    GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
-except KeyError:
-    st.error("Erreur : Les clés API Google ne sont pas correctement configurées.")
+    GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
+    GOOGLE_SEARCH_ENGINE_ID = st.secrets.get("GOOGLE_SEARCH_ENGINE_ID")
+
+    # Debugging
+    st.write(f"Clé API Google : {GOOGLE_API_KEY}")
+    st.write(f"ID Moteur de Recherche : {GOOGLE_SEARCH_ENGINE_ID}")
+
+except Exception as e:
+    st.error(f"Erreur lors de la récupération des clés API : {str(e)}")
     raise ValueError("Les clés API Google ne sont pas correctement configurées.")
 
 # Vérification que les clés sont bien chargées
