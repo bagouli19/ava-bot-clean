@@ -62,11 +62,6 @@ except KeyError as e:
     raise ValueError("Les clés API Google ne sont pas correctement définies.")
 
 # Vérification des clés
-if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
-    st.error("Les clés API Google sont vides ou mal définies.")
-    raise ValueError(f"Clé API Google : {GOOGLE_API_KEY}\nID Moteur de Recherche : {GOOGLE_SEARCH_ENGINE_ID}")
-
-# Afficher les clés pour vérifier leur chargement (temporairement)
 st.write(f"Clé API Google : {GOOGLE_API_KEY}")
 st.write(f"ID Moteur de Recherche : {GOOGLE_SEARCH_ENGINE_ID}")
 
