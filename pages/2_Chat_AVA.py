@@ -1396,7 +1396,8 @@ import difflib
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-st.secrets["OpenAI"]["OPENAI_API_KEY"]
+OPENAI_API_KEY = st.secrets["OpenAI"]["OPENAI_API_KEY"]
+openai.api_key  = OPENAI_API_KEY
 
 # --------------------------
 # Fonctions utilitaires
