@@ -52,23 +52,43 @@ from dotenv import load_dotenv
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
 
-# Chargement sécurisé des clés API Google
+
+# Chargement des clés API depuis les secrets Streamlit
 try:
-    GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
-    GOOGLE_SEARCH_ENGINE_ID = st.secrets.get("GOOGLE_SEARCH_ENGINE_ID")
+    GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
+    GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
+except KeyError:
+    st.error("Les clés API Google ne sont pas correctement configurées.")
+    raise ValueError("Les clés API Google ne sont pas correctement définies.")
 
-    # Debugging
-    st.write(f"Clé API Google : {GOOGLE_API_KEY}")
-    st.write(f"ID Moteur de Recherche : {GOOGLE_SEARCH_ENGINE_ID}")
-
-except Exception as e:
-    st.error(f"Erreur lors de la récupération des clés API : {str(e)}")
-    raise ValueError("Les clés API Google ne sont pas correctement configurées.")
-
-# Vérification que les clés sont bien chargées
+# Vérification des clés
 if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
     st.error("Les clés API Google ne sont pas correctement configurées.")
     raise ValueError("Les clés API Google ne sont pas correctement définies.")
+
+# Fonction de recherche Google
+def rechercher_sur_google(question):
+    query = question
+    url = f"https://www.googleapis.com/customsearch/v1?q={query}&cx={GOOGLE_SEARCH_ENGINE_ID}&key={GOOGLE_API_KEY}"
+    
+    try:
+        response = requests.get(url)
+        data = response.json()
+        resultats = data.get("items", [])
+        
+        if not resultats:
+            return "Désolé, je n'ai trouvé aucun résultat pertinent sur Google."
+        
+        reponse = "Voici les premiers résultats trouvés sur Google :\n"
+        for item in resultats[:3]:
+            titre = item.get("title", "Sans titre")
+            lien = item.get("link", "Pas de lien disponible")
+            reponse += f"- {titre} : {lien}\n"
+
+        return reponse
+    except Exception as e:
+        return f"Erreur lors de la recherche Google : {e}"
+
 
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
@@ -1372,37 +1392,6 @@ def format_actus(
         texte += f"{i}. 🔹 [{titre}]({url})\n"
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
-
-import requests
-
-def rechercher_sur_google(query):
-    url = "https://www.googleapis.com/customsearch/v1"
-    params = {
-        "key": GOOGLE_API_KEY,
-        "cx": GOOGLE_SEARCH_ENGINE_ID,
-        "q": query
-    }
-
-    try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        if "items" in data:
-            return [item["title"] + " - " + item["link"] for item in data["items"][:3]]
-        else:
-            return ["Aucun résultat trouvé."]
-    except Exception as e:
-        return [f"Erreur lors de la recherche Google : {e}"]
-
-# Test direct (facultatif)
-st.write("Test Google :")
-query = st.text_input("Entrez votre recherche :")
-if query:
-    resultats = rechercher_sur_google(query)
-    for resultat in resultats:
-        st.write(resultat)
-
-
-
 
 import streamlit as st
 import openai
