@@ -51,8 +51,6 @@ from dotenv import load_dotenv
 # ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
-st.write("🔍 Contenu de st.secrets :", st.secrets)
-st.stop()
 
 # Chargement des clés API depuis les secrets Streamlit
 try:
