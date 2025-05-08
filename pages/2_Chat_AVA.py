@@ -43,14 +43,6 @@ from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_t
 from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
-
-
-
-# ───────────────────────────────────────────────────────────────────────
-# Configuration de la page
-# ───────────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="Chat AVA", layout="centered")
-
 # Construire un dict ne contenant que les noms de clés et de sous-clés
 structure = {}
 for key, val in st.secrets.items():
@@ -61,6 +53,13 @@ for key, val in st.secrets.items():
 
 st.write("🔍 Structure de st.secrets :", structure)
 st.stop()
+
+
+
+# ───────────────────────────────────────────────────────────────────────
+# Configuration de la page
+# ───────────────────────────────────────────────────────────────────────
+st.set_page_config(page_title="Chat AVA", layout="centered")
 
 # Chargement des clés API depuis les secrets Streamlit
 try:
