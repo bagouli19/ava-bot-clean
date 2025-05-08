@@ -52,14 +52,15 @@ from dotenv import load_dotenv
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
 
-# Chargement des clés API depuis les secrets Streamlit
+# Chargement sécurisé des clés API Google
 try:
     GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
     GOOGLE_SEARCH_ENGINE_ID = st.secrets["GOOGLE_SEARCH_ENGINE_ID"]
 except KeyError as e:
-    st.error(f"Erreur de configuration des clés API Google : {str(e)}")
+    st.error(f"Erreur de configuration des clés API Google : {e}")
     raise ValueError("Les clés API Google ne sont pas configurées correctement.")
 
+# Vérification que les clés sont bien chargées
 if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
     raise ValueError("Les clés API Google ne sont pas correctement définies.")
 
@@ -1368,26 +1369,32 @@ def format_actus(
 
 import requests
 
-def rechercher_sur_google(question):
+# Exemple de fonction de recherche Google
+def rechercher_sur_google(query):
+    url = f"https://www.googleapis.com/customsearch/v1"
+    params = {
+        "key": GOOGLE_API_KEY,
+        "cx": GOOGLE_SEARCH_ENGINE_ID,
+        "q": query
+    }
+
     try:
-        url = f"https://www.googleapis.com/customsearch/v1"
-        params = {
-            "key": GOOGLE_API_KEY,
-            "cx": GOOGLE_SEARCH_ENGINE_ID,
-            "q": question,
-            "num": 3  # Nombre de résultats souhaités
-        }
         response = requests.get(url, params=params)
         data = response.json()
-        
         if "items" in data:
-            results = data["items"]
-            response_text = "\n\n".join([f"- {item['title']}\n{item['link']}" for item in results])
-            return response_text if response_text else "Aucun résultat trouvé."
+            return [item["title"] + " - " + item["link"] for item in data["items"][:3]]
         else:
-            return "Aucun résultat trouvé."
+            return ["Aucun résultat trouvé."]
     except Exception as e:
-        return f"Erreur lors de la recherche Google : {str(e)}"
+        return [f"Erreur lors de la recherche Google : {e}"]
+
+# Test : Utilisation de la fonction
+st.write("Test Google :")
+query = st.text_input("Entrez votre recherche :")
+if query:
+    resultats = rechercher_sur_google(query)
+    for resultat in resultats:
+        st.write(resultat)
 
 
 
