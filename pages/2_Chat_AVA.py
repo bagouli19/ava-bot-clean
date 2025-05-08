@@ -126,7 +126,7 @@ FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json" )
 GITHUB_REPO = "bagouli19/ava-bot-ultimate"
 FICHIER_PROFIL = "data/profil_utilisateur.json"
 BRANCHE = "main"
-GITHUB_TOKEN = st.secrets["github"]["token"]  # ⚠️ Assure-toi qu'il est défini
+GITHUB_TOKEN = st.secrets["github"]["GITHUB_TOKEN"]
 STYLE_FILE      = os.path.join(SCRIPT_DIR, "style_ava.json")
 import base64
 
