@@ -43,17 +43,6 @@ from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_t
 from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
-# Construire un dict ne contenant que les noms de clés et de sous-clés
-structure = {}
-for key, val in st.secrets.items():
-    if isinstance(val, dict):
-        structure[key] = list(val.keys())
-    else:
-        structure[key] = None
-
-st.write("🔍 Structure de st.secrets :", structure)
-st.stop()
-
 
 
 # ───────────────────────────────────────────────────────────────────────
