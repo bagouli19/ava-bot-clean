@@ -61,7 +61,7 @@ except KeyError as e:
     raise ValueError("Les clés API Google ne sont pas configurées correctement.")
 
 if not GOOGLE_API_KEY or not GOOGLE_SEARCH_ENGINE_ID:
-    raise ValueError("Les clés API Google ne sont pas configurées correctement.")
+    raise ValueError("Les clés API Google ne sont pas correctement définies.")
 
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
