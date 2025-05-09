@@ -1868,7 +1868,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
     
     # --- Bloc météo intelligent (ultra robuste) ---
-    if any(kw in question_clean for kw in ["meteo", "météo", "quel temps", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"]):
+    if any(kw in question_clean for kw in ["meteo", "météo", "quel temps", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"," Meteo Aujourd Hui"]):
         ville_detectee = "Paris"  # Par défaut
 
         # Chercher "à/au/aux/dans/sur/en <lieu>"
