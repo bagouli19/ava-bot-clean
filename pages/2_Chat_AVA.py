@@ -2487,10 +2487,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         else:
             return "🌍 Je ne connais pas encore la capitale de ce pays. Essayez un autre !"
 
-    def traiter_demande_meteo(question_clean):
-    """
-    Analyse la question pour détecter la ville demandée et récupère la météo.
-    """
+    
     # ✅ Liste de mots-clés météo
     mots_cles_meteo = [
         "meteo", "météo", "quel temps", "prévision", "prévisions", 
