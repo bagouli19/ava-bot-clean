@@ -1653,207 +1653,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
         
         return message_bot  # Retour immédiat si calcul détecté
-        
-    if "recherche" in question_clean.lower() or "google" in question_clean.lower():
-        requete = question_clean.replace("recherche", "").replace("google", "").strip()
-        if len(requete) > 0:
-            message_bot = rechercher_sur_google(requete)
-        else:
-            message_bot = "Dites-moi ce que vous souhaitez que je recherche sur Google."
-
-    # Détection de requête ouverte ou généraliste
-    print("✅ gerer_modules_speciaux appelée :", question_clean)   
-    # 🔍 Bloc prioritaire : recherche universelle
-    if any(mot in question_clean.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition", "dernières nouvelles", "actualités sur", "infos sur"]):
-        print("✅ Recherche universelle détectée pour :", question_clean)
-        try:
-            # ✅ Priorité 1 : Bing
-            message_bot = recherche_web_bing(question_clean)
-            print("✅ Résultat recherche Bing :", message_bot)
-        
-            # ✅ Priorité 3 : Wikipédia si les deux échouent
-            if not message_bot or "🤷" in message_bot:
-                print("❌ Google n'a pas trouvé, tentative Wikipédia")
-                message_bot = recherche_web_wikipedia(question_clean)
-                print("✅ Résultat recherche Wikipédia :", message_bot)
-
-            # ❌ Fallback : Aucun résultat
-            if not message_bot or "🤷" in message_bot:
-                print("❌ Aucun résultat clair trouvé, fallback message")
-                message_bot = "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
-
-        except Exception as e:
-            print(f"❌ Erreur pendant la recherche universelle : {e}")
-            message_bot = "❌ Une erreur est survenue pendant la recherche."
-
-    # ⚽️ Détection de recherche de score de football
-    if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
-        print("✅ Recherche de score de football détectée :", question_clean)
-        from modules.recherche_web import recherche_score_football
-        equipe = question_clean.replace("score", "").replace("résultat", "").replace("a gagné", "").strip()
-        message_bot = recherche_score_football(equipe)
-        print("✅ Résultat score de football :", message_bot)
-       
-        return message_bot
-
-
-
-                                                                        
-    # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
-    formulations_rappel = [
-        "rappelle-moi de",
-        "rappelle moi de",
-        "n'oublie pas de",
-        "souviens-toi de",
-        "souviens toi de"
-    ]
-
-    for intro in formulations_rappel:
-        if intro in question_clean:
-            contenu = question_clean.split(intro)[-1].strip(" .!?")
-            if contenu and len(contenu) > 5:
-                profil = get_my_profile()
-                if "rappels" not in profil:
-                    profil["rappels"] = []
-                profil["rappels"].append({
-                    "contenu": contenu,
-                    "date": datetime.now().strftime("%Y-%m-%d")
-                })
-                set_my_profile(profil)
-                return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
-            if contenu and len(contenu) > 5:
-                profil["rappels"].append({"contenu": contenu, "date": datetime.now().strftime("%Y-%m-%d")})
-                set_my_profile(profil)
-                return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
-
-    # --- 📝 Détection et enregistrement de tâches à faire ---
-    if any(phrase in question_clean for phrase in ["ajoute", "rajoute", "note", "mets dans ma liste"]):
-        profil = get_my_profile()
-        if "taches" not in profil:
-            profil["taches"] = []
-        contenu = question_clean.split("de")[-1].strip(" .!?")
-        if contenu:
-            profil["taches"].append({"contenu": contenu, "date": datetime.now().strftime("%Y-%m-%d")})
-            set_my_profile(profil)
-            return f"🗒️ J’ai ajouté à votre liste : **{contenu}**."
-
-    # --- 🧾 Affichage des rappels ou tâches ---
-    if "rappels" in question_clean or "à me rappeler" in question_clean:
-        profil = get_my_profile()
-        rappels = profil.get("rappels", [])
-        if not rappels:
-            return "🔕 Vous n’avez aucun rappel pour l’instant."
-        return "🔔 Vos rappels enregistrés :\n" + "\n".join([f"- {r['contenu']} ({r['date']})" for r in rappels])
-
-    if "liste" in question_clean or "mes tâches" in question_clean or "tâches" in question_clean:
-        profil = get_my_profile()
-        taches = profil.get("taches", [])
-        if not taches:
-            return "📭 Votre liste de tâches est vide pour le moment."
-        return "📝 Voici votre liste de tâches :\n" + "\n".join([f"- {t['contenu']} ({t['date']})" for t in taches])
-
-    # 🔍 Affichage des souvenirs mémorisés si demandé
-    if question_clean in [
-        "montre moi tes souvenirs",
-        "qu'as tu retenu",
-        "quels souvenirs as tu",
-        "montre tes souvenirs",
-        "qu'as tu mémorisé",
-        "rappelle toi ce que tu as appris"
-    ]:
-        memoire = charger_memoire_ava()
-        souvenirs = memoire.get("souvenirs", [])
-        if not souvenirs:
-            return "📭 Pour l'instant, je n’ai rien mémorisé de particulier."
-        reponse = "🧠 Voici ce que j’ai noté dans ma mémoire globale :\n\n"
-        for s in souvenirs[-5:]:
-            reponse += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
-        return reponse
-
-   
-    # 🧠 Bloc mémoire évolutive AVA (autonome)
-    def doit_memoriser_automatiquement(phrase: str) -> bool:
-        """Détermine si la phrase est pertinente pour la mémoire."""
-        contenu = phrase.lower()
-        if len(contenu) < 15:
-            return False
-
-        mots_importants = [
-            "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
-            "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
-        ]
-        mots_emotionnels = ["incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"]
-
-        if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
-            return True
-
-        return False
-
-    # 🔄 Intégration dans gerer_modules_speciaux()
-    if doit_memoriser_automatiquement(question_clean):
-        contenu = question_clean.strip(" .!?")
-
-        try:
-            memoire = charger_memoire_ava()
-            memoire["souvenirs"].append({
-                "type": "réflexion_utilisateur",
-                "contenu": contenu,
-                "date": datetime.now().strftime("%Y-%m-%d")
-            })
-            sauvegarder_memoire_ava(memoire)
-
-            # Recharge la mémoire pour afficher une mise à jour fiable
-            memoire = charger_memoire_ava()
-            derniers_souvenirs = memoire.get("souvenirs", [])[-3:]
-
-            retour = "🧠 Ce que vous venez de dire m’a marquée... je l’ai noté dans mes souvenirs :\n"
-            for s in derniers_souvenirs:
-                retour += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
-            return retour
-
-        except Exception as e:
-            return f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}"
-
-    suggestions = {
-        "musique": "Souhaitez-vous que je vous propose une autre chanson ? 🎵",
-        "voyage": "Si vous souhaitez des idées de destinations, je peux en proposer ! 🌍",
-        "santé": "Pensez à bien vous reposer, je suis là si vous avez besoin d’un petit conseil bien-être. 🌿",
-        "bourse": "Souhaitez-vous une mise à jour rapide sur un actif particulier ? 📈",
-        "amour": "Si vous voulez parler de cœur, je suis là pour écouter sans jugement. 💖",
-        "horoscope": "Souhaitez-vous que je vous partage votre horoscope du jour ? ✨",
-        "motivation": "Envie d’un boost d’énergie ? Je peux vous balancer une punchline futuriste. 🚀",
-        "recette": "Un petit creux ? Je peux vous proposer une recette rapide à tester. 🍳",
-        "temps": "Vous voulez la météo actuelle dans votre ville ? Je peux la retrouver. ☁️",
-        "symptôme": "Si vous avez un petit souci de santé, je peux vous orienter avec douceur. 🩺"
-    }
     
-    # 🧠 Récupération mémoire court terme (si dispo)
-    dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
-
-    # 🔑 Mots-clés pour détecter une intention musicale
-    mots_cles_musique = [
-        "musique", "chanson", "son", "titre", "écouter", "playlist", "sons", "mets-moi une chanson", "propose un son", "donne un son"
-    ]
-    theme_musique_detecte = any(mot in question_clean.lower() for mot in mots_cles_musique)
-
-    # 🔁 Suggestions génériques selon thème
-    if dernier_theme in suggestions:
-        message_bot += f"\n{suggestions[dernier_theme]}"
-
-    # 🎵 Bloc musical déclenché par mémoire ou mot-clé détecté
-    if theme_musique_detecte or dernier_theme == "musique":
-        print("🟢 Bloc musical déclenché 🎵")
-        tendances = obtenir_titres_populaires_france()
-        if tendances:
-            message_bot += (
-                "\n🎧 Voici quelques titres populaires à découvrir :\n\n"
-                + "\n".join(tendances)
-                + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
-            )
-
-    return message_bot if message_bot else None
-    
-    # --- Bloc Convertisseur intelligent ---
+        # --- Bloc Convertisseur intelligent ---
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
         try:
             phrase = question_clean.replace(",", ".")
@@ -2808,6 +2609,205 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             st.session_state["quiz_attendu"] = ""
             return message
 
+    if "recherche" in question_clean.lower() or "google" in question_clean.lower():
+        requete = question_clean.replace("recherche", "").replace("google", "").strip()
+        if len(requete) > 0:
+            message_bot = rechercher_sur_google(requete)
+        else:
+            message_bot = "Dites-moi ce que vous souhaitez que je recherche sur Google."
+
+    # Détection de requête ouverte ou généraliste
+    print("✅ gerer_modules_speciaux appelée :", question_clean)   
+    # 🔍 Bloc prioritaire : recherche universelle
+    if any(mot in question_clean.lower() for mot in ["qui est", "qu'est-ce que", "c'est quoi", "définition", "dernières nouvelles", "actualités sur", "infos sur"]):
+        print("✅ Recherche universelle détectée pour :", question_clean)
+        try:
+            # ✅ Priorité 1 : Bing
+            message_bot = recherche_web_bing(question_clean)
+            print("✅ Résultat recherche Bing :", message_bot)
+        
+            # ✅ Priorité 3 : Wikipédia si les deux échouent
+            if not message_bot or "🤷" in message_bot:
+                print("❌ Google n'a pas trouvé, tentative Wikipédia")
+                message_bot = recherche_web_wikipedia(question_clean)
+                print("✅ Résultat recherche Wikipédia :", message_bot)
+
+            # ❌ Fallback : Aucun résultat
+            if not message_bot or "🤷" in message_bot:
+                print("❌ Aucun résultat clair trouvé, fallback message")
+                message_bot = "🤷 Je n'ai pas trouvé d'information claire, mais vous pouvez reformuler ou être plus spécifique."
+
+        except Exception as e:
+            print(f"❌ Erreur pendant la recherche universelle : {e}")
+            message_bot = "❌ Une erreur est survenue pendant la recherche."
+
+    # ⚽️ Détection de recherche de score de football
+    if any(mot in question_clean.lower() for mot in ["score", "résultat", "a gagné"]):
+        print("✅ Recherche de score de football détectée :", question_clean)
+        from modules.recherche_web import recherche_score_football
+        equipe = question_clean.replace("score", "").replace("résultat", "").replace("a gagné", "").strip()
+        message_bot = recherche_score_football(equipe)
+        print("✅ Résultat score de football :", message_bot)
+       
+        return message_bot
+
+
+
+                                                                        
+    # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
+    formulations_rappel = [
+        "rappelle-moi de",
+        "rappelle moi de",
+        "n'oublie pas de",
+        "souviens-toi de",
+        "souviens toi de"
+    ]
+
+    for intro in formulations_rappel:
+        if intro in question_clean:
+            contenu = question_clean.split(intro)[-1].strip(" .!?")
+            if contenu and len(contenu) > 5:
+                profil = get_my_profile()
+                if "rappels" not in profil:
+                    profil["rappels"] = []
+                profil["rappels"].append({
+                    "contenu": contenu,
+                    "date": datetime.now().strftime("%Y-%m-%d")
+                })
+                set_my_profile(profil)
+                return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
+            if contenu and len(contenu) > 5:
+                profil["rappels"].append({"contenu": contenu, "date": datetime.now().strftime("%Y-%m-%d")})
+                set_my_profile(profil)
+                return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
+
+    # --- 📝 Détection et enregistrement de tâches à faire ---
+    if any(phrase in question_clean for phrase in ["ajoute", "rajoute", "note", "mets dans ma liste"]):
+        profil = get_my_profile()
+        if "taches" not in profil:
+            profil["taches"] = []
+        contenu = question_clean.split("de")[-1].strip(" .!?")
+        if contenu:
+            profil["taches"].append({"contenu": contenu, "date": datetime.now().strftime("%Y-%m-%d")})
+            set_my_profile(profil)
+            return f"🗒️ J’ai ajouté à votre liste : **{contenu}**."
+
+    # --- 🧾 Affichage des rappels ou tâches ---
+    if "rappels" in question_clean or "à me rappeler" in question_clean:
+        profil = get_my_profile()
+        rappels = profil.get("rappels", [])
+        if not rappels:
+            return "🔕 Vous n’avez aucun rappel pour l’instant."
+        return "🔔 Vos rappels enregistrés :\n" + "\n".join([f"- {r['contenu']} ({r['date']})" for r in rappels])
+
+    if "liste" in question_clean or "mes tâches" in question_clean or "tâches" in question_clean:
+        profil = get_my_profile()
+        taches = profil.get("taches", [])
+        if not taches:
+            return "📭 Votre liste de tâches est vide pour le moment."
+        return "📝 Voici votre liste de tâches :\n" + "\n".join([f"- {t['contenu']} ({t['date']})" for t in taches])
+
+    # 🔍 Affichage des souvenirs mémorisés si demandé
+    if question_clean in [
+        "montre moi tes souvenirs",
+        "qu'as tu retenu",
+        "quels souvenirs as tu",
+        "montre tes souvenirs",
+        "qu'as tu mémorisé",
+        "rappelle toi ce que tu as appris"
+    ]:
+        memoire = charger_memoire_ava()
+        souvenirs = memoire.get("souvenirs", [])
+        if not souvenirs:
+            return "📭 Pour l'instant, je n’ai rien mémorisé de particulier."
+        reponse = "🧠 Voici ce que j’ai noté dans ma mémoire globale :\n\n"
+        for s in souvenirs[-5:]:
+            reponse += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
+        return reponse
+
+   
+    # 🧠 Bloc mémoire évolutive AVA (autonome)
+    def doit_memoriser_automatiquement(phrase: str) -> bool:
+        """Détermine si la phrase est pertinente pour la mémoire."""
+        contenu = phrase.lower()
+        if len(contenu) < 15:
+            return False
+
+        mots_importants = [
+            "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
+            "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
+        ]
+        mots_emotionnels = ["incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"]
+
+        if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
+            return True
+
+        return False
+
+    # 🔄 Intégration dans gerer_modules_speciaux()
+    if doit_memoriser_automatiquement(question_clean):
+        contenu = question_clean.strip(" .!?")
+
+        try:
+            memoire = charger_memoire_ava()
+            memoire["souvenirs"].append({
+                "type": "réflexion_utilisateur",
+                "contenu": contenu,
+                "date": datetime.now().strftime("%Y-%m-%d")
+            })
+            sauvegarder_memoire_ava(memoire)
+
+            # Recharge la mémoire pour afficher une mise à jour fiable
+            memoire = charger_memoire_ava()
+            derniers_souvenirs = memoire.get("souvenirs", [])[-3:]
+
+            retour = "🧠 Ce que vous venez de dire m’a marquée... je l’ai noté dans mes souvenirs :\n"
+            for s in derniers_souvenirs:
+                retour += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
+            return retour
+
+        except Exception as e:
+            return f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}"
+
+    suggestions = {
+        "musique": "Souhaitez-vous que je vous propose une autre chanson ? 🎵",
+        "voyage": "Si vous souhaitez des idées de destinations, je peux en proposer ! 🌍",
+        "santé": "Pensez à bien vous reposer, je suis là si vous avez besoin d’un petit conseil bien-être. 🌿",
+        "bourse": "Souhaitez-vous une mise à jour rapide sur un actif particulier ? 📈",
+        "amour": "Si vous voulez parler de cœur, je suis là pour écouter sans jugement. 💖",
+        "horoscope": "Souhaitez-vous que je vous partage votre horoscope du jour ? ✨",
+        "motivation": "Envie d’un boost d’énergie ? Je peux vous balancer une punchline futuriste. 🚀",
+        "recette": "Un petit creux ? Je peux vous proposer une recette rapide à tester. 🍳",
+        "temps": "Vous voulez la météo actuelle dans votre ville ? Je peux la retrouver. ☁️",
+        "symptôme": "Si vous avez un petit souci de santé, je peux vous orienter avec douceur. 🩺"
+    }
+    
+    # 🧠 Récupération mémoire court terme (si dispo)
+    dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
+
+    # 🔑 Mots-clés pour détecter une intention musicale
+    mots_cles_musique = [
+        "musique", "chanson", "son", "titre", "écouter", "playlist", "sons", "mets-moi une chanson", "propose un son", "donne un son"
+    ]
+    theme_musique_detecte = any(mot in question_clean.lower() for mot in mots_cles_musique)
+
+    # 🔁 Suggestions génériques selon thème
+    if dernier_theme in suggestions:
+        message_bot += f"\n{suggestions[dernier_theme]}"
+
+    # 🎵 Bloc musical déclenché par mémoire ou mot-clé détecté
+    if theme_musique_detecte or dernier_theme == "musique":
+        print("🟢 Bloc musical déclenché 🎵")
+        tendances = obtenir_titres_populaires_france()
+        if tendances:
+            message_bot += (
+                "\n🎧 Voici quelques titres populaires à découvrir :\n\n"
+                + "\n".join(tendances)
+                + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
+            )
+
+    return message_bot if message_bot else None
+    
     
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
