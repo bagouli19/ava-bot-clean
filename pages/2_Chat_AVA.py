@@ -64,9 +64,9 @@ except KeyError as e:
 st.write(f"Clé API Google : {GOOGLE_API_KEY if GOOGLE_API_KEY else 'Aucune'}")
 st.write(f"ID Moteur de Recherche : {GOOGLE_SEARCH_ENGINE_ID if GOOGLE_SEARCH_ENGINE_ID else 'Aucun'}")
 
-# Fonction de recherche Google
+# Fonction de recherche Google avec descriptif personnalisé
 def rechercher_sur_google(question):
-    query = question
+    query = question.strip()
     url = f"https://www.googleapis.com/customsearch/v1?q={query}&cx={GOOGLE_SEARCH_ENGINE_ID}&key={GOOGLE_API_KEY}"
     
     try:
@@ -77,7 +77,20 @@ def rechercher_sur_google(question):
         if not resultats:
             return "Désolé, je n'ai trouvé aucun résultat pertinent sur Google."
         
-        reponse = "Voici les premiers résultats trouvés sur Google :\n"
+        # Définir un petit descriptif personnalisé en fonction du type de recherche
+        if "horoscope" in query.lower():
+            description = "🔮 Voici ce que j'ai trouvé sur votre horoscope :"
+        elif "météo" in query.lower() or "meteo" in query.lower():
+            description = "🌦️ J'ai trouvé les prévisions météo pour vous :"
+        elif "recette" in query.lower():
+            description = "🍽️ Voilà quelques recettes qui pourraient vous plaire :"
+        elif "actualité" in query.lower():
+            description = "📰 Voici les dernières actualités que j'ai trouvées :"
+        else:
+            description = "🔎 Voici les premiers résultats trouvés sur Google :"
+
+        # Construction de la réponse avec descriptif
+        reponse = f"{description}\n"
         for item in resultats[:3]:
             titre = item.get("title", "Sans titre")
             lien = item.get("link", "Pas de lien disponible")
@@ -85,8 +98,7 @@ def rechercher_sur_google(question):
 
         return reponse
     except Exception as e:
-        return f"Erreur lors de la recherche Google : {e}"
-
+        return f"⚠️ Erreur lors de la recherche Google : {e}"
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
@@ -2583,12 +2595,17 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             st.session_state["quiz_attendu"] = ""
             return message
 
+    # Intégration dans le système de détection des questions
     if "recherche" in question_clean.lower() or "google" in question_clean.lower():
         requete = question_clean.replace("recherche", "").replace("google", "").strip()
         if len(requete) > 0:
             message_bot = rechercher_sur_google(requete)
         else:
-            message_bot = "Dites-moi ce que vous souhaitez que je recherche sur Google."
+            message_bot = "🔎 Dites-moi ce que vous souhaitez que je recherche sur Google."
+
+    # ✅ Automatisation de la recherche Google pour les questions sans réponse
+    if message_bot in ["Je ne sais pas.", "Désolé, je n'ai pas la réponse.", "Pouvez-vous reformuler ?"]:
+        message_bot = rechercher_sur_google(question_clean)
 
     # Détection de requête ouverte ou généraliste
     print("✅ gerer_modules_speciaux appelée :", question_clean)   
