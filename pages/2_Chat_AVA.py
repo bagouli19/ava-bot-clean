@@ -1536,23 +1536,28 @@ def calculer_expression(question_clean):
     try:
         # Extraction et nettoyage de l'expression mathématique
         question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
-        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
+        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc).strip()
         
-        # Vérification de la validité de l'expression
-        expression = question_calc.strip()
-        if re.match(r"^[\d\.\+\-\*/%\(\)\s]+$", expression):
-            # Utilisation de ast.literal_eval pour un calcul sécurisé
-            result = ast.literal_eval(expression)
-            print("✅ Calcul local effectué avec succès.")  # Diagnostic
+        # Vérification de la validité de l'expression (nombres et opérateurs uniquement)
+        if re.match(r"^[\d\.\+\-\*/%\(\)\s]+$", question_calc):
+            # Utilisation de ast.parse pour une évaluation sécurisée
+            tree = ast.parse(question_calc, mode='eval')
+            for node in ast.walk(tree):
+                if not isinstance(node, (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Num, 
+                                         ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow, 
+                                         ast.Mod, ast.FloorDiv, ast.USub, ast.UAdd, 
+                                         ast.Load, ast.Constant)):
+                    return "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
+            
+            # Évaluation sécurisée de l'expression
+            result = eval(compile(tree, filename="<string>", mode="eval"))
             return f"🧮 Le résultat est : **{round(result, 4)}**"
         else:
-            print("❌ Expression invalide détectée.")  # Diagnostic
             return "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
     except ZeroDivisionError:
         return "❌ Division par zéro détectée. Essayez une autre opération."
     except Exception as e:
         return f"❌ Erreur de calcul : {str(e)}"
-
 
 import streamlit as st
 import openai
