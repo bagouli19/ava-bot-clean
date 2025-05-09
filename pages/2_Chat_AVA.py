@@ -1650,14 +1650,15 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             print(f"🔧 Debug : Expression après nettoyage : {question_calc}")
 
             try:
-                # Utilisation d'une expression régulière pour s'assurer que l'expression est sécurisée
-                if re.match(r"^[0-9\.\+\-\*/%\(\)\s]+$", question_calc):
-                    result = eval(question_calc, {"__builtins__": None}, {})
-                    print(f"🔧 Debug : Résultat calculé : {result}")
-                    message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-                else:
-                    print("🔧 Debug : Expression non autorisée détectée.")
-                    message_bot = "❌ L'expression contient des caractères non autorisés. Utilisez uniquement des nombres et des opérateurs mathématiques."
+                # Utilisation d'ast.literal_eval pour une évaluation ultra sécurisée
+                expression = ast.parse(question_calc, mode='eval')
+                for node in ast.walk(expression):
+                    if not isinstance(node, (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Num, ast.operator, ast.Load)):
+                        raise ValueError("❌ Expression non autorisée détectée.")
+            
+                # Évaluation de l'expression (100% sécurisé)
+                result = eval(compile(expression, "", mode="eval"))
+                message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
             except ZeroDivisionError:
                 print("🔧 Debug : Division par zéro détectée.")
                 message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
@@ -1670,7 +1671,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # ✅ Si message_bot a été rempli, nous retournons la réponse
     if message_bot:
         return message_bot
-
 
 
     # Bloc Convertisseur intelligent 
