@@ -1544,15 +1544,30 @@ def format_actus(
 
 
 
+# Fonction de recherche des occurrences de 'horoscope' dans le fichier
+
+def rechercher_horoscope(filepath):
+    with open(filepath, 'r', encoding='utf-8') as file:
+        contenu = file.read()
+
+    occurrences = list(re.finditer(r"horoscope", contenu, re.IGNORECASE))
+
+    if occurrences:
+        print(f"✅ {len(occurrences)} occurrences trouvées :")
+        for occ in occurrences:
+            start = max(0, occ.start() - 50)
+            end = min(len(contenu), occ.end() + 50)
+            print(f"...{contenu[start:end]}...")
+    else:
+        print("❌ Aucune occurrence trouvée.")
+
+# --- Amélioration du bloc météo ---
 def get_meteo_ville(city: str) -> str:
     """
     1) Géocode la ville
     2) Récupère la météo par lat/lon si disponibles
     3) Sinon fallback sur nom de la ville
     """
-    if not API_KEY:
-        return "⚠️ Clé API météo non configurée."
-
     lat, lon = geocode_location(city)
     params = {
         "appid": API_KEY,
@@ -1561,10 +1576,8 @@ def get_meteo_ville(city: str) -> str:
     }
 
     if lat is not None and lon is not None:
-        # Si géocodage OK, on interroge par coordonnées
         params.update({"lat": lat, "lon": lon})
     else:
-        # fallback : requête directe par nom de ville
         params["q"] = city
 
     try:
@@ -1572,22 +1585,23 @@ def get_meteo_ville(city: str) -> str:
         resp.raise_for_status()
         data = resp.json()
         weather = data.get("weather")
-        main = data.get("main", {})
-        wind = data.get("wind", {})
+        main   = data.get("main", {})
+        wind   = data.get("wind", {})
 
         if not weather or not isinstance(weather, list):
             return "⚠️ Données météo manquantes."
 
         desc = weather[0].get("description", "").capitalize()
         temp = main.get("temp", "N/A")
-        hum = main.get("humidity", "N/A")
+        hum  = main.get("humidity", "N/A")
         vent = wind.get("speed", "N/A")
 
-        return f"{desc} avec {temp}°C, humidité : {hum}%, vent : {vent} m/s."
+        return f"{desc} avec {temp}°C, humidité : {hum}%, vent : {vent} m/s."
     except requests.RequestException:
         return "⚠️ Impossible de joindre le service météo pour le moment."
     except ValueError:
         return "⚠️ Réponse météo invalide."
+
 
 import streamlit as st
 import openai
@@ -2488,38 +2502,24 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "🌍 Je ne connais pas encore la capitale de ce pays. Essayez un autre !"
 
     
-    
-    # ✅ Liste de mots-clés météo
-    mots_cles_meteo = [
-        "meteo", "météo", "quel temps", "prévision", "prévisions", 
-        "il fait quel temps", "temps à", "temps en", "temps au", 
-        "il fait beau", "il pleut", "va-t-il pleuvoir", 
-        "faut-il prendre un parapluie"
-    ]
 
-    if any(kw in question_clean.lower() for kw in mots_cles_meteo):
+    # --- Bloc météo intelligent (ultra robuste) ---
+    if any(kw in question_clean.lower() for kw in ["meteo", "météo", "quel temps", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"]):
         ville_detectee = "Paris"  # Par défaut
 
-        # ✅ Extraction de la ville avec une nouvelle méthode simplifiée
-        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en)\s+([a-zA-Z\s\-']+)", question_clean, re.IGNORECASE)
-        if match_geo:
-            ville_detectee = match_geo.group(1).strip().title()
+        # Chercher "à/au/aux/dans/sur/en <lieu>"
+        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
 
-        # ✅ Si aucun lieu n'est détecté, on vérifie une autre méthode
-        if not match_geo:
-            match_direct = re.search(r"(?:meteo|météo)\s+([a-zA-Z\s\-']+)", question_clean, re.IGNORECASE)
-            if match_direct:
-                ville_detectee = match_direct.group(1).strip().title()
-        
-        print(f"🔎 [DEBUG] Ville détectée : {ville_detectee}")
+        if match_geo:
+            lieu = match_geo.group(1).strip().rstrip(" ?.!;")
+            ville_detectee = lieu.title()
 
         try:
             meteo = get_meteo_ville(ville_detectee)
-        except Exception as e:
-            print(f"❌ [DEBUG] Erreur lors de la récupération de la météo : {e}")
+        except Exception:
             return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
 
-        if "⚠️" in meteo:
+        if "erreur" in meteo.lower() or "manquantes" in meteo.lower():
             return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
 
         return (
