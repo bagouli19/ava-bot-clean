@@ -2487,6 +2487,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         else:
             return "🌍 Je ne connais pas encore la capitale de ce pays. Essayez un autre !"
 
+    def traiter_demande_meteo(question_clean):
+    """
+    Analyse la question pour détecter la ville demandée et récupère la météo.
+    """
     # ✅ Liste de mots-clés météo
     mots_cles_meteo = [
         "meteo", "météo", "quel temps", "prévision", "prévisions", 
@@ -2495,12 +2499,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "faut-il prendre un parapluie"
     ]
 
+    # ✅ Vérification initiale
     if any(kw in question_clean.lower() for kw in mots_cles_meteo):
         ville_detectee = "Paris"  # Par défaut (Paris)
         question_clean = question_clean.lower()
 
         # ✅ Suppression des mots parasites
-        mots_parasites = ["aujourd'hui", "météo", "quel", "temps", "prévision", "prévisions"]
+        mots_parasites = ["aujourd'hui", "demain", "après-demain", "météo", "quel", "temps", "prévision", "prévisions"]
         for mot in mots_parasites:
             question_clean = question_clean.replace(mot, "")
 
@@ -2515,7 +2520,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         if match_geo:
             lieu = match_geo.group(1).strip().rstrip(" ?.!;")
-            ville_detectee = " ".join(w.capitalize() for w in lieu.split() if w.lower() not in mots_parasites)
+            # ✅ Nettoyage des mots parasites restants
+            lieu = " ".join(w.capitalize() for w in lieu.split() if w.lower() not in mots_parasites)
+            ville_detectee = lieu if lieu else "Paris"
+
+        # ✅ Validation de la ville détectée
+        if ville_detectee.lower() in ["", "meteo", "météo", "aujourd'hui", "demain"]:
+            ville_detectee = "Paris"
 
         try:
             meteo = get_meteo_ville(ville_detectee)
@@ -2536,7 +2547,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
         nom_simple = question_clean[len("analyse "):].strip()
