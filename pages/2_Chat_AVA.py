@@ -1530,24 +1530,6 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-# Fonction de recherche des occurrences de 'horoscope' dans le fichier
-
-def rechercher_horoscope(filepath):
-    with open(filepath, 'r', encoding='utf-8') as file:
-        contenu = file.read()
-
-    occurrences = list(re.finditer(r"horoscope", contenu, re.IGNORECASE))
-
-    if occurrences:
-        print(f"✅ {len(occurrences)} occurrences trouvées :")
-        for occ in occurrences:
-            start = max(0, occ.start() - 50)
-            end = min(len(contenu), occ.end() + 50)
-            print(f"...{contenu[start:end]}...")
-    else:
-        print("❌ Aucune occurrence trouvée.")
-
-
 
 import streamlit as st
 import openai
@@ -1656,32 +1638,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-    # --- Bloc Horoscope dans les modules spéciaux ---
-    if any(kw in question_clean for kw in ["horoscope", "signe", "astrologie"]):
-        signes_disponibles = [
-            "bélier", "taureau", "gémeaux", "cancer", "lion", "vierge", 
-            "balance", "scorpion", "sagittaire", "capricorne", 
-            "verseau", "poissons"
-        ]
-        signe_detecte = next((s for s in signes_disponibles if s in question_clean), None)
-
-        if not signe_detecte:
-            message_bot = (
-                "🔮 Pour vous donner votre horoscope, indiquez-moi votre **signe astrologique** "
-                "(ex : Lion, Vierge, Taureau...)\n\n"
-            )
-        else:
-            try:
-                # Utiliser la nouvelle fonction sécurisée
-                horoscope = get_horoscope(signe_detecte.lower())
-                if horoscope:
-                    message_bot = f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n{horoscope}"
-                else:
-                    message_bot = "⚠️ Désolé, je n'ai pas pu obtenir votre horoscope pour l'instant."
-            except Exception as e:
-                message_bot = f"❌ Erreur lors de la récupération de l'horoscope : {e}"
-
-
     import re, ast, streamlit as st
 
     # Récupère le texte brut que tape l’utilisateur
