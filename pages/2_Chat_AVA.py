@@ -1530,7 +1530,7 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-    import ast
+import ast
     
 def calculer_expression(question_clean):
     try:
