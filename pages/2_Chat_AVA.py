@@ -1530,6 +1530,26 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
+def get_horoscope(sign):
+    # Utiliser la clé API stockée dans secrets
+    try:
+        api_key = st.secrets["api_ninjas"]["api_key"]
+        url = f"https://api.api-ninjas.com/v1/horoscope?zodiac={sign}"
+        headers = {'X-Api-Key': api_key}
+        
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Gérer les erreurs HTTP
+        data = response.json()
+        return data.get('horoscope', 'Horoscope non disponible.')
+    except KeyError:
+        return "⚠️ Clé API non trouvée. Vérifiez votre fichier secrets.toml."
+    except Exception as e:
+        return f"⚠️ Erreur lors de la récupération de l'horoscope : {str(e)}"
+
+# Exemple d'utilisation
+signe = "lion"
+horoscope = get_horoscope(signe)
+st.write(f"🔮 Horoscope pour **{signe.capitalize()}** :\n\n{horoscope}")
 
 import streamlit as st
 import openai
@@ -1982,39 +2002,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         for key, reponse in base_culture_nettoyee.items():
             if key in question_clean:
                 return reponse
-
-    
-    # --- Bloc Horoscope ---
-    if any(kw in question_clean for kw in ["horoscope", "signe", "astrologie"]):
-        signes_disponibles = [
-            "bélier", "taureau", "gémeaux", "cancer", "lion", "vierge", 
-            "balance", "scorpion", "sagittaire", "capricorne", 
-            "verseau", "poissons"
-        ]
-        signe_detecte = next((s for s in signes_disponibles if s in question_clean), None)
-
-        if not signe_detecte:
-            message_bot = (
-                "🔮 Pour vous donner votre horoscope, indiquez-moi votre **signe astrologique** "
-                "(ex : Lion, Vierge, Taureau...)\n\n"
-            )
-        else:
-            try:
-                response = requests.post(
-                    f"https://aztro.sameerkumar.website/?sign={signe_detecte}&day=today"
-                )
-                response.raise_for_status()
-                data = response.json()
-                texte = data.get("description", "")
-     
-                if texte:
-                    message_bot = f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n> {texte}\n\n"
-                else:
-                    message_bot = f"🌙 Horoscope pour **{signe_detecte.capitalize()}** indisponible. Essayez plus tard."
-            except Exception as e:
-                message_bot = f"⚠️ Je n'arrive pas à récupérer l'horoscope pour le moment. Réessayez plus tard.\n\nErreur : {str(e)}"
-
-
    
     # --- Bloc Faits Insolites ---
     faits_insolites = [
