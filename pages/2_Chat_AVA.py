@@ -1646,7 +1646,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # Calcul direct si la phrase commence par "calcul" ou "calcule"
     m = re.match(r"(?i)^\s*calcul(?:e)?\s+([\d\.\+\-\*/%\(\)\s]+)$", raw)
     if m:
-        expr = m.group(1)
+        expr = m.group(1).replace(" ", "")  # Supprime les espaces
         st.write("🔧 DEBUG expr prête à parser:", repr(expr))
         try:
             tree = ast.parse(expr, mode="eval")
