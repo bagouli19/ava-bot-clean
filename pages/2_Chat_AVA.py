@@ -1530,26 +1530,21 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
+
 def get_horoscope(sign):
-    # Utiliser la clé API stockée dans secrets
     try:
         api_key = st.secrets["api_ninjas"]["api_key"]
         url = f"https://api.api-ninjas.com/v1/horoscope?zodiac={sign}"
         headers = {'X-Api-Key': api_key}
         
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  # Gérer les erreurs HTTP
+        response.raise_for_status()
         data = response.json()
         return data.get('horoscope', 'Horoscope non disponible.')
     except KeyError:
         return "⚠️ Clé API non trouvée. Vérifiez votre fichier secrets.toml."
     except Exception as e:
         return f"⚠️ Erreur lors de la récupération de l'horoscope : {str(e)}"
-
-# Exemple d'utilisation
-signe = "lion"
-horoscope = get_horoscope(signe)
-st.write(f"🔮 Horoscope pour **{signe.capitalize()}** :\n\n{horoscope}")
 
 import streamlit as st
 import openai
@@ -1674,7 +1669,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             )
         else:
             # Utiliser la nouvelle fonction sécurisée
-            horoscope = get_horoscope(signe_detecte)
+            horoscope = get_horoscope(signe_detecte.lower())
             message_bot = f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n{horoscope}"
 
     import re, ast, streamlit as st
