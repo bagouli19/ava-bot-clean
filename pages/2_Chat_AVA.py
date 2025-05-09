@@ -2816,7 +2816,12 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     return message_bot if message_bot else None
     
-    
+    # --- Rappel dynamique d'un souvenir enregistré ---
+    if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
+        for cle, valeur in st.session_state["souvenirs"].items():
+            if any(mot in cle for mot in question_clean.split()):
+                return f"✨ Souvenir retrouvé : **{valeur}**"
+        return "❓ Je n'ai pas encore ce souvenir enregistré..."
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
@@ -2839,12 +2844,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             ]
             message_bot = random.choice(reponses_ava)
     
-    # --- Rappel dynamique d'un souvenir enregistré ---
-    if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
-        for cle, valeur in st.session_state["souvenirs"].items():
-            if any(mot in cle for mot in question_clean.split()):
-                return f"✨ Souvenir retrouvé : **{valeur}**"
-        return "❓ Je n'ai pas encore ce souvenir enregistré..."
+    
     
 
    # 3️⃣ Recherche sémantique avec BERT
