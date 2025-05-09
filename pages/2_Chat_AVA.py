@@ -2507,11 +2507,14 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         ville_detectee = "Paris"  # Par défaut
 
         # Détection améliorée de la ville dans la question
-        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en|aujourd'hui\s+à)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
+        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
 
         if match_geo:
             lieu = match_geo.group(1).strip().rstrip(" ?.!;")
             ville_detectee = lieu.title()
+
+        elif "aujourd'hui" in question_clean.lower():
+            ville_detectee = "Paris"  # Défaut en cas de confusion
 
         try:
             meteo = get_meteo_ville(ville_detectee)
@@ -2532,6 +2535,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
+
 
 
 
