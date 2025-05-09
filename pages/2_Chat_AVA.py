@@ -2499,28 +2499,23 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if any(kw in question_clean.lower() for kw in mots_cles_meteo):
         ville_detectee = "Paris"  # Par défaut
 
-        # ✅ Suppression des mots parasites
-        mots_parasites = ["aujourd'hui", "demain", "après-demain", "météo", "quel", "temps", "prévision", "prévisions"]
-        question_simplifiee = question_clean.lower()
-        for mot in mots_parasites:
-            question_simplifiee = question_simplifiee.replace(mot, "")
-
-        # ✅ Extraction de la ville uniquement (à, au, en, sur...)
-        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en)\s+([a-z' -]+)", question_simplifiee, re.IGNORECASE)
+        # ✅ Extraction de la ville avec une nouvelle méthode simplifiée
+        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en)\s+([a-zA-Z\s\-']+)", question_clean, re.IGNORECASE)
         if match_geo:
-            ville_detectee = match_geo.group(1).strip().capitalize()
+            ville_detectee = match_geo.group(1).strip().title()
 
-        # ✅ Correction si ville incorrecte détectée
-        if not ville_detectee or ville_detectee.lower() in ["meteo", "météo"]:
-            ville_detectee = "Paris"
-
-        print(f"🔎 Question simplifiée : {question_simplifiee}")
-        print(f"🔎 Ville détectée : {ville_detectee}")
+        # ✅ Si aucun lieu n'est détecté, on vérifie une autre méthode
+        if not match_geo:
+            match_direct = re.search(r"(?:meteo|météo)\s+([a-zA-Z\s\-']+)", question_clean, re.IGNORECASE)
+            if match_direct:
+                ville_detectee = match_direct.group(1).strip().title()
+        
+        print(f"🔎 [DEBUG] Ville détectée : {ville_detectee}")
 
         try:
             meteo = get_meteo_ville(ville_detectee)
         except Exception as e:
-            print(f"❌ Erreur lors de la récupération de la météo : {e}")
+            print(f"❌ [DEBUG] Erreur lors de la récupération de la météo : {e}")
             return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
 
         if "⚠️" in meteo:
@@ -2537,7 +2532,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-
+        
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
         nom_simple = question_clean[len("analyse "):].strip()
