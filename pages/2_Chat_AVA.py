@@ -1547,11 +1547,6 @@ def rechercher_horoscope(filepath):
     else:
         print("❌ Aucune occurrence trouvée.")
 
-# Exécution de la fonction sur le fichier
-
-# Mettre ici le chemin complet de ton fichier Chat_AVA.py
-fichier_chat_ava = '2_Chat_AVA.py'
-rechercher_horoscope(fichier_chat_ava)
 
 
 import streamlit as st
