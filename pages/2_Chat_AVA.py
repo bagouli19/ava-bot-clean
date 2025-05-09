@@ -1531,20 +1531,19 @@ def format_actus(
     return texte
 
 
-def get_horoscope(sign):
+def get_horoscope(signe):
     try:
-        api_key = st.secrets["api_ninjas"]["api_key"]
-        url = f"https://api.api-ninjas.com/v1/horoscope?zodiac={sign}"
-        headers = {'X-Api-Key': api_key}
-        
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        data = response.json()
-        return data.get('horoscope', 'Horoscope non disponible.')
-    except KeyError:
-        return "⚠️ Clé API non trouvée. Vérifiez votre fichier secrets.toml."
+        url = f"https://aztro.sameerkumar.website/?sign={signe}&day=today"
+        response = requests.post(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("description", "Désolé, je n'ai pas pu obtenir l'horoscope.")
+        else:
+            return "⚠️ Désolé, je n'ai pas pu obtenir votre horoscope pour l'instant."
+
     except Exception as e:
-        return f"⚠️ Erreur lors de la récupération de l'horoscope : {str(e)}"
+        return f"❌ Erreur lors de la récupération de l'horoscope : {str(e)}"
 
 import streamlit as st
 import openai
@@ -1668,9 +1667,16 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "(ex : Lion, Vierge, Taureau...)\n\n"
             )
         else:
-            # Utiliser la nouvelle fonction sécurisée
-            horoscope = get_horoscope(signe_detecte.lower())
-            message_bot = f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n{horoscope}"
+            try:
+                # Utiliser la nouvelle fonction sécurisée
+                horoscope = get_horoscope(signe_detecte.lower())
+                if horoscope:
+                    message_bot = f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n{horoscope}"
+                else:
+                    message_bot = "⚠️ Désolé, je n'ai pas pu obtenir votre horoscope pour l'instant."
+            except Exception as e:
+                message_bot = f"❌ Erreur lors de la récupération de l'horoscope : {e}"
+
 
     import re, ast, streamlit as st
 
