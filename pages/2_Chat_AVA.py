@@ -1678,7 +1678,32 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 match = re.search(r"(\d+(\.\d+)?)\s*km", phrase)
                 if match:
                     km = float(match.group(1))
-                    miles = km * 0.621
+                    miles = km * 0.621371
+                    message_bot = f"📏 {km} km = {round(miles, 2)} miles"
+            elif "miles en km" in phrase:
+                match = re.search(r"(\d+(\.\d+)?)\s*miles?", phrase)
+                if match:
+                    mi = float(match.group(1))
+                    km = mi / 0.621371
+                    message_bot = f"📏 {mi} miles = {round(km, 2)} km"
+            elif "celsius en fahrenheit" in phrase:
+                match = re.search(r"(\d+(\.\d+)?)\s*c", phrase)
+                if match:
+                    celsius = float(match.group(1))
+                    fahrenheit = (celsius * 9/5) + 32
+                    message_bot = f"🌡️ {celsius}°C = {round(fahrenheit, 2)}°F"
+            elif "fahrenheit en celsius" in phrase:
+                match = re.search(r"(\d+(\.\d+)?)\s*f", phrase)
+                if match:
+                    f_temp = float(match.group(1))
+                    c_temp = (f_temp - 32) * 5/9
+                    message_bot = f"🌡️ {f_temp}°F = {round(c_temp, 2)}°C"
+        except Exception as e:
+            message_bot = f"⚠️ Désolé, la conversion n’a pas pu être effectuée en raison d’un problème de connexion. Veuillez réessayer plus tard."
+
+    # ✅ Si message_bot a été rempli, nous retournons la réponse
+    if message_bot:
+        return message_bot
 
     # --- Bloc Quiz de culture générale ---
     if not message_bot and any(mot in question_clean for mot in [
