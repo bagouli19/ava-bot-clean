@@ -1572,12 +1572,6 @@ def calculer_expression(question_clean):
         print(f"❌ Erreur de calcul : {str(e)}")
         return f"❌ Erreur de calcul : {str(e)}"
 
-# --- Intégration dans ton bloc de chat AVA ---
-if not message_bot and re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
-    message_bot = calculer_expression(question_clean)
-    print(f"🔧 Réponse AVA : {message_bot}")
-    return message_bot  # Retour immédiat si calcul détecté
-
 
 import streamlit as st
 import openai
@@ -1685,6 +1679,12 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
+    
+    # --- Intégration dans ton bloc de chat AVA ---
+    if not message_bot and re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
+        message_bot = calculer_expression(question_clean)
+        print(f"🔧 Réponse AVA : {message_bot}")
+        return message_bot  # Retour immédiat si calcul détecté
 
     # Bloc Convertisseur intelligent 
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
