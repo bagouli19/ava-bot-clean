@@ -324,6 +324,36 @@ def sauvegarder_memoire_ava(memoire: dict):
     except Exception as e:
         st.sidebar.error(f"❌ Erreur lors de la sauvegarde mémoire : {e}")
 
+def detecter_information_cle(question: str):
+    """Détecte les informations clés dans une question ou une réponse."""
+    informations_detectees = {}
+
+    # Détection du prénom (simple exemple)
+    if "je m'appelle" in question.lower() or "mon nom est" in question.lower():
+        mots = question.split()
+        for i, mot in enumerate(mots):
+            if mot.lower() in ["m'appelle", "nom", "prénom"]:
+                if i + 1 < len(mots):
+                    prenom = mots[i + 1].capitalize()
+                    informations_detectees["prenom"] = prenom
+
+    # Détection des intérêts (livres, musique, films)
+    if "j'aime" in question.lower():
+        mots = question.split()
+        for i, mot in enumerate(mots):
+            if mot.lower() == "j'aime":
+                interet = " ".join(mots[i+1:])
+                informations_detectees["interet"] = interet
+
+    # Détection d'une préférence particulière
+    if "je préfère" in question.lower():
+        mots = question.split()
+        for i, mot in enumerate(mots):
+            if mot.lower() == "je préfère":
+                preference = " ".join(mots[i+1:])
+                informations_detectees["preference"] = preference
+
+    return informations_detectees
 
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
@@ -1531,34 +1561,28 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
-    utilisateur = "ID_Utilisateur"  # Remplace par l'ID réel de l'utilisateur si tu en as un
 
-    memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
+    # 1️⃣ Détection automatique des informations clés
+    informations_detectees = detecter_information_cle(question_clean)
+    if informations_detectees:
+        for cle, valeur in informations_detectees.items():
+            memoire_ava[cle] = valeur  # Enregistre dans la mémoire
+        sauvegarder_memoire_ava(memoire_ava)  # Met à jour sur GitHub
+        print(f"🔍 Informations détectées et enregistrées : {informations_detectees}")
 
-    if "force_gpt" in question_clean:
-        prompt = question_clean.replace("force_gpt", "").strip()
-        print("🔁 Appel GPT forcé")
-        reponse = repondre_openai(prompt)
-        enregistrer_interaction(utilisateur, question_clean, reponse)
-        return reponse
-
-    # Salutations
+    # (le reste de ta fonction reste inchangé)
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
         print("👋 Réponse salutation trouvée")
-        enregistrer_interaction(utilisateur, question_clean, reponse_salut)
         return reponse_salut
 
-    # 3️⃣ Culture générale
+    # Culture générale
     if question_clean in base_culture_nettoyee:
-        reponse = base_culture_nettoyee[question_clean]
-        enregistrer_interaction(utilisateur, question_clean, reponse)
-        return reponse
+        return base_culture_nettoyee[question_clean]
 
-    # 4️⃣ Phrases classiques dans la base de langage
+    # Phrases classiques dans la base de langage
     reponse_langage = chercher_reponse_base_langage(question)
     if reponse_langage:
-        enregistrer_interaction(utilisateur, question_clean, reponse_langage)
         return reponse_langage
 
     # Modules spéciaux
@@ -1566,15 +1590,15 @@ def trouver_reponse(question: str, model) -> str:
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
         print("✅ Réponse module spécial")
-        enregistrer_interaction(utilisateur, question_clean, reponse_speciale.strip())
         return reponse_speciale.strip()
 
     # GPT fallback
     print("🤖 Fallback GPT")
     reponse_openai = repondre_openai(question_clean)
     if reponse_openai:
-        enregistrer_interaction(utilisateur, question_clean, reponse_openai.strip())
         return reponse_openai.strip()
+
+    return "🤔 Je n'ai pas trouvé de réponse précise."
 
 
 # --- Modules personnalisés (à enrichir) ---
