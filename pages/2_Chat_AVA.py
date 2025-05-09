@@ -412,6 +412,31 @@ def obtenir_titres_populaires_france(nb=5):
     except Exception as e:
         return [f"❌ Exception : {str(e)}"]
 
+# Chemin du fichier JSON (assure-toi qu'il est au même endroit que Chat_AVA.py)
+fichier_interactions = "interactions_ava.json"
+
+def enregistrer_interaction(utilisateur, question, reponse):
+    # Charger les interactions existantes
+    if os.path.exists(fichier_interactions):
+        with open(fichier_interactions, "r", encoding="utf-8") as f:
+            interactions = json.load(f)
+    else:
+        interactions = []
+
+    # Ajouter la nouvelle interaction
+    nouvelle_interaction = {
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "utilisateur": utilisateur,
+        "question": question,
+        "reponse": reponse,
+        "satisfaction": None
+    }
+
+    interactions.append(nouvelle_interaction)
+
+    # Enregistrer les interactions mises à jour
+    with open(fichier_interactions, "w", encoding="utf-8") as f:
+        json.dump(interactions, f, ensure_ascii=False, indent=4)
 
 # ───────────────────────────────────────────────────────────────────────
 # 6️⃣ Chargement du modèle sémantique MiniLM
@@ -1465,27 +1490,34 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
+    utilisateur = "ID_Utilisateur"  # Remplace par l'ID réel de l'utilisateur si tu en as un
 
     memoire_court_terme["dernier_sujet"] = question_clean.lower().split()[0]
 
     if "force_gpt" in question_clean:
         prompt = question_clean.replace("force_gpt", "").strip()
         print("🔁 Appel GPT forcé")
-        return repondre_openai(prompt)
+        reponse = repondre_openai(prompt)
+        enregistrer_interaction(utilisateur, question_clean, reponse)
+        return reponse
 
     # Salutations
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
         print("👋 Réponse salutation trouvée")
+        enregistrer_interaction(utilisateur, question_clean, reponse_salut)
         return reponse_salut
 
     # 3️⃣ Culture générale
     if question_clean in base_culture_nettoyee:
-        return base_culture_nettoyee[question_clean]
+        reponse = base_culture_nettoyee[question_clean]
+        enregistrer_interaction(utilisateur, question_clean, reponse)
+        return reponse
 
-    # 4 Phrases classiques dans la base de langage
+    # 4️⃣ Phrases classiques dans la base de langage
     reponse_langage = chercher_reponse_base_langage(question)
     if reponse_langage:
+        enregistrer_interaction(utilisateur, question_clean, reponse_langage)
         return reponse_langage
 
     # Modules spéciaux
@@ -1493,15 +1525,18 @@ def trouver_reponse(question: str, model) -> str:
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
         print("✅ Réponse module spécial")
+        enregistrer_interaction(utilisateur, question_clean, reponse_speciale.strip())
         return reponse_speciale.strip()
 
     # GPT fallback
     print("🤖 Fallback GPT")
     reponse_openai = repondre_openai(question_clean)
     if reponse_openai:
+        enregistrer_interaction(utilisateur, question_clean, reponse_openai.strip())
         return reponse_openai.strip()
 
-    return "🤔 Je n'ai pas trouvé de réponse précise."
+    # Réponse par défaut
+    reponse_defaut = "🤔 Je n'ai pas trouvé de réponse
 
 
 # --- Modules personnalisés (à enrichir) ---
