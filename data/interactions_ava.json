@@ -1,1 +1,6 @@
-[]
+{
+    "utilisateur_1": {
+        "nom": "Teddy",
+        "historique": []
+    }
+}

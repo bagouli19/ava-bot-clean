@@ -225,25 +225,44 @@ import requests, json, base64
 from datetime import datetime
 import streamlit as st
 
+import requests
+import json
+import streamlit as st
+
 # Configuration GitHub
 GITHUB_REPO = "bagouli19/ava-bot-ultimate"
 FICHIER_MEMOIRE = "data/memoire_ava.json"
 BRANCHE = "main"
 GITHUB_TOKEN = st.secrets["github"]["GITHUB_TOKEN"]
 
-def charger_memoire_ava() -> dict:
-    """Charge la mémoire AVA depuis GitHub (fichier JSON brut)."""
-    url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{BRANCHE}/{FICHIER_MEMOIRE}"
+def charger_memoire_ava():
+    """Charge la mémoire AVA depuis GitHub."""
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE}"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            return response.json()
-        else:
-            st.sidebar.warning("⚠️ Impossible de lire la mémoire depuis GitHub.")
-            return {"souvenirs": []}
+            contenu_base64 = response.json().get("content", "")
+            if contenu_base64:
+                contenu_json = base64.b64decode(contenu_base64).decode("utf-8")
+                return json.loads(contenu_json)
+        print("⚠️ Erreur de chargement de la mémoire depuis GitHub.")
+        return {}
     except Exception as e:
-        st.sidebar.error(f"❌ Erreur lors du chargement mémoire : {e}")
-        return {"souvenirs": []}
+        print(f"⚠️ Erreur de connexion à GitHub : {e}")
+        return {}
+
+# Charger la mémoire
+memoire_ava = charger_memoire_ava()
+
+def enregistrer_memoire_ava(memoire_ava):
+    """Enregistre la mémoire localement (sauvegarde de sécurité)."""
+    with open("memoire_ava.json", "w", encoding="utf-8") as fichier:
+        json.dump(memoire_ava, fichier, ensure_ascii=False, indent=4)
 
 def sauvegarder_memoire_ava(memoire: dict):
     """Sauvegarde la mémoire AVA sur GitHub via l’API GitHub."""
@@ -254,12 +273,34 @@ def sauvegarder_memoire_ava(memoire: dict):
     }
 
     try:
-        get_res = requests.get(url, headers=headers)
-        sha = get_res.json().get("sha", "")
+        # Charger la mémoire actuelle sur GitHub pour obtenir le SHA
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            sha = response.json().get("sha", "")
+        else:
+            print("⚠️ Erreur de récupération de SHA GitHub.")
+            sha = ""
 
-        if not sha:
-            st.sidebar.error("❌ SHA introuvable : impossible de mettre à jour le fichier mémoire.")
-            return
+        # Convertir la mémoire en JSON
+        contenu_json = json.dumps(memoire, ensure_ascii=False, indent=4).encode("utf-8")
+        contenu_base64 = base64.b64encode(contenu_json).decode("utf-8")
+
+        data = {
+            "message": "🔄 Mise à jour de la mémoire AVA",
+            "content": contenu_base64,
+            "sha": sha
+        }
+
+        # Envoi de la mise à jour à GitHub
+        response = requests.put(url, headers=headers, json=data)
+
+        if response.status_code in [200, 201]:
+            print("✅ Mémoire AVA sauvegardée sur GitHub.")
+        else:
+            print(f"❌ Erreur lors de la sauvegarde sur GitHub : {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
+
 
         # Données encodées base64 pour GitHub API
         content_encoded = base64.b64encode(
