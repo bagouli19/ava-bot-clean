@@ -1650,16 +1650,17 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             print(f"🔧 Debug : Expression après nettoyage : {question_calc}")
 
             try:
-                # Utilisation de ast.literal_eval pour une évaluation 100% sécurisée
-                expression = ast.literal_eval(question_calc)
-                print(f"🔧 Debug : Résultat calculé avec ast : {expression}")
-                message_bot = f"🧮 Le résultat est : **{round(expression, 4)}**"
+                # Utilisation d'une expression régulière pour s'assurer que l'expression est sécurisée
+                if re.match(r"^[0-9\.\+\-\*/%\(\)\s]+$", question_calc):
+                    result = eval(question_calc, {"__builtins__": None}, {})
+                    print(f"🔧 Debug : Résultat calculé : {result}")
+                    message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
+                else:
+                    print("🔧 Debug : Expression non autorisée détectée.")
+                    message_bot = "❌ L'expression contient des caractères non autorisés. Utilisez uniquement des nombres et des opérateurs mathématiques."
             except ZeroDivisionError:
                 print("🔧 Debug : Division par zéro détectée.")
                 message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
-            except (SyntaxError, ValueError):
-                print("🔧 Debug : Expression invalide détectée.")
-                message_bot = "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
             except Exception as e:
                 print(f"🔧 Debug : Erreur inattendue : {str(e)}")
                 message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
@@ -1669,6 +1670,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # ✅ Si message_bot a été rempli, nous retournons la réponse
     if message_bot:
         return message_bot
+
 
 
     # Bloc Convertisseur intelligent 
