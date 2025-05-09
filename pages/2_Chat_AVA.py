@@ -2503,22 +2503,30 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
 
     # --- Bloc météo intelligent (ultra robuste) ---
-    if any(kw in question_clean.lower() for kw in ["meteo", "météo", "quel temps", "quelle est la météo", "quelle est la météo aujourd'hui", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"]):
+    if any(kw in question_clean.lower() for kw in [
+        "meteo", "météo", "quel temps", 
+        "quelle est la météo", "quelle est la météo aujourd'hui", 
+        "prévision", "prévisions", 
+        "il fait quel temps", "temps à", "temps en", "temps au", 
+        "il fait beau", "il pleut", "va-t-il pleuvoir", 
+        "faut-il prendre un parapluie"
+    ]):
         ville_detectee = "Paris"  # Par défaut
 
         # Détection améliorée de la ville dans la question
         match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
 
+        # Gestion spécifique pour "quelle est la météo à ..."
+        if "quelle est la météo" in question_clean.lower():
+            # On cherche la ville après "à"
+            match_geo = re.search(r"quelle est la météo (?:à|a|au|aux|dans|sur|en)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
+
         if match_geo:
             lieu = match_geo.group(1).strip().rstrip(" ?.!;")
             ville_detectee = lieu.title()
 
-        # Correction spécifique pour "quelle est la météo à ..."
-        if "quelle est la météo à" in question_clean.lower():
-            ville_detectee = re.sub(r"quelle est la météo à\s*", "", question_clean, flags=re.IGNORECASE).strip().title()
-
         # Correction pour éviter les erreurs sur les noms mal nettoyés
-        ville_detectee = ville_detectee.replace("Meteo Aujourd Hui ", "Paris").replace("Aujourd'hui", "").replace("Quelle est la météo à", "").replace("Quel temps fait-il à", "").replace("quelle est la météo à", "").strip()
+        ville_detectee = ville_detectee.replace("Meteo Aujourd Hui ", "Paris").replace("Aujourd'hui", "").strip()
 
         try:
             meteo = get_meteo_ville(ville_detectee)
@@ -2539,6 +2547,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
+
 
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
