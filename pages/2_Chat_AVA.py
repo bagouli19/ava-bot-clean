@@ -1639,7 +1639,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
     
     import ast 
-    
+
     # --- Bloc spécial : Calcul local sécurisé (100% local) ---
     if not message_bot and re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
         try:
@@ -1669,7 +1669,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 message_bot = "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
     
         except ZeroDivisionError:
-            message_bot = "
+            message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
+        except Exception as e:
+            message_bot = f"❌ Erreur de calcul : {str(e)}"
+
+    # Sécurité : on renvoie immédiatement la réponse s'il y a un résultat
+    if message_bot:
+        return message_bot
 
 
     # Bloc Convertisseur intelligent 
