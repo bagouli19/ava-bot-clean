@@ -1530,48 +1530,6 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-    
-import re
-import ast  # ✅ Import du module ast pour un calcul sécurisé
-
-def calculer_expression(question_clean):
-    try:
-        # Extraction et nettoyage de l'expression mathématique
-        question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
-        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc).strip()
-        
-        # Debug : Affichage de l'expression analysée
-        print(f"🔍 Expression à évaluer : {question_calc}")
-
-        # Vérification de la validité de l'expression (nombres et opérateurs uniquement)
-        if re.match(r"^[\d\.\+\-\*/%\(\)\s]+$", question_calc):
-            # Utilisation de ast.parse pour une évaluation sécurisée
-            tree = ast.parse(question_calc, mode='eval')
-            for node in ast.walk(tree):
-                if not isinstance(node, (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Num, 
-                                         ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow, 
-                                         ast.Mod, ast.FloorDiv, ast.USub, ast.UAdd, 
-                                         ast.Load, ast.Constant)):
-                    print("❌ Expression invalide (nœud non autorisé)")
-                    return "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
-            
-            # Debug : Affichage de l'arbre AST
-            print(f"🔍 Arbre AST : {ast.dump(tree)}")
-
-            # Évaluation sécurisée de l'expression
-            result = eval(compile(tree, filename="<string>", mode="eval"))
-            print(f"✅ Résultat calculé : {result}")
-            return f"🧮 Le résultat est : **{round(result, 4)}**"
-        else:
-            print("❌ Expression invalide (non reconnue)")
-            return "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
-    except ZeroDivisionError:
-        print("❌ Erreur : Division par zéro")
-        return "❌ Division par zéro détectée. Essayez une autre opération."
-    except Exception as e:
-        print(f"❌ Erreur de calcul : {str(e)}")
-        return f"❌ Erreur de calcul : {str(e)}"
-
 
 import streamlit as st
 import openai
@@ -1680,11 +1638,39 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-    # --- Intégration dans ton bloc de chat AVA ---
+    import ast 
+    
+    # --- Bloc spécial : Calcul local sécurisé (100% local) ---
     if not message_bot and re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
-        message_bot = calculer_expression(question_clean)
-        print(f"🔧 Réponse AVA : {message_bot}")
-        return message_bot  # Retour immédiat si calcul détecté
+        try:
+            # Extraction et nettoyage de l'expression mathématique
+            question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
+            question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc).strip()
+        
+            # Vérification de la validité de l'expression (nombres et opérateurs uniquement)
+            if re.match(r"^[\d\.\+\-\*/%\(\)\s]+$", question_calc):
+                import ast  # Sécurité pour s'assurer que ast est bien importé
+            
+                # Utilisation de ast.parse pour une évaluation sécurisée
+                tree = ast.parse(question_calc, mode='eval')
+                for node in ast.walk(tree):
+                    if not isinstance(node, (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Num, 
+                                             ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow, 
+                                             ast.Mod, ast.FloorDiv, ast.USub, ast.UAdd, 
+                                             ast.Load, ast.Constant)):
+                        message_bot = "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
+                        break
+            
+                if not message_bot:
+                    # Évaluation sécurisée de l'expression
+                    result = eval(compile(tree, filename="<string>", mode="eval"))
+                    message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
+            else:
+                message_bot = "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
+    
+        except ZeroDivisionError:
+            message_bot = "
+
 
     # Bloc Convertisseur intelligent 
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
