@@ -1638,59 +1638,65 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-    import ast 
+     import re, ast
 
     # --- Bloc spécial : Calcul local sécurisé (100% local) ---
-    print("🔧 DEBUG : Bloc de calcul appelé.")  # Trace de débogage
+    print("🔧 DEBUG : Bloc de calcul appelé.")
 
-    if not message_bot and re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
-        print("🔧 DEBUG : Expression de calcul détectée.")  # Trace de débogage
+    # On détecte « calcul » ou « calcule » au début, insensible à la casse
+    calc_match = re.match(r"(?i)^\s*calcul(?:e)?\b(.*)", question_clean)
+    if not message_bot and calc_match:
+        print("🔧 DEBUG : Expression de calcul détectée.")
         try:
-            # Extraction et nettoyage de l'expression mathématique
-            question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
-            question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc).strip()
-            print(f"🔧 DEBUG : Expression à évaluer : {question_calc}")  # Trace de débogage
+            # On récupère tout ce qui suit « calcul… »
+            question_calc = calc_match.group(1)
+            # Normalisation des symboles (virgule, x majuscule/minuscule, ÷)
+            question_calc = (question_calc
+                             .replace(",", ".")
+                             .replace("x", "*").replace("X", "*")
+                             .replace("÷", "/")
+                             .strip())
+            print(f"🔧 DEBUG : Expression à évaluer : «{question_calc}»")
 
-            # Vérification de la validité de l'expression (nombres et opérateurs uniquement)
-            if re.match(r"^[\d\.\+\-\*/%\(\)\s]+$", question_calc):
-                import ast  # Sécurité pour s'assurer que ast est bien importé
-            
-                # Utilisation de ast.parse pour une évaluation sécurisée
-                tree = ast.parse(question_calc, mode='eval')
-                print(f"🔧 DEBUG : Arbre AST : {tree}")  # Trace de débogage
-            
-                # Sécurité : vérification des nœuds
+            # On n’autorise que chiffres, opérateurs, espaces et parenthèses
+            if re.fullmatch(r"[\d\.\+\-\*/%\(\)\s]+", question_calc):
+                # Sécurité : on parse en AST
+                tree = ast.parse(question_calc, mode="eval")
+                print(f"🔧 DEBUG : Arbre AST : {tree}")
+
+                # Vérification des nœuds
                 for node in ast.walk(tree):
-                    if not isinstance(node, (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Num, 
-                                             ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow, 
-                                             ast.Mod, ast.FloorDiv, ast.USub, ast.UAdd, 
-                                             ast.Load, ast.Constant)):
-                        message_bot = "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
-                        print("🔧 DEBUG : Expression invalide détectée.")  # Trace de débogage
+                    if not isinstance(node, (
+                            ast.Expression, ast.BinOp, ast.UnaryOp,
+                            ast.Add, ast.Sub, ast.Mult, ast.Div,
+                            ast.Pow, ast.Mod, ast.FloorDiv,
+                            ast.USub, ast.UAdd, ast.Load, ast.Constant)):
+                        message_bot = ("❌ Expression invalide : "
+                                       "utilisez uniquement nombres et opérateurs.")
+                        print("🔧 DEBUG : Nœud non autorisé détecté.")
                         break
-            
+
                 if not message_bot:
-                    # Évaluation sécurisée de l'expression
+                    # Évaluation sécurisée
                     result = eval(compile(tree, filename="<string>", mode="eval"))
                     message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-                    print(f"✅ DEBUG : Résultat calculé : {result}")  # Trace de débogage
+                    print(f"✅ DEBUG : Résultat calculé : {result}")
             else:
-                message_bot = "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
-                print("🔧 DEBUG : Expression non mathématique détectée.")  # Trace de débogage
-    
+                message_bot = ("❌ Expression invalide : "
+                               "utilisez uniquement nombres et opérateurs.")
+                print("🔧 DEBUG : Regex de validation échouée.")
+
         except ZeroDivisionError:
-            message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
-            print("❌ DEBUG : Division par zéro.")  # Trace de débogage
+            message_bot = "❌ Division par zéro détectée."
+            print("❌ DEBUG : Division par zéro.")
         except Exception as e:
-            message_bot = f"❌ Erreur de calcul : {str(e)}"
-            print(f"❌ DEBUG : Erreur inconnue : {str(e)}")  # Trace de débogage
+            message_bot = f"❌ Erreur de calcul : {e}"
+            print(f"❌ DEBUG : Exception inattendue : {e}")
 
-    # Sécurité : on renvoie immédiatement la réponse s'il y a un résultat
+    # Si on a un message à renvoyer, on stoppe là
     if message_bot:
-        print(f"✅ DEBUG : Résultat final : {message_bot}")  # Trace de débogage
+        print(f"✅ DEBUG : Résultat final : {message_bot}")
         return message_bot
-
-
 
     # Bloc Convertisseur intelligent 
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
