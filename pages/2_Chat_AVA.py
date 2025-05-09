@@ -1680,10 +1680,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         st.write(f"✅ DEBUG message_bot   : {message_bot}")
         st.stop()
 
-        # Si on a un résultat, on renvoie tout de suite
-        if message_bot:
-            print(f"✅ DEBUG Résultat final: {message_bot}")
-            return message_bot
+        
 
     # Bloc Convertisseur intelligent 
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
