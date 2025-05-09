@@ -2513,8 +2513,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             lieu = match_geo.group(1).strip().rstrip(" ?.!;")
             ville_detectee = lieu.title()
 
-        elif "aujourd'hui" in question_clean.lower():
-            ville_detectee = "Paris"  # Défaut en cas de confusion
+        elif any(kw in question_clean.lower() for kw in ["quelle est la météo", "quelle est la météo aujourd'hui"]):
+            ville_detectee = "Paris"  # Défaut si aucune ville n'est détectée
 
         try:
             meteo = get_meteo_ville(ville_detectee)
@@ -2523,7 +2523,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         if "erreur" in meteo.lower() or "manquantes" in meteo.lower() or "impossible" in meteo.lower():
             return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
-
+ 
         return (
             f"🌦️ **Météo à {ville_detectee} :**\n\n"
             f"{meteo}\n\n"
