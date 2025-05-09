@@ -1594,15 +1594,11 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
         pass
     return ""
 
-
-
-
-
 # --------------------------
 # Pipeline de réponse
 # --------------------------
 
-def trouver_reponse(question: str, model, user_id: str) -> str:
+def trouver_reponse(question: str, model):
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
 
