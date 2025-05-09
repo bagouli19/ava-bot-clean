@@ -2500,28 +2500,27 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         else:
             return "🌍 Je ne connais pas encore la capitale de ce pays. Essayez un autre !"
 
+
+
     # --- Bloc météo intelligent (ultra robuste) ---
     if any(kw in question_clean.lower() for kw in ["meteo", "météo", "quel temps", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"]):
         ville_detectee = "Paris"  # Par défaut
 
         # Détection améliorée de la ville dans la question
-        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
+        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en|aujourd'hui\s+à)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
 
         if match_geo:
             lieu = match_geo.group(1).strip().rstrip(" ?.!;")
             ville_detectee = lieu.title()
 
-        elif "aujourd'hui" in question_clean.lower():
-            ville_detectee = "Paris"  # Défaut en cas de confusion
-
         try:
             meteo = get_meteo_ville(ville_detectee)
         except Exception:
             return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
-    
+
         if "erreur" in meteo.lower() or "manquantes" in meteo.lower() or "impossible" in meteo.lower():
             return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
-    
+
         return (
             f"🌦️ **Météo à {ville_detectee} :**\n\n"
             f"{meteo}\n\n"
