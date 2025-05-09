@@ -328,7 +328,7 @@ def detecter_information_cle(question: str):
     """Détecte les informations clés dans une question ou une réponse."""
     informations_detectees = {}
 
-    # Détection du prénom (simple exemple)
+    # Détection du prénom
     if "je m'appelle" in question.lower() or "mon nom est" in question.lower():
         mots = question.split()
         for i, mot in enumerate(mots):
@@ -353,7 +353,51 @@ def detecter_information_cle(question: str):
                 preference = " ".join(mots[i+1:])
                 informations_detectees["preference"] = preference
 
+    # Détection de l'âge
+    if "j'ai" in question.lower() and "ans" in question.lower():
+        mots = question.split()
+        for i, mot in enumerate(mots):
+            if mot.lower() == "j'ai" and i + 1 < len(mots):
+                try:
+                    age = int(mots[i + 1])
+                    informations_detectees["age"] = age
+                except ValueError:
+                    pass
+
+    # Détection de la ville
+    if "j'habite à" in question.lower() or "je vis à" in question.lower():
+        mots = question.split()
+        for i, mot in enumerate(mots):
+            if mot.lower() in ["j'habite", "je vis"] and i + 2 < len(mots) and mots[i + 1].lower() == "à":
+                ville = mots[i + 2].capitalize()
+                informations_detectees["ville"] = ville
+
+    # Détection du métier
+    if "je suis" in question.lower() and "travaille" not in question.lower():
+        mots = question.split()
+        for i, mot in enumerate(mots):
+            if mot.lower() == "je" and i + 1 < len(mots) and mots[i + 1].lower() == "suis":
+                metier = " ".join(mots[i + 2:])
+                informations_detectees["metier"] = metier
+
+    # Détection de la langue préférée
+    if "je parle" in question.lower():
+        mots = question.split()
+        for i, mot in enumerate(mots):
+            if mot.lower() == "je" and i + 1 < len(mots) and mots[i + 1].lower() == "parle":
+                langue = " ".join(mots[i + 2:])
+                informations_detectees["langue_preferee"] = langue
+
+    # Détection des objectifs ou rêves
+    if "je rêve de" in question.lower():
+        mots = question.split()
+        for i, mot in enumerate(mots):
+            if mot.lower() == "je" and i + 1 < len(mots) and mots[i + 1].lower() == "rêve":
+                reve = " ".join(mots[i + 2:])
+                informations_detectees["reves"] = reve
+
     return informations_detectees
+
 
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
