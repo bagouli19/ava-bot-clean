@@ -2513,8 +2513,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             lieu = match_geo.group(1).strip().rstrip(" ?.!;")
             ville_detectee = lieu.title()
 
-        elif any(kw in question_clean.lower() for kw in ["quelle est la météo", "quelle est la météo aujourd'hui"]):
-            ville_detectee = "Paris"  # Défaut si aucune ville n'est détectée
+        # Correction spécifique pour "quelle est la météo à ..."
+        if "quelle est la météo à" in question_clean.lower():
+            ville_detectee = re.sub(r"quelle est la météo à\s*", "", question_clean, flags=re.IGNORECASE).strip().title()
 
         # Correction pour éviter les erreurs sur les noms mal nettoyés
         ville_detectee = ville_detectee.replace("Meteo Aujourd Hui ", "Paris").replace("Aujourd'hui", "").replace("Quelle est la météo à", "").replace("Quel temps fait-il à", "").replace("quelle est la météo à", "").strip()
@@ -2538,7 +2539,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-
 
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
