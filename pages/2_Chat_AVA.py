@@ -1640,51 +1640,51 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     
     import re, ast, streamlit as st
 
-# --- Bloc calcul sécurisé ---
-st.write("🔧 DEBUG : Bloc de calcul appelé.")
+    # --- Bloc calcul sécurisé ---
+    st.write("🔧 DEBUG : Bloc de calcul appelé.")
 
-m = re.match(r'(?i)^\s*calcul(?:e)?\s+(.+)', question_clean.strip())
-if m:
-    expr = m.group(1)
-    st.write(f"🔧 DEBUG raw expr      : {expr!r}")
+    m = re.match(r'(?i)^\s*calcul(?:e)?\s+(.+)', question_clean.strip())
+    if m:
+        expr = m.group(1)
+        st.write(f"🔧 DEBUG raw expr      : {expr!r}")
 
-    expr = (expr.replace(',', '.')
-                .replace('x', '*').replace('X', '*')
-                .replace('÷', '/')
-                .strip())
-    st.write(f"🔧 DEBUG normalized expr: {expr!r}")
+        expr = (expr.replace(',', '.')
+                    .replace('x', '*').replace('X', '*')
+                    .replace('÷', '/')
+                    .strip())
+        st.write(f"🔧 DEBUG normalized expr: {expr!r}")
 
-    if re.fullmatch(r'[\d\.\+\-\*/%\(\)\s]+', expr):
-        try:
-            tree = ast.parse(expr, mode='eval')
-            st.write("🔧 DEBUG AST dump      :", ast.dump(tree))
+        if re.fullmatch(r'[\d\.\+\-\*/%\(\)\s]+', expr):
+            try:
+                tree = ast.parse(expr, mode='eval')
+                st.write("🔧 DEBUG AST dump      :", ast.dump(tree))
+    
+                for node in ast.walk(tree):
+                    if not isinstance(node, (
+                            ast.Expression, ast.BinOp, ast.UnaryOp,
+                            ast.Add, ast.Sub, ast.Mult, ast.Div,
+                            ast.Pow, ast.Mod, ast.FloorDiv,
+                            ast.USub, ast.UAdd, ast.Load, ast.Constant)):
+                        raise ValueError("Nœud interdit")
+    
+                result = eval(compile(tree, filename="<calc>", mode="eval"))
+                message_bot = f"🧮 Résultat : **{round(result,4)}**"
+                st.write(f"✅ DEBUG Résultat      : {result}")
+            except Exception as e:
+                message_bot = f"❌ Erreur : {e}"
+                st.write(f"❌ DEBUG Exception     : {e}")
+        else:
+            message_bot = "❌ Expression invalide."
+            st.write("🔧 DEBUG Regex invalide")
 
-            for node in ast.walk(tree):
-                if not isinstance(node, (
-                        ast.Expression, ast.BinOp, ast.UnaryOp,
-                        ast.Add, ast.Sub, ast.Mult, ast.Div,
-                        ast.Pow, ast.Mod, ast.FloorDiv,
-                        ast.USub, ast.UAdd, ast.Load, ast.Constant)):
-                    raise ValueError("Nœud interdit")
+        st.write(f"✅ DEBUG message_bot   : {message_bot}")
+        st.stop()
 
-            result = eval(compile(tree, filename="<calc>", mode="eval"))
-            message_bot = f"🧮 Résultat : **{round(result,4)}**"
-            st.write(f"✅ DEBUG Résultat      : {result}")
-        except Exception as e:
-            message_bot = f"❌ Erreur : {e}"
-            st.write(f"❌ DEBUG Exception     : {e}")
-    else:
-        message_bot = "❌ Expression invalide."
-        st.write("🔧 DEBUG Regex invalide")
+        # Si on a un résultat, on renvoie tout de suite
+        if message_bot:
+            print(f"✅ DEBUG Résultat final: {message_bot}")
+            return message_bot
 
-    st.write(f"✅ DEBUG message_bot   : {message_bot}")
-    st.stop()
-
-    # Si on a un résultat, on renvoie tout de suite
-    if message_bot:
-        print(f"✅ DEBUG Résultat final: {message_bot}")
-        return message_bot
-        
     # Bloc Convertisseur intelligent 
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
         try:
