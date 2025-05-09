@@ -2503,7 +2503,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
 
     # --- Bloc météo intelligent (ultra robuste) ---
-    if any(kw in question_clean.lower() for kw in ["meteo", "météo", "quel temps", "quelle est la météo", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"]):
+    if any(kw in question_clean.lower() for kw in ["meteo", "météo", "quel temps", "quelle est la météo", "quelle est la météo aujourd'hui", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"]):
         ville_detectee = "Paris"  # Par défaut
 
         # Détection améliorée de la ville dans la question
@@ -2535,8 +2535,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-
-
 
 
     # --- Analyse technique via "analyse <actif>" ---
