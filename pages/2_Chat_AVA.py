@@ -1543,17 +1543,16 @@ def calculer_expression(question_clean):
         if re.match(r"^[\d\.\+\-\*/%\(\)\s]+$", expression):
             # Utilisation de ast.literal_eval pour un calcul sécurisé
             result = ast.literal_eval(expression)
+            print("✅ Calcul local effectué avec succès.")  # Diagnostic
             return f"🧮 Le résultat est : **{round(result, 4)}**"
         else:
+            print("❌ Expression invalide détectée.")  # Diagnostic
             return "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
     except ZeroDivisionError:
         return "❌ Division par zéro détectée. Essayez une autre opération."
     except Exception as e:
         return f"❌ Erreur de calcul : {str(e)}"
 
-# --- Test direct (peut être intégré dans ton bloc de traitement) ---
-question_test = "calcule 5 * 3 + 2"
-print(calculer_expression(question_test))
 
 import streamlit as st
 import openai
@@ -1661,6 +1660,10 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
+    # --- Intégration dans ton bloc de chat AVA ---
+    if not message_bot and re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
+        message_bot = calculer_expression(question_clean)
+        return message_bot  # Retour immédiat si calcul détecté
 
     # Bloc Convertisseur intelligent 
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
