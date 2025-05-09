@@ -1655,8 +1655,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         except Exception as e:
             message_bot = f"❌ Erreur de calcul : {e}"
 
-        st.write("✅ DEBUG message_bot :", message_bot)
-        st.stop()
+
 
     # Bloc Convertisseur intelligent 
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
