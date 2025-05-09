@@ -1530,7 +1530,6 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-
 def get_horoscope(signe: str) -> str:
     api_key = st.secrets.get("api_ninjas_key")  # Utilisation de l'API Key depuis les secrets Streamlit
     url = f"https://api.api-ninjas.com/v1/horoscope?sign={signe.lower()}"
@@ -1550,6 +1549,8 @@ def get_horoscope(signe: str) -> str:
 # Exemple d'appel pour tester
 if __name__ == '__main__':
     print(get_horoscope("lion"))
+
+
 import streamlit as st
 import openai
 import difflib
