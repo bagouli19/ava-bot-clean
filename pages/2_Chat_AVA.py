@@ -2517,7 +2517,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             ville_detectee = "Paris"  # Défaut si aucune ville n'est détectée
 
         # Correction pour éviter les erreurs sur les noms mal nettoyés
-        ville_detectee = ville_detectee.replace("Meteo Aujourd Hui ", "Paris").replace("Aujourd'hui", "").replace("Quelle est la météo à", "").replace("Quel temps fait-il à", "").strip()
+        ville_detectee = ville_detectee.replace("Meteo Aujourd Hui ", "Paris").replace("Aujourd'hui", "").replace("Quelle est la météo à", "").replace("Quel temps fait-il à", "").replace("quelle est la météo à", "").strip()
 
         try:
             meteo = get_meteo_ville(ville_detectee)
@@ -2538,6 +2538,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
+
 
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
