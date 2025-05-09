@@ -1531,20 +1531,25 @@ def format_actus(
     return texte
 
 
-def get_horoscope(signe):
+def get_horoscope(signe: str) -> str:
+    api_key = st.secrets.get("api_ninjas_key")  # Utilisation de l'API Key depuis les secrets Streamlit
+    url = f"https://api.api-ninjas.com/v1/horoscope?sign={signe.lower()}"
+    headers = {'X-Api-Key': api_key}
+
     try:
-        url = f"https://aztro.sameerkumar.website/?sign={signe}&day=today"
-        response = requests.post(url)
-
-        if response.status_code == 200:
-            data = response.json()
-            return data.get("description", "Désolé, je n'ai pas pu obtenir l'horoscope.")
+        response = requests.get(url, headers=headers, timeout=10)
+        data = response.json()
+        if response.status_code == 200 and "horoscope" in data:
+            return data["horoscope"]
         else:
-            return "⚠️ Désolé, je n'ai pas pu obtenir votre horoscope pour l'instant."
-
+            return "⚠️ Désolé, l'horoscope est temporairement inaccessible."
     except Exception as e:
-        return f"❌ Erreur lors de la récupération de l'horoscope : {str(e)}"
+        return f"❌ Erreur lors de la récupération de l'horoscope : {e}"
 
+
+# Exemple d'appel pour tester
+if __name__ == '__main__':
+    print(get_horoscope("lion"))
 import streamlit as st
 import openai
 import difflib
