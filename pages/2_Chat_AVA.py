@@ -2499,10 +2499,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # ✅ Vérification initiale
     if any(kw in question_clean.lower() for kw in mots_cles_meteo):
         ville_detectee = "Paris"  # Par défaut (Paris)
-        question_clean = question_clean.lower()
+        question_clean_original = question_clean  # Pour voir la question initiale
 
         # ✅ Suppression des mots parasites
-        mots_parasites = ["aujourd'hui", "demain", "après-demain", "météo", "quel", "temps", "prévision", "prévisions","Aujourd Hui"]
+        mots_parasites = ["aujourd'hui", "demain", "après-demain", "météo", "quel", "temps", "prévision", "prévisions"]
         for mot in mots_parasites:
             question_clean = question_clean.replace(mot, "")
 
@@ -2520,6 +2520,11 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             # ✅ Nettoyage des mots parasites restants
             lieu = " ".join(w.capitalize() for w in lieu.split() if w.lower() not in mots_parasites)
             ville_detectee = lieu if lieu else "Paris"
+
+        # ✅ Affichage de diagnostic
+        print(f"🔎 Question originale : {question_clean_original}")
+        print(f"🔎 Question nettoyée : {question_clean}")
+        print(f"🔎 Ville détectée : {ville_detectee}")
 
         # ✅ Validation de la ville détectée
         if ville_detectee.lower() in ["", "meteo", "météo", "aujourd'hui", "demain"]:
@@ -2544,6 +2549,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
+        
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
         nom_simple = question_clean[len("analyse "):].strip()
