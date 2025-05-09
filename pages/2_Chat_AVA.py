@@ -2950,14 +2950,3 @@ if st.sidebar.button("🧹 Vider les rappels"):
     set_my_profile(profil)
     st.sidebar.success("✅ Rappels supprimés !")
 
-if st.sidebar.button("🧪 Tester GPT-3.5"):
-    with st.chat_message("assistant", avatar="assets/ava_logo.png"):
-        st.markdown("🛠️ Appel à OpenAI en cours...")
-        st.markdown(repondre_openai("Peux-tu me faire un poème sur une IA qui rêve de liberté dans un monde numérique ?"))
-
-if __name__ == "__main__":
-    st.title("Test de la Recherche Google avec AVA")
-    question = st.text_input("Tapez votre question ici (précédez par 'recherche' ou 'google') :")
-    if question:
-        reponse = rechercher_sur_google(question)
-        st.write("Réponse d'AVA :", reponse)
