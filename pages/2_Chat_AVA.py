@@ -1641,16 +1641,15 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import re, ast, streamlit as st
 
     # Récupère le texte brut que tape l’utilisateur
-    raw = question_raw.strip()
+    raw = question_clean  # Utilise question_clean comme base
 
-    # Détecte et capture tout ce qui suit "calcul" ou "calcule"
+    # Calcul direct si la phrase commence par "calcul" ou "calcule"
     m = re.match(r"(?i)^\s*calcul(?:e)?\s+([\d\.\+\-\*/%\(\)\s]+)$", raw)
     if m:
         expr = m.group(1)
         st.write("🔧 DEBUG expr prête à parser:", repr(expr))
         try:
             tree = ast.parse(expr, mode="eval")
-            # … ta vérif AST ici …
             result = eval(compile(tree, "<calc>", "eval"))
             message_bot = f"🧮 Résultat : **{round(result,4)}**"
         except Exception as e:
@@ -1658,9 +1657,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         st.write("✅ DEBUG message_bot :", message_bot)
         st.stop()
-
-
-        
 
     # Bloc Convertisseur intelligent 
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
