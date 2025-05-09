@@ -1835,8 +1835,106 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             )
 
     return message_bot if message_bot else None
+    
+    # --- Bloc Convertisseur intelligent ---
+    if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
+        try:
+            phrase = question_clean.replace(",", ".")
+            match = re.search(r"(\d+(\.\d+)?)\s*([a-z]{3})\s*(en|to)\s*([a-z]{3})", phrase, re.IGNORECASE)
+            if match:
+                montant = float(match.group(1))
+                from_cur = match.group(3).upper()
+                to_cur = match.group(5).upper()
+                url = f"https://v6.exchangerate-api.com/v6/dab2bba4f43a99445158d9ae/latest/{from_cur}"
+                response = requests.get(url, timeout=10)
+                data = response.json()
+                if data.get("result") == "success":
+                    taux = data["conversion_rates"].get(to_cur)
+                    if taux:
+                        result = montant * taux
+                        message_bot = f"💱 {montant} {from_cur} = {round(result, 2)} {to_cur}"
+                    else:
+                        message_bot = "❌ Taux de conversion non disponible pour la devise demandée."
+                else:
+                    message_bot = "⚠️ Désolé, la conversion n’a pas pu être effectuée en raison d’un problème avec l’API. Veuillez réessayer plus tard."
+            elif "km en miles" in phrase:
+                match = re.search(r"(\d+(\.\d+)?)\s*km", phrase)
+                if match:
+                    km = float(match.group(1))
+                    miles = km * 0.621371
+                    message_bot = f"📏 {km} km = {round(miles, 2)} miles"
+            elif "miles en km" in phrase:
+                match = re.search(r"(\d+(\.\d+)?)\s*miles?", phrase)
+                if match:
+                    mi = float(match.group(1))
+                    km = mi / 0.621371
+                    message_bot = f"📏 {mi} miles = {round(km, 2)} km"
+            elif "celsius en fahrenheit" in phrase:
+                match = re.search(r"(\d+(\.\d+)?)\s*c", phrase)
+                if match:
+                    celsius = float(match.group(1))
+                    fahrenheit = (celsius * 9/5) + 32
+                    message_bot = f"🌡️ {celsius}°C = {round(fahrenheit, 2)}°F"
+            elif "fahrenheit en celsius" in phrase:
+                match = re.search(r"(\d+(\.\d+)?)\s*f", phrase)
+                if match:
+                    f_temp = float(match.group(1))
+                    c_temp = (f_temp - 32) * 5/9
+                    message_bot = f"🌡️ {f_temp}°F = {round(c_temp, 2)}°C"
+        except Exception as e:
+            message_bot = f"⚠️ Désolé, la conversion n’a pas pu être effectuée en raison d’un problème de connexion. Veuillez réessayer plus tard."
+    
+    # --- Bloc Quiz de culture générale ---
+    if not message_bot and any(mot in question_clean for mot in [
+        "quiz", "quizz", "question", "culture générale", "pose-moi une question", "teste mes connaissances"
+    ]):
+        quizz_culture = [
+            {"question": "🌍 Quelle est la capitale de l'Australie ?", "réponse": "canberra"},
+            {"question": "🧪 Quel est l'élément chimique dont le symbole est O ?", "réponse": "oxygène"},
+            {"question": "🖼️ Qui a peint la Joconde ?", "réponse": "léonard de vinci"},
+            {"question": "📚 Combien y a-t-il de continents sur Terre ?", "réponse": "7"},
+            {"question": "🚀 Quelle planète est la plus proche du Soleil ?", "réponse": "mercure"},
+            {"question": "🇫🇷 Qui a écrit 'Les Misérables' ?", "réponse": "victor hugo"},
+            {"question": "🎬 Quel film a remporté l'Oscar du meilleur film en 1998 avec 'Titanic' ?", "réponse": "titanic"},
+            {"question": "🐘 Quel est le plus grand animal terrestre ?", "réponse": "éléphant"},
+            {"question": "🎼 Quel musicien est surnommé 'le Roi de la Pop' ?", "réponse": "michael jackson"},
+            {"question": "⚽ Quelle nation a remporté la Coupe du Monde 2018 ?", "réponse": "france"},
+            {"question": "🗼 En quelle année a été inaugurée la Tour Eiffel ?", "réponse": "1889"},
+            {"question": "🧬 Que signifie l'acronyme ADN ?", "réponse": "acide désoxyribonucléique"},
+            {"question": "🎨 Quel peintre est célèbre pour avoir coupé une partie de son oreille ?", "réponse": "vincent van gogh"},
+            {"question": "🇮🇹 Dans quel pays se trouve la ville de Venise ?", "réponse": "italie"},
+            {"question": "🎭 Qui a écrit la pièce 'Hamlet' ?", "réponse": "william shakespeare"},
+            {"question": "📐 Quel est le nom du triangle qui a deux côtés de même longueur ?", "réponse": "triangle isocèle"},
+            {"question": "🔬 Quel scientifique a formulé la théorie de la relativité ?", "réponse": "albert einstein"},
+            {"question": "🌋 Quel volcan italien est célèbre pour avoir détruit Pompéi ?", "réponse": "vesuve"},
+            {"question": "🎤 Qui chante la chanson 'Someone Like You' ?", "réponse": "adele"},
+            {"question": "🗳️ Quel est le régime politique de la France ?", "réponse": "république"}
+        ]
+        question_choisie = random.choice(quizz_culture)
+        st.session_state["quiz_attendu"] = question_choisie["réponse"].lower()
+        return f"🧠 **Quiz Culture G** :\n{question_choisie['question']}\n\nRépondez directement !"
 
-     # --- Bloc Recettes rapides ---
+    # --- Bloc spécial : Calcul ---
+    if not message_bot:
+        question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
+        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
+    
+        try:
+            # Détection d'expressions simples avec opérateurs mathématiques
+            if re.search(r"[\d\s\.\+\-\*/%()]+", question_calc):
+                expression = re.findall(r"[\d\.\+\-\*/%\(\)\s]+", question_calc)
+                expression = "".join(expression)
+                result = eval(expression, {"__builtins__": None}, {})
+                message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
+        except:
+            message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
+
+
+        # ✅ CORRECTION IMPORTANTE
+        if message_bot:
+            return message_bot
+            
+    # --- Bloc Recettes rapides ---
     recettes = [
         "🥪 **Sandwich thon-avocat** : pain complet, thon, avocat écrasé, citron, sel, poivre. 5 minutes chrono !",
         "🍝 **Pâtes à l’ail** : pâtes + ail émincé + huile d’olive + herbes. Simple, rapide, efficace.",
@@ -2399,7 +2497,18 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             message_bot += "\nVeux-tu en découvrir un autre ? 😉"
         except Exception:
             message_bot = "⚠️ Désolé, une erreur est survenue en essayant de découvrir un nouveau pays."
-
+    # --- Bloc Culture générale simple ---
+    if any(keyword in question_clean for keyword in [
+        "qui ", "quand ", "où ", "combien ", "quel ", "quelle ",
+        "c'est quoi", "c'est qui"
+    ]):
+        # recherche exacte dans la base
+        if question_clean in base_culture_nettoyee:
+            return base_culture_nettoyee[question_clean]
+        # recherche par inclusion de la clé
+        for key, reponse in base_culture_nettoyee.items():
+            if key in question_clean:
+                return reponse
     # ─── Bloc Géographie (capitales) ─────────────
     if "capitale" in question_clean or "où se trouve" in question_clean or "ville principale" in question_clean:
         match = re.search(r"(?:de la|de l'|du|de|des)\s+([a-zàâçéèêëîïôûùüÿñæœ' -]+)", question_clean)
@@ -2586,53 +2695,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         else:
             return "🌍 Je ne connais pas encore la capitale de ce pays. Essayez un autre !"
 
-    # --- Bloc Convertisseur intelligent ---
-    if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
-        try:
-            phrase = question_clean.replace(",", ".")
-            match = re.search(r"(\d+(\.\d+)?)\s*([a-z]{3})\s*(en|to)\s*([a-z]{3})", phrase, re.IGNORECASE)
-            if match:
-                montant = float(match.group(1))
-                from_cur = match.group(3).upper()
-                to_cur = match.group(5).upper()
-                url = f"https://v6.exchangerate-api.com/v6/dab2bba4f43a99445158d9ae/latest/{from_cur}"
-                response = requests.get(url, timeout=10)
-                data = response.json()
-                if data.get("result") == "success":
-                    taux = data["conversion_rates"].get(to_cur)
-                    if taux:
-                        result = montant * taux
-                        message_bot = f"💱 {montant} {from_cur} = {round(result, 2)} {to_cur}"
-                    else:
-                        message_bot = "❌ Taux de conversion non disponible pour la devise demandée."
-                else:
-                    message_bot = "⚠️ Désolé, la conversion n’a pas pu être effectuée en raison d’un problème avec l’API. Veuillez réessayer plus tard."
-            elif "km en miles" in phrase:
-                match = re.search(r"(\d+(\.\d+)?)\s*km", phrase)
-                if match:
-                    km = float(match.group(1))
-                    miles = km * 0.621371
-                    message_bot = f"📏 {km} km = {round(miles, 2)} miles"
-            elif "miles en km" in phrase:
-                match = re.search(r"(\d+(\.\d+)?)\s*miles?", phrase)
-                if match:
-                    mi = float(match.group(1))
-                    km = mi / 0.621371
-                    message_bot = f"📏 {mi} miles = {round(km, 2)} km"
-            elif "celsius en fahrenheit" in phrase:
-                match = re.search(r"(\d+(\.\d+)?)\s*c", phrase)
-                if match:
-                    celsius = float(match.group(1))
-                    fahrenheit = (celsius * 9/5) + 32
-                    message_bot = f"🌡️ {celsius}°C = {round(fahrenheit, 2)}°F"
-            elif "fahrenheit en celsius" in phrase:
-                match = re.search(r"(\d+(\.\d+)?)\s*f", phrase)
-                if match:
-                    f_temp = float(match.group(1))
-                    c_temp = (f_temp - 32) * 5/9
-                    message_bot = f"🌡️ {f_temp}°F = {round(c_temp, 2)}°C"
-        except Exception as e:
-            message_bot = f"⚠️ Désolé, la conversion n’a pas pu être effectuée en raison d’un problème de connexion. Veuillez réessayer plus tard."
+    
 
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
@@ -2748,55 +2811,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             st.session_state["quiz_attendu"] = ""
             return message
 
-    # --- Bloc Quiz de culture générale ---
-    if not message_bot and any(mot in question_clean for mot in [
-        "quiz", "quizz", "question", "culture générale", "pose-moi une question", "teste mes connaissances"
-    ]):
-        quizz_culture = [
-            {"question": "🌍 Quelle est la capitale de l'Australie ?", "réponse": "canberra"},
-            {"question": "🧪 Quel est l'élément chimique dont le symbole est O ?", "réponse": "oxygène"},
-            {"question": "🖼️ Qui a peint la Joconde ?", "réponse": "léonard de vinci"},
-            {"question": "📚 Combien y a-t-il de continents sur Terre ?", "réponse": "7"},
-            {"question": "🚀 Quelle planète est la plus proche du Soleil ?", "réponse": "mercure"},
-            {"question": "🇫🇷 Qui a écrit 'Les Misérables' ?", "réponse": "victor hugo"},
-            {"question": "🎬 Quel film a remporté l'Oscar du meilleur film en 1998 avec 'Titanic' ?", "réponse": "titanic"},
-            {"question": "🐘 Quel est le plus grand animal terrestre ?", "réponse": "éléphant"},
-            {"question": "🎼 Quel musicien est surnommé 'le Roi de la Pop' ?", "réponse": "michael jackson"},
-            {"question": "⚽ Quelle nation a remporté la Coupe du Monde 2018 ?", "réponse": "france"},
-            {"question": "🗼 En quelle année a été inaugurée la Tour Eiffel ?", "réponse": "1889"},
-            {"question": "🧬 Que signifie l'acronyme ADN ?", "réponse": "acide désoxyribonucléique"},
-            {"question": "🎨 Quel peintre est célèbre pour avoir coupé une partie de son oreille ?", "réponse": "vincent van gogh"},
-            {"question": "🇮🇹 Dans quel pays se trouve la ville de Venise ?", "réponse": "italie"},
-            {"question": "🎭 Qui a écrit la pièce 'Hamlet' ?", "réponse": "william shakespeare"},
-            {"question": "📐 Quel est le nom du triangle qui a deux côtés de même longueur ?", "réponse": "triangle isocèle"},
-            {"question": "🔬 Quel scientifique a formulé la théorie de la relativité ?", "réponse": "albert einstein"},
-            {"question": "🌋 Quel volcan italien est célèbre pour avoir détruit Pompéi ?", "réponse": "vesuve"},
-            {"question": "🎤 Qui chante la chanson 'Someone Like You' ?", "réponse": "adele"},
-            {"question": "🗳️ Quel est le régime politique de la France ?", "réponse": "république"}
-        ]
-        question_choisie = random.choice(quizz_culture)
-        st.session_state["quiz_attendu"] = question_choisie["réponse"].lower()
-        return f"🧠 **Quiz Culture G** :\n{question_choisie['question']}\n\nRépondez directement !"
-
-    # --- Bloc spécial : Calcul ---
-    if not message_bot:
-        question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
-        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
     
-        try:
-            # Détection d'expressions simples avec opérateurs mathématiques
-            if re.search(r"[\d\s\.\+\-\*/%()]+", question_calc):
-                expression = re.findall(r"[\d\.\+\-\*/%\(\)\s]+", question_calc)
-                expression = "".join(expression)
-                result = eval(expression, {"__builtins__": None}, {})
-                message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-        except:
-            message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
-
-
-        # ✅ CORRECTION IMPORTANTE
-        if message_bot:
-            return message_bot
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
