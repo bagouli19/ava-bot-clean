@@ -1530,6 +1530,30 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
+    import ast
+    
+def calculer_expression(question_clean):
+    try:
+        # Extraction et nettoyage de l'expression mathématique
+        question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
+        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
+        
+        # Vérification de la validité de l'expression
+        expression = question_calc.strip()
+        if re.match(r"^[\d\.\+\-\*/%\(\)\s]+$", expression):
+            # Utilisation de ast.literal_eval pour un calcul sécurisé
+            result = ast.literal_eval(expression)
+            return f"🧮 Le résultat est : **{round(result, 4)}**"
+        else:
+            return "❌ L'expression est invalide. Utilisez uniquement des nombres et des opérateurs mathématiques."
+    except ZeroDivisionError:
+        return "❌ Division par zéro détectée. Essayez une autre opération."
+    except Exception as e:
+        return f"❌ Erreur de calcul : {str(e)}"
+
+# --- Test direct (peut être intégré dans ton bloc de traitement) ---
+question_test = "calcule 5 * 3 + 2"
+print(calculer_expression(question_test))
 
 import streamlit as st
 import openai
@@ -1637,41 +1661,6 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
-
-    import ast
-    
-    # --- Bloc spécial : Calcul local sécurisé (100% local) ---
-    if not message_bot:
-        print("🔧 Debug : Bloc Calcul activé.")
-        if re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
-            print("🔧 Debug : Expression détectée pour calcul.")
-            question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
-            question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc).strip()
-            print(f"🔧 Debug : Expression après nettoyage : {question_calc}")
-
-            try:
-                # Utilisation d'ast.literal_eval pour une évaluation ultra sécurisée
-                expression = ast.parse(question_calc, mode='eval')
-                for node in ast.walk(expression):
-                    if not isinstance(node, (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Num, ast.operator, ast.Load)):
-                        raise ValueError("❌ Expression non autorisée détectée.")
-            
-                # Évaluation de l'expression (100% sécurisé)
-                result = eval(compile(expression, "", mode="eval"))
-                message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-            except ZeroDivisionError:
-                print("🔧 Debug : Division par zéro détectée.")
-                message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
-            except Exception as e:
-                print(f"🔧 Debug : Erreur inattendue : {str(e)}")
-                message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
-
-        print(f"🔧 Debug : Message bot final : {message_bot}")
-
-    # ✅ Si message_bot a été rempli, nous retournons la réponse
-    if message_bot:
-        return message_bot
-
 
     # Bloc Convertisseur intelligent 
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
