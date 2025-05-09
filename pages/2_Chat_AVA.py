@@ -1646,25 +1646,25 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
         question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc).strip()
     
-    try:
-        # Utilisation de ast.literal_eval pour une évaluation sécurisée
-        tree = ast.parse(question_calc, mode='eval')
-        for node in ast.walk(tree):
-            if not isinstance(node, (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Num, ast.Constant,
-                                     ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Mod, ast.Pow, ast.FloorDiv,
-                                     ast.UAdd, ast.USub)):
-                raise ValueError("Expression non sécurisée détectée.")
+        try:
+            # Utilisation de ast.literal_eval pour une évaluation sécurisée
+            tree = ast.parse(question_calc, mode='eval')
+            for node in ast.walk(tree):
+                if not isinstance(node, (ast.Expression, ast.BinOp, ast.UnaryOp, ast.Num, ast.Constant,
+                                         ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Mod, ast.Pow, ast.FloorDiv,
+                                         ast.UAdd, ast.USub)):
+                    raise ValueError("Expression non sécurisée détectée.")
         
-        result = eval(compile(tree, filename="", mode="eval"))
-        message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-    except ZeroDivisionError:
-        message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
-    except:
-        message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
+            result = eval(compile(tree, filename="", mode="eval"))
+            message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
+        except ZeroDivisionError:
+            message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
+        except:
+            message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
 
-# ✅ Si message_bot a été rempli, nous retournons la réponse
-if message_bot:
-    return message_bot
+    # ✅ Si message_bot a été rempli, nous retournons la réponse
+    if message_bot:
+        return message_bot
 
 
     # Bloc Convertisseur intelligent 
