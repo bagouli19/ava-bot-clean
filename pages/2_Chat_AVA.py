@@ -1637,6 +1637,7 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
+    
     # --- Bloc spécial : Calcul local sécurisé (100% local) ---
     if re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
         # Extraction et nettoyage de l'expression mathématique
