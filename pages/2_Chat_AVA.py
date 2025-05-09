@@ -1638,7 +1638,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-     import re, ast
+    import re, ast
 
     # --- Bloc spécial : Calcul local sécurisé (100% local) ---
     print("🔧 DEBUG : Bloc de calcul appelé.")
