@@ -1598,39 +1598,37 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 # Pipeline de réponse
 # --------------------------
 
-def trouver_reponse(question: str, model):
+def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
-
-    # Détecter les informations utilisateur
-    informations = detecter_information_cle(question_clean)
-    if informations:
-        enregistrer_informations_utilisateur(user_id, informations)
-
-    # Salutations
+    
+    # 🔍 Salutations
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
         return reponse_salut
-
-    # 3️⃣ Culture générale
+    
+    # 🌐 Culture générale (Base de connaissances)
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # 4 Phrases classiques dans la base de langage
+    # 📚 Base de langage
     reponse_langage = chercher_reponse_base_langage(question)
     if reponse_langage:
         return reponse_langage
-
-    # Modules spéciaux
+    
+    # ⚡ Modules spécialisés (prioritaires)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
+        print("✅ Réponse module spécial")
         return reponse_speciale.strip()
-
-    # GPT fallback
+    
+    # 🤖 Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
+    print("🤖 Appel GPT (fallback)")
     reponse_openai = repondre_openai(question_clean)
     if reponse_openai:
         return reponse_openai.strip()
 
+    # ❓ Réponse par défaut
     return "🤔 Je n'ai pas trouvé de réponse précise."
 
 
