@@ -1589,56 +1589,6 @@ def get_meteo_ville(city: str) -> str:
     except ValueError:
         return "⚠️ Réponse météo invalide."
 
-# --- Bloc météo intelligent (ultra robuste) ---
-def traiter_demande_meteo(question_clean):
-    # ✅ Liste de mots-clés météo
-    mots_cles_meteo = [
-        "meteo", "météo", "quel temps", "prévision", "prévisions", 
-        "il fait quel temps", "temps à", "temps en", "temps au", 
-        "il fait beau", "il pleut", "va-t-il pleuvoir", 
-        "faut-il prendre un parapluie"
-    ]
-
-    if any(kw in question_clean.lower() for kw in mots_cles_meteo):
-        ville_detectee = "Paris"  # Par défaut (Paris)
-        question_clean = question_clean.lower()
-
-        # ✅ Détection de la ville par mots-clés contextuels
-        pattern1 = re.compile(r"(?:à|a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
-        match_geo = pattern1.search(question_clean)
-
-        # ✅ Sinon "meteo <lieu>" ou "météo <lieu>"
-        if not match_geo:
-            pattern2 = re.compile(r"(?:meteo|météo)\s+(.+)$", re.IGNORECASE)
-            match_geo = pattern2.search(question_clean)
-
-        if match_geo:
-            lieu = match_geo.group(1).strip().rstrip(" ?.!;")
-            ville_detectee = " ".join(w.capitalize() for w in lieu.split())
-
-        try:
-            meteo = get_meteo_ville(ville_detectee)
-        except Exception:
-            return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
-
-        if "⚠️" in meteo:
-            return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
-
-        return (
-            f"🌦️ **Météo à {ville_detectee} :**\n\n"
-            f"{meteo}\n\n"
-            + random.choice([
-                "🧥 Pense à t’habiller en conséquence !",
-                "☕ Rien de tel qu’un bon café pour accompagner la journée.",
-                "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
-                "💡 Info météo = longueur d’avance.",
-                "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
-            ])
-        )
-
-    return None
-
-
 import streamlit as st
 import openai
 import difflib
@@ -2537,7 +2487,50 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         else:
             return "🌍 Je ne connais pas encore la capitale de ce pays. Essayez un autre !"
 
-    
+    # ✅ Liste de mots-clés météo
+    mots_cles_meteo = [
+        "meteo", "météo", "quel temps", "prévision", "prévisions", 
+        "il fait quel temps", "temps à", "temps en", "temps au", 
+        "il fait beau", "il pleut", "va-t-il pleuvoir", 
+        "faut-il prendre un parapluie"
+    ]
+
+    if any(kw in question_clean.lower() for kw in mots_cles_meteo):
+        ville_detectee = "Paris"  # Par défaut (Paris)
+        question_clean = question_clean.lower()
+
+        # ✅ Détection de la ville par mots-clés contextuels
+        pattern1 = re.compile(r"(?:à|a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
+        match_geo = pattern1.search(question_clean)
+
+        # ✅ Sinon "meteo <lieu>" ou "météo <lieu>"
+        if not match_geo:
+            pattern2 = re.compile(r"(?:meteo|météo)\s+(.+)$", re.IGNORECASE)
+            match_geo = pattern2.search(question_clean)
+
+        if match_geo:
+            lieu = match_geo.group(1).strip().rstrip(" ?.!;")
+            ville_detectee = " ".join(w.capitalize() for w in lieu.split())
+
+        try:
+            meteo = get_meteo_ville(ville_detectee)
+        except Exception:
+            return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
+
+        if "⚠️" in meteo:
+            return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
+
+        return (
+            f"🌦️ **Météo à {ville_detectee} :**\n\n"
+            f"{meteo}\n\n"
+            + random.choice([
+                "🧥 Pense à t’habiller en conséquence !",
+                "☕ Rien de tel qu’un bon café pour accompagner la journée.",
+                "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
+                "💡 Info météo = longueur d’avance.",
+                "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
+            ])
+        )
 
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
