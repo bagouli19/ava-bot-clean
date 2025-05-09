@@ -1602,42 +1602,35 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 # Pipeline de réponse
 # --------------------------
 
-def trouver_reponse(question: str, model) -> str:
+def trouver_reponse(question: str, model, user_id: str) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
 
-    # 1️⃣ Détection automatique des informations clés
-    informations_detectees = detecter_information_cle(question_clean)
-    if informations_detectees:
-        for cle, valeur in informations_detectees.items():
-            memoire_ava[cle] = valeur  # Enregistre dans la mémoire
-        sauvegarder_memoire_ava(memoire_ava)  # Met à jour sur GitHub
-        print(f"🔍 Informations détectées et enregistrées : {informations_detectees}")
+    # Détecter les informations utilisateur
+    informations = detecter_information_cle(question_clean)
+    if informations:
+        enregistrer_informations_utilisateur(user_id, informations)
 
-    # (le reste de ta fonction reste inchangé)
+    # Salutations
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
-        print("👋 Réponse salutation trouvée")
         return reponse_salut
 
-    # Culture générale
+    # 3️⃣ Culture générale
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # Phrases classiques dans la base de langage
+    # 4 Phrases classiques dans la base de langage
     reponse_langage = chercher_reponse_base_langage(question)
     if reponse_langage:
         return reponse_langage
 
     # Modules spéciaux
-    print("🧩 Passage aux modules spéciaux")
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
-        print("✅ Réponse module spécial")
         return reponse_speciale.strip()
 
     # GPT fallback
-    print("🤖 Fallback GPT")
     reponse_openai = repondre_openai(question_clean)
     if reponse_openai:
         return reponse_openai.strip()
