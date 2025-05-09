@@ -1530,21 +1530,28 @@ def format_actus(
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
 
-def get_horoscope(signe: str) -> str:
-    api_key = st.secrets.get("api_ninjas_key")  # Utilisation de l'API Key depuis les secrets Streamlit
-    url = f"https://api.api-ninjas.com/v1/horoscope?sign={signe.lower()}"
-    headers = {'X-Api-Key': api_key}
+# Fonction de recherche des occurrences de 'horoscope' dans le fichier
 
-    try:
-        response = requests.get(url, headers=headers, timeout=10)
-        data = response.json()
-        if response.status_code == 200 and "horoscope" in data:
-            return data["horoscope"]
-        else:
-            return "⚠️ Désolé, l'horoscope est temporairement inaccessible."
-    except Exception as e:
-        return f"❌ Erreur lors de la récupération de l'horoscope : {e}"
+def rechercher_horoscope(filepath):
+    with open(filepath, 'r', encoding='utf-8') as file:
+        contenu = file.read()
 
+    occurrences = list(re.finditer(r"horoscope", contenu, re.IGNORECASE))
+
+    if occurrences:
+        print(f"✅ {len(occurrences)} occurrences trouvées :")
+        for occ in occurrences:
+            start = max(0, occ.start() - 50)
+            end = min(len(contenu), occ.end() + 50)
+            print(f"...{contenu[start:end]}...")
+    else:
+        print("❌ Aucune occurrence trouvée.")
+
+# Exécution de la fonction sur le fichier
+
+# Mettre ici le chemin complet de ton fichier Chat_AVA.py
+fichier_chat_ava = '2_Chat_AVA.py'
+rechercher_horoscope(fichier_chat_ava)
 
 
 import streamlit as st
