@@ -1546,10 +1546,6 @@ def get_horoscope(signe: str) -> str:
         return f"❌ Erreur lors de la récupération de l'horoscope : {e}"
 
 
-# Exemple d'appel pour tester
-if __name__ == '__main__':
-    print(get_horoscope("lion"))
-
 
 import streamlit as st
 import openai
