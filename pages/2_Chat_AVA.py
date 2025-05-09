@@ -1658,6 +1658,25 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
+    # --- Bloc Horoscope dans les modules spéciaux ---
+    if any(kw in question_clean for kw in ["horoscope", "signe", "astrologie"]):
+        signes_disponibles = [
+            "bélier", "taureau", "gémeaux", "cancer", "lion", "vierge", 
+            "balance", "scorpion", "sagittaire", "capricorne", 
+            "verseau", "poissons"
+        ]
+        signe_detecte = next((s for s in signes_disponibles if s in question_clean), None)
+
+        if not signe_detecte:
+            message_bot = (
+                "🔮 Pour vous donner votre horoscope, indiquez-moi votre **signe astrologique** "
+                "(ex : Lion, Vierge, Taureau...)\n\n"
+            )
+        else:
+            # Utiliser la nouvelle fonction sécurisée
+            horoscope = get_horoscope(signe_detecte)
+            message_bot = f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n{horoscope}"
+
     import re, ast, streamlit as st
 
     # Récupère le texte brut que tape l’utilisateur
