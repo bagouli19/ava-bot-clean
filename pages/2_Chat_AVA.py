@@ -2502,7 +2502,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         question_clean = question_clean.lower()
 
         # ✅ Suppression des mots parasites
-        mots_parasites = ["aujourd'hui", "demain", "après-demain", "météo", "quel", "temps", "prévision", "prévisions"]
+        mots_parasites = ["aujourd'hui", "demain", "après-demain", "météo", "quel", "temps", "prévision", "prévisions","Aujourd Hui"]
         for mot in mots_parasites:
             question_clean = question_clean.replace(mot, "")
 
