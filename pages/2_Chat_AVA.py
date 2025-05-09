@@ -1637,7 +1637,7 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
-    
+
     # --- Bloc spécial : Calcul local sécurisé (100% local) ---
     if re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
         # Extraction et nettoyage de l'expression mathématique
@@ -1931,7 +1931,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # --- 2️⃣ Recherche d'un souvenir dans le profil utilisateur ---
     profil = get_my_profile()
     for cle_souv, contenu in profil.get("souvenirs", {}).items():
-        if cle_souv.replace("_", " ") in question_clean or contenu.lower() in question_clean:
+        if cle_souv.replace("_", " ") in question_clean or (isinstance(contenu, str) and contenu.lower() in question_clean):
             return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
     
     # --- Bloc Actualités améliorées ---
