@@ -2496,43 +2496,31 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "faut-il prendre un parapluie"
     ]
 
-    # ✅ Vérification initiale
     if any(kw in question_clean.lower() for kw in mots_cles_meteo):
-        ville_detectee = "Paris"  # Par défaut (Paris)
-        question_clean_original = question_clean  # Pour voir la question initiale
+        ville_detectee = "Paris"  # Par défaut
 
         # ✅ Suppression des mots parasites
         mots_parasites = ["aujourd'hui", "demain", "après-demain", "météo", "quel", "temps", "prévision", "prévisions"]
+        question_simplifiee = question_clean.lower()
         for mot in mots_parasites:
-            question_clean = question_clean.replace(mot, "")
+            question_simplifiee = question_simplifiee.replace(mot, "")
 
-        # ✅ Détection de la ville par mots-clés contextuels
-        pattern1 = re.compile(r"(?:à|a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
-        match_geo = pattern1.search(question_clean)
-
-        # ✅ Sinon "meteo <lieu>" ou "météo <lieu>"
-        if not match_geo:
-            pattern2 = re.compile(r"(?:meteo|météo)\s+(.+)$", re.IGNORECASE)
-            match_geo = pattern2.search(question_clean)
-
+        # ✅ Extraction de la ville uniquement (à, au, en, sur...)
+        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en)\s+([a-z' -]+)", question_simplifiee, re.IGNORECASE)
         if match_geo:
-            lieu = match_geo.group(1).strip().rstrip(" ?.!;")
-            # ✅ Nettoyage des mots parasites restants
-            lieu = " ".join(w.capitalize() for w in lieu.split() if w.lower() not in mots_parasites)
-            ville_detectee = lieu if lieu else "Paris"
+            ville_detectee = match_geo.group(1).strip().capitalize()
 
-        # ✅ Affichage de diagnostic
-        print(f"🔎 Question originale : {question_clean_original}")
-        print(f"🔎 Question nettoyée : {question_clean}")
-        print(f"🔎 Ville détectée : {ville_detectee}")
-
-        # ✅ Validation de la ville détectée
-        if ville_detectee.lower() in ["", "meteo", "météo", "aujourd'hui", "demain"]:
+        # ✅ Correction si ville incorrecte détectée
+        if not ville_detectee or ville_detectee.lower() in ["meteo", "météo"]:
             ville_detectee = "Paris"
+
+        print(f"🔎 Question simplifiée : {question_simplifiee}")
+        print(f"🔎 Ville détectée : {ville_detectee}")
 
         try:
             meteo = get_meteo_ville(ville_detectee)
-        except Exception:
+        except Exception as e:
+            print(f"❌ Erreur lors de la récupération de la météo : {e}")
             return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
 
         if "⚠️" in meteo:
@@ -2549,7 +2537,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-        
+
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
         nom_simple = question_clean[len("analyse "):].strip()
