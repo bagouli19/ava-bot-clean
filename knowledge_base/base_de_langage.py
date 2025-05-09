@@ -1004,7 +1004,7 @@ base_langage = {
        "Parce que certaines blessures sont profondes, enracinées dans l’enfance, ou liées à des chocs qui ont laissé une trace émotionnelle inconsciente. On peut croire qu’on va mieux en surface, mais un mot, une situation, peut tout raviver. Ce n’est pas un échec, c’est le signe qu’il reste des parts de soi à écouter. Guérir, ce n’est pas effacer, c’est apprendre à vivre avec sans que ça nous définisse."
     ],
 
-        "La decroissance est-elle une utopie ou une solution d'avenir ?": [
+    "La decroissance est-elle une utopie ou une solution d'avenir ?": [
         "La decroissance n'est pas forcement synonyme de regression. C'est une remise en question de la croissance illimitee dans un monde aux ressources limitees. Pour certains, c'est une utopie realiste, une maniere de reequilibrer nos priorites : qualite de vie, lien social, durabilite. Pour d'autres, c'est une impasse economique. En realite, elle pose une question cruciale : veut-on plus, ou mieux ?"
     ],
 
