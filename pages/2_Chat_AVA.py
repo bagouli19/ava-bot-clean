@@ -1640,45 +1640,25 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     
     import re, ast, streamlit as st
 
-    # --- Bloc calcul sécurisé ---
-    st.write("🔧 DEBUG : Bloc de calcul appelé.")
+    # Récupère le texte brut que tape l’utilisateur
+    raw = question_raw.strip()
 
-    m = re.match(r'(?i)^\s*calcul(?:e)?\s+(.+)', question_clean.strip())
+    # Détecte et capture tout ce qui suit "calcul" ou "calcule"
+    m = re.match(r"(?i)^\s*calcul(?:e)?\s+([\d\.\+\-\*/%\(\)\s]+)$", raw)
     if m:
         expr = m.group(1)
-        st.write(f"🔧 DEBUG raw expr      : {expr!r}")
+        st.write("🔧 DEBUG expr prête à parser:", repr(expr))
+        try:
+            tree = ast.parse(expr, mode="eval")
+            # … ta vérif AST ici …
+            result = eval(compile(tree, "<calc>", "eval"))
+            message_bot = f"🧮 Résultat : **{round(result,4)}**"
+        except Exception as e:
+            message_bot = f"❌ Erreur de calcul : {e}"
 
-        expr = (expr.replace(',', '.')
-                    .replace('x', '*').replace('X', '*')
-                    .replace('÷', '/')
-                    .strip())
-        st.write(f"🔧 DEBUG normalized expr: {expr!r}")
-
-        if re.fullmatch(r'[\d\.\+\-\*/%\(\)\s]+', expr):
-            try:
-                tree = ast.parse(expr, mode='eval')
-                st.write("🔧 DEBUG AST dump      :", ast.dump(tree))
-    
-                for node in ast.walk(tree):
-                    if not isinstance(node, (
-                            ast.Expression, ast.BinOp, ast.UnaryOp,
-                            ast.Add, ast.Sub, ast.Mult, ast.Div,
-                            ast.Pow, ast.Mod, ast.FloorDiv,
-                            ast.USub, ast.UAdd, ast.Load, ast.Constant)):
-                        raise ValueError("Nœud interdit")
-    
-                result = eval(compile(tree, filename="<calc>", mode="eval"))
-                message_bot = f"🧮 Résultat : **{round(result,4)}**"
-                st.write(f"✅ DEBUG Résultat      : {result}")
-            except Exception as e:
-                message_bot = f"❌ Erreur : {e}"
-                st.write(f"❌ DEBUG Exception     : {e}")
-        else:
-            message_bot = "❌ Expression invalide."
-            st.write("🔧 DEBUG Regex invalide")
-
-        st.write(f"✅ DEBUG message_bot   : {message_bot}")
+        st.write("✅ DEBUG message_bot :", message_bot)
         st.stop()
+
 
         
 
