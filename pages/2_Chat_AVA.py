@@ -2776,17 +2776,26 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # 🧠 Récupération mémoire court terme (si dispo)
     dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
 
-    # 🔑 Mots-clés pour détecter une intention musicale
+    # ✅ Mots-clés pour détecter une intention musicale, en début de phrase ou explicite
     mots_cles_musique = [
-        "musique", "chanson", "son", "titre", "écouter", "playlist", "sons", "mets-moi une chanson", "propose un son", "donne un son"
+        "musique", "chanson", "son", "titre", "écouter", "playlist", "mets-moi une chanson", 
+        "propose un son", "donne un son", "j'aimerais écouter", "je veux écouter", 
+        "as-tu une musique", "tu connais une chanson", "recommande une chanson"
     ]
-    theme_musique_detecte = any(mot in question_clean.lower() for mot in mots_cles_musique)
 
-    # 🔁 Suggestions génériques selon thème
-    if dernier_theme in suggestions:
-        message_bot += f"\n{suggestions[dernier_theme]}"
+    # ✅ Ignorer les questions génériques comme "Quels sont..."
+    ignorer_prefixes = ["quel ", "quels sont", "quelles sont", "quelle est"]
 
-    # 🎵 Bloc musical déclenché par mémoire ou mot-clé détecté
+    # ✅ Vérifier si la question contient explicitement un mot-clé musical
+    theme_musique_detecte = any(
+        question_clean.lower().startswith(prefix) for prefix in mots_cles_musique
+    ) or any(
+        mot in question_clean.lower() for mot in mots_cles_musique
+    ) and not any(
+        question_clean.lower().startswith(prefix) for prefix in ignorer_prefixes
+    )
+    
+    # ✅ Bloc musical déclenché uniquement si thème musique détecté
     if theme_musique_detecte or dernier_theme == "musique":
         print("🟢 Bloc musical déclenché 🎵")
         tendances = obtenir_titres_populaires_france()
