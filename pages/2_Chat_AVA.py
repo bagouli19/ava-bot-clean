@@ -1639,7 +1639,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
 
     # --- Bloc spécial : Calcul local sécurisé (100% local) ---
-    if re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
+    if not message_bot and re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
         # Extraction et nettoyage de l'expression mathématique
         question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
         question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
@@ -1652,10 +1652,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
         except:
             message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
-        
-        return message_bot  # Retour immédiat si calcul détecté
-    
-        # --- Bloc Convertisseur intelligent ---
+
+    # Bloc Convertisseur intelligent 
     if not message_bot and any(kw in question_clean for kw in ["convertis", "convertir", "combien vaut", "en dollars", "en euros", "en km", "en miles", "en mètres", "en celsius", "en fahrenheit"]):
         try:
             phrase = question_clean.replace(",", ".")
@@ -1680,29 +1678,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 match = re.search(r"(\d+(\.\d+)?)\s*km", phrase)
                 if match:
                     km = float(match.group(1))
-                    miles = km * 0.621371
-                    message_bot = f"📏 {km} km = {round(miles, 2)} miles"
-            elif "miles en km" in phrase:
-                match = re.search(r"(\d+(\.\d+)?)\s*miles?", phrase)
-                if match:
-                    mi = float(match.group(1))
-                    km = mi / 0.621371
-                    message_bot = f"📏 {mi} miles = {round(km, 2)} km"
-            elif "celsius en fahrenheit" in phrase:
-                match = re.search(r"(\d+(\.\d+)?)\s*c", phrase)
-                if match:
-                    celsius = float(match.group(1))
-                    fahrenheit = (celsius * 9/5) + 32
-                    message_bot = f"🌡️ {celsius}°C = {round(fahrenheit, 2)}°F"
-            elif "fahrenheit en celsius" in phrase:
-                match = re.search(r"(\d+(\.\d+)?)\s*f", phrase)
-                if match:
-                    f_temp = float(match.group(1))
-                    c_temp = (f_temp - 32) * 5/9
-                    message_bot = f"🌡️ {f_temp}°F = {round(c_temp, 2)}°C"
-        except Exception as e:
-            message_bot = f"⚠️ Désolé, la conversion n’a pas pu être effectuée en raison d’un problème de connexion. Veuillez réessayer plus tard."
-    
+                    miles = km * 0.621
+
     # --- Bloc Quiz de culture générale ---
     if not message_bot and any(mot in question_clean for mot in [
         "quiz", "quizz", "question", "culture générale", "pose-moi une question", "teste mes connaissances"
