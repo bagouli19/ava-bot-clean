@@ -2503,39 +2503,50 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
 
     # --- Bloc météo intelligent (ultra robuste) ---
-    print(f"🔍 Question analysée : {question_clean}")
+    print(f"🔍 Question analysée : '{question_clean}'")
+    print(f"🔍 Longueur de la question : {len(question_clean)} caractères")
 
-    if any(kw in question_clean.lower() for kw in [
+    # Afficher chaque caractère avec son code ASCII (pour détecter les caractères invisibles)
+    print("🔍 Caractères dans la question :")
+    for i, char in enumerate(question_clean):
+        print(f"🔹 {i}: '{char}' (ASCII: {ord(char)})")
+
+    # --- Détection intelligente de la météo ---
+    mots_cles_meteo = [
         "meteo", "météo", "quel temps", 
         "quelle est la météo", "quelle est la météo aujourd'hui", 
         "prévision", "prévisions", 
         "il fait quel temps", "temps à", "temps en", "temps au", 
         "il fait beau", "il pleut", "va-t-il pleuvoir", 
         "faut-il prendre un parapluie"
-    ]):
-        ville_detectee = "Paris"  # Par défaut
-        print(f"🔍 Mot clé météo détecté - Ville par défaut : {ville_detectee}")
+    ]
 
-        # Détection améliorée de la ville dans la question
+    if any(kw in question_clean.lower() for kw in mots_cles_meteo):
+        print("✅ Mot-clé météo détecté.")
+
+        # Ville par défaut
+        ville_detectee = "Paris"
+
+        # Détection améliorée de la ville (méthode simplifiée)
         match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
         print(f"🔍 Match géo initial : {match_geo}")
 
-        # Gestion spécifique pour "quelle est la météo à ..."
+        if match_geo:
+            ville_detectee = match_geo.group(1).strip().title()
+            print(f"🔍 Ville détectée initialement : {ville_detectee}")
+
+        # Correction spécifique pour la phrase problématique
         if "quelle est la météo" in question_clean.lower():
-            # On cherche la ville après "à"
+            print("✅ Phrase spécifique 'quelle est la météo' détectée.")
             match_geo = re.search(r"quelle est la météo (?:à|a|au|aux|dans|sur|en)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
             print(f"🔍 Match géo spécifique : {match_geo}")
+            if match_geo:
+                ville_detectee = match_geo.group(1).strip().title()
+                print(f"🔍 Ville détectée après correction spécifique : {ville_detectee}")
 
-        if match_geo:
-            lieu = match_geo.group(1).strip().rstrip(" ?.!;")
-            ville_detectee = lieu.title()
-            print(f"🔍 Ville détectée après extraction : {ville_detectee}")
-        else:
-            print("⚠️ Aucun lieu détecté, utilisation de la ville par défaut.")
-
-        # Correction pour éviter les erreurs sur les noms mal nettoyés
+        # Nettoyage final de la ville détectée
         ville_detectee = ville_detectee.replace("Meteo Aujourd Hui ", "Paris").replace("Aujourd'hui", "").strip()
-        print(f"🔍 Ville après correction : {ville_detectee}")
+        print(f"🔍 Ville après nettoyage final : {ville_detectee}")
 
         try:
             meteo = get_meteo_ville(ville_detectee)
@@ -2558,6 +2569,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
+    else:
+        print("⚠️ Aucun mot-clé météo détecté.")
+
 
 
 
