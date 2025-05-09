@@ -2502,7 +2502,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
 
 
-    # --- Bloc météo intelligent (ultra robuste) ---
+    # --- Bloc météo intelligent (ultra robuste et amélioré) ---
     if any(kw in question_clean.lower() for kw in [
         "meteo", "météo", "quel temps", "quelle est la météo", 
         "quelle est la météo aujourd'hui", "prévision", "prévisions", 
@@ -2511,30 +2511,28 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     ]):
         ville_detectee = "Paris"  # Par défaut (au cas où aucune ville n'est détectée)
 
-        # Détection améliorée de la ville dans la question
-        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
+        # --- Détection de la ville / village / lieu ---
+        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en|pour)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
 
-        # Si une ville ou village est détecté, on la récupère
         if match_geo:
             ville_detectee = match_geo.group(1).strip().title()
 
-        # Si aucune ville détectée via la regex, on tente de détecter via les mots directement
-        if "quelle est la météo à" in question_clean.lower():
-            ville_detectee = re.sub(r"quelle est la météo à\s*", "", question_clean, flags=re.IGNORECASE).strip().title()
-        elif "météo à" in question_clean.lower():
-            ville_detectee = re.sub(r"météo à\s*", "", question_clean, flags=re.IGNORECASE).strip().title()
-        elif "météo en" in question_clean.lower():
-            ville_detectee = re.sub(r"météo en\s*", "", question_clean, flags=re.IGNORECASE).strip().title()
-
-        # Nettoyage final pour éviter les erreurs de détection
-        ville_detectee = ville_detectee.replace("Aujourd'hui", "").replace("Meteo Aujourd Hui", "").strip()
-
+        # Si aucune ville détectée par la regex, on tente une autre approche
+        if not match_geo:
+            pattern_ville = re.compile(r"(?:meteo|météo|prévisions|quel temps|il fait quel temps)\s+([a-zA-Z' -]+)", re.IGNORECASE)
+            match_ville = pattern_ville.search(question_clean)
+            if match_ville:
+                ville_detectee = match_ville.group(1).strip().title()
+    
+        # Correction pour s'assurer que le nom est bien propre
+        ville_detectee = re.sub(r"[^a-zA-Z' -]", "", ville_detectee).strip().title()
+        
         # Récupération de la météo
         try:
             meteo = get_meteo_ville(ville_detectee)
         except Exception:
             return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
-
+ 
         if "erreur" in meteo.lower() or "manquantes" in meteo.lower() or "impossible" in meteo.lower():
             return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
 
@@ -2549,9 +2547,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-
-
-
 
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
