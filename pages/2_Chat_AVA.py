@@ -2000,19 +2000,22 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             )
         else:
             try:
-                response = requests.get(f"https://aztro.sameerkumar.website/?sign={signe_detecte}&day=today")
+                response = requests.post(
+                    f"https://aztro.sameerkumar.website/?sign={signe_detecte}&day=today"
+                )
                 response.raise_for_status()
                 data = response.json()
                 texte = data.get("description", "")
-
+     
                 if texte:
                     message_bot = f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n> {texte}\n\n"
                 else:
                     message_bot = f"🌙 Horoscope pour **{signe_detecte.capitalize()}** indisponible. Essayez plus tard."
             except Exception as e:
-                message_bot = "⚠️ Je n'arrive pas à récupérer l'horoscope pour le moment. Réessayez plus tard."
+                message_bot = f"⚠️ Je n'arrive pas à récupérer l'horoscope pour le moment. Réessayez plus tard.\n\nErreur : {str(e)}"
 
-    
+
+   
     # --- Bloc Faits Insolites ---
     faits_insolites = [
         "🐙 Un poulpe a trois cœurs… et son sang est bleu !",
