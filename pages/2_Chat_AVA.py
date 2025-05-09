@@ -1529,34 +1529,7 @@ def format_actus(
         texte += f"{i}. 🔹 [{titre}]({url})\n"
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
-    
-def calcul_local(expression):
-    """Fonction de calcul local sécurisé."""
-    try:
-        # Remplacement des symboles courants
-        expression = expression.replace(",", ".").replace("x", "*").replace("÷", "/")
-        expression = re.sub(r"[^\d\.\+\-\*/%\(\)\s]", "", expression)  # Sécurité : supprime tout autre caractère
 
-        # Évaluation sécurisée
-        result = eval(expression, {"__builtins__": None}, {})
-        return f"🧮 Le résultat est : **{round(result, 4)}**"
-    except ZeroDivisionError:
-        return "❌ Division par zéro détectée. Essayez une autre opération."
-    except:
-        return "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
-
-# Intégration dans la fonction gerer_modules_speciaux
-def gerer_modules_speciaux(question_clean):
-    message_bot = ""
-
-    # --- Bloc spécial : Calcul local ---
-    if not message_bot:
-        if re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean):
-            # Extraire l'expression mathématique
-            question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_clean)
-            message_bot = calcul_local(question_calc)
-
-    return message_bot
 
 import streamlit as st
 import openai
@@ -1664,7 +1637,23 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
-    
+    # --- Bloc spécial : Calcul local sécurisé (100% local) ---
+    if re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
+        # Extraction et nettoyage de l'expression mathématique
+        question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
+        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc)
+
+        try:
+            # Évaluation sécurisée (100% local, sans OpenAI)
+            result = eval(question_calc, {"__builtins__": None}, {})
+            message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
+        except ZeroDivisionError:
+            message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
+        except:
+            message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
+        
+        return message_bot  # Retour immédiat si calcul détecté
+        
     if "recherche" in question_clean.lower() or "google" in question_clean.lower():
         requete = question_clean.replace("recherche", "").replace("google", "").strip()
         if len(requete) > 0:
