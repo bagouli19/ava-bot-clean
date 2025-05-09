@@ -1529,6 +1529,34 @@ def format_actus(
         texte += f"{i}. 🔹 [{titre}]({url})\n"
     texte += "\n🧠 *Restez curieux, le savoir, c’est la puissance !*"
     return texte
+    
+def calcul_local(expression):
+    """Fonction de calcul local sécurisé."""
+    try:
+        # Remplacement des symboles courants
+        expression = expression.replace(",", ".").replace("x", "*").replace("÷", "/")
+        expression = re.sub(r"[^\d\.\+\-\*/%\(\)\s]", "", expression)  # Sécurité : supprime tout autre caractère
+
+        # Évaluation sécurisée
+        result = eval(expression, {"__builtins__": None}, {})
+        return f"🧮 Le résultat est : **{round(result, 4)}**"
+    except ZeroDivisionError:
+        return "❌ Division par zéro détectée. Essayez une autre opération."
+    except:
+        return "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
+
+# Intégration dans la fonction gerer_modules_speciaux
+def gerer_modules_speciaux(question_clean):
+    message_bot = ""
+
+    # --- Bloc spécial : Calcul local ---
+    if not message_bot:
+        if re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean):
+            # Extraire l'expression mathématique
+            question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_clean)
+            message_bot = calcul_local(question_calc)
+
+    return message_bot
 
 import streamlit as st
 import openai
@@ -1913,29 +1941,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         question_choisie = random.choice(quizz_culture)
         st.session_state["quiz_attendu"] = question_choisie["réponse"].lower()
         return f"🧠 **Quiz Culture G** :\n{question_choisie['question']}\n\nRépondez directement !"
-
-    # --- Bloc spécial : Calcul sécurisé ---
-    if not message_bot:
-        question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
-        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc).strip()
-
-        try:
-            # Vérification de la validité de l'expression mathématique
-            if re.match(r"^[0-9\.\+\-\*/%\(\)\s]+$", question_calc):
-                # Utilisation de la fonction eval sécurisée
-                result = eval(question_calc, {"__builtins__": None}, {})
-                message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-            else:
-                message_bot = "❌ Je n’ai pas reconnu d’expression mathématique valide. Essayez par exemple : 'calcul 5 + 3'."
-
-        except ZeroDivisionError:
-            message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
-        except Exception as e:
-            message_bot = f"❌ Une erreur est survenue : {str(e)}"
-
-    return message_bot
-
-
 
     # --- Bloc Recettes rapides ---
     recettes = [
