@@ -2488,6 +2488,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "🌍 Je ne connais pas encore la capitale de ce pays. Essayez un autre !"
 
     
+    
     # ✅ Liste de mots-clés météo
     mots_cles_meteo = [
         "meteo", "météo", "quel temps", "prévision", "prévisions", 
@@ -2532,7 +2533,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-        
+
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
         nom_simple = question_clean[len("analyse "):].strip()
