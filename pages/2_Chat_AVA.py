@@ -1987,33 +1987,31 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # --- Bloc Horoscope ---
     if any(kw in question_clean for kw in ["horoscope", "signe", "astrologie"]):
         signes_disponibles = [
-            "bélier", "taureau", "gémeaux", "cancer", "lion", "vierge", "balance",
-            "scorpion", "sagittaire", "capricorne", "verseau", "poissons"
+            "bélier", "taureau", "gémeaux", "cancer", "lion", "vierge", 
+            "balance", "scorpion", "sagittaire", "capricorne", 
+            "verseau", "poissons"
         ]
         signe_detecte = next((s for s in signes_disponibles if s in question_clean), None)
 
         if not signe_detecte:
-            return (
+            message_bot = (
                 "🔮 Pour vous donner votre horoscope, indiquez-moi votre **signe astrologique** "
                 "(ex : Lion, Vierge, Taureau...)\n\n"
             )
+        else:
+            try:
+                response = requests.get(f"https://aztro.sameerkumar.website/?sign={signe_detecte}&day=today")
+                response.raise_for_status()
+                data = response.json()
+                texte = data.get("description", "")
 
-        try:
-            response = requests.post(
-                f" https://kayoo123.github.io/astroo-api/jour.json"
-            )
-            response.raise_for_status()
-            data = response.json()
-            texte = data.get("description", "")
+                if texte:
+                    message_bot = f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n> {texte}\n\n"
+                else:
+                    message_bot = f"🌙 Horoscope pour **{signe_detecte.capitalize()}** indisponible. Essayez plus tard."
+            except Exception as e:
+                message_bot = "⚠️ Je n'arrive pas à récupérer l'horoscope pour le moment. Réessayez plus tard."
 
-            if texte:
-                return f"🔮 Horoscope pour **{signe_detecte.capitalize()}** :\n\n> {texte}\n\n"
-            else:
-                return f"🌙 Horoscope pour **{signe_detecte.capitalize()}** indisponible. Essayez plus tard."
-
-        except Exception as e:
-            return "⚠️ Je n'arrive pas à récupérer l'horoscope pour le moment. Réessayez plus tard."
-        
     
     # --- Bloc Faits Insolites ---
     faits_insolites = [
