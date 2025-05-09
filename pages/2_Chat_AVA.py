@@ -2499,6 +2499,11 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         ville_detectee = "Paris"  # Par défaut (Paris)
         question_clean = question_clean.lower()
 
+        # ✅ Suppression des mots parasites
+        mots_parasites = ["aujourd'hui", "météo", "quel", "temps", "prévision", "prévisions"]
+        for mot in mots_parasites:
+            question_clean = question_clean.replace(mot, "")
+
         # ✅ Détection de la ville par mots-clés contextuels
         pattern1 = re.compile(r"(?:à|a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
         match_geo = pattern1.search(question_clean)
@@ -2510,7 +2515,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         if match_geo:
             lieu = match_geo.group(1).strip().rstrip(" ?.!;")
-            ville_detectee = " ".join(w.capitalize() for w in lieu.split())
+            ville_detectee = " ".join(w.capitalize() for w in lieu.split() if w.lower() not in mots_parasites)
 
         try:
             meteo = get_meteo_ville(ville_detectee)
