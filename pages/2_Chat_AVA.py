@@ -1641,23 +1641,33 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import ast
     
     # --- Bloc spécial : Calcul local sécurisé (100% local) ---
-    if not message_bot and re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
-        # Extraction et nettoyage de l'expression mathématique
-        question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
-        question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc).strip()
+    if not message_bot:
+        print("🔧 Debug : Bloc Calcul activé.")
+        if re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
+            print("🔧 Debug : Expression détectée pour calcul.")
+            question_calc = question_clean.replace(",", ".").replace("x", "*").replace("÷", "/")
+            question_calc = re.sub(r"^calcul(?:e)?\s*", "", question_calc).strip()
+            print(f"🔧 Debug : Expression après nettoyage : {question_calc}")
 
-        # Expression régulière pour filtrer les caractères autorisés (chiffres, opérateurs, parenthèses)
-        if re.match(r"^[0-9\.\+\-\*/%\(\)\s]+$", question_calc):
-            try:
-                # Évaluation de l'expression de manière sécurisée
-                result = eval(question_calc, {"__builtins__": None}, {})
-                message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
-            except ZeroDivisionError:
-                message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
-            except Exception as e:
-                message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
-        else:
-            message_bot = "❌ L'expression contient des caractères non autorisés. Utilisez uniquement les chiffres et opérateurs mathématiques."
+            # Vérification de l'expression mathématique
+            if re.match(r"^[0-9\.\+\-\*/%\(\)\s]+$", question_calc):
+                print("🔧 Debug : Expression valide détectée.")
+                try:
+                    # Évaluation sécurisée
+                    result = eval(question_calc, {"__builtins__": None}, {})
+                    print(f"🔧 Debug : Résultat calculé : {result}")
+                    message_bot = f"🧮 Le résultat est : **{round(result, 4)}**"
+                except ZeroDivisionError:
+                    print("🔧 Debug : Division par zéro détectée.")
+                    message_bot = "❌ Division par zéro détectée. Essayez une autre opération."
+                except Exception as e:
+                    print(f"🔧 Debug : Erreur inattendue : {str(e)}")
+                    message_bot = "❌ Je n’ai pas réussi à faire le calcul. Essayez une expression plus simple."
+            else:
+                print("🔧 Debug : Expression invalide détectée.")
+                message_bot = "❌ L'expression contient des caractères non autorisés."
+    
+        print(f"🔧 Debug : Message bot final : {message_bot}")
 
     # ✅ Si message_bot a été rempli, nous retournons la réponse
     if message_bot:
