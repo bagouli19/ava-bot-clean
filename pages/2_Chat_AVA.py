@@ -1535,9 +1535,6 @@ def trouver_reponse(question: str, model) -> str:
         enregistrer_interaction(utilisateur, question_clean, reponse_openai.strip())
         return reponse_openai.strip()
 
-    # Réponse par défaut
-    reponse_defaut = "🤔 Je n'ai pas trouvé de réponse
-
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
