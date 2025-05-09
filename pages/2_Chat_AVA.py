@@ -2542,7 +2542,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             print(f"🌦️ Météo récupérée pour {ville_detectee} : {meteo}")
         except Exception as e:
             print(f"❌ Erreur de récupération météo : {e}")
-           return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
+            return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
 
         if "erreur" in meteo.lower() or "manquantes" in meteo.lower() or "impossible" in meteo.lower():
             return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
