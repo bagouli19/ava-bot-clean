@@ -1543,6 +1543,102 @@ def format_actus(
     return texte
 
 
+
+def get_meteo_ville(city: str) -> str:
+    """
+    1) Géocode la ville
+    2) Récupère la météo par lat/lon si disponibles
+    3) Sinon fallback sur nom de la ville
+    """
+    if not API_KEY:
+        return "⚠️ Clé API météo non configurée."
+
+    lat, lon = geocode_location(city)
+    params = {
+        "appid": API_KEY,
+        "units": "metric",
+        "lang": "fr"
+    }
+
+    if lat is not None and lon is not None:
+        # Si géocodage OK, on interroge par coordonnées
+        params.update({"lat": lat, "lon": lon})
+    else:
+        # fallback : requête directe par nom de ville
+        params["q"] = city
+
+    try:
+        resp = requests.get("http://api.openweathermap.org/data/2.5/weather", params=params, timeout=5)
+        resp.raise_for_status()
+        data = resp.json()
+        weather = data.get("weather")
+        main = data.get("main", {})
+        wind = data.get("wind", {})
+
+        if not weather or not isinstance(weather, list):
+            return "⚠️ Données météo manquantes."
+
+        desc = weather[0].get("description", "").capitalize()
+        temp = main.get("temp", "N/A")
+        hum = main.get("humidity", "N/A")
+        vent = wind.get("speed", "N/A")
+
+        return f"{desc} avec {temp}°C, humidité : {hum}%, vent : {vent} m/s."
+    except requests.RequestException:
+        return "⚠️ Impossible de joindre le service météo pour le moment."
+    except ValueError:
+        return "⚠️ Réponse météo invalide."
+
+# --- Bloc météo intelligent (ultra robuste) ---
+def traiter_demande_meteo(question_clean):
+    # ✅ Liste de mots-clés météo
+    mots_cles_meteo = [
+        "meteo", "météo", "quel temps", "prévision", "prévisions", 
+        "il fait quel temps", "temps à", "temps en", "temps au", 
+        "il fait beau", "il pleut", "va-t-il pleuvoir", 
+        "faut-il prendre un parapluie"
+    ]
+
+    if any(kw in question_clean.lower() for kw in mots_cles_meteo):
+        ville_detectee = "Paris"  # Par défaut (Paris)
+        question_clean = question_clean.lower()
+
+        # ✅ Détection de la ville par mots-clés contextuels
+        pattern1 = re.compile(r"(?:à|a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
+        match_geo = pattern1.search(question_clean)
+
+        # ✅ Sinon "meteo <lieu>" ou "météo <lieu>"
+        if not match_geo:
+            pattern2 = re.compile(r"(?:meteo|météo)\s+(.+)$", re.IGNORECASE)
+            match_geo = pattern2.search(question_clean)
+
+        if match_geo:
+            lieu = match_geo.group(1).strip().rstrip(" ?.!;")
+            ville_detectee = " ".join(w.capitalize() for w in lieu.split())
+
+        try:
+            meteo = get_meteo_ville(ville_detectee)
+        except Exception:
+            return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
+
+        if "⚠️" in meteo:
+            return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
+
+        return (
+            f"🌦️ **Météo à {ville_detectee} :**\n\n"
+            f"{meteo}\n\n"
+            + random.choice([
+                "🧥 Pense à t’habiller en conséquence !",
+                "☕ Rien de tel qu’un bon café pour accompagner la journée.",
+                "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
+                "💡 Info météo = longueur d’avance.",
+                "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
+            ])
+        )
+
+
+
+
 import streamlit as st
 import openai
 import difflib
@@ -1878,45 +1974,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     # Nettoyage de base
     question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
-    
-    # --- Bloc météo intelligent (ultra robuste) ---
-    if any(kw in question_clean for kw in ["meteo", "météo", "quel temps", "prévision", "prévisions", "il fait quel temps", "temps à", "temps en", "temps au", "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"," Meteo Aujourd Hui"]):
-        ville_detectee = "Paris"  # Par défaut
-
-        # Chercher "à/au/aux/dans/sur/en <lieu>"
-        pattern1 = re.compile(r"(?:à|a|au|aux|dans|sur|en)\s+([a-z' -]+)", re.IGNORECASE)
-        match_geo = pattern1.search(question_clean)
-
-        # Sinon "meteo <lieu>" ou "météo <lieu>"
-        if not match_geo:
-            pattern2 = re.compile(r"(?:meteo|météo)\s+(.+)$", re.IGNORECASE)
-            match_geo = pattern2.search(question_clean)
-
-        if match_geo:
-            lieu = match_geo.group(1).strip().rstrip(" ?.!;")
-            ville_detectee = " ".join(w.capitalize() for w in lieu.split())
-
-        try:
-            meteo = get_meteo_ville(ville_detectee)
-        except Exception:
-            return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
-
-        if "erreur" in meteo.lower():
-            return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
-
-        return (
-            f"🌦️ **Météo à {ville_detectee} :**\n\n"
-            f"{meteo}\n\n"
-            + random.choice([
-                "🧥 Pense à t’habiller en conséquence !",
-                "☕ Rien de tel qu’un bon café pour accompagner la journée.",
-                "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
-                "💡 Info météo = longueur d’avance.",
-                "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
-            ])
-        )
-
-    
+      
 
     # --- 1️⃣ Détection et enregistrement automatique de souvenirs dans le profil utilisateur ---
     patterns_souvenirs = {
