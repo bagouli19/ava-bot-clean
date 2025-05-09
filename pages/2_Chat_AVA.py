@@ -1660,6 +1660,7 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
+
     # --- Intégration dans ton bloc de chat AVA ---
     if not message_bot and re.search(r"^calcul(?:e)?\s*[\d\.\+\-\*/%()]+", question_clean.lower()):
         message_bot = calculer_expression(question_clean)
