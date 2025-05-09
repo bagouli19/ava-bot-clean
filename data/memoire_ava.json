@@ -34,6 +34,11 @@
             "type": "réflexion_utilisateur",
             "contenu": "je crois que tu es bientot prete pour le public",
             "date": "2025-05-09"
+        },
+        {
+            "type": "réflexion_utilisateur",
+            "contenu": "que fais tu de beau en ce moment",
+            "date": "2025-05-09"
         }
     ]
 }
