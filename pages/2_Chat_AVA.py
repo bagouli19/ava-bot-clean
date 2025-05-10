@@ -1690,14 +1690,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if reponse_souvenir:
         print("✅ Souvenir utilisateur détecté :", reponse_souvenir)  # ➡️ LOG TEST
         return reponse_souvenir  # Priorité absolue sur les souvenirs
+  
 
-    # ✅ Modules existants (comme météo, actualités, analyse technique, etc.)
-    # 🔄 Place ici tes modules existants comme la météo, actualités, etc.
-    message_bot = ""
-
-    # 🛑 Si aucun module n'a répondu, on continue
-    return message_bot if message_bot else None    
-    
     import re, ast, streamlit as st
 
     # Récupère le texte brut que tape l’utilisateur
