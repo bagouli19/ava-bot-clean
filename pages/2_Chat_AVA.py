@@ -1637,9 +1637,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    
+    # Nettoyage de base
+    question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
 
-     # --- 1️⃣ Gestion des souvenirs utilisateur ---
+    # --- 1️⃣ Gestion des souvenirs utilisateur (Priorité absolue) ---
     def gerer_souvenirs_utilisateur(question_clean):
         patterns_souvenirs = {
             "je m'appelle": "prenom",
@@ -1678,26 +1679,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                     return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
                 else:
                     return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
-
-        return None
-
-    # --- 2️⃣ Appel immédiat à la gestion des souvenirs ---
-    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
-    if reponse_souvenir:
-        return reponse_souvenir
-
-    # --- 3️⃣ Si aucun souvenir n'est détecté, on continue avec les autres modules ---
-    print("Aucun souvenir utilisateur détecté. Passage aux autres modules.")
-    
-    # Ici, vous pouvez ajouter d'autres modules (météo, analyse technique, etc.)
-    # Par exemple :
-    if "météo" in question_clean:
-        return obtenir_meteo(question_clean)
-    
-    # --- 4️⃣ Fallback OpenAI (dernier recours) ---
-    print("⚙️ Appel à GPT-3.5 Turbo en cours…")
-    reponse_openai = repondre_openai(question_clean)
-    return reponse_openai
     
     import re, ast, streamlit as st
 
