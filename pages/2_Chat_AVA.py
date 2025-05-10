@@ -2707,7 +2707,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         if not souvenirs:
             return "📭 Pour l'instant, je n’ai rien mémorisé de particulier."
 
-       reponse = "🧠 Voici ce que j’ai noté dans ma mémoire globale :\n\n"
+        reponse = "🧠 Voici ce que j’ai noté dans ma mémoire globale :\n\n"
         for s in souvenirs[-5:]:
             reponse += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
         return reponse
