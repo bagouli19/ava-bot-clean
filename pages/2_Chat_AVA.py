@@ -2361,6 +2361,51 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                     "L’écriture hiéroglyphique est un héritage fascinant."
                 ]
             }
+            {
+                "pays": "Mexique 🇲🇽",
+                "faits": [
+                    "Pays de la tequila et du mariachi.",
+                    "Les pyramides de Teotihuacan sont parmi les plus impressionnantes du monde.",
+                    "Le Jour des Morts (Día de los Muertos) est une tradition culturelle emblématique.",
+                    "Le Mexique est le berceau de la civilisation aztèque et maya.",
+                    "Cancún est une destination touristique célèbre pour ses plages paradisiaques.",
+                    "La cuisine mexicaine est inscrite au patrimoine mondial de l'UNESCO.",
+                    "Le sombrero est un symbole typique de la culture mexicaine.",
+                    "Mexico est l'une des plus grandes villes du monde.",
+                    "Frida Kahlo est l'une des artistes les plus célèbres du Mexique.",
+                    "La fête de l'indépendance est célébrée le 16 septembre."
+                ]
+            },
+            {
+                "pays": "Australie 🇦🇺",
+                "faits": [
+                    "Pays des kangourous et des koalas.",
+                    "La Grande Barrière de Corail est le plus grand récif corallien du monde.",
+                    "Sydney est célèbre pour son opéra au design unique.",
+                    "L'Uluru (Ayers Rock) est un site sacré pour les aborigènes.",
+                    "Le surf est une véritable institution en Australie.",
+                    "L'Australie est le seul pays qui est aussi un continent.",
+                    "Le Grand Désert de Victoria est l'un des plus grands déserts au monde.",
+                    "Les Australiens célèbrent le Nouvel An avec des feux d'artifice spectaculaires à Sydney.",
+                    "L'Australie possède une faune unique avec des espèces comme le wombat et l'échidné.",
+                    "Les Aborigènes australiens sont l'une des plus anciennes cultures vivantes sur Terre."
+                ]
+            },
+            {
+                "pays": "Canada 🇨🇦",
+                "faits": [
+                    "Deuxième plus grand pays du monde par sa superficie.",
+                    "Les chutes du Niagara sont l'une des merveilles naturelles les plus visitées.",
+                    "Le hockey sur glace est le sport national du Canada.",
+                    "Le sirop d'érable est une spécialité canadienne.",
+                    "Le parc national de Banff offre des paysages à couper le souffle.",
+                    "Le Canada est bilingue avec l'anglais et le français comme langues officielles.",
+                    "Les aurores boréales sont visibles dans le Grand Nord canadien.",
+                    "Toronto est la plus grande ville du pays.",
+                    "Les forêts boréales couvrent une grande partie du territoire.",
+                    "La feuille d'érable est le symbole emblématique du pays."
+                ]
+            }
             # (On pourra en rajouter plein d’autres ensuite 💪)
         ]
     
@@ -2372,6 +2417,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             message_bot += "\nVeux-tu en découvrir un autre ? 😉"
         except Exception:
             message_bot = "⚠️ Désolé, une erreur est survenue en essayant de découvrir un nouveau pays."
+            
     # --- Bloc Culture générale simple ---
     if any(keyword in question_clean for keyword in [
         "qui ", "quand ", "où ", "combien ", "quel ", "quelle ",
