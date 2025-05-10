@@ -2730,7 +2730,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         return False
 
-    #🔄 Enregistrement optimisé des souvenirs avec gestion des doublons
+    # 🔄 Enregistrement optimisé des souvenirs avec gestion stricte des doublons
     if doit_memoriser_automatiquement(question_clean):
         contenu = question_clean.strip(" .!?").lower()
 
@@ -2738,22 +2738,24 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             memoire = charger_memoire_ava()
             souvenirs = memoire.get("souvenirs", [])
         
-            # Vérifier si le contenu existe déjà dans les souvenirs (ignorer les doublons)
-            if contenu not in [s["contenu"].lower() for s in souvenirs]:
-                # Enregistrer uniquement si la phrase est unique
+            # Liste des contenus existants (normalisés)
+            souvenirs_existants = {s["contenu"].strip(" .!?").lower() for s in souvenirs}
+        
+            # Vérification stricte des doublons
+            if contenu not in souvenirs_existants:
                 memoire["souvenirs"].append({
                     "type": "réflexion_utilisateur",
-                    "contenu": contenu,
+                    "contenu": question_clean.strip(" .!?"),  # Garde le texte original
                     "date": datetime.now().strftime("%Y-%m-%d")
                 })
                 sauvegarder_memoire_ava(memoire)
                 print("✅ Souvenir enregistré.")
-
             else:
                 print("⚠️ Souvenir déjà existant, non enregistré.")
 
         except Exception as e:
             print(f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}")
+
 
     # ✅ Rappel dynamique d'un souvenir enregistré
     if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
