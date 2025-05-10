@@ -2715,7 +2715,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # 🧠 Bloc mémoire évolutive AVA (autonome)
     def doit_memoriser_automatiquement(phrase: str) -> bool:
         """Détermine si la phrase est pertinente pour la mémoire."""
-        contenu = phrase.lower()
+        contenu = phrase.lower().strip(" .!?")
         if len(contenu) < 15:
             return False
 
@@ -2723,38 +2723,48 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
             "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
         ]
-        mots_emotionnels = ["incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"]
+        mots_emotionnels = [
+            "incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"
+        ]
 
         if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
             return True
 
         return False
 
-    # 🔄 Enregistrement optimisé des souvenirs avec gestion stricte des doublons
+    # 🔄 Enregistrement optimisé des souvenirs
     if doit_memoriser_automatiquement(question_clean):
         contenu = question_clean.strip(" .!?").lower()
 
         try:
             memoire = charger_memoire_ava()
             souvenirs = memoire.get("souvenirs", [])
-        
-            # Liste des contenus existants (normalisés)
-            souvenirs_existants = {s["contenu"].strip(" .!?").lower() for s in souvenirs}
-        
-            # Vérification stricte des doublons
-            if contenu not in souvenirs_existants:
-                memoire["souvenirs"].append({
+
+            # Vérifier s'il y a déjà un souvenir identique (contenu uniquement)
+            if not any(s["contenu"].lower() == contenu for s in souvenirs):
+                souvenirs.append({
                     "type": "réflexion_utilisateur",
-                    "contenu": question_clean.strip(" .!?"),  # Garde le texte original
+                    "contenu": contenu,
                     "date": datetime.now().strftime("%Y-%m-%d")
                 })
+
+                # Limite de 100 souvenirs (évite une surcharge)
+                souvenirs = souvenirs[-100:]
+
+                # Mettre à jour la mémoire et sauvegarder
+                memoire["souvenirs"] = souvenirs
                 sauvegarder_memoire_ava(memoire)
-                print("✅ Souvenir enregistré.")
+
+                # Confirmer l'enregistrement
+                retour = "🧠 Ce que vous venez de dire m’a marquée... je l’ai noté dans mes souvenirs :\n"
+                retour += f"- [{datetime.now().strftime('%Y-%m-%d')}] **réflexion_utilisateur** : {contenu}\n"
+                return retour
             else:
-                print("⚠️ Souvenir déjà existant, non enregistré.")
+                return "🔍 Ce souvenir est déjà enregistré, je m'en souviens bien. 😊"
 
         except Exception as e:
-            print(f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}")
+            return f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}"
+
 
 
     # ✅ Rappel dynamique d'un souvenir enregistré
