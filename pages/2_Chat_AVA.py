@@ -1672,7 +1672,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
             return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
 
-    return None
+
        
     
     import re, ast, streamlit as st
