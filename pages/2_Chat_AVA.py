@@ -2631,15 +2631,21 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 if "souvenirs" not in profil:
                     profil["souvenirs"] = {}
 
-                # Vérifier si le souvenir existe déjà
-                if cle_souvenir in profil["souvenirs"] and profil["souvenirs"][cle_souvenir].lower() == valeur.lower():
-                    return f"✨ Vous m'aviez déjà dit que {cle_souvenir.replace('_', ' ')} est **{valeur.capitalize()}** 🧠"
+                # ✅ Vérifier si le souvenir existe déjà
+                if cle_souvenir in profil["souvenirs"]:
+                    # ✅ Mettre à jour uniquement si la valeur est différente
+                    if profil["souvenirs"][cle_souvenir].lower() == valeur.lower():
+                        return f"✨ Vous m'aviez déjà dit que {cle_souvenir.replace('_', ' ')} est **{valeur.capitalize()}** 🧠"
+                    else:
+                        profil["souvenirs"][cle_souvenir] = valeur
+                        set_my_profile(profil)
+                        return f"✨ J'ai mis à jour votre souvenir : **{cle_souvenir.replace('_', ' ')}** est maintenant **{valeur.capitalize()}** 🧠"
 
-                # Enregistrer ou mettre à jour le souvenir
+                # ✅ Enregistrement du nouveau souvenir
                 profil["souvenirs"][cle_souvenir] = valeur
                 set_my_profile(profil)
 
-                # Utilisation dynamique du prénom dans la réponse
+                # ✅ Utilisation dynamique du prénom dans la réponse
                 prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
                 return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
 
@@ -2653,6 +2659,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
             else:
                 return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
+
                                                                         
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
