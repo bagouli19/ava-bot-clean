@@ -2131,7 +2131,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "spasmes musculaires", "trouble digestif", "infection dentaire"
     ]):   
     
-        reponses_medic_optimise = {
+        reponses_medic = {
             "grippe": "🤒 Les symptômes de la grippe incluent : fièvre élevée, frissons, fatigue intense, toux sèche, douleurs musculaires.",
             "rhume": "🤧 Le rhume provoque généralement une congestion nasale, des éternuements, une légère fatigue et parfois un peu de fièvre.",
             "fièvre": "🌡️ Pour faire baisser une fièvre, restez hydraté, reposez-vous, et prenez du paracétamol si besoin. Consultez si elle dépasse 39°C.",
