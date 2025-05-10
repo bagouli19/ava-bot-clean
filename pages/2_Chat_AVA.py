@@ -217,6 +217,46 @@ if user not in all_profiles:
 
 st.session_state.profil = all_profiles[user]
 
+def gerer_souvenirs_utilisateur(question_clean):
+    """
+    Gère les souvenirs utilisateur en priorité absolue.
+    """
+    profil = get_my_profile()
+    if "souvenirs" not in profil:
+        profil["souvenirs"] = {}
+
+    # --- 1️⃣ Enregistrement automatique de souvenirs utilisateur ---
+    patterns_souvenirs = {
+        "je m'appelle": "prenom",
+        "mon prénom est": "prenom",
+        "mon chien s'appelle": "chien",
+        "mon plat préféré est": "plat_prefere",
+        "mon film préféré est": "film_prefere",
+        "mon sport préféré est": "sport_prefere",
+        "ma couleur préférée est": "couleur_preferee",
+        "j'adore la musique": "musique_preferee",
+        "j'aime boire": "boisson_preferee",
+        "mon passe-temps favori est": "passe_temps",
+        "mon animal préféré est": "animal_prefere",
+        "le pays de mes rêves est": "pays_reve"
+    }
+
+    for debut_phrase, cle_souvenir in patterns_souvenirs.items():
+        if question_clean.lower().startswith(debut_phrase):
+            valeur = question_clean[len(debut_phrase):].strip(" .!?")
+            if valeur:
+                profil["souvenirs"][cle_souvenir] = valeur
+                set_my_profile(profil)
+                prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
+                return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
+
+    # --- 2️⃣ Utilisation des souvenirs existants ---
+    for cle_souv, contenu in profil.get("souvenirs", {}).items():
+        if cle_souv.replace("_", " ") in question_clean:
+            prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
+            return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
+
+    return None  # Aucun souvenir détecté
 # ✅ Affichage de test
 st.write("✅ Profil utilisateur chargé :", st.session_state.profil)
 
@@ -1637,45 +1677,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    profil = get_my_profile()
-    if "souvenirs" not in profil:
-        profil["souvenirs"] = {}
-
-    # --- 1️⃣ Enregistrement automatique de souvenirs utilisateur ---
-    patterns_souvenirs = {
-        "je m'appelle": "prenom",
-        "mon prénom est": "prenom",
-        "mon chien s'appelle": "chien",
-        "mon plat préféré est": "plat_prefere",
-        "mon film préféré est": "film_prefere",
-        "mon sport préféré est": "sport_prefere",
-        "ma couleur préférée est": "couleur_preferee",
-        "j'adore la musique": "musique_preferee",
-        "j'aime boire": "boisson_preferee",
-        "mon passe-temps favori est": "passe_temps",
-        "mon animal préféré est": "animal_prefere",
-        "le pays de mes rêves est": "pays_reve"
-    }
-
-    for debut_phrase, cle_souvenir in patterns_souvenirs.items():
-        if question_clean.lower().startswith(debut_phrase):
-            valeur = question_clean[len(debut_phrase):].strip(" .!?")
-            if valeur:
-                profil["souvenirs"][cle_souvenir] = valeur
-                set_my_profile(profil)
-                prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
-                return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
-
-    # --- 2️⃣ Utilisation des souvenirs existants ---
-    for cle_souv, contenu in profil.get("souvenirs", {}).items():
-        if cle_souv.replace("_", " ") in question_clean:
-            prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
-            return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
-
-     # ✅ 1️⃣ Souvenirs utilisateur en priorité
+    # ✅ 1️⃣ Souvenirs utilisateur en priorité
     reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
     if reponse_souvenir:
-        return reponse_souvenir 
+        return reponse_souvenir  # Priorité absolue sur les souvenirs
        
     
     import re, ast, streamlit as st
