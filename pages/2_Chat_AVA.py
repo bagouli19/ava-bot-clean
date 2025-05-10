@@ -1529,6 +1529,48 @@ def get_meteo_ville(city: str) -> str:
     except ValueError:
         return "⚠️ Réponse météo invalide."
 
+# Nettoyage de base
+question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
+
+# --- 1️⃣ Gestion des souvenirs utilisateur (Priorité absolue) ---
+def gerer_souvenirs_utilisateur(question_clean):
+    patterns_souvenirs = {
+        "je m'appelle": "prenom",
+        "mon prénom est": "prenom",
+        "mon chien s'appelle": "chien",
+        "mon plat préféré est": "plat_prefere",
+        "mon film préféré est": "film_prefere",
+        "mon sport préféré est": "sport_prefere",
+        "ma couleur préférée est": "couleur_preferee",
+        "j'adore la musique": "musique_preferee",
+        "j'aime boire": "boisson_preferee",
+        "mon passe-temps favori est": "passe_temps",
+        "mon animal préféré est": "animal_prefere",
+        "le pays de mes rêves est": "pays_reve"
+    }
+
+    profil = get_my_profile()
+    if "souvenirs" not in profil:
+        profil["souvenirs"] = {}
+
+    # Enregistrement des souvenirs
+    for debut_phrase, cle_souvenir in patterns_souvenirs.items():
+        if question_clean.lower().startswith(debut_phrase):
+            valeur = question_clean[len(debut_phrase):].strip(" .!?")
+            if valeur:
+                profil["souvenirs"][cle_souvenir] = valeur
+                set_my_profile(profil)
+                prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
+                return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
+
+    # Utilisation des souvenirs existants
+    for cle_souv, contenu in profil.get("souvenirs", {}).items():
+        if cle_souv.replace("_", " ") in question_clean:
+            prenom = profil.get("souvenirs", {}).get("prenom", "")
+            if prenom:
+                return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
+            else:
+                return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
 
 import streamlit as st
 import openai
@@ -1637,48 +1679,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    # Nettoyage de base
-    question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
 
-    # --- 1️⃣ Gestion des souvenirs utilisateur (Priorité absolue) ---
-    def gerer_souvenirs_utilisateur(question_clean):
-        patterns_souvenirs = {
-            "je m'appelle": "prenom",
-            "mon prénom est": "prenom",
-            "mon chien s'appelle": "chien",
-            "mon plat préféré est": "plat_prefere",
-            "mon film préféré est": "film_prefere",
-            "mon sport préféré est": "sport_prefere",
-            "ma couleur préférée est": "couleur_preferee",
-            "j'adore la musique": "musique_preferee",
-            "j'aime boire": "boisson_preferee",
-            "mon passe-temps favori est": "passe_temps",
-            "mon animal préféré est": "animal_prefere",
-            "le pays de mes rêves est": "pays_reve"
-        }
-
-        profil = get_my_profile()
-        if "souvenirs" not in profil:
-            profil["souvenirs"] = {}
-
-        # Enregistrement des souvenirs
-        for debut_phrase, cle_souvenir in patterns_souvenirs.items():
-            if question_clean.lower().startswith(debut_phrase):
-                valeur = question_clean[len(debut_phrase):].strip(" .!?")
-                if valeur:
-                    profil["souvenirs"][cle_souvenir] = valeur
-                    set_my_profile(profil)
-                    prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
-                    return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
-
-        # Utilisation des souvenirs existants
-        for cle_souv, contenu in profil.get("souvenirs", {}).items():
-            if cle_souv.replace("_", " ") in question_clean:
-                prenom = profil.get("souvenirs", {}).get("prenom", "")
-                if prenom:
-                    return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
-                else:
-                    return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
     
     import re, ast, streamlit as st
 
