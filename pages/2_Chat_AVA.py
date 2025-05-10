@@ -1675,6 +1675,20 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
+    
+        # ✅ Gestion des souvenirs utilisateur (nouvelle priorité)
+    print("🧠 Appel de la fonction gerer_souvenirs_utilisateur (dans gerer_modules_speciaux)")  # ➡️ LOG TEST
+    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
+    if reponse_souvenir:
+        print("✅ Souvenir utilisateur détecté :", reponse_souvenir)  # ➡️ LOG TEST
+        return reponse_souvenir  # Priorité absolue sur les souvenirs
+
+    # ✅ Modules existants (comme météo, actualités, analyse technique, etc.)
+    # 🔄 Place ici tes modules existants comme la météo, actualités, etc.
+    message_bot = ""
+
+    # 🛑 Si aucun module n'a répondu, on continue
+    return message_bot if message_bot else None
 
     import re, ast, streamlit as st
 
