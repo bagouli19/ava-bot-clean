@@ -144,6 +144,11 @@
             "type": "réflexion_utilisateur",
             "contenu": "je pense que l avenir de l humanite est lie a la technologie",
             "date": "2025-05-10"
+        },
+        {
+            "type": "réflexion_utilisateur",
+            "contenu": "je crois que la gentillesse peut changer le monde",
+            "date": "2025-05-10"
         }
     ]
 }
