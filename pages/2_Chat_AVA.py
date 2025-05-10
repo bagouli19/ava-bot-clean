@@ -1907,7 +1907,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     profil = get_my_profile()
     prenom = profil.get("souvenirs", {}).get("prenom", "")
 
-f    or cle_souv, contenu in profil.get("souvenirs", {}).items():
+    for cle_souv, contenu in profil.get("souvenirs", {}).items():
         if cle_souv.replace("_", " ") in question_clean or (isinstance(contenu, str) and contenu.lower() in question_clean):
             if prenom:
                 return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
