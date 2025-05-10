@@ -1672,7 +1672,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
             return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
 
-
+     # ✅ 1️⃣ Souvenirs utilisateur en priorité
+    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
+    if reponse_souvenir:
+        return reponse_souvenir 
        
     
     import re, ast, streamlit as st
