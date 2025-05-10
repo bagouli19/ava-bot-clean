@@ -1863,56 +1863,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         if message_bot:
             return message_bot
 
-    # Nettoyage de base
-    question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
-      
-
-    # --- 1️⃣ Détection et enregistrement automatique de souvenirs dans le profil utilisateur ---
-    patterns_souvenirs = {
-        "je m'appelle": "prenom",
-        "mon prénom est": "prenom",
-        "mon chien s'appelle": "chien",
-        "mon plat préféré est": "plat_prefere",
-        "mon film préféré est": "film_prefere",
-        "mon sport préféré est": "sport_prefere",
-        "ma couleur préférée est": "couleur_preferee",
-        "j'adore la musique": "musique_preferee",
-        "j'aime boire": "boisson_preferee",
-        "mon passe-temps favori est": "passe_temps",
-        "mon animal préféré est": "animal_prefere",
-        "le pays de mes rêves est": "pays_reve"
-    }
-
-    for debut_phrase, cle_souvenir in patterns_souvenirs.items():
-        if question_clean.startswith(debut_phrase):
-            valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
-            if valeur:
-                profil = get_my_profile()
-                if "souvenirs" not in profil:
-                    profil["souvenirs"] = {}
-
-                # Vérifier si le souvenir existe déjà
-                if cle_souvenir in profil["souvenirs"] and profil["souvenirs"][cle_souvenir].lower() == valeur.lower():
-                    return f"✨ Vous m'aviez déjà dit que {cle_souvenir.replace('_', ' ')} est **{valeur.capitalize()}** 🧠"
-
-                # Enregistrer ou mettre à jour le souvenir
-                profil["souvenirs"][cle_souvenir] = valeur
-                set_my_profile(profil)
-
-                # Utilisation dynamique du prénom dans la réponse
-                prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
-                return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
-
-    # --- 2️⃣ Recherche d'un souvenir dans le profil utilisateur ---
-    profil = get_my_profile()
-    prenom = profil.get("souvenirs", {}).get("prenom", "")
-
-    for cle_souv, contenu in profil.get("souvenirs", {}).items():
-        if cle_souv.replace("_", " ") in question_clean or (isinstance(contenu, str) and contenu.lower() in question_clean):
-            if prenom:
-                return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
-            else:
-                return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
+   
                 
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
@@ -2652,7 +2603,56 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return message_bot
 
 
+    # Nettoyage de base
+    question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
+      
 
+    # --- 1️⃣ Détection et enregistrement automatique de souvenirs dans le profil utilisateur ---
+    patterns_souvenirs = {
+        "je m'appelle": "prenom",
+        "mon prénom est": "prenom",
+        "mon chien s'appelle": "chien",
+        "mon plat préféré est": "plat_prefere",
+        "mon film préféré est": "film_prefere",
+        "mon sport préféré est": "sport_prefere",
+        "ma couleur préférée est": "couleur_preferee",
+        "j'adore la musique": "musique_preferee",
+        "j'aime boire": "boisson_preferee",
+        "mon passe-temps favori est": "passe_temps",
+        "mon animal préféré est": "animal_prefere",
+        "le pays de mes rêves est": "pays_reve"
+    }
+
+    for debut_phrase, cle_souvenir in patterns_souvenirs.items():
+        if question_clean.startswith(debut_phrase):
+            valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
+            if valeur:
+                profil = get_my_profile()
+                if "souvenirs" not in profil:
+                    profil["souvenirs"] = {}
+
+                # Vérifier si le souvenir existe déjà
+                if cle_souvenir in profil["souvenirs"] and profil["souvenirs"][cle_souvenir].lower() == valeur.lower():
+                    return f"✨ Vous m'aviez déjà dit que {cle_souvenir.replace('_', ' ')} est **{valeur.capitalize()}** 🧠"
+
+                # Enregistrer ou mettre à jour le souvenir
+                profil["souvenirs"][cle_souvenir] = valeur
+                set_my_profile(profil)
+
+                # Utilisation dynamique du prénom dans la réponse
+                prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
+                return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
+
+    # --- 2️⃣ Recherche d'un souvenir dans le profil utilisateur ---
+    profil = get_my_profile()
+    prenom = profil.get("souvenirs", {}).get("prenom", "")
+
+    for cle_souv, contenu in profil.get("souvenirs", {}).items():
+        if cle_souv.replace("_", " ") in question_clean or (isinstance(contenu, str) and contenu.lower() in question_clean):
+            if prenom:
+                return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
+            else:
+                return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
                                                                         
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
