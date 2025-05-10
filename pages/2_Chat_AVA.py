@@ -2692,74 +2692,49 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "📭 Votre liste de tâches est vide pour le moment."
         return "📝 Voici votre liste de tâches :\n" + "\n".join([f"- {t['contenu']} ({t['date']})" for t in taches])
 
-# 🔍 Optimisation de la gestion de la mémoire globale AVA
 
-# ⚡️ Chargement et gestion de la mémoire globale
-memoire_ava = charger_memoire_ava()
+    # ✅ Bloc de mémoire globale (souvenirs)
+    if doit_memoriser_automatiquement(question_clean):
+        contenu = question_clean.strip(" .!?")
 
-# ✅ Fonction de vérification de l'importance d'un souvenir
-def doit_memoriser_automatiquement(phrase: str) -> bool:
-    contenu = phrase.lower()
-    if len(contenu) < 15:
-        return False
+        try:
+            memoire = charger_memoire_ava()
 
-    mots_importants = [
-        "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
-        "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
-    ]
-    mots_emotionnels = [
-        "incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"
-    ]
+            # Nettoyage des souvenirs trop anciens (30 jours)
+            memoire["souvenirs"] = [s for s in memoire.get("souvenirs", []) if (datetime.now() - datetime.strptime(s["date"], "%Y-%m-%d")).days <= 30]
 
-    if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
-        return True
+            # Limite de 100 souvenirs
+            if len(memoire["souvenirs"]) >= 100:
+                memoire["souvenirs"].pop(0)
 
-    return False
+            # Enregistrement si non dupliqué
+            if contenu not in [s["contenu"] for s in memoire.get("souvenirs", [])]:
+                memoire["souvenirs"].append({
+                    "type": "réflexion_utilisateur",
+                    "contenu": contenu,
+                    "date": datetime.now().strftime("%Y-%m-%d")
+                })
+                sauvegarder_memoire_ava(memoire)
 
-# 🔄 Enregistrement optimisé des souvenirs
-if doit_memoriser_automatiquement(question_clean):
-    contenu = question_clean.strip(" .!?")
+        except Exception as e:
+            message_bot = f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}"
 
-    try:
-        memoire = charger_memoire_ava()
-
-        # Nettoyage des souvenirs trop anciens (30 jours)
-        memoire["souvenirs"] = [s for s in memoire.get("souvenirs", []) if (datetime.now() - datetime.strptime(s["date"], "%Y-%m-%d")).days <= 30]
-
-        # Limite de 100 souvenirs
-        if len(memoire["souvenirs"]) >= 100:
-            memoire["souvenirs"].pop(0)
-
-        # Enregistrement si non dupliqué
-        if contenu not in [s["contenu"] for s in memoire.get("souvenirs", [])]:
-            memoire["souvenirs"].append({
-                "type": "réflexion_utilisateur",
-                "contenu": contenu,
-                "date": datetime.now().strftime("%Y-%m-%d")
-            })
-            sauvegarder_memoire_ava(memoire)
-
-    except Exception as e:
-        print(f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}")
-    
-    # --- Rappel dynamique d'un souvenir enregistré ---
+    # ✅ Rappel dynamique d'un souvenir enregistré
     if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
-        for cle, valeur in st.session_state["souvenirs"].items():
+        for cle, valeur in st.session_state.get("souvenirs", {}).items():
             if any(mot in cle for mot in question_clean.split()):
                 return f"✨ Souvenir retrouvé : **{valeur}**"
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
 
-    # ✅ Mots-clés pour détecter une intention musicale, en début de phrase ou explicite
+    # ✅ Bloc musical (détection et réponse musicale avancée)
     mots_cles_musique = [
         "musique", "chanson", "son", "titre", "écouter", "playlist", "mets-moi une chanson", 
         "propose un son", "donne un son", "j'aimerais écouter", "je veux écouter", 
         "as-tu une musique", "tu connais une chanson", "recommande une chanson"
     ]
 
-    # ✅ Ignorer les questions génériques comme "Quels sont..."
     ignorer_prefixes = ["quel ", "quels sont", "quelles sont", "quelle est"]
 
-    # ✅ Vérifier si la question contient explicitement un mot-clé musical
     theme_musique_detecte = any(
         question_clean.lower().startswith(prefix) for prefix in mots_cles_musique
     ) or any(
@@ -2767,9 +2742,8 @@ if doit_memoriser_automatiquement(question_clean):
     ) and not any(
         question_clean.lower().startswith(prefix) for prefix in ignorer_prefixes
     )
-    
-    # ✅ Bloc musical déclenché uniquement si thème musique détecté
-    if theme_musique_detecte or dernier_theme == "musique":
+
+    if theme_musique_detecte:
         print("🟢 Bloc musical déclenché 🎵")
         tendances = obtenir_titres_populaires_france()
         if tendances:
@@ -2778,6 +2752,21 @@ if doit_memoriser_automatiquement(question_clean):
                 + "\n".join(tendances)
                 + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
             )
+
+    # ✅ Bloc par défaut si rien n'a été détecté
+    if not message_bot:
+        reponses_ava = [
+            "Je suis là pour vous aider, mais j'ai besoin d'un peu plus de détails 🤖",
+            "Je n'ai pas bien compris. Pouvez-vous reformuler, s'il vous plaît ?",
+            "Ce sujet est encore un peu flou pour moi... Je peux parler d'analyse technique, "
+            "de météo, d'actualités, et bien plus encore !",
+            "Hmm... Ce n'est pas encore dans ma base de données. Essayez une autre "
+            "formulation ou tapez 'analyse complète' pour un aperçu du marché 📊"
+        ]
+        message_bot = random.choice(reponses_ava)
+
+    return message_bot if message_bot else None
+
 
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
