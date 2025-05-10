@@ -2790,20 +2790,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
             )
 
-    # ✅ Bloc par défaut si rien n'a été détecté
-    if not message_bot:
-        reponses_ava = [
-            "Je suis là pour vous aider, mais j'ai besoin d'un peu plus de détails 🤖",
-            "Je n'ai pas bien compris. Pouvez-vous reformuler, s'il vous plaît ?",
-            "Ce sujet est encore un peu flou pour moi... Je peux parler d'analyse technique, "
-            "de météo, d'actualités, et bien plus encore !",
-            "Hmm... Ce n'est pas encore dans ma base de données. Essayez une autre "
-            "formulation ou tapez 'analyse complète' pour un aperçu du marché 📊"
-        ]
-        message_bot = random.choice(reponses_ava)
-
-    
-
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
