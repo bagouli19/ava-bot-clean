@@ -18,16 +18,24 @@
       "rappels": [],
       "plat_prefere": "la pizza"
     },
-    "taches": [],
-    "rappels": [
+    "taches": [
       {
-        "contenu": "prendre mon rendez vous demain",
-        "date": "2025-05-05"
+        "contenu": "mets dans ma liste aller au coiffeur",
+        "date": "2025-05-07"
       },
       {
-        "contenu": "prendre rendez vous au dentiste",
+        "contenu": "o au taches",
+        "date": "2025-05-09"
+      },
+      {
+        "contenu": "o tik tok",
+        "date": "2025-05-09"
+      },
+      {
+        "contenu": "quels souvenirs as tu note",
         "date": "2025-05-10"
       }
-    ]
+    ],
+    "rappels": []
   }
 }
