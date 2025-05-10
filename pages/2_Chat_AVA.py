@@ -2693,9 +2693,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "📭 Votre liste de tâches est vide pour le moment."
         return "📝 Voici votre liste de tâches :\n" + "\n".join([f"- {t['contenu']} ({t['date']})" for t in taches])
 
+    # 🔍 Optimisation de la gestion de la mémoire globale AVA
+
+    # ⚡️ Chargement et gestion de la mémoire globale
+    memoire_ava = charger_memoire_ava()
+
     # ✅ Fonction de vérification de l'importance d'un souvenir
     def doit_memoriser_automatiquement(phrase: str) -> bool:
-        """Détermine si la phrase est pertinente pour la mémoire."""
         contenu = phrase.lower()
         if len(contenu) < 15:
             return False
@@ -2712,7 +2716,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return True
 
         return False
-
+        
     # ✅ Enregistrement automatique des souvenirs
     if doit_memoriser_automatiquement(question_clean):
         contenu = question_clean.strip(" .!?")
