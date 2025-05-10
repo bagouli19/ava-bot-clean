@@ -1911,6 +1911,58 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             message_bot = "💦 Sauge en infusion ou en déodorant naturel, porter du coton, et éviter les plats épicés."
         elif "inflammation" in question_clean:
             message_bot = "🧂 Cataplasme d’argile verte, infusion de curcuma et gingembre, ou massage à l’huile de millepertuis."
+        elif "gueule de bois" in question_clean or "lendemain de soirée" in question_clean:
+            message_bot = "🍋 Eau citronnée, infusion de gingembre, banane pour le potassium et hydratation maximale. Repos recommandé."
+        elif "bouton de fièvre" in question_clean or "herpès" in question_clean:
+            message_bot = "🧴 Application de miel pur ou d’huile essentielle de tea tree (diluée), ou compresse froide de thé noir."
+        elif "piqûre d'insecte" in question_clean or "moustique" in question_clean:
+            message_bot = "🐝 Application d’huile essentielle de lavande ou de basilic, ou une pâte de bicarbonate de soude avec de l'eau."
+        elif "brûlure d'estomac" in question_clean or "reflux acide" in question_clean:
+            message_bot = "🔥 Infusion de guimauve, jus d’aloe vera, et surélever la tête du lit. Évite les repas lourds et épicés."
+        elif "douleur dentaire" in question_clean or "rage de dents" in question_clean:
+            message_bot = "🦷 Clou de girofle directement sur la dent douloureuse, gargarisme d’eau salée tiède ou huile essentielle de menthe poivrée."
+        elif "eczéma" in question_clean or "démangeaison" in question_clean:
+            message_bot = "🧴 Gel d’aloe vera pur, huile de bourrache ou application de lait d'avoine sur les zones touchées."
+        elif "cheveux secs" in question_clean or "cheveux cassants" in question_clean:
+            message_bot = "💆 Bain d’huile de coco ou d’argan avant le shampooing, rinçage à l’eau tiède avec vinaigre de cidre."
+        elif "pellicules" in question_clean:
+            message_bot = "❄️ Massage du cuir chevelu avec de l’huile essentielle de tea tree diluée ou rinçage avec infusion de thym."
+        elif "acné" in question_clean or "boutons" in question_clean:
+            message_bot = "🧼 Masque à l’argile verte, huile essentielle de tea tree diluée, ou une compresse de camomille."
+        elif "ballonnement" in question_clean or "gaz" in question_clean:
+            message_bot = "🌿 Infusion de fenouil, charbon actif, ou une petite marche après le repas pour faciliter la digestion."
+        elif "coup de soleil" in question_clean:
+            message_bot = "☀️ Gel d’aloe vera pur, yaourt nature en application locale ou infusion de camomille en compresse."
+        elif "douleurs menstruelles" in question_clean or "règles douloureuses" in question_clean:
+            message_bot = "🌸 Infusion de framboisier, bouillotte chaude sur le ventre, ou massage à l’huile de lavande."
+        elif "mal des transports" in question_clean or "nausées en voiture" in question_clean:
+            message_bot = "🚗 Gingembre confit, huile essentielle de menthe poivrée, ou respiration profonde et regard sur l’horizon."
+        elif "mycose" in question_clean or "infection fongique" in question_clean:
+            message_bot = "🍃 Application d’huile de coco ou d’huile essentielle de tea tree diluée, ou bain au vinaigre de cidre."
+        elif "varices" in question_clean or "jambes lourdes" in question_clean:
+            message_bot = "🦵 Massage à l’huile de calophylle inophylle, infusion de vigne rouge ou élévation des jambes en fin de journée."
+        elif "mauvaise haleine" in question_clean:
+            message_bot = "🍃 Infusion de menthe poivrée, clou de girofle à mâcher ou rinçage à l’eau salée."
+        elif "blessure" in question_clean or "coupure" in question_clean:
+            message_bot = "🩹 Désinfection avec de l’eau oxygénée, application de miel pur pour ses propriétés cicatrisantes, ou compresse de lavande."
+        elif "constipation" in question_clean:
+            message_bot = "🍑 Pruneaux, eau tiède à jeun avec un peu de citron, ou infusion de graines de lin ou psyllium."
+        elif "diarrhée" in question_clean:
+            message_bot = "🍌 Riz blanc, infusion de feuille de ronce, et bien s’hydrater avec une eau légèrement salée et sucrée."
+        elif "cystite" in question_clean or "infection urinaire" in question_clean:
+            message_bot = "🍒 Jus de cranberry, infusion de bruyère, et boisson d’eau citronnée régulièrement."
+        elif "mal au dos" in question_clean or "lumbago" in question_clean:
+            message_bot = "💆‍♂️ Application d’huile de gaulthérie, étirements doux, et compresse chaude sur la zone douloureuse."
+        elif "chute de cheveux" in question_clean:
+            message_bot = "🌱 Huile de ricin en massage sur le cuir chevelu, infusion de prêle, et alimentation riche en zinc."
+        elif "mains sèches" in question_clean or "peau sèche" in question_clean:
+            message_bot = "🧴 Masque au miel, huile d’amande douce, ou crème à la cire d’abeille en application régulière."
+        elif "douleurs articulaires" in question_clean or "arthrite" in question_clean:
+            message_bot = "🦴 Infusion de curcuma et gingembre, application d'argile verte en cataplasme, ou huile d'arnica en massage."
+        elif "perte de mémoire" in question_clean or "trou de mémoire" in question_clean:
+            message_bot = "🧠 Infusion de sauge, huile de poisson riche en oméga-3, et exercices de mémorisation."
+        elif "inflammation" in question_clean or "douleur chronique" in question_clean:
+            message_bot = "🔥 Infusion de curcuma et gingembre, massage à l’huile de millepertuis, et alimentation anti-inflammatoire."
         else:
             message_bot = "🌱 Je connais plein de remèdes naturels ! Dites-moi pour quel symptôme ou souci, et je vous propose une solution douce et efficace."
         
