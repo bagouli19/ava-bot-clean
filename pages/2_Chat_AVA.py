@@ -2313,7 +2313,30 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     
     # --- Bloc Découverte du Monde 100% local ---
     if not message_bot and any(kw in question_clean for kw in [
-        "pays", "fait-moi découvrir", "découvre-moi", "exploration du monde", "découvrir un pays"
+        "pays", 
+        "fait-moi découvrir", 
+        "découvre-moi", 
+        "exploration du monde", 
+        "découvrir un pays", 
+        "présente-moi un pays", 
+        "montre-moi un pays", 
+        "quel pays découvrir", 
+        "explorer un pays", 
+        "découverte géographique", 
+        "parle-moi d'un pays", 
+        "raconte-moi un pays", 
+        "un pays à découvrir", 
+        "montre-moi une destination", 
+        "donne-moi un fait sur un pays", 
+        "fait géographique", 
+        "un pays intéressant", 
+        "apprends-moi sur un pays", 
+        "explore avec moi", 
+        "destination surprenante", 
+        "pays fascinant", 
+        "culture d'un pays", 
+        "découvrir un lieu", 
+        "région du monde"
     ]):
         DESTINATIONS = [
             {
