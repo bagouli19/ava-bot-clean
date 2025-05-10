@@ -1529,8 +1529,6 @@ def get_meteo_ville(city: str) -> str:
     except ValueError:
         return "⚠️ Réponse météo invalide."
 
-# Nettoyage de base
-question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
 
 # --- 1️⃣ Gestion des souvenirs utilisateur (Priorité absolue) ---
 def gerer_souvenirs_utilisateur(question_clean):
