@@ -2797,6 +2797,8 @@ if doit_memoriser_automatiquement(question_clean):
                 return f"✨ Souvenir retrouvé : **{valeur}**"
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
 
+    return message_bot if message_bot else None
+    
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
         # détection de salutations en anglais
@@ -2848,7 +2850,7 @@ if doit_memoriser_automatiquement(question_clean):
     if message_bot:
         return message_bot
 
-    return message_bot if message_bot else None
+    return None
 
     
 # ─── Boucle Streamlit Chat (TOUJOURS en bas) ───
