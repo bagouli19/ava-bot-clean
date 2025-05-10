@@ -213,9 +213,13 @@ if user not in all_profiles:
 
 st.session_state.profil = all_profiles[user]
 
-# ✅ Gestion des souvenirs utilisateur
 def gerer_souvenirs_utilisateur(question_clean):
+    """
+    Gère les souvenirs utilisateur en priorité absolue.
+    """
     profil = get_my_profile()
+    if "souvenirs" not in profil:
+        profil["souvenirs"] = {}
 
     # --- 1️⃣ Enregistrement automatique de souvenirs utilisateur ---
     patterns_souvenirs = {
@@ -248,7 +252,8 @@ def gerer_souvenirs_utilisateur(question_clean):
             prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
             return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
 
-    return None
+    return None  # Aucun souvenir détecté
+
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1627,6 +1632,7 @@ def trouver_reponse(question: str, model) -> str:
     # ✅ 1️⃣ Souvenirs utilisateur en priorité (avant toute autre réponse)
     reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
     if reponse_souvenir:
+        print("✅ Réponse souvenir utilisateur")
         return reponse_souvenir  # Priorité absolue sur les souvenirs
     
     # ✅ 2️⃣ Salutations (si pas de souvenirs)
@@ -1657,6 +1663,7 @@ def trouver_reponse(question: str, model) -> str:
 
     # ✅ 7️⃣ Réponse par défaut (si tout échoue)
     return "🤔 Je n'ai pas trouvé de réponse précise."
+
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
