@@ -1529,6 +1529,26 @@ def get_meteo_ville(city: str) -> str:
     except ValueError:
         return "⚠️ Réponse météo invalide."
 
+# ✅ Fonction de vérification de l'importance d'un souvenir
+def doit_memoriser_automatiquement(phrase: str) -> bool:
+    """Détermine si la phrase est pertinente pour la mémoire."""
+    contenu = phrase.lower()
+    if len(contenu) < 15:
+        return False
+
+    mots_importants = [
+        "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
+        "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
+    ]
+    mots_emotionnels = [
+        "incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"
+    ]
+
+    if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
+        return True
+
+    return False
+
 import streamlit as st
 import openai
 import difflib
@@ -2693,15 +2713,16 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return "📝 Voici votre liste de tâches :\n" + "\n".join([f"- {t['contenu']} ({t['date']})" for t in taches])
 
 
-    # ✅ Bloc de mémoire globale (souvenirs)
+    # ✅ Enregistrement automatique des souvenirs
     if doit_memoriser_automatiquement(question_clean):
         contenu = question_clean.strip(" .!?")
 
         try:
-            memoire = charger_memoire_ava()
-
             # Nettoyage des souvenirs trop anciens (30 jours)
-            memoire["souvenirs"] = [s for s in memoire.get("souvenirs", []) if (datetime.now() - datetime.strptime(s["date"], "%Y-%m-%d")).days <= 30]
+            memoire["souvenirs"] = [
+                s for s in memoire.get("souvenirs", []) 
+                if (datetime.now() - datetime.strptime(s["date"], "%Y-%m-%d")).days <= 30
+            ]
 
             # Limite de 100 souvenirs
             if len(memoire["souvenirs"]) >= 100:
@@ -2716,8 +2737,24 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 })
                 sauvegarder_memoire_ava(memoire)
 
+            message_bot += "🧠 Ce que vous venez de dire m’a marquée... je l’ai noté dans mes souvenirs.\n"
+
         except Exception as e:
-            message_bot = f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}"
+            message_bot += f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}\n"
+
+    # ✅ Rappel des souvenirs si demandé
+    if question_clean in [
+        "montre moi tes souvenirs", "qu'as tu retenu", "quels souvenirs as tu",
+        "montre tes souvenirs", "qu'as tu mémorisé", "rappelle toi ce que tu as appris"
+    ]:
+        souvenirs = memoire.get("souvenirs", [])[-5:]  # Affichage des 5 derniers souvenirs
+        if not souvenirs:
+            return "📭 Pour l'instant, je n’ai rien mémorisé de particulier."
+        
+        reponse = "🧠 Voici ce que j’ai noté dans ma mémoire globale :\n\n"
+        for s in souvenirs:
+            reponse += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
+        return reponse
 
     # ✅ Rappel dynamique d'un souvenir enregistré
     if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
