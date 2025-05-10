@@ -2730,30 +2730,30 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         return False
 
-    # 🔄 Intégration dans gerer_modules_speciaux()
+    #🔄 Enregistrement optimisé des souvenirs avec gestion des doublons
     if doit_memoriser_automatiquement(question_clean):
-        contenu = question_clean.strip(" .!?")
+        contenu = question_clean.strip(" .!?").lower()
 
         try:
             memoire = charger_memoire_ava()
-            memoire["souvenirs"].append({
-                "type": "réflexion_utilisateur",
-                "contenu": contenu,
-                "date": datetime.now().strftime("%Y-%m-%d")
-            })
-            sauvegarder_memoire_ava(memoire)
+            souvenirs = memoire.get("souvenirs", [])
+        
+            # Vérifier si le contenu existe déjà dans les souvenirs (ignorer les doublons)
+            if contenu not in [s["contenu"].lower() for s in souvenirs]:
+                # Enregistrer uniquement si la phrase est unique
+                memoire["souvenirs"].append({
+                    "type": "réflexion_utilisateur",
+                    "contenu": contenu,
+                    "date": datetime.now().strftime("%Y-%m-%d")
+                })
+                sauvegarder_memoire_ava(memoire)
+                print("✅ Souvenir enregistré.")
 
-            # Recharge la mémoire pour afficher une mise à jour fiable
-            memoire = charger_memoire_ava()
-            derniers_souvenirs = memoire.get("souvenirs", [])[-3:]
-
-            retour = "🧠 Ce que vous venez de dire m’a marquée... je l’ai noté dans mes souvenirs :\n"
-            for s in derniers_souvenirs:
-                retour += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
-            return retour
+            else:
+                print("⚠️ Souvenir déjà existant, non enregistré.")
 
         except Exception as e:
-            return f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}"
+            print(f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}")
 
     # ✅ Rappel dynamique d'un souvenir enregistré
     if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
