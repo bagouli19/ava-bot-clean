@@ -213,53 +213,68 @@ if user not in all_profiles:
 
 st.session_state.profil = all_profiles[user]
 
-def gerer_souvenirs_utilisateur(question_clean):
+
+
+def normalize_text(s: str) -> str:
+    # remplace les apostrophes typographiques par l'apostrophe simple
+    s = s.replace("’", "'").replace("‘", "'")
+    # met en ASCII (strip accents)
+    s = unicodedata.normalize("NFKD", s)
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return s.lower().strip()
+
+def gerer_souvenirs_utilisateur(question_raw: str):
     """
     Gère les souvenirs utilisateur en priorité absolue.
     """
-    print("🧠 Appel de la fonction gerer_souvenirs_utilisateur")
-    
+    st.write("🧠 DEBUG: appel gerer_souvenirs_utilisateur")
+    q_norm = normalize_text(question_raw)
+    st.write("🧠 DEBUG: q_norm =", q_norm)
+
     profil = get_my_profile()
     if "souvenirs" not in profil:
         profil["souvenirs"] = {}
 
-    # --- 1️⃣ Enregistrement automatique de souvenirs utilisateur ---
-    patterns_souvenirs = {
+    # Phrases clés → nom de champ dans profil
+    patterns = {
         "je m'appelle": "prenom",
-        "mon prénom est": "prenom",
+        "mon prenom est": "prenom",
         "mon chien s'appelle": "chien",
-        "mon plat préféré est": "plat_prefere",
-        "mon film préféré est": "film_prefere",
-        "mon sport préféré est": "sport_prefere",
-        "ma couleur préférée est": "couleur_preferee",
+        "mon plat prefere est": "plat_prefere",
+        "mon film prefere est": "film_prefere",
+        "mon sport prefere est": "sport_prefere",
+        "ma couleur prefere est": "couleur_preferee",
         "j'adore la musique": "musique_preferee",
         "j'aime boire": "boisson_preferee",
         "mon passe-temps favori est": "passe_temps",
-        "mon animal préféré est": "animal_prefere",
-        "le pays de mes rêves est": "pays_reve"
+        "mon animal prefere est": "animal_prefere",
+        "le pays de mes reves est": "pays_reve"
     }
 
-    for debut_phrase, cle_souvenir in patterns_souvenirs.items():
-        if question_clean.lower().startswith(debut_phrase):
-            print(f"✅ Souvenir détecté : {cle_souvenir}")
-            valeur = question_clean[len(debut_phrase):].strip(" .!?")
+    # 1️⃣ Enregistrement
+    for debut, cle in patterns.items():
+        if q_norm.startswith(debut):
+            valeur = q_norm[len(debut):].strip(" .!?")
+            st.write(f"✅ DEBUG détection: {debut!r} → clé {cle}, valeur brute: {valeur!r}")
             if valeur:
-                profil["souvenirs"][cle_souvenir] = valeur
+                profil["souvenirs"][cle] = valeur
                 set_my_profile(profil)
-                prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
-                print(f"✅ Souvenir enregistré : {cle_souvenir} = {valeur}")
-                return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
+                prenom = profil["souvenirs"].get("prenom", "cher utilisateur")
+                resp = f"✨ C’est noté, {prenom.capitalize()} : **{valeur.capitalize()}** 🧠"
+                st.write("✅ DEBUG réponse enregistrement:", resp)
+                return resp
 
-    # --- 2️⃣ Utilisation des souvenirs existants ---
-    for cle_souv, contenu in profil.get("souvenirs", {}).items():
-        if cle_souv.replace("_", " ") in question_clean:
-            prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
-            print(f"✅ Souvenir retrouvé : {cle_souv} = {contenu}")
-            return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
+    # 2️⃣ Rappel
+    for cle, contenu in profil.get("souvenirs", {}).items():
+        mot = cle.replace("_", " ")
+        if mot in q_norm:
+            prenom = profil["souvenirs"].get("prenom", "cher utilisateur")
+            resp = f"🧠 Oui, {prenom}, je me souviens : **{contenu}**"
+            st.write("✅ DEBUG rappel souvenir:", cle, contenu)
+            return resp
 
-    print("❌ Aucun souvenir détecté")
-    return None  # Aucun souvenir détecté
-
+    st.write("❌ DEBUG: aucun souvenir détecté")
+    return None
 
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
