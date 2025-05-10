@@ -247,13 +247,12 @@ FICHIER_MEMOIRE = "data/memoire_ava.json"
 BRANCHE = "main"
 GITHUB_TOKEN = st.secrets["github"]["GITHUB_TOKEN"]
 
+# ─────────────────────────────────────────
+# 🔄 Charger la mémoire AVA (générale) depuis GitHub
+# ─────────────────────────────────────────
 def charger_memoire_ava():
-    """Charge la mémoire AVA depuis GitHub."""
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE}"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
-    }
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_AVA}"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
     try:
         response = requests.get(url, headers=headers)
@@ -262,153 +261,81 @@ def charger_memoire_ava():
             if contenu_base64:
                 contenu_json = base64.b64decode(contenu_base64).decode("utf-8")
                 return json.loads(contenu_json)
-        print("⚠️ Erreur de chargement de la mémoire depuis GitHub.")
+        print("⚠️ Erreur de chargement de la mémoire AVA.")
+        return {"souvenirs": []}
+    except Exception as e:
+        print(f"⚠️ Erreur de connexion à GitHub : {e}")
+        return {"souvenirs": []}
+
+# ─────────────────────────────────────────
+# 🔄 Charger la mémoire des utilisateurs
+# ─────────────────────────────────────────
+def charger_memoire_utilisateurs():
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_UTILISATEURS}"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            contenu_base64 = response.json().get("content", "")
+            if contenu_base64:
+                contenu_json = base64.b64decode(contenu_base64).decode("utf-8")
+                return json.loads(contenu_json)
+        print("⚠️ Erreur de chargement de la mémoire des utilisateurs.")
         return {}
     except Exception as e:
         print(f"⚠️ Erreur de connexion à GitHub : {e}")
         return {}
 
-# Charger la mémoire
-memoire_ava = charger_memoire_ava()
-
-def enregistrer_memoire_ava(memoire_ava):
-    """Enregistre la mémoire localement (sauvegarde de sécurité)."""
-    with open("memoire_ava.json", "w", encoding="utf-8") as fichier:
-        json.dump(memoire_ava, fichier, ensure_ascii=False, indent=4)
-
+# ─────────────────────────────────────────
+# 💾 Sauvegarder la mémoire AVA (générale)
+# ─────────────────────────────────────────
 def sauvegarder_memoire_ava(memoire: dict):
-    """Sauvegarde la mémoire AVA sur GitHub via l’API GitHub."""
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE}"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
-    }
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_AVA}"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
     try:
-        # Charger la mémoire actuelle sur GitHub pour obtenir le SHA
         response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            sha = response.json().get("sha", "")
-        else:
-            print("⚠️ Erreur de récupération de SHA GitHub.")
-            sha = ""
+        sha = response.json().get("sha", "") if response.status_code == 200 else ""
 
-        # Convertir la mémoire en JSON
         contenu_json = json.dumps(memoire, ensure_ascii=False, indent=4).encode("utf-8")
         contenu_base64 = base64.b64encode(contenu_json).decode("utf-8")
 
-        data = {
-            "message": "🔄 Mise à jour de la mémoire AVA",
-            "content": contenu_base64,
-            "sha": sha
-        }
-
-        # Envoi de la mise à jour à GitHub
+        data = {"message": "🔄 Mise à jour de la mémoire AVA", "content": contenu_base64, "sha": sha}
         response = requests.put(url, headers=headers, json=data)
 
         if response.status_code in [200, 201]:
             print("✅ Mémoire AVA sauvegardée sur GitHub.")
         else:
-            print(f"❌ Erreur lors de la sauvegarde sur GitHub : {response.status_code} - {response.text}")
+            print(f"❌ Erreur lors de la sauvegarde : {response.status_code} - {response.text}")
     except Exception as e:
         print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
 
 
-        # Données encodées base64 pour GitHub API
-        content_encoded = base64.b64encode(
-            json.dumps(memoire, ensure_ascii=False, indent=2).encode("utf-8")
-        ).decode("utf-8")
+# ─────────────────────────────────────────
+# 💾 Sauvegarder la mémoire des utilisateurs
+# ─────────────────────────────────────────
+def sauvegarder_memoire_utilisateurs(memoire: dict):
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_UTILISATEURS}"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
-        payload = {
-            "message": f"💾 update mémoire {datetime.now().isoformat()}",
-            "content": content_encoded,
-            "sha": sha
-        }
+    try:
+        response = requests.get(url, headers=headers)
+        sha = response.json().get("sha", "") if response.status_code == 200 else ""
 
-        put_res = requests.put(url, headers=headers, json=payload)
+        contenu_json = json.dumps(memoire, ensure_ascii=False, indent=4).encode("utf-8")
+        contenu_base64 = base64.b64encode(contenu_json).decode("utf-8")
 
-        if put_res.status_code in [200, 201]:
-            st.sidebar.success("✅ mémoire_ava.json mise à jour sur GitHub")
+        data = {"message": "🔄 Mise à jour de la mémoire des utilisateurs", "content": contenu_base64, "sha": sha}
+        response = requests.put(url, headers=headers, json=data)
+
+        if response.status_code in [200, 201]:
+            print("✅ Mémoire utilisateurs sauvegardée sur GitHub.")
         else:
-            st.sidebar.error(f"❌ Erreur GitHub : {put_res.status_code}")
-            st.sidebar.error(put_res.text)
-
+            print(f"❌ Erreur lors de la sauvegarde : {response.status_code} - {response.text}")
     except Exception as e:
-        st.sidebar.error(f"❌ Erreur lors de la sauvegarde mémoire : {e}")
+        print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
 
-def detecter_information_cle(question: str):
-    """Détecte les informations clés dans une question ou une réponse."""
-    informations_detectees = {}
-
-    # Détection du prénom
-    if "je m'appelle" in question.lower() or "mon nom est" in question.lower():
-        mots = question.split()
-        for i, mot in enumerate(mots):
-            if mot.lower() in ["m'appelle", "nom", "prénom"]:
-                if i + 1 < len(mots):
-                    prenom = mots[i + 1].capitalize()
-                    informations_detectees["prenom"] = prenom
-
-    # Détection des intérêts (livres, musique, films)
-    if "j'aime" in question.lower():
-        mots = question.split()
-        for i, mot in enumerate(mots):
-            if mot.lower() == "j'aime":
-                interet = " ".join(mots[i+1:])
-                informations_detectees["interet"] = interet
-
-    # Détection d'une préférence particulière
-    if "je préfère" in question.lower():
-        mots = question.split()
-        for i, mot in enumerate(mots):
-            if mot.lower() == "je préfère":
-                preference = " ".join(mots[i+1:])
-                informations_detectees["preference"] = preference
-
-    # Détection de l'âge
-    if "j'ai" in question.lower() and "ans" in question.lower():
-        mots = question.split()
-        for i, mot in enumerate(mots):
-            if mot.lower() == "j'ai" and i + 1 < len(mots):
-                try:
-                    age = int(mots[i + 1])
-                    informations_detectees["age"] = age
-                except ValueError:
-                    pass
-
-    # Détection de la ville
-    if "j'habite à" in question.lower() or "je vis à" in question.lower():
-        mots = question.split()
-        for i, mot in enumerate(mots):
-            if mot.lower() in ["j'habite", "je vis"] and i + 2 < len(mots) and mots[i + 1].lower() == "à":
-                ville = mots[i + 2].capitalize()
-                informations_detectees["ville"] = ville
-
-    # Détection du métier
-    if "je suis" in question.lower() and "travaille" not in question.lower():
-        mots = question.split()
-        for i, mot in enumerate(mots):
-            if mot.lower() == "je" and i + 1 < len(mots) and mots[i + 1].lower() == "suis":
-                metier = " ".join(mots[i + 2:])
-                informations_detectees["metier"] = metier
-
-    # Détection de la langue préférée
-    if "je parle" in question.lower():
-        mots = question.split()
-        for i, mot in enumerate(mots):
-            if mot.lower() == "je" and i + 1 < len(mots) and mots[i + 1].lower() == "parle":
-                langue = " ".join(mots[i + 2:])
-                informations_detectees["langue_preferee"] = langue
-
-    # Détection des objectifs ou rêves
-    if "je rêve de" in question.lower():
-        mots = question.split()
-        for i, mot in enumerate(mots):
-            if mot.lower() == "je" and i + 1 < len(mots) and mots[i + 1].lower() == "rêve":
-                reve = " ".join(mots[i + 2:])
-                informations_detectees["reves"] = reve
-
-    return informations_detectees
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -2775,15 +2702,16 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "rappelle toi ce que tu as appris"
     ]:
         memoire = charger_memoire_ava()
-        souvenirs = memoire.get("souvenirs", [])
+        souvenirs = memoire.get("souvenirs", [])[-100:]
+
         if not souvenirs:
             return "📭 Pour l'instant, je n’ai rien mémorisé de particulier."
-        reponse = "🧠 Voici ce que j’ai noté dans ma mémoire globale :\n\n"
+
+       reponse = "🧠 Voici ce que j’ai noté dans ma mémoire globale :\n\n"
         for s in souvenirs[-5:]:
             reponse += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
         return reponse
 
-   
     # 🧠 Bloc mémoire évolutive AVA (autonome)
     def doit_memoriser_automatiquement(phrase: str) -> bool:
         """Détermine si la phrase est pertinente pour la mémoire."""
@@ -2795,7 +2723,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
             "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
         ]
-        mots_emotionnels = ["incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"]
+        mots_emotionnels = [
+            "incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"
+        ]
 
         if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
             return True
@@ -2808,18 +2738,16 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         try:
             memoire = charger_memoire_ava()
-            memoire["souvenirs"].append({
-                "type": "réflexion_utilisateur",
-                "contenu": contenu,
-                "date": datetime.now().strftime("%Y-%m-%d")
-            })
-            sauvegarder_memoire_ava(memoire)
-
-            # Recharge la mémoire pour afficher une mise à jour fiable
-            memoire = charger_memoire_ava()
-            derniers_souvenirs = memoire.get("souvenirs", [])[-3:]
+            if contenu not in [s['contenu'] for s in memoire.get("souvenirs", [])]:
+                memoire["souvenirs"].append({
+                    "type": "réflexion_utilisateur",
+                    "contenu": contenu,
+                    "date": datetime.now().strftime("%Y-%m-%d")
+                })
+                sauvegarder_memoire_ava(memoire)
 
             retour = "🧠 Ce que vous venez de dire m’a marquée... je l’ai noté dans mes souvenirs :\n"
+            derniers_souvenirs = memoire.get("souvenirs", [])[-3:]
             for s in derniers_souvenirs:
                 retour += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
             return retour
