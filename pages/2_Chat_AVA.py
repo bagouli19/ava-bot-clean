@@ -1648,12 +1648,6 @@ def trouver_reponse(question: str, model) -> str:
     if reponse_langage:
         return reponse_langage
         
-    # ✅ 1️⃣ Souvenirs utilisateur en priorité
-    print("🧠 Appel de la fonction gerer_souvenirs_utilisateur")  # ➡️ LOG TEST
-    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
-    if reponse_souvenir:
-        print("✅ Souvenir détecté :", reponse_souvenir)  # ➡️ LOG TEST
-        return reponse_souvenir  # Priorité absolue sur les souvenirs
 
     # ⚡ Modules spécialisés (prioritaires)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
@@ -1676,7 +1670,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-        # ✅ Gestion des souvenirs utilisateur (nouvelle priorité)
+    # ✅ Gestion des souvenirs utilisateur (nouvelle priorité)
     print("🧠 Appel de la fonction gerer_souvenirs_utilisateur (dans gerer_modules_speciaux)")  # ➡️ LOG TEST
     reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
     if reponse_souvenir:
