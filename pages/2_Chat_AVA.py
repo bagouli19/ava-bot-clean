@@ -1637,10 +1637,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    # Nettoyage de base
-    question_simplifiee = question_clean.replace("'", "").replace("’", "").lower().strip()
+    
 
-    # --- 1️⃣ Détection et enregistrement automatique de souvenirs dans le profil utilisateur ---
+     # --- 1️⃣ Gestion des souvenirs utilisateur ---
     def gerer_souvenirs_utilisateur(question_clean):
         patterns_souvenirs = {
             "je m'appelle": "prenom",
@@ -1658,49 +1657,45 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         }
 
         profil = get_my_profile()
-        for debut_phrase, cle_souvenir in patterns_souvenirs.items():
-            if question_clean.startswith(debut_phrase):
-                valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
-                if valeur:
-                    if "souvenirs" not in profil:
-                        profil["souvenirs"] = {}
+        if "souvenirs" not in profil:
+            profil["souvenirs"] = {}
 
+        # Enregistrement des souvenirs
+        for debut_phrase, cle_souvenir in patterns_souvenirs.items():
+            if question_clean.lower().startswith(debut_phrase):
+                valeur = question_clean[len(debut_phrase):].strip(" .!?")
+                if valeur:
                     profil["souvenirs"][cle_souvenir] = valeur
                     set_my_profile(profil)
-
                     prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
                     return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
-        
-        return None
 
-    # --- 2️⃣ Utilisation des souvenirs enregistrés ---
-    def utiliser_souvenirs_utilisateur(question_clean):
-        profil = get_my_profile()
-        prenom = profil.get("souvenirs", {}).get("prenom", "")
-
+        # Utilisation des souvenirs existants
         for cle_souv, contenu in profil.get("souvenirs", {}).items():
-            if cle_souv.replace("_", " ") in question_clean or (isinstance(contenu, str) and contenu.lower() in question_clean):
+            if cle_souv.replace("_", " ") in question_clean:
+                prenom = profil.get("souvenirs", {}).get("prenom", "")
                 if prenom:
                     return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
                 else:
                     return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
-        
+
         return None
 
-    # --- 3️⃣ Gestion des souvenirs AVANT tout autre traitement ---
+    # --- 2️⃣ Appel immédiat à la gestion des souvenirs ---
     reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
     if reponse_souvenir:
         return reponse_souvenir
 
-    reponse_souvenir = utiliser_souvenirs_utilisateur(question_clean)
-    if reponse_souvenir:
-        return reponse_souvenir
-
-    # --- 4️⃣ Si pas de souvenir détecté, on passe aux autres modules ---
-    # Vous pouvez ajouter ici d'autres blocs de traitement (météo, actualités, etc.)
-    # Si aucun module spécial n'est activé, on passe à OpenAI.
+    # --- 3️⃣ Si aucun souvenir n'est détecté, on continue avec les autres modules ---
+    print("Aucun souvenir utilisateur détecté. Passage aux autres modules.")
     
-    print("Aucun souvenir détecté. Passage à OpenAI.")
+    # Ici, vous pouvez ajouter d'autres modules (météo, analyse technique, etc.)
+    # Par exemple :
+    if "météo" in question_clean:
+        return obtenir_meteo(question_clean)
+    
+    # --- 4️⃣ Fallback OpenAI (dernier recours) ---
+    print("⚙️ Appel à GPT-3.5 Turbo en cours…")
     reponse_openai = repondre_openai(question_clean)
     return reponse_openai
     
