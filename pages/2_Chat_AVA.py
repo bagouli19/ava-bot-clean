@@ -1655,7 +1655,11 @@ def trouver_reponse(question: str, model) -> str:
     reponse_langage = chercher_reponse_base_langage(question)
     if reponse_langage:
         return reponse_langage
-    
+     # ✅ 1️⃣ Souvenirs utilisateur en priorité
+    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
+    if reponse_souvenir:
+        return reponse_souvenir  # Priorité absolue sur les souvenirs
+        
     # ⚡ Modules spécialisés (prioritaires)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
@@ -1677,12 +1681,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    # ✅ 1️⃣ Souvenirs utilisateur en priorité
-    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
-    if reponse_souvenir:
-        return reponse_souvenir  # Priorité absolue sur les souvenirs
-       
-    
     import re, ast, streamlit as st
 
     # Récupère le texte brut que tape l’utilisateur
