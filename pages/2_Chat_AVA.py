@@ -136,12 +136,15 @@ FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json" )
 # 3️⃣ Gestion des profils utilisateur via GitHub (mémoire personnelle)
 # ───────────────────────────────────────────────────────────────────────
 
+# ✅ Chargement et gestion des profils utilisateurs (avec GitHub)
 GITHUB_REPO = "bagouli19/ava-bot-ultimate"
 FICHIER_PROFIL = "data/profil_utilisateur.json"
 BRANCHE = "main"
 GITHUB_TOKEN = st.secrets["github"]["GITHUB_TOKEN"]
-STYLE_FILE      = os.path.join(SCRIPT_DIR, "style_ava.json")
+
 import base64
+import json
+from datetime import datetime
 
 def charger_profils() -> dict:
     url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{BRANCHE}/{FICHIER_PROFIL}"
@@ -189,24 +192,17 @@ def sauvegarder_profils(profils: dict):
     except Exception as e:
         st.sidebar.error(f"❌ Erreur API GitHub : {e}")
 
-# 🔁 Fonctions de gestion individuelle
+# ✅ Gestion du profil utilisateur
 def get_my_profile() -> dict:
-    return st.session_state.profil
+    return st.session_state.get("profil", {})
 
-def set_my_profile(profile: dict):
-    st.session_state.profil = profile
+def set_my_profile(profil: dict):
+    st.session_state.profil = profil
     profils = charger_profils()
-    profils[user] = profile
+    profils[user] = profil
     sauvegarder_profils(profils)
 
-def memoriser_souvenir_utilisateur(cle: str, valeur: str):
-    profil = get_my_profile()
-    if "souvenirs" not in profil:
-        profil["souvenirs"] = {}
-    profil["souvenirs"][cle] = valeur
-    set_my_profile(profil)
-
-# Chargement ou création du profil courant
+# ✅ Chargement ou création du profil utilisateur
 all_profiles = charger_profils()
 if user not in all_profiles:
     all_profiles[user] = {
@@ -217,13 +213,9 @@ if user not in all_profiles:
 
 st.session_state.profil = all_profiles[user]
 
+# ✅ Gestion des souvenirs utilisateur
 def gerer_souvenirs_utilisateur(question_clean):
-    """
-    Gère les souvenirs utilisateur en priorité absolue.
-    """
     profil = get_my_profile()
-    if "souvenirs" not in profil:
-        profil["souvenirs"] = {}
 
     # --- 1️⃣ Enregistrement automatique de souvenirs utilisateur ---
     patterns_souvenirs = {
@@ -256,18 +248,8 @@ def gerer_souvenirs_utilisateur(question_clean):
             prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
             return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
 
-    return None  # Aucun souvenir détecté
-# ✅ Affichage de test
-st.write("✅ Profil utilisateur chargé :", st.session_state.profil)
+    return None
 
-st.sidebar.subheader("🧠 Profil AVA (test)")
-st.sidebar.json(st.session_state.profil)
-
-if st.sidebar.button("Changer prénom pour 'Alex'"):
-    nouveau_profil = st.session_state.profil.copy()
-    nouveau_profil["prenom"] = "Alex"
-    set_my_profile(nouveau_profil)
-    st.success("✅ Prénom modifié et profil sauvegardé !")
 
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
@@ -1655,7 +1637,7 @@ def trouver_reponse(question: str, model) -> str:
     reponse_langage = chercher_reponse_base_langage(question)
     if reponse_langage:
         return reponse_langage
-        
+
     # ✅ 1️⃣ Souvenirs utilisateur en priorité
     reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
     if reponse_souvenir:
