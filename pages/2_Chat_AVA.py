@@ -2116,11 +2116,8 @@ def normalize_text(s: str) -> str:
     s = unicodedata.normalize("NFKD", s).encode("ASCII", "ignore").decode("utf-8")
     return s.lower().strip()
 
-# ✅ Bloc Réponses médicales explicites optimisé
-def repondre_medical(question_clean):
-    question_clean = normalize_text(question_clean)   
-    # --- Bloc Réponses médicales explicites ---
-    reponses_medic_optimise = [
+# --- Bloc Réponses médicales explicites optimisé ---
+if any(kw in question_clean for kw in [
         "grippe", "rhume", "fièvre", "migraine", "angine", "hypertension", "stress", "toux", "maux", "douleur",
         "asthme", "bronchite", "eczéma", "diabète", "cholestérol", "acné", "ulcère", "anémie", "insomnie",
         "vertige", "brûlures", "reflux", "nausée", "dépression", "allergie", "palpitations", "otite", "sinusite",
@@ -2139,7 +2136,17 @@ def repondre_medical(question_clean):
         "spasmes musculaires", "trouble digestif", "infection dentaire"
     ]):   
     
-        reponses_medic = {
+    # ✅ Fonction pour normaliser les textes
+    def normalize_text(s: str) -> str:
+        s = s.replace("’", "'").replace("‘", "'")
+        s = unicodedata.normalize("NFKD", s).encode("ASCII", "ignore").decode("utf-8")
+        return s.lower().strip()
+
+    # ✅ Bloc Réponses médicales explicites optimisé
+    def repondre_medical(question_clean):
+        question_clean = normalize_text(question_clean)
+    
+        reponses_medic_optimise = {
             "grippe": "🤒 Les symptômes de la grippe incluent : fièvre élevée, frissons, fatigue intense, toux sèche, douleurs musculaires.",
             "rhume": "🤧 Le rhume provoque généralement une congestion nasale, des éternuements, une légère fatigue et parfois un peu de fièvre.",
             "fièvre": "🌡️ Pour faire baisser une fièvre, restez hydraté, reposez-vous, et prenez du paracétamol si besoin. Consultez si elle dépasse 39°C.",
