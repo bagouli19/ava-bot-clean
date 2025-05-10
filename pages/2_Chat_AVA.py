@@ -2110,15 +2110,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "⚠️ Je n'ai pas encore partagé de fait insolite. Demandez d'abord un fait !"
         
 
-    import unicodedata
-    def normalize(s: str) -> str:
-        # suppression des accents et apostrophes typographiques
-        s = s.replace("’","'").replace("‘","'")
-        s = unicodedata.normalize("NFKD", s)
-        s = "".join(c for c in s if not unicodedata.combining(c))
-        return s.lower()
-
-    norm_q = normalize(question_clean)
+    
     # --- Bloc Réponses médicales explicites optimisé ---
     if any(kw in question_clean for kw in [
         "grippe", "rhume", "fièvre", "migraine", "angine", "hypertension", "stress", "toux", "maux", "douleur",
@@ -2159,7 +2151,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "hématémèse", "hémoptysie", "vomissements", "rectorragie", "cystocèle", "rectocèle", "colique",
         "surcharge pondérale", "myopie", "hypermetropie", "astigmatisme", "presbytie", "dystrophie musculaire", 
         "pityriasis rosé de Gibert"
-    ]):   
+
+       ]):   
     
         reponses_medic = {
             "grippe": "🤒 Les symptômes de la grippe incluent : fièvre élevée, frissons, fatigue intense, toux sèche, douleurs musculaires.",
@@ -2310,23 +2303,13 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "pityriasis rosé de Gibert": "🌸 Éruption en forme de sapin sur le torse. Bénin, disparaît en quelques semaines.",
 
 
-        }
-        reponses_medic_norm = {
-        normalize(symptome): reponse
-        for symptome, reponse in reponses_medic.items()
     }
-    # on trie les clés de façon à tester d'abord les plus longues
-    sorted_symptomes = sorted(
-        reponses_medic_norm.keys(),
-        key=lambda k: len(k),
-        reverse=True
-    )
-    for sympt_norm in sorted_symptomes:
-        if sympt_norm in norm_q:
-            return reponses_medic_norm[sympt_norm]
-    # si on arrive ici, on n’a rien trouvé
-    return "🩺 Désolé, je n'ai pas trouvé d'information médicale correspondante. Pouvez-vous préciser votre symptôme ?"
-
+        # on parcourt le dict et on retourne dès qu'on trouve
+        for symptome, reponse in reponses_medic.items():
+            if symptome in question_clean:
+                return reponse
+        # ❗ Si aucun symptôme ne correspond ➔ message d'erreur fixe
+        return "🩺 Désolé, je n'ai pas trouvé d'information médicale correspondante. Pouvez-vous préciser votre symptôme ?"
     
     # --- Bloc Découverte du Monde 100% local ---
     if not message_bot and any(kw in question_clean for kw in [
