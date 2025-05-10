@@ -1529,25 +1529,6 @@ def get_meteo_ville(city: str) -> str:
     except ValueError:
         return "⚠️ Réponse météo invalide."
 
-# ✅ Fonction de vérification de l'importance d'un souvenir
-def doit_memoriser_automatiquement(phrase: str) -> bool:
-    """Détermine si la phrase est pertinente pour la mémoire."""
-    contenu = phrase.lower()
-    if len(contenu) < 15:
-        return False
-
-    mots_importants = [
-        "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
-        "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
-    ]
-    mots_emotionnels = [
-        "incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"
-    ]
-
-    if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
-        return True
-
-    return False
 
 import streamlit as st
 import openai
@@ -2712,6 +2693,25 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "📭 Votre liste de tâches est vide pour le moment."
         return "📝 Voici votre liste de tâches :\n" + "\n".join([f"- {t['contenu']} ({t['date']})" for t in taches])
 
+    # ✅ Fonction de vérification de l'importance d'un souvenir
+    def doit_memoriser_automatiquement(phrase: str) -> bool:
+        """Détermine si la phrase est pertinente pour la mémoire."""
+        contenu = phrase.lower()
+        if len(contenu) < 15:
+            return False
+
+        mots_importants = [
+            "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
+            "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
+        ]
+        mots_emotionnels = [
+            "incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"
+        ]
+
+        if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
+            return True
+
+        return False
 
     # ✅ Enregistrement automatique des souvenirs
     if doit_memoriser_automatiquement(question_clean):
