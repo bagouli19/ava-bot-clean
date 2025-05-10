@@ -2741,7 +2741,13 @@ if doit_memoriser_automatiquement(question_clean):
 
     except Exception as e:
         print(f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}")
-   
+    
+    # --- Rappel dynamique d'un souvenir enregistré ---
+    if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
+        for cle, valeur in st.session_state["souvenirs"].items():
+            if any(mot in cle for mot in question_clean.split()):
+                return f"✨ Souvenir retrouvé : **{valeur}**"
+        return "❓ Je n'ai pas encore ce souvenir enregistré..."
 
     # ✅ Mots-clés pour détecter une intention musicale, en début de phrase ou explicite
     mots_cles_musique = [
@@ -2773,15 +2779,6 @@ if doit_memoriser_automatiquement(question_clean):
                 + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
             )
 
-    
-    # --- Rappel dynamique d'un souvenir enregistré ---
-    if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
-        for cle, valeur in st.session_state["souvenirs"].items():
-            if any(mot in cle for mot in question_clean.split()):
-                return f"✨ Souvenir retrouvé : **{valeur}**"
-        return "❓ Je n'ai pas encore ce souvenir enregistré..."
-
-    
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
@@ -2805,7 +2802,7 @@ if doit_memoriser_automatiquement(question_clean):
             message_bot = random.choice(reponses_ava)
 
     return message_bot if message_bot else None
-    
+
    # 3️⃣ Recherche sémantique avec BERT
     try:
         # on utilise bien la base déjà nettoyée pour la similarité
