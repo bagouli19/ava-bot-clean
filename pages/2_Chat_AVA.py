@@ -2692,7 +2692,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "📭 Votre liste de tâches est vide pour le moment."
         return "📝 Voici votre liste de tâches :\n" + "\n".join([f"- {t['contenu']} ({t['date']})" for t in taches])
 
-    # 🔍 Optimisation de la gestion de la mémoire globale AVA
+# 🔍 Optimisation de la gestion de la mémoire globale AVA
 
 # ⚡️ Chargement et gestion de la mémoire globale
 memoire_ava = charger_memoire_ava()
@@ -2741,23 +2741,7 @@ if doit_memoriser_automatiquement(question_clean):
 
     except Exception as e:
         print(f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}")
-
-
-    suggestions = {
-        "musique": "Souhaitez-vous que je vous propose une autre chanson ? 🎵",
-        "voyage": "Si vous souhaitez des idées de destinations, je peux en proposer ! 🌍",
-        "santé": "Pensez à bien vous reposer, je suis là si vous avez besoin d’un petit conseil bien-être. 🌿",
-        "bourse": "Souhaitez-vous une mise à jour rapide sur un actif particulier ? 📈",
-        "amour": "Si vous voulez parler de cœur, je suis là pour écouter sans jugement. 💖",
-        "horoscope": "Souhaitez-vous que je vous partage votre horoscope du jour ? ✨",
-        "motivation": "Envie d’un boost d’énergie ? Je peux vous balancer une punchline futuriste. 🚀",
-        "recette": "Un petit creux ? Je peux vous proposer une recette rapide à tester. 🍳",
-        "temps": "Vous voulez la météo actuelle dans votre ville ? Je peux la retrouver. ☁️",
-        "symptôme": "Si vous avez un petit souci de santé, je peux vous orienter avec douceur. 🩺"
-    }
-    
-    # 🧠 Récupération mémoire court terme (si dispo)
-    dernier_theme = memoire_court_terme.get("dernier_sujet", "").lower()
+   
 
     # ✅ Mots-clés pour détecter une intention musicale, en début de phrase ou explicite
     mots_cles_musique = [
@@ -2797,8 +2781,8 @@ if doit_memoriser_automatiquement(question_clean):
                 return f"✨ Souvenir retrouvé : **{valeur}**"
         return "❓ Je n'ai pas encore ce souvenir enregistré..."
 
-    return message_bot if message_bot else None
     
+
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
         # détection de salutations en anglais
@@ -2819,10 +2803,9 @@ if doit_memoriser_automatiquement(question_clean):
                 "formulation ou tapez 'analyse complète' pour un aperçu du marché 📊"
             ]
             message_bot = random.choice(reponses_ava)
-    
-    
-    
 
+    return message_bot if message_bot else None
+    
    # 3️⃣ Recherche sémantique avec BERT
     try:
         # on utilise bien la base déjà nettoyée pour la similarité
