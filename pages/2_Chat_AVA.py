@@ -2149,7 +2149,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "fracture ouverte", "coupure superficielle", "brûlure de rasage", "contusion", "érythème",
         "angiome", "hyperhidrose", "hyperacousie", "hypoacousie", "spondylolyse", "choc anaphylactique",
         "hématémèse", "hémoptysie", "vomissements", "rectorragie", "cystocèle", "rectocèle", "colique",
-        "surcharge pondérale", "myopie", "hypermetropie", "astigmatisme", "presbytie", "dystrophie musculaire"
+        "surcharge pondérale", "myopie", "hypermetropie", "astigmatisme", "presbytie", "dystrophie musculaire","pityriasis rosé de Gibert"
     ]):   
     
         reponses_medic = {
