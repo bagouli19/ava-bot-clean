@@ -1569,7 +1569,26 @@ def gerer_souvenirs_utilisateur(question_clean):
                 return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
             else:
                 return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
+        return None
 
+    # --- 2️⃣ Appel immédiat à la gestion des souvenirs ---
+    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
+    if reponse_souvenir:
+        return reponse_souvenir  # 🚨 Priorité absolue sur les souvenirs utilisateur
+
+    # --- 3️⃣ Gestion des autres modules (si aucun souvenir détecté) ---
+    # Vous pouvez ajouter ici les autres modules comme la météo, les actualités, etc.
+    if "météo" in question_clean:
+        return obtenir_meteo(question_clean)
+
+    if "analyse technique" in question_clean:
+        return analyser_marche(question_clean)
+
+    # --- 4️⃣ Fallback OpenAI (dernier recours uniquement) ---
+    print("⚙️ Appel à GPT-3.5 Turbo en cours…")
+    reponse_openai = repondre_openai(question_clean)
+    return reponse_openai
+    
 import streamlit as st
 import openai
 import difflib
