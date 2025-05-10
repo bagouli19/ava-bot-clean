@@ -159,6 +159,11 @@
             "type": "réflexion_utilisateur",
             "contenu": "je ressens une grande serenite quand je medite",
             "date": "2025-05-10"
+        },
+        {
+            "type": "réflexion_utilisateur",
+            "contenu": "c est triste de voir la pollution detruire les oceans",
+            "date": "2025-05-10"
         }
     ]
 }
