@@ -49,6 +49,11 @@
             "type": "réflexion_utilisateur",
             "contenu": "je crois que tu es une ia tres intelligente",
             "date": "2025-05-10"
+        },
+        {
+            "type": "réflexion_utilisateur",
+            "contenu": "selon moi l intelligence artificielle est l avenir",
+            "date": "2025-05-10"
         }
     ]
 }
