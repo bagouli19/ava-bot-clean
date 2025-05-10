@@ -2608,57 +2608,72 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
       
 
     # --- 1️⃣ Détection et enregistrement automatique de souvenirs dans le profil utilisateur ---
-    patterns_souvenirs = {
-        "je m'appelle": "prenom",
-        "mon prénom est": "prenom",
-        "mon chien s'appelle": "chien",
-        "mon plat préféré est": "plat_prefere",
-        "mon film préféré est": "film_prefere",
-        "mon sport préféré est": "sport_prefere",
-        "ma couleur préférée est": "couleur_preferee",
-        "j'adore la musique": "musique_preferee",
-        "j'aime boire": "boisson_preferee",
-        "mon passe-temps favori est": "passe_temps",
-        "mon animal préféré est": "animal_prefere",
-        "le pays de mes rêves est": "pays_reve"
-    }
+    def gerer_souvenirs_utilisateur(question_clean):
+        patterns_souvenirs = {
+            "je m'appelle": "prenom",
+            "mon prénom est": "prenom",
+            "mon chien s'appelle": "chien",
+            "mon plat préféré est": "plat_prefere",
+            "mon film préféré est": "film_prefere",
+            "mon sport préféré est": "sport_prefere",
+            "ma couleur préférée est": "couleur_preferee",
+            "j'adore la musique": "musique_preferee",
+            "j'aime boire": "boisson_preferee",
+            "mon passe-temps favori est": "passe_temps",
+            "mon animal préféré est": "animal_prefere",
+            "le pays de mes rêves est": "pays_reve"
+        }
 
-    for debut_phrase, cle_souvenir in patterns_souvenirs.items():
-        if question_clean.startswith(debut_phrase):
-            valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
-            if valeur:
-                profil = get_my_profile()
-                if "souvenirs" not in profil:
-                    profil["souvenirs"] = {}
-
-                # ✅ Vérifier si le souvenir existe déjà
-                if cle_souvenir in profil["souvenirs"]:
-                    # ✅ Mettre à jour uniquement si la valeur est différente
-                    if profil["souvenirs"][cle_souvenir].lower() == valeur.lower():
-                        return f"✨ Vous m'aviez déjà dit que {cle_souvenir.replace('_', ' ')} est **{valeur.capitalize()}** 🧠"
+        profil = get_my_profile()
+        for debut_phrase, cle_souvenir in patterns_souvenirs.items():
+            if question_clean.startswith(debut_phrase):
+                valeur = question_clean.replace(debut_phrase, "").strip(" .!?")
+                if valeur:
+                    if "souvenirs" not in profil:
+                        profil["souvenirs"] = {}
+    
+                    # ✅ Enregistrement ou mise à jour
+                    if cle_souvenir in profil["souvenirs"]:
+                        if profil["souvenirs"][cle_souvenir].lower() == valeur.lower():
+                            return f"✨ Vous m'aviez déjà dit que {cle_souvenir.replace('_', ' ')} est **{valeur.capitalize()}** 🧠"
+                        else:
+                            profil["souvenirs"][cle_souvenir] = valeur
+                            set_my_profile(profil)
+                            return f"✨ J'ai mis à jour votre souvenir : **{cle_souvenir.replace('_', ' ')}** est maintenant **{valeur.capitalize()}** 🧠"
                     else:
                         profil["souvenirs"][cle_souvenir] = valeur
                         set_my_profile(profil)
-                        return f"✨ J'ai mis à jour votre souvenir : **{cle_souvenir.replace('_', ' ')}** est maintenant **{valeur.capitalize()}** 🧠"
+                        prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
+                        return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
+    
+        return None
 
-                # ✅ Enregistrement du nouveau souvenir
-                profil["souvenirs"][cle_souvenir] = valeur
-                set_my_profile(profil)
+    # --- 2️⃣ Utilisation des souvenirs enregistrés ---
+    def utiliser_souvenirs_utilisateur(question_clean):
+        profil = get_my_profile()
+        prenom = profil.get("souvenirs", {}).get("prenom", "")
+    
+        for cle_souv, contenu in profil.get("souvenirs", {}).items():
+            if cle_souv.replace("_", " ") in question_clean or (isinstance(contenu, str) and contenu.lower() in question_clean):
+                if prenom:
+                    return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
+                else:
+                    return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
+    
+        return None
 
-                # ✅ Utilisation dynamique du prénom dans la réponse
-                prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
-                return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
+    # --- 3️⃣ Gestion des souvenirs AVANT appel à OpenAI ---
+    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
+    if reponse_souvenir:
+        return reponse_souvenir
 
-    # --- 2️⃣ Recherche d'un souvenir dans le profil utilisateur ---
-    profil = get_my_profile()
-    prenom = profil.get("souvenirs", {}).get("prenom", "")
+    reponse_souvenir = utiliser_souvenirs_utilisateur(question_clean)
+    if reponse_souvenir:
+        return reponse_souvenir
 
-    for cle_souv, contenu in profil.get("souvenirs", {}).items():
-        if cle_souv.replace("_", " ") in question_clean or (isinstance(contenu, str) and contenu.lower() in question_clean):
-            if prenom:
-                return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
-            else:
-                return f"🧠 Oui, je m'en souviens ! Vous m'avez dit : **{contenu}**"
+    # --- 4️⃣ Si pas de souvenir détecté, on passe à OpenAI ou autre traitement ---
+    reponse_openai = repondre_openai(question_clean)
+    return reponse_openai
 
                                                                         
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
