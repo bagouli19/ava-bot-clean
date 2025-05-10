@@ -243,7 +243,7 @@ import streamlit as st
 
 # Configuration GitHub
 GITHUB_REPO = "bagouli19/ava-bot-ultimate"
-FICHIER_MEMOIRE = "data/memoire_ava.json"
+FICHIER_MEMOIRE_AVA = "data/memoire_ava.json"  # Assure-toi que ce chemin est correct
 BRANCHE = "main"
 GITHUB_TOKEN = st.secrets["github"]["GITHUB_TOKEN"]
 
@@ -271,7 +271,7 @@ def charger_memoire_ava():
 # 🔄 Charger la mémoire des utilisateurs
 # ─────────────────────────────────────────
 def charger_memoire_utilisateurs():
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_UTILISATEURS}"
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_AVA}"
     headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
     try:
