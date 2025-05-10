@@ -2360,7 +2360,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                     "Le Sphinx de Gizeh garde ses secrets depuis 4500 ans.",
                     "L’écriture hiéroglyphique est un héritage fascinant."
                 ]
-            }
+            },
             {
                 "pays": "Mexique 🇲🇽",
                 "faits": [
@@ -2417,7 +2417,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             message_bot += "\nVeux-tu en découvrir un autre ? 😉"
         except Exception:
             message_bot = "⚠️ Désolé, une erreur est survenue en essayant de découvrir un nouveau pays."
-            
+
     # --- Bloc Culture générale simple ---
     if any(keyword in question_clean for keyword in [
         "qui ", "quand ", "où ", "combien ", "quel ", "quelle ",
