@@ -59,6 +59,11 @@
             "type": "réflexion_utilisateur",
             "contenu": "c est incroyable de voir tout ce que tu peux faire",
             "date": "2025-05-10"
+        },
+        {
+            "type": "réflexion_utilisateur",
+            "contenu": "c est tellement triste de voir les forets disparaitre",
+            "date": "2025-05-10"
         }
     ]
 }
