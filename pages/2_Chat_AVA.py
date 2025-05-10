@@ -2765,7 +2765,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         except Exception as e:
             return f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}"
 
-
+    return message_bot if message_bot else None
 
     # ✅ Rappel dynamique d'un souvenir enregistré
     if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
@@ -2813,8 +2813,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         ]
         message_bot = random.choice(reponses_ava)
 
-    return message_bot if message_bot else None
-
+    
 
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
