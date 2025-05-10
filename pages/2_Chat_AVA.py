@@ -1634,44 +1634,41 @@ def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
     
-    print(f"🔍 Question reçue : {question_clean}")
-    
-    # ✅ 1️⃣ Souvenirs utilisateur en priorité (avant toute autre réponse)
-    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
-    print(f"🔍 Réponse souvenir : {reponse_souvenir}")
-    if reponse_souvenir:
-        print("✅ Réponse souvenir utilisateur trouvée")
-        return reponse_souvenir  # Priorité absolue sur les souvenirs
-    
-    # ✅ 2️⃣ Salutations (si pas de souvenirs)
+    # 🔍 Salutations
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
         return reponse_salut
     
-    # ✅ 3️⃣ Culture générale (Base de connaissances)
+    # 🌐 Culture générale (Base de connaissances)
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # ✅ 4️⃣ Base de langage
+    # 📚 Base de langage
     reponse_langage = chercher_reponse_base_langage(question)
     if reponse_langage:
         return reponse_langage
+        
+    # ✅ 1️⃣ Souvenirs utilisateur en priorité
+    print("🧠 Appel de la fonction gerer_souvenirs_utilisateur")  # ➡️ LOG TEST
+    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
+    if reponse_souvenir:
+        print("✅ Souvenir détecté :", reponse_souvenir)  # ➡️ LOG TEST
+        return reponse_souvenir  # Priorité absolue sur les souvenirs
 
-    # ✅ 5️⃣ Modules spécialisés (prioritaires)
+    # ⚡ Modules spécialisés (prioritaires)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
         print("✅ Réponse module spécial")
         return reponse_speciale.strip()
     
-    # ✅ 6️⃣ Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
-    print("🤖 Appel GPT (fallback)")
+    # 🤖 Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
+    print("🤖 Appel GPT (fallback)")  # ➡️ LOG TEST
     reponse_openai = repondre_openai(question_clean)
     if reponse_openai:
         return reponse_openai.strip()
 
-    # ✅ 7️⃣ Réponse par défaut (si tout échoue)
+    # ❓ Réponse par défaut
     return "🤔 Je n'ai pas trouvé de réponse précise."
-
 
 
 # --- Modules personnalisés (à enrichir) ---
