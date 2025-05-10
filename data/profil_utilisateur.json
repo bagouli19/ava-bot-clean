@@ -15,7 +15,8 @@
     "prenom": "Manuel",
     "souvenirs": {
       "taches": [],
-      "rappels": []
+      "rappels": [],
+      "plat_prefere": "la pizza"
     },
     "taches": [
       {
