@@ -1655,6 +1655,7 @@ def trouver_reponse(question: str, model) -> str:
     reponse_langage = chercher_reponse_base_langage(question)
     if reponse_langage:
         return reponse_langage
+        
     # ✅ 1️⃣ Souvenirs utilisateur en priorité
     reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
     if reponse_souvenir:
