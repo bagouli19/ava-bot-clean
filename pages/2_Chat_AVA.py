@@ -2281,12 +2281,12 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
 
         }
-    # on parcourt le dict et on retourne dès qu'on trouve
-    for symptome, reponse in reponses_medic.items():
-        if symptome in question_clean:
-            return reponse
-    # ❗ Si aucun symptôme ne correspond ➔ message d'erreur fixe
-    return "🩺 Désolé, je n'ai pas trouvé d'information médicale correspondante. Pouvez-vous préciser votre symptôme ?"
+        # on parcourt le dict et on retourne dès qu'on trouve
+        for symptome, reponse in reponses_medic.items():
+            if symptome in question_clean:
+                return reponse
+        # ❗ Si aucun symptôme ne correspond ➔ message d'erreur fixe
+        return "🩺 Désolé, je n'ai pas trouvé d'information médicale correspondante. Pouvez-vous préciser votre symptôme ?"
 
     
     # --- Bloc Découverte du Monde 100% local ---
