@@ -44,6 +44,11 @@
             "type": "réflexion_utilisateur",
             "contenu": "je pense que la technologie va revolutionner le monde",
             "date": "2025-05-10"
+        },
+        {
+            "type": "réflexion_utilisateur",
+            "contenu": "je crois que tu es une ia tres intelligente",
+            "date": "2025-05-10"
         }
     ]
 }
