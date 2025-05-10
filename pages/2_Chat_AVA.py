@@ -2110,9 +2110,17 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "⚠️ Je n'ai pas encore partagé de fait insolite. Demandez d'abord un fait !"
         
 
-        
+    # ✅ Fonction pour normaliser les textes
+def normalize_text(s: str) -> str:
+    s = s.replace("’", "'").replace("‘", "'")
+    s = unicodedata.normalize("NFKD", s).encode("ASCII", "ignore").decode("utf-8")
+    return s.lower().strip()
+
+# ✅ Bloc Réponses médicales explicites optimisé
+def repondre_medical(question_clean):
+    question_clean = normalize_text(question_clean)   
     # --- Bloc Réponses médicales explicites ---
-    if any(kw in question_clean for kw in [
+    reponses_medic_optimise = [
         "grippe", "rhume", "fièvre", "migraine", "angine", "hypertension", "stress", "toux", "maux", "douleur",
         "asthme", "bronchite", "eczéma", "diabète", "cholestérol", "acné", "ulcère", "anémie", "insomnie",
         "vertige", "brûlures", "reflux", "nausée", "dépression", "allergie", "palpitations", "otite", "sinusite",
