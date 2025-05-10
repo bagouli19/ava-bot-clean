@@ -217,6 +217,8 @@ def gerer_souvenirs_utilisateur(question_clean):
     """
     Gère les souvenirs utilisateur en priorité absolue.
     """
+    print("🧠 Appel de la fonction gerer_souvenirs_utilisateur")
+    
     profil = get_my_profile()
     if "souvenirs" not in profil:
         profil["souvenirs"] = {}
@@ -239,21 +241,24 @@ def gerer_souvenirs_utilisateur(question_clean):
 
     for debut_phrase, cle_souvenir in patterns_souvenirs.items():
         if question_clean.lower().startswith(debut_phrase):
+            print(f"✅ Souvenir détecté : {cle_souvenir}")
             valeur = question_clean[len(debut_phrase):].strip(" .!?")
             if valeur:
                 profil["souvenirs"][cle_souvenir] = valeur
                 set_my_profile(profil)
                 prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
+                print(f"✅ Souvenir enregistré : {cle_souvenir} = {valeur}")
                 return f"✨ C’est noté dans ton profil, {prenom} : **{valeur.capitalize()}** 🧠"
 
     # --- 2️⃣ Utilisation des souvenirs existants ---
     for cle_souv, contenu in profil.get("souvenirs", {}).items():
         if cle_souv.replace("_", " ") in question_clean:
             prenom = profil.get("souvenirs", {}).get("prenom", "cher utilisateur")
+            print(f"✅ Souvenir retrouvé : {cle_souv} = {contenu}")
             return f"🧠 Oui, {prenom}, je m'en souviens ! Vous m'avez dit : **{contenu}**"
 
+    print("❌ Aucun souvenir détecté")
     return None  # Aucun souvenir détecté
-
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1629,10 +1634,13 @@ def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
     
+    print(f"🔍 Question reçue : {question_clean}")
+    
     # ✅ 1️⃣ Souvenirs utilisateur en priorité (avant toute autre réponse)
     reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
+    print(f"🔍 Réponse souvenir : {reponse_souvenir}")
     if reponse_souvenir:
-        print("✅ Réponse souvenir utilisateur")
+        print("✅ Réponse souvenir utilisateur trouvée")
         return reponse_souvenir  # Priorité absolue sur les souvenirs
     
     # ✅ 2️⃣ Salutations (si pas de souvenirs)
@@ -1663,6 +1671,7 @@ def trouver_reponse(question: str, model) -> str:
 
     # ✅ 7️⃣ Réponse par défaut (si tout échoue)
     return "🤔 Je n'ai pas trouvé de réponse précise."
+
 
 
 # --- Modules personnalisés (à enrichir) ---
