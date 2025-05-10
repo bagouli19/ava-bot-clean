@@ -2110,14 +2110,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "⚠️ Je n'ai pas encore partagé de fait insolite. Demandez d'abord un fait !"
         
 
-    # ✅ Fonction pour normaliser les textes
-def normalize_text(s: str) -> str:
-    s = s.replace("’", "'").replace("‘", "'")
-    s = unicodedata.normalize("NFKD", s).encode("ASCII", "ignore").decode("utf-8")
-    return s.lower().strip()
 
-# --- Bloc Réponses médicales explicites optimisé ---
-if any(kw in question_clean for kw in [
+    # --- Bloc Réponses médicales explicites optimisé ---
+    if any(kw in question_clean for kw in [
         "grippe", "rhume", "fièvre", "migraine", "angine", "hypertension", "stress", "toux", "maux", "douleur",
         "asthme", "bronchite", "eczéma", "diabète", "cholestérol", "acné", "ulcère", "anémie", "insomnie",
         "vertige", "brûlures", "reflux", "nausée", "dépression", "allergie", "palpitations", "otite", "sinusite",
@@ -2286,12 +2281,12 @@ if any(kw in question_clean for kw in [
 
 
         }
-        # on parcourt le dict et on retourne dès qu'on trouve
-        for symptome, reponse in reponses_medic.items():
-            if symptome in question_clean:
-                return reponse
-        # ❗ Si aucun symptôme ne correspond ➔ message d'erreur fixe
-        return "🩺 Désolé, je n'ai pas trouvé d'information médicale correspondante. Pouvez-vous préciser votre symptôme ?"
+    # on parcourt le dict et on retourne dès qu'on trouve
+    for symptome, reponse in reponses_medic.items():
+        if symptome in question_clean:
+            return reponse
+    # ❗ Si aucun symptôme ne correspond ➔ message d'erreur fixe
+    return "🩺 Désolé, je n'ai pas trouvé d'information médicale correspondante. Pouvez-vous préciser votre symptôme ?"
 
     
     # --- Bloc Découverte du Monde 100% local ---
