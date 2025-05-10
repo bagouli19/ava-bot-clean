@@ -2789,7 +2789,6 @@ if doit_memoriser_automatiquement(question_clean):
                 + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
             )
 
-    return message_bot if message_bot else None
     
     # --- Rappel dynamique d'un souvenir enregistré ---
     if any(mot in question_clean for mot in ["mon prénom", "mon prenom", "mon film préféré", "mon chien", "mon plat préféré", "mon sport préféré"]):
