@@ -2136,16 +2136,6 @@ if any(kw in question_clean for kw in [
         "spasmes musculaires", "trouble digestif", "infection dentaire"
     ]):   
     
-    # ✅ Fonction pour normaliser les textes
-    def normalize_text(s: str) -> str:
-        s = s.replace("’", "'").replace("‘", "'")
-        s = unicodedata.normalize("NFKD", s).encode("ASCII", "ignore").decode("utf-8")
-        return s.lower().strip()
-
-    # ✅ Bloc Réponses médicales explicites optimisé
-    def repondre_medical(question_clean):
-        question_clean = normalize_text(question_clean)
-    
         reponses_medic_optimise = {
             "grippe": "🤒 Les symptômes de la grippe incluent : fièvre élevée, frissons, fatigue intense, toux sèche, douleurs musculaires.",
             "rhume": "🤧 Le rhume provoque généralement une congestion nasale, des éternuements, une légère fatigue et parfois un peu de fièvre.",
