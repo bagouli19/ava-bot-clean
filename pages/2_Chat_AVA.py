@@ -1624,40 +1624,39 @@ def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
     
-    # 🔍 Salutations
+    # ✅ 1️⃣ Souvenirs utilisateur en priorité (avant toute autre réponse)
+    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
+    if reponse_souvenir:
+        return reponse_souvenir  # Priorité absolue sur les souvenirs
+    
+    # ✅ 2️⃣ Salutations (si pas de souvenirs)
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
         return reponse_salut
     
-    # 🌐 Culture générale (Base de connaissances)
+    # ✅ 3️⃣ Culture générale (Base de connaissances)
     if question_clean in base_culture_nettoyee:
         return base_culture_nettoyee[question_clean]
 
-    # 📚 Base de langage
+    # ✅ 4️⃣ Base de langage
     reponse_langage = chercher_reponse_base_langage(question)
     if reponse_langage:
         return reponse_langage
 
-    # ✅ 1️⃣ Souvenirs utilisateur en priorité
-    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
-    if reponse_souvenir:
-        return reponse_souvenir  # Priorité absolue sur les souvenirs
-
-    # ⚡ Modules spécialisés (prioritaires)
+    # ✅ 5️⃣ Modules spécialisés (prioritaires)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
         print("✅ Réponse module spécial")
         return reponse_speciale.strip()
     
-    # 🤖 Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
+    # ✅ 6️⃣ Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
     print("🤖 Appel GPT (fallback)")
     reponse_openai = repondre_openai(question_clean)
     if reponse_openai:
         return reponse_openai.strip()
 
-    # ❓ Réponse par défaut
+    # ✅ 7️⃣ Réponse par défaut (si tout échoue)
     return "🤔 Je n'ai pas trouvé de réponse précise."
-
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
