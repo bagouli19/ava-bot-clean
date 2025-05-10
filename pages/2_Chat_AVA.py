@@ -2692,68 +2692,56 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return "📭 Votre liste de tâches est vide pour le moment."
         return "📝 Voici votre liste de tâches :\n" + "\n".join([f"- {t['contenu']} ({t['date']})" for t in taches])
 
-    # 🔍 Affichage des souvenirs mémorisés si demandé
-    if question_clean in [
-        "montre moi tes souvenirs",
-        "qu'as tu retenu",
-        "quels souvenirs as tu",
-        "montre tes souvenirs",
-        "qu'as tu mémorisé",
-        "rappelle toi ce que tu as appris"
-    ]:
-        memoire = charger_memoire_ava()
-        souvenirs = memoire.get("souvenirs", [])[-100:]
+    # 🔍 Optimisation de la gestion de la mémoire globale AVA
 
-        if not souvenirs:
-            return "📭 Pour l'instant, je n’ai rien mémorisé de particulier."
+# ⚡️ Chargement et gestion de la mémoire globale
+memoire_ava = charger_memoire_ava()
 
-        reponse = "🧠 Voici ce que j’ai noté dans ma mémoire globale :\n\n"
-        for s in souvenirs[-5:]:
-            reponse += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
-        return reponse
-
-    # 🧠 Bloc mémoire évolutive AVA (autonome)
-    def doit_memoriser_automatiquement(phrase: str) -> bool:
-        """Détermine si la phrase est pertinente pour la mémoire."""
-        contenu = phrase.lower()
-        if len(contenu) < 15:
-            return False
-
-        mots_importants = [
-            "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
-            "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
-        ]
-        mots_emotionnels = [
-            "incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"
-        ]
-
-        if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
-            return True
-
+# ✅ Fonction de vérification de l'importance d'un souvenir
+def doit_memoriser_automatiquement(phrase: str) -> bool:
+    contenu = phrase.lower()
+    if len(contenu) < 15:
         return False
 
-    # 🔄 Intégration dans gerer_modules_speciaux()
-    if doit_memoriser_automatiquement(question_clean):
-        contenu = question_clean.strip(" .!?")
+    mots_importants = [
+        "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
+        "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
+    ]
+    mots_emotionnels = [
+        "incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"
+    ]
 
-        try:
-            memoire = charger_memoire_ava()
-            if contenu not in [s['contenu'] for s in memoire.get("souvenirs", [])]:
-                memoire["souvenirs"].append({
-                    "type": "réflexion_utilisateur",
-                    "contenu": contenu,
-                    "date": datetime.now().strftime("%Y-%m-%d")
-                })
-                sauvegarder_memoire_ava(memoire)
+    if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
+        return True
 
-            retour = "🧠 Ce que vous venez de dire m’a marquée... je l’ai noté dans mes souvenirs :\n"
-            derniers_souvenirs = memoire.get("souvenirs", [])[-3:]
-            for s in derniers_souvenirs:
-                retour += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
-            return retour
+    return False
 
-        except Exception as e:
-            return f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}"
+# 🔄 Enregistrement optimisé des souvenirs
+if doit_memoriser_automatiquement(question_clean):
+    contenu = question_clean.strip(" .!?")
+
+    try:
+        memoire = charger_memoire_ava()
+
+        # Nettoyage des souvenirs trop anciens (30 jours)
+        memoire["souvenirs"] = [s for s in memoire.get("souvenirs", []) if (datetime.now() - datetime.strptime(s["date"], "%Y-%m-%d")).days <= 30]
+
+        # Limite de 100 souvenirs
+        if len(memoire["souvenirs"]) >= 100:
+            memoire["souvenirs"].pop(0)
+
+        # Enregistrement si non dupliqué
+        if contenu not in [s["contenu"] for s in memoire.get("souvenirs", [])]:
+            memoire["souvenirs"].append({
+                "type": "réflexion_utilisateur",
+                "contenu": contenu,
+                "date": datetime.now().strftime("%Y-%m-%d")
+            })
+            sauvegarder_memoire_ava(memoire)
+
+    except Exception as e:
+        print(f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}")
+
 
     suggestions = {
         "musique": "Souhaitez-vous que je vous propose une autre chanson ? 🎵",
