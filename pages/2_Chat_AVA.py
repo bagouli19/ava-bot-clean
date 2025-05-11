@@ -1550,46 +1550,7 @@ def rechercher_horoscope(filepath):
     else:
         print("❌ Aucune occurrence trouvée.")
 
-# --- Amélioration du bloc météo ---
-def get_meteo_ville(city: str) -> str:
-    """
-    1) Géocode la ville
-    2) Récupère la météo par lat/lon si disponibles
-    3) Sinon fallback sur nom de la ville
-    """
-    lat, lon = geocode_location(city)
-    params = {
-        "appid": API_KEY,
-        "units": "metric",
-        "lang": "fr"
-    }
 
-    if lat is not None and lon is not None:
-        params.update({"lat": lat, "lon": lon})
-    else:
-        params["q"] = city
-
-    try:
-        resp = requests.get("http://api.openweathermap.org/data/2.5/weather", params=params, timeout=5)
-        resp.raise_for_status()
-        data = resp.json()
-        weather = data.get("weather")
-        main   = data.get("main", {})
-        wind   = data.get("wind", {})
-
-        if not weather or not isinstance(weather, list):
-            return "⚠️ Données météo manquantes."
-
-        desc = weather[0].get("description", "").capitalize()
-        temp = main.get("temp", "N/A")
-        hum  = main.get("humidity", "N/A")
-        vent = wind.get("speed", "N/A")
-
-        return f"{desc} avec {temp}°C, humidité : {hum}%, vent : {vent} m/s."
-    except requests.RequestException:
-        return "⚠️ Impossible de joindre le service météo pour le moment."
-    except ValueError:
-        return "⚠️ Réponse météo invalide."
 
 import streamlit as st
 import openai
