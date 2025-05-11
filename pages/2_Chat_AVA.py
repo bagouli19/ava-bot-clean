@@ -1771,6 +1771,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
+    clean_norm = normalize(question_clean)
+    clean_final = clean_text(clean_norm)
+
      # ✅ Gestion des souvenirs utilisateur (nouvelle priorité)
     print("🧠 Appel de la fonction gerer_souvenirs_utilisateur (dans gerer_modules_speciaux)")  # ➡️ LOG TEST
     reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
@@ -3065,34 +3068,51 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
 
 
-    # ─── Bloc musical ───
-    clean = question_clean.lower().strip()
-    st.write("🔍 DEBUG music clean:", clean)
+    # … en haut de ton fichier, une seule fois …
+    def normalize(s: str) -> str:
+        """Enlève accents, apostrophes typographiques, et met en minuscules."""
+        s = s.replace("’", "'").replace("‘", "'")
+        s = unicodedata.normalize("NFKD", s)
+        s = "".join(c for c in s if not unicodedata.combining(c))
+        return s.lower().strip()
 
-    mots_cles = [
-        "musique", "chanson", "son", "titre", "écouter", "playlist",
-        "mets-moi une chanson", "propose un son", "donne un son",
-        "j'aimerais écouter", "je veux écouter",
-        "as-tu une musique", "tu connais une chanson", "recommande une chanson"
-    ]
-    ignorer = ["quel ", "quels sont", "quelles sont", "quelle est"]
 
-    # On déclenche si on trouve un mot-clé **et** qu'on ne commence pas par un préfixe ignoré
-    theme = any(kw in clean for kw in mots_cles)
-    debut_ignore = any(clean.startswith(pref) for pref in ignorer)
-    theme_musique_detecte = theme and not debut_ignore
+        # ─── Bloc musical optimisé ───
+        clean_norm = normalize(question_clean)
+        st.write("🔍 DEBUG clean_norm pour musique :", clean_norm)
 
-    st.write("🔍 DEBUG music détecté ?", theme_musique_detecte)
+        # 1) Liste de mots-clés à normaliser
+        mots_cles = [
+            "musique", "chanson", "son", "titre", "ecouter", "playlist",
+            "mets-moi une chanson", "propose un son", "donne un son",
+            "j'aimerais ecouter", "je veux ecouter",
+            "as-tu une musique", "tu connais une chanson", "recommande une chanson"
+        ]
+        mots_cles_norm = [normalize(w) for w in mots_cles]
 
-    if theme_musique_detecte:
-        st.write("🟢 Bloc musical déclenché 🎵")
-        tendances = obtenir_titres_populaires_france()
-        if tendances:
-            return (
-                "🟢 Voici quelques titres populaires à découvrir :\n\n"
-                + "\n".join(f"• {t}" for t in tendances)
-                + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
-            )
+        # 2) Préfixes factuels à ignorer
+        ignorer = ["quel ", "quels sont", "quelles sont", "quelle est"]
+        ignorer_norm = [normalize(p) for p in ignorer]
+
+        # 3) Détection : on cherche un mot-clé, et on ne doit pas commencer par un préfixe à ignorer
+        contains_kw = any(kw in clean_norm for kw in mots_cles_norm)
+        starts_ignore = any(clean_norm.startswith(pref) for pref in ignorer_norm)
+        theme_musique = contains_kw and not starts_ignore
+
+        st.write("🔍 DEBUG contains_kw :", contains_kw)
+        st.write("🔍 DEBUG starts_ignore :", starts_ignore)
+        st.write("🔍 DEBUG theme_musique_detecte :", theme_musique)
+
+        if theme_musique:
+            st.write("🟢 Bloc musical déclenché 🎵")
+            tendances = obtenir_titres_populaires_france()
+            if tendances:
+                return (
+                    "🟢 Voici quelques titres populaires à découvrir :\n\n"
+                    + "\n".join(f"• {t}" for t in tendances)
+                    + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
+                )
+
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
