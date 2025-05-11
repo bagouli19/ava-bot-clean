@@ -613,11 +613,8 @@ def load_bert_model():
 
     # 4️⃣ Chargement final du modèle
     try:
-        st.success("✅ Modèle BERT chargé avec succès.")
         return SentenceTransformer(MODEL_PATH)
     except Exception as e:
-        st.error("❌ Un bug dans la matrice ! AVA n’a pas pu charger son modèle BERT.")
-        st.info("➡️ Vérifie que tous les fichiers du modèle sont valides.")
         st.code(str(e))
         st.stop()
 
