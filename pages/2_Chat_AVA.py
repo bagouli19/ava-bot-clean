@@ -1966,7 +1966,47 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         if message_bot:
             return message_bot
 
-   
+    # --- Bloc météo avec recherche Google automatique ---
+    if any(kw in question_clean.lower() for kw in [
+        "meteo", "météo", "quel temps", "prévision", "prévisions", 
+        "il fait quel temps", "temps à", "temps en", "temps au", 
+        "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie",
+        "quel est", "quel est la météo d'aujourd'hui"
+    ]):
+        ville_detectee = "Paris"  # Par défaut (au cas où aucune ville n'est détectée)
+
+        # --- Détection de la ville / village / lieu ---
+        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en|pour)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
+
+        if match_geo:
+            ville_detectee = match_geo.group(1).strip().title()
+
+        # Si aucune ville détectée par la regex, on tente une autre approche
+        if not match_geo:
+            pattern_ville = re.compile(r"(?:meteo|météo|prévisions|quel temps|il fait quel temps)\s+([a-zA-Z' -]+)", re.IGNORECASE)
+            match_ville = pattern_ville.search(question_clean)
+            if match_ville:
+                ville_detectee = match_ville.group(1).strip().title()
+
+        # Correction pour s'assurer que le nom est bien propre
+        ville_detectee = re.sub(r"[^a-zA-Z' -]", "", ville_detectee).strip().title()
+
+        #Utilisation de Google pour la météo
+        recherche_google = f"météo {ville_detectee}"
+        resultats_google = rechercher_sur_google(recherche_google)
+    
+        # Construction de la réponse
+        return (
+            f"🌦️ **Météo à {ville_detectee} via Google :**\n\n"
+            f"{resultats_google}\n\n"
+            + random.choice([
+                "🧥 Pense à t’habiller en conséquence !",
+                "☕ Rien de tel qu’un bon café pour accompagner la journée.",
+                "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
+                "💡 Info météo = longueur d’avance.",
+                "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
+            ])
+        )
                 
     # --- Bloc Actualités améliorées ---
     if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
