@@ -1627,10 +1627,6 @@ def repondre(question):
         return recap + google
     return ai
 
-# Dans ton Streamlit :
-question = st.text_input("Pose ta question")
-if question:
-    st.markdown(repondre(question))
 
 def chercher_reponse_base_langage(question):
     question_clean = question.lower()
