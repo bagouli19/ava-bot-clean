@@ -3182,11 +3182,7 @@ if prompt:
     # Affichage immédiat du message d'AVA
     with st.chat_message("assistant", avatar="assets/ava_logo.png"):
         st.markdown(reponse)
-    # Bouton pour effacer la conversation
-    if st.button("🗑️ Effacer la conversation"):
-        st.session_state.historique_conversation = []  # Réinitialiser l'historique
-        st.experimental_rerun()  # Recharge la page pour afficher une conversation vide
-        
+
 # 🔧 TEST : Appel direct à GPT-3.5 Turbo si question commence par "force openai:"
 if prompt and prompt.lower().startswith("force openai:"):
     question_openai = prompt.replace("force openai:", "").strip()
@@ -3196,6 +3192,11 @@ if prompt and prompt.lower().startswith("force openai:"):
     except Exception as e:
         st.error(f"❌ Erreur GPT-3.5 : {e}")
     st.stop()  # on arrête ici pour ne pas passer dans les autres blocs
+    
+# Bouton pour effacer la conversation
+if st.button("🗑️ Effacer la conversation"):
+    st.session_state.historique_conversation = []  # Réinitialiser l'historique
+    st.experimental_rerun()  # Recharge la page pour afficher une conversation vide
 
 st.sidebar.subheader("🧾 Rappels et tâches")
 
