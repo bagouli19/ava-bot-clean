@@ -55,42 +55,25 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 try:
     GOOGLE_API_KEY          = st.secrets["github"]["GOOGLE_API_KEY"]
     GOOGLE_SEARCH_ENGINE_ID = st.secrets["github"]["GOOGLE_SEARCH_ENGINE_ID"]
-    GITHUB_TOKEN            = st.secrets["github"]["GITHUB_TOKEN"]
 except KeyError as e:
     st.error(f"Les clés API Google ne sont pas correctement configurées dans les secrets Streamlit : {e}")
     raise ValueError("Les clés API Google ne sont pas correctement définies.")
 
-# Vérification des clés pour diagnostic
-st.write(f"Clé API Google : {GOOGLE_API_KEY if GOOGLE_API_KEY else 'Aucune'}")
-st.write(f"ID Moteur de Recherche : {GOOGLE_SEARCH_ENGINE_ID if GOOGLE_SEARCH_ENGINE_ID else 'Aucun'}")
-
-# Fonction de recherche Google avec descriptif personnalisé
+# Fonction de recherche Google automatique
 def rechercher_sur_google(question):
     query = question.strip()
     url = f"https://www.googleapis.com/customsearch/v1?q={query}&cx={GOOGLE_SEARCH_ENGINE_ID}&key={GOOGLE_API_KEY}"
-    
+
     try:
         response = requests.get(url)
         data = response.json()
         resultats = data.get("items", [])
-        
+
         if not resultats:
-            return "Désolé, je n'ai trouvé aucun résultat pertinent sur Google."
-        
-        # Définir un petit descriptif personnalisé en fonction du type de recherche
-        if "horoscope" in query.lower():
-            description = "🔮 Voici ce que j'ai trouvé sur votre horoscope :"
-        elif "météo" in query.lower() or "meteo" in query.lower():
-            description = "🌦️ J'ai trouvé les prévisions météo pour vous :"
-        elif "recette" in query.lower():
-            description = "🍽️ Voilà quelques recettes qui pourraient vous plaire :"
-        elif "actualité" in query.lower():
-            description = "📰 Voici les dernières actualités que j'ai trouvées :"
-        else:
-            description = "🔎 Voici les premiers résultats trouvés sur Google :"
+            return "🔎 Hmm, je n'ai rien trouvé sur Google... mais ne vous inquiétez pas, je suis toujours là pour vous aider. 😊"
 
         # Construction de la réponse avec descriptif
-        reponse = f"{description}\n"
+        reponse = "🔎 J'ai cherché un peu pour vous, et voici ce que j'ai trouvé sur Google :\n"
         for item in resultats[:3]:
             titre = item.get("title", "Sans titre")
             lien = item.get("link", "Pas de lien disponible")
@@ -98,7 +81,15 @@ def rechercher_sur_google(question):
 
         return reponse
     except Exception as e:
-        return f"⚠️ Erreur lors de la recherche Google : {e}"
+        return f"⚠️ Oups, une erreur est survenue lors de la recherche Google : {e}"
+
+# Utilisation automatique si AVA et GPT-3.5 échouent
+def obtenir_reponse(question, reponse_ava, reponse_gpt):
+    if reponse_ava.strip() == "" and reponse_gpt.strip() == "":
+        return rechercher_sur_google(question)
+
+    return reponse_ava if reponse_ava else reponse_gpt
+
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
