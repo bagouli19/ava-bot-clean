@@ -1613,7 +1613,7 @@ def repondre(question):
 question = st.text_input("Pose ta question")
 if question:
     st.markdown(repondre(question))
-    
+
 def chercher_reponse_base_langage(question):
     question_clean = question.lower()
     correspondances = difflib.get_close_matches(question_clean, base_langage.keys(), n=1, cutoff=0.8)
@@ -1696,8 +1696,15 @@ def trouver_reponse(question: str, model) -> str:
     # 🤖 Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
     print("🤖 Appel GPT (fallback)")
     reponse_openai = repondre_openai(question_clean)
+
+    # Si GPT a une vraie réponse (repondre_openai retourne None en cas d’échec)
     if reponse_openai:
         return reponse_openai.strip()
+
+    # Sinon, on bascule automatiquement sur Google
+    print("🔎 Fallback Google")
+    recap = "**Récap GPT-3.5 :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
+    return recap + rechercher_sur_google(question
 
     # ❓ Réponse par défaut
     return "🤔 Je n'ai pas trouvé de réponse précise."
