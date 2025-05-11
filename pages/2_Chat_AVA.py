@@ -2679,37 +2679,35 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # --- Bloc météo intelligent (ultra robuste et amélioré) ---
     import re
 
+    # --- Bloc météo intelligent (ultra robuste et amélioré) ---
     if any(kw in question_clean.lower() for kw in [
         "meteo", "météo", "quel temps", "prévision", "prévisions", 
         "il fait quel temps", "temps à", "temps en", "temps au", 
-        "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"
+        "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie",
+        "quel est", "quel est la météo d'aujourd'hui"
     ]):
-        ville_detectee = "Paris"  # Par défaut (au cas où aucune ville n'est détectée)
+        ville_detectee = None
 
-        # --- Détection de la ville / village / lieu (améliorée) ---
-        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en|pour)\s+([a-zA-ZÀ-ÿ' -]+)", question_clean, re.IGNORECASE)
+        # --- Détection de la ville / village / lieu ---
+        match_geo = re.search(r"(?:à|a|au|aux|dans|sur|en|pour)\s+([a-zA-Z' -]+)", question_clean, re.IGNORECASE)
 
         if match_geo:
             ville_detectee = match_geo.group(1).strip().title()
-        else:
-            # Si aucune ville détectée par la regex, on tente une autre approche
-            pattern_ville = re.compile(r"(?:meteo|météo|prévisions|quel temps|il fait quel temps)\s+([a-zA-ZÀ-ÿ' -]+)", re.IGNORECASE)
-            match_ville = pattern_ville.search(question_clean)
-            if match_ville:
-                ville_detectee = match_ville.group(1).strip().title()
     
-        # Correction pour s'assurer que le nom est bien propre
-        ville_detectee = re.sub(r"[^a-zA-ZÀ-ÿ' -]", "", ville_detectee).strip().title()
-    
-        # Récupération de la météo (protection renforcée)
+        # Si aucune ville détectée, on utilise une valeur par défaut (Paris)
+        if not ville_detectee:
+            ville_detectee = "Paris"
+
+        # Récupération de la météo
         try:
             meteo = get_meteo_ville(ville_detectee)
-            if "erreur" in meteo.lower() or "manquantes" in meteo.lower() or "impossible" in meteo.lower():
-                raise ValueError("Erreur météo")
         except Exception:
+            return "⚠️ Impossible de récupérer la météo pour le moment. Réessayez plus tard."
+    
+        # Vérification de la réponse météo
+        if not meteo or "erreur" in meteo.lower() or "manquantes" in meteo.lower() or "impossible" in meteo.lower():
             return f"⚠️ Désolé, je n'ai pas trouvé la météo pour **{ville_detectee}**. Peux-tu essayer un autre endroit ?"
 
-        # Message de retour amélioré
         return (
             f"🌦️ **Météo à {ville_detectee} :**\n\n"
             f"{meteo}\n\n"
@@ -2718,9 +2716,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "☕ Rien de tel qu’un bon café pour accompagner la journée.",
                 "🔮 Le ciel en dit long… mais c’est toi qui choisis ta météo intérieure !",
                 "💡 Info météo = longueur d’avance.",
-               "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
+                "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
+
     # --- Analyse technique via "analyse <actif>" ---
     if not message_bot and question_clean.startswith("analyse "):
         nom_simple = question_clean[len("analyse "):].strip()
