@@ -1894,7 +1894,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         if "stress" in question_clean:
             message_bot = "🧘 Pour le stress : tisane de camomille ou de valériane, respiration profonde, méditation guidée ou bain tiède aux huiles essentielles de lavande."
-         elif "mal de gorge" in question_clean or "gorge" in question_clean:
+        elif "mal de gorge" in question_clean or "gorge" in question_clean:
             message_bot = "🍯 Miel et citron dans une infusion chaude, gargarisme d’eau salée tiède, ou infusion de thym. Évite de trop parler et garde ta gorge bien hydratée."
         elif "rhume" in question_clean or "nez bouché" in question_clean:
             message_bot = "🌿 Inhalation de vapeur avec huile essentielle d’eucalyptus, tisane de gingembre, et bouillon chaud. Repose-toi bien."
