@@ -3084,7 +3084,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         starts_ignore = any(question_clean.lower().startswith(pref) for pref in ignorer)
         theme_musique = contains_kw and not starts_ignore
 
-       if theme_musique:
+        if theme_musique:
             st.write("🟢 Bloc musical déclenché 🎵")
             tendances = obtenir_titres_populaires_france()
             if tendances:
