@@ -3182,7 +3182,11 @@ if prompt:
     # Affichage immédiat du message d'AVA
     with st.chat_message("assistant", avatar="assets/ava_logo.png"):
         st.markdown(reponse)
-    
+    # Bouton pour effacer la conversation
+    if st.button("🗑️ Effacer la conversation"):
+        st.session_state.historique_conversation = []  # Réinitialiser l'historique
+        st.experimental_rerun()  # Recharge la page pour afficher une conversation vide
+        
 # 🔧 TEST : Appel direct à GPT-3.5 Turbo si question commence par "force openai:"
 if prompt and prompt.lower().startswith("force openai:"):
     question_openai = prompt.replace("force openai:", "").strip()
@@ -3225,9 +3229,3 @@ if st.sidebar.button("🧹 Vider les rappels"):
     set_my_profile(profil)
     st.sidebar.success("✅ Rappels supprimés !")
 
-# Bouton pour effacer la conversation
-if st.button("🗑️ Effacer la conversation"):
-    # Réinitialiser l'historique de conversation
-    if "historique_conversation" in st.session_state:
-        st.session_state.historique_conversation = []
-    st.experimental_rerun()  # Recharge la page pour actualiser l'affichage
