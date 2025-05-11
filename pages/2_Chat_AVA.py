@@ -1738,11 +1738,7 @@ def trouver_reponse(question: str, model) -> str:
         low = reponse_openai.lower()
         if not any(pat in low for pat in fail_patterns):
             # GPT a donné une vraie réponse
-            return reponse_openai.strip()
-
-    # 🔎 Fallback Google
-    print("🔎 Fallback Google")
-    recap = "**R
+            return reponse_openai
 
 
 # --- Modules personnalisés (à enrichir) ---
