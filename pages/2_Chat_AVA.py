@@ -574,7 +574,6 @@ def load_bert_model():
 
     # 1️⃣ Téléchargement complet si config.json manquant
     if not os.path.isfile(config_file):
-        st.warning("📂 config.json introuvable → téléchargement du modèle complet…")
         snapshot_download(
             repo_id="sentence-transformers/bert-base-nli-mean-tokens",
             local_dir=MODEL_PATH,
@@ -2007,7 +2006,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-        
+
     #heure
     if any(kw in question_clean.lower() for kw in [
         "quelle heure", "il est quelle heure", "donne-moi l'heure", 
