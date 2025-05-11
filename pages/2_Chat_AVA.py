@@ -3182,12 +3182,6 @@ if prompt:
     # Affichage immédiat du message d'AVA
     with st.chat_message("assistant", avatar="assets/ava_logo.png"):
         st.markdown(reponse)
-
-    # 🔘 Bouton test mémoire globale (à usage développeur)
-    if st.sidebar.button("🔄 Forcer sauvegarde mémoire JSON"):
-        memoire = charger_memoire_ava()
-        sauvegarder_memoire_ava(memoire)
-        st.sidebar.success("✅ Sauvegarde forcée effectuée.")
     
 # 🔧 TEST : Appel direct à GPT-3.5 Turbo si question commence par "force openai:"
 if prompt and prompt.lower().startswith("force openai:"):
