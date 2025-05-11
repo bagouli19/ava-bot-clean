@@ -1601,6 +1601,10 @@ import importlib
 # Chargement dynamique de la base de langage en tant que module
 base_langage = importlib.import_module('knowledge_base.base_de_langage')
 
+# Vérification que la base de langage est bien un dictionnaire
+if not isinstance(base_langage.base_de_langage, dict):
+    raise ValueError("❌ Erreur : La base de langage doit être un dictionnaire.")
+
 # Chargement du modèle BERT pour les similarités
 modele_bert = SentenceTransformer('sentence-transformers/bert-base-nli-mean-tokens')
 
