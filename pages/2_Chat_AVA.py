@@ -1593,7 +1593,14 @@ def get_meteo_ville(city: str) -> str:
     except ValueError:
         return "⚠️ Réponse météo invalide."
 
-
+# ─── Helper de normalisation ───
+def normalize(s: str) -> str:
+    """Enlève accents, apostrophes typographiques, et met en minuscules."""
+    s = s.replace("’", "'").replace("‘", "'")
+    s = unicodedata.normalize("NFKD", s)
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return s.lower().strip()
+    
 import streamlit as st
 import openai
 import difflib
@@ -1765,13 +1772,6 @@ def trouver_reponse(question: str, model) -> str:
     recap = "**Récap GPT-3.5 :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
     return recap + rechercher_sur_google(question)
 
-# … en haut de ton fichier, une seule fois …
-    def normalize(s: str) -> str:
-        """Enlève accents, apostrophes typographiques, et met en minuscules."""
-        s = s.replace("’", "'").replace("‘", "'")
-        s = unicodedata.normalize("NFKD", s)
-        s = "".join(c for c in s if not unicodedata.combining(c))
-        return s.lower().strip()
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
