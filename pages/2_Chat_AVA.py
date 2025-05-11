@@ -1629,7 +1629,30 @@ def est_reponse_vide_ou_generique(reponse: str) -> bool:
         return True
     # Considérons vides ou très courtes (<3 mots)
     return len(reponse.strip().split()) < 3
+    
+def repondre_avec_gpt(question):
+    resp = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role":"system", "content": SYSTEM_PROMPT},
+            {"role":"user",   "content": question}
+        ],
+        temperature=0.7,
+    )
+    texte = resp.choices[0].message.content.strip()
 
+    # Si GPT s'excuse ou refuse, on considère que c'est un échec
+    lower = texte.lower()
+    excuses = [
+        "je suis désolé", 
+        "je ne peux pas", 
+        "je ne suis pas en mesure",
+        "je ne peux fournir",
+    ]
+    if any(excuse in lower for excuse in excuses):
+        return None
+
+    return texte
 # --------------------------
 # Appels API et BERT
 # --------------------------
