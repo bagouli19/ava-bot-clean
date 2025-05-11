@@ -1740,9 +1740,9 @@ def trouver_reponse(question: str, model) -> str:
             # GPT a donné une vraie réponse
             return reponse_openai.strip()
 
-    # 🔎 Fallback Google
-    print("🔎 Fallback Google")
-    recap = "**R
+# 🔎 Fallback Google
+print("🔎 Fallback Google")
+recap = "**R
 
 
 # --- Modules personnalisés (à enrichir) ---
