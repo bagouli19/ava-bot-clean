@@ -51,6 +51,14 @@ from dotenv import load_dotenv
 
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
+# ─── Helper de normalisation ───
+def normalize(s: str) -> str:
+    """Enlève accents, apostrophes typographiques, et met en minuscules."""
+    s = s.replace("’", "'").replace("‘", "'")
+    s = unicodedata.normalize("NFKD", s)
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return s.lower().strip()
+    
 # Chargement des clés API depuis les secrets Streamlit
 try:
     GOOGLE_API_KEY          = st.secrets["github"]["GOOGLE_API_KEY"]
@@ -1593,14 +1601,8 @@ def get_meteo_ville(city: str) -> str:
     except ValueError:
         return "⚠️ Réponse météo invalide."
 
-# ─── Helper de normalisation ───
-def normalize(s: str) -> str:
-    """Enlève accents, apostrophes typographiques, et met en minuscules."""
-    s = s.replace("’", "'").replace("‘", "'")
-    s = unicodedata.normalize("NFKD", s)
-    s = "".join(c for c in s if not unicodedata.combining(c))
-    return s.lower().strip()
-    
+
+
 import streamlit as st
 import openai
 import difflib
