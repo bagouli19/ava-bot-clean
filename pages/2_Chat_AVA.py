@@ -3065,36 +3065,32 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
 
 
-    # ─── Bloc musical (détection et réponse musicale avancée) ───
-    # Liste de mots-clés qui déclenchent la musique
-    mots_cles_musique = [
+    # ─── Bloc musical ───
+    clean = question_clean.lower().strip()
+    st.write("🔍 DEBUG music clean:", clean)
+
+    mots_cles = [
         "musique", "chanson", "son", "titre", "écouter", "playlist",
         "mets-moi une chanson", "propose un son", "donne un son",
         "j'aimerais écouter", "je veux écouter",
         "as-tu une musique", "tu connais une chanson", "recommande une chanson"
     ]
-    # Prefixes à ignorer (questions factuelles « Quelle est… »)
-    ignorer_prefixes = ["quel ", "quels sont", "quelles sont", "quelle est"]
+    ignorer = ["quel ", "quels sont", "quelles sont", "quelle est"]
 
-    clean = question_clean.lower()
+    # On déclenche si on trouve un mot-clé **et** qu'on ne commence pas par un préfixe ignoré
+    theme = any(kw in clean for kw in mots_cles)
+    debut_ignore = any(clean.startswith(pref) for pref in ignorer)
+    theme_musique_detecte = theme and not debut_ignore
 
-    # On considère qu'on est dans le thème musical si :
-    # – Soit on commence par un mot-clé, soit on contient un mot-clé,
-    # – Et on ne commence PAS par un des préfixes factuels.
-    theme_musique_detecte = (
-        (any(clean.startswith(kw) for kw in mots_cles_musique) or
-         any(kw in clean for kw in mots_cles_musique))
-        and not any(clean.startswith(pref) for pref in ignorer_prefixes)
-    )
+    st.write("🔍 DEBUG music détecté ?", theme_musique_detecte)
 
     if theme_musique_detecte:
-        # Appel à ta fonction d'extraction des titres populaires
+        st.write("🟢 Bloc musical déclenché 🎵")
         tendances = obtenir_titres_populaires_france()
         if tendances:
-            # Formatte le message et on renvoie directement
             return (
-                "🟢 Here we go! Voici quelques titres populaires à découvrir :\n\n"
-                + "\n".join(f"• {titre}" for titre in tendances)
+                "🟢 Voici quelques titres populaires à découvrir :\n\n"
+                + "\n".join(f"• {t}" for t in tendances)
                 + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
             )
 
