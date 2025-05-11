@@ -66,7 +66,7 @@ st.markdown("""
 
 # --- Titre et sous-titre ---
 st.markdown('<div class="title">Bienvenue sur AVA</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Votre assistante boursière, météo et actualités 24h/24 — toujours connectée, toujours prête 🤖</div>', unsafe_allow_html=True)
+
 
 # --- Logo centré ---
 try:
