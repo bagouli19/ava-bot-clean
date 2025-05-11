@@ -40,6 +40,8 @@
   },
   "marco": {
     "prenom": "Marco",
-    "souvenirs": {}
+    "souvenirs": {
+      "plat_prefere": "la cote de boeuf"
+    }
   }
 }
