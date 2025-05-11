@@ -1709,8 +1709,9 @@ def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
     
-    # 🟢 Message de réflexion de AVA
-    st.info("💡 AVA réfléchit... veuillez patienter un instant.")
+    # 🟢 Animation de chargement discrète
+    with st.spinner("💡 AVA réfléchit... veuillez patienter un instant."):
+        time.sleep(0.5)  # Pause de 0.5 seconde pour rendre l'animation visible
 
     # 🔍 Salutations
     reponse_salut = repondre_salutation(question_clean)
