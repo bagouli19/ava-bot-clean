@@ -1673,7 +1673,6 @@ def repondre_avec_gpt(question):
 
 def repondre_openai(prompt: str) -> str:
     try:
-        st.info("🛠️ Appel à OpenAI en cours...")
         resp = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -1731,7 +1730,6 @@ def trouver_reponse(question: str, model) -> str:
         return reponse_speciale.strip()
     
     # 🤖 Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
-    print("🤖 Appel GPT (fallback)")
     reponse_openai = repondre_openai(question)
 
     # Patterns indiquant un échec ou une non-compréhension
@@ -3128,7 +3126,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     # 4️⃣ Fallback automatique vers OpenAI
     try:
-        print("⚙️ Appel à GPT-3.5 Turbo en cours…")
         reponse_openai = repondre_openai(question_clean)
         if reponse_openai and reponse_openai.strip():
             return reponse_openai.strip()
