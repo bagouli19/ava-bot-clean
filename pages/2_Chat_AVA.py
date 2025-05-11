@@ -1709,6 +1709,15 @@ def trouver_reponse(question: str, model) -> str:
     question_raw = question or ""
     question_clean = nettoyer_texte(question_raw)
     
+    # 🟢 Message de réflexion de AVA
+    st.info("💡 AVA réfléchit... veuillez patienter un instant.")
+
+    # Exécuter les réponses (GPT-3.5, base de langage, modules)
+    reponse_finale = trouver_reponse(question)
+
+    # Afficher la réponse finale
+    st.success(reponse_finale)
+    
     # 🔍 Salutations
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
@@ -1766,7 +1775,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
 
      # ✅ Gestion des souvenirs utilisateur (nouvelle priorité)
-    print("🧠 Appel de la fonction gerer_souvenirs_utilisateur (dans gerer_modules_speciaux)")  # ➡️ LOG TEST
     reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
     if reponse_souvenir:
         print("✅ Souvenir utilisateur détecté :", reponse_souvenir)  # ➡️ LOG TEST
