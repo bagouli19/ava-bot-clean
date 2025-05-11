@@ -1765,6 +1765,13 @@ def trouver_reponse(question: str, model) -> str:
     recap = "**Récap GPT-3.5 :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
     return recap + rechercher_sur_google(question)
 
+# … en haut de ton fichier, une seule fois …
+    def normalize(s: str) -> str:
+        """Enlève accents, apostrophes typographiques, et met en minuscules."""
+        s = s.replace("’", "'").replace("‘", "'")
+        s = unicodedata.normalize("NFKD", s)
+        s = "".join(c for c in s if not unicodedata.combining(c))
+        return s.lower().strip()
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
@@ -3068,50 +3075,41 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
 
 
-    # … en haut de ton fichier, une seule fois …
-    def normalize(s: str) -> str:
-        """Enlève accents, apostrophes typographiques, et met en minuscules."""
-        s = s.replace("’", "'").replace("‘", "'")
-        s = unicodedata.normalize("NFKD", s)
-        s = "".join(c for c in s if not unicodedata.combining(c))
-        return s.lower().strip()
+    # ─── Bloc musical optimisé ───
+    clean_norm = normalize(question_clean)
+    st.write("🔍 DEBUG clean_norm pour musique :", clean_norm)
 
+    # 1) Liste de mots-clés à normaliser
+    mots_cles = [
+        "musique", "chanson", "son", "titre", "ecouter", "playlist",
+        "mets-moi une chanson", "propose un son", "donne un son",
+        "j'aimerais ecouter", "je veux ecouter",
+        "as-tu une musique", "tu connais une chanson", "recommande une chanson"
+    ]
+    mots_cles_norm = [normalize(w) for w in mots_cles]
 
-        # ─── Bloc musical optimisé ───
-        clean_norm = normalize(question_clean)
-        st.write("🔍 DEBUG clean_norm pour musique :", clean_norm)
+    # 2) Préfixes factuels à ignorer
+    ignorer = ["quel ", "quels sont", "quelles sont", "quelle est"]
+    ignorer_norm = [normalize(p) for p in ignorer]
 
-        # 1) Liste de mots-clés à normaliser
-        mots_cles = [
-            "musique", "chanson", "son", "titre", "ecouter", "playlist",
-            "mets-moi une chanson", "propose un son", "donne un son",
-            "j'aimerais ecouter", "je veux ecouter",
-            "as-tu une musique", "tu connais une chanson", "recommande une chanson"
-        ]
-        mots_cles_norm = [normalize(w) for w in mots_cles]
+    # 3) Détection : on cherche un mot-clé, et on ne doit pas commencer par un préfixe à ignorer
+    contains_kw = any(kw in clean_norm for kw in mots_cles_norm)
+    starts_ignore = any(clean_norm.startswith(pref) for pref in ignorer_norm)
+    theme_musique = contains_kw and not starts_ignore
 
-        # 2) Préfixes factuels à ignorer
-        ignorer = ["quel ", "quels sont", "quelles sont", "quelle est"]
-        ignorer_norm = [normalize(p) for p in ignorer]
+    st.write("🔍 DEBUG contains_kw :", contains_kw)
+    st.write("🔍 DEBUG starts_ignore :", starts_ignore)
+    st.write("🔍 DEBUG theme_musique_detecte :", theme_musique)
 
-        # 3) Détection : on cherche un mot-clé, et on ne doit pas commencer par un préfixe à ignorer
-        contains_kw = any(kw in clean_norm for kw in mots_cles_norm)
-        starts_ignore = any(clean_norm.startswith(pref) for pref in ignorer_norm)
-        theme_musique = contains_kw and not starts_ignore
-
-        st.write("🔍 DEBUG contains_kw :", contains_kw)
-        st.write("🔍 DEBUG starts_ignore :", starts_ignore)
-        st.write("🔍 DEBUG theme_musique_detecte :", theme_musique)
-
-        if theme_musique:
-            st.write("🟢 Bloc musical déclenché 🎵")
-            tendances = obtenir_titres_populaires_france()
-            if tendances:
-                return (
-                    "🟢 Voici quelques titres populaires à découvrir :\n\n"
-                    + "\n".join(f"• {t}" for t in tendances)
-                    + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
-                )
+    if theme_musique:
+        st.write("🟢 Bloc musical déclenché 🎵")
+        tendances = obtenir_titres_populaires_france()
+        if tendances:
+            return (
+                "🟢 Voici quelques titres populaires à découvrir :\n\n"
+                + "\n".join(f"• {t}" for t in tendances)
+                + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
+            )
 
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
