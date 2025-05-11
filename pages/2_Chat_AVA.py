@@ -1720,7 +1720,7 @@ def trouver_reponse(question: str, model) -> str:
     print("🤖 Appel GPT (fallback)")
     reponse_openai = repondre_openai(question)
 
-    # Liste de fragments indiquant que GPT s'excuse ou renvoie un "non-réponse"
+    # Patterns indiquant un échec ou une non-compréhension
     fail_patterns = [
         "je suis désolé",
         "je vous recommande",
@@ -1728,17 +1728,24 @@ def trouver_reponse(question: str, model) -> str:
         "je ne peux pas",
         "je ne suis pas en mesure",
         "je ne peux fournir",
-        "je n'ai pas",
-        "consultez",
-        "je ne suis pas en mesure"
+        "je n'ai pas compris",
+        "pouvez reformuler",
+        "vous pouvez reformuler",
+        "je n’ai pas compris",
+        "je n’ai pas",
+        "consultez"
     ]
 
-    # On considère comme "réponse valide" tout ce qui n'inclut pas ces patterns
     if reponse_openai:
         low = reponse_openai.lower()
+        # Si aucune des phrases d'excuse / non-compréhension n'apparaît, c’est une vraie réponse
         if not any(pat in low for pat in fail_patterns):
-            # GPT a donné une vraie réponse
-            return reponse_openai
+            return reponse_openai.strip()
+
+    # Sinon, on bascule sur Google
+    print("🔎 Fallback Google")
+    recap = "**Récap GPT-3.5 :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
+    return recap + rechercher_sur_google(question)
 
 
 # --- Modules personnalisés (à enrichir) ---
