@@ -43,5 +43,9 @@
     "souvenirs": {
       "plat_prefere": "la cote de boeuf"
     }
+  },
+  "tt": {
+    "prenom": "Tt",
+    "souvenirs": {}
   }
 }
