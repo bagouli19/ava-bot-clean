@@ -70,21 +70,39 @@ except KeyError as e:
 # Fonction de recherche Google automatique
 def rechercher_sur_google(question):
     query = question.strip()
-    url = f"https://www.googleapis.com/customsearch/v1?q={query}&cx={GOOGLE_SEARCH_ENGINE_ID}&key={GOOGLE_API_KEY}"
+    url = (
+        f"https://www.googleapis.com/customsearch/v1"
+        f"?q={query}&cx={GOOGLE_SEARCH_ENGINE_ID}&key={GOOGLE_API_KEY}"
+    )
 
     try:
         response = requests.get(url)
         data = response.json()
         resultats = data.get("items", [])
+        info = data.get("searchInformation", {})
+
+        # 1) Récapitulatif global
+        total = info.get("totalResults", "inconnu")
+        temps = info.get("searchTime", None)
+        recap = f"🔎 Google a trouvé environ **{total}** résultats"
+        if temps is not None:
+            recap += f" en {temps:.2f}s"
+        recap += ".\n\n"
 
         if not resultats:
-            return "Désolé, je n'ai trouvé aucun résultat pertinent sur Google."
+            return recap + "Désolé, je n'ai trouvé aucun résultat pertinent."
 
-        reponse = "🔎 Voici ce que j'ai trouvé sur Google :\n"
+        # 2) Détails sur les 3 premiers
+        reponse = recap + "Voici un aperçu des 3 premiers résultats :\n\n"
         for item in resultats[:3]:
-            titre = item.get("title", "Sans titre")
-            lien = item.get("link", "Pas de lien disponible")
-            reponse += f"- {titre} : {lien}\n"
+            titre   = item.get("title", "Sans titre")
+            lien    = item.get("link", "Pas de lien disponible")
+            snippet = item.get("snippet", "").strip().replace("\n", " ")
+            reponse += (
+                f"• **{titre}**\n"
+                f"  {snippet}\n"
+                f"  🔗 {lien}\n\n"
+            )
 
         return reponse
 
