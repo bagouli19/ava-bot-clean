@@ -567,7 +567,7 @@ MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "bert-base-nli-mean-tokens")
 
 @st.cache_resource
 def load_bert_model():
-    st.warning("🔁 Vérification du modèle local BERT en cours…")
+    
 
     config_file = os.path.join(MODEL_PATH, "config.json")
     pt_file     = os.path.join(MODEL_PATH, "pytorch_model.bin")
