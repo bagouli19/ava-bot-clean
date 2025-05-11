@@ -1594,6 +1594,36 @@ def get_meteo_ville(city: str) -> str:
     except ValueError:
         return "⚠️ Réponse météo invalide."
 
+from sentence_transformers import SentenceTransformer, util
+import torch
+import importlib
+
+# Chargement dynamique de la base de langage en tant que module
+base_langage = importlib.import_module('knowledge_base.base_de_langage')
+
+# Chargement du modèle BERT pour les similarités
+modele_bert = SentenceTransformer('all-MiniLM-L6-v2')
+
+# Extraction des questions et réponses
+questions_base = list(base_langage.base_de_langage.keys())
+reponses_base = list(base_langage.base_de_langage.values())
+
+# Pré-calcul des embeddings pour toutes les questions
+embeddings_base = modele_bert.encode(questions_base, convert_to_tensor=True)
+
+# Fonction de recherche sémantique optimisée
+def trouver_reponse_semantique(question):
+    question_embedding = modele_bert.encode(question, convert_to_tensor=True)
+    similarites = util.pytorch_cos_sim(question_embedding, embeddings_base)
+    scores, indices = torch.topk(similarites, k=1)
+
+    # Seuil de similarité
+    seuil = 0.75
+    if scores[0][0] >= seuil:
+        question_proche = questions_base[indices[0][0]]
+        return reponses_base[indices[0][0]]
+
+    return "Désolé, je n'ai pas trouvé de réponse pertinente dans ma base de connaissances."
 
 
 import streamlit as st
