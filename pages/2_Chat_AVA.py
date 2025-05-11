@@ -3192,11 +3192,6 @@ if prompt and prompt.lower().startswith("force openai:"):
     except Exception as e:
         st.error(f"❌ Erreur GPT-3.5 : {e}")
     st.stop()  # on arrête ici pour ne pas passer dans les autres blocs
-    
-# Bouton pour effacer la conversation
-if st.button("🗑️ Effacer la conversation"):
-    st.session_state.historique_conversation = []  # Réinitialiser l'historique
-    st.experimental_rerun()  # Recharge la page pour afficher une conversation vide
 
 st.sidebar.subheader("🧾 Rappels et tâches")
 
