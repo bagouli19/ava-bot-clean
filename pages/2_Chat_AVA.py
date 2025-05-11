@@ -1712,12 +1712,6 @@ def trouver_reponse(question: str, model) -> str:
     # 🟢 Message de réflexion de AVA
     st.info("💡 AVA réfléchit... veuillez patienter un instant.")
 
-    # Exécuter les réponses (GPT-3.5, base de langage, modules)
-    reponse_finale = trouver_reponse(question)
-
-    # Afficher la réponse finale
-    st.success(reponse_finale)
-    
     # 🔍 Salutations
     reponse_salut = repondre_salutation(question_clean)
     if reponse_salut:
@@ -1763,7 +1757,7 @@ def trouver_reponse(question: str, model) -> str:
         if not any(pat in low for pat in fail_patterns):
             return reponse_openai.strip()
 
-    # Sinon, on bascule sur Google
+    # 🔎 Fallback Google (si aucune réponse satisfaisante)
     print("🔎 Fallback Google")
     recap = "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
     return recap + rechercher_sur_google(question)
