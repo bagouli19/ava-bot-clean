@@ -1872,71 +1872,16 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         st.session_state["quiz_attendu"] = question_choisie["réponse"].lower()
         return f"🧠 **Quiz Culture G** :\n{question_choisie['question']}\n\nRépondez directement !"
 
-    # --- Bloc Recettes rapides ---
-    recettes = [
-        "🥪 **Sandwich thon-avocat** : pain complet, thon, avocat écrasé, citron, sel, poivre. 5 minutes chrono !",
-        "🍝 **Pâtes à l’ail** : pâtes + ail émincé + huile d’olive + herbes. Simple, rapide, efficace.",
-        "🍳 **Omelette fromage** : œufs battus, sel, poivre, fromage râpé. 5 minutes à la poêle !",
-        "🥗 **Salade express** : tomates cerises, mozzarella, roquette, huile d’olive, vinaigre balsamique.",
-        "🌯 **Wrap poulet-crudités** : galette + restes de poulet + salade + sauce yaourt.",
-        "🥔 **Pommes de terre sautées** : en cubes, à la poêle avec ail et persil. Parfait avec des œufs !",
-        "🍲 **Soupe express** : légumes surgelés mixés + cube bouillon + crème légère. Prête en 10 minutes.",
-        "🍞 **Croque-monsieur rapide** : pain de mie, jambon, fromage, 5 min au grill ou à la poêle.",
-        "🥒 **Tartines fraîcheur** : pain grillé, fromage frais, concombre, citron et herbes.",
-        "🍚 **Riz sauté aux légumes** : reste de riz + légumes + œuf + sauce soja. Un wok express !",
-        "🍗 **Poulet minute au curry** : dés de poulet + crème + curry + oignon, à la poêle en 10 min.",
-        "🍳 **Œufs brouillés crémeux** : œufs + beurre + sel + poivre, cuisson douce pour onctuosité.",
-        "🧄 **Pâtes ail-persil** : ail doré à la poêle, persil frais, huile d’olive, et hop sur les pâtes !",
-        "🥑 **Toast avocat-œuf** : pain grillé + avocat écrasé + œuf au plat ou mollet.",
-        "🌮 **Tacos express** : galette + steak haché ou haricots + tomate + salade + sauce.",
-        "🥔 **Gratin express au micro-ondes** : pommes de terre en tranches fines + crème + fromage.",
-        "🍅 **Tomates mozzarella** : tranches de tomates + mozzarella + basilic + huile d’olive. Simple et frais.",
-        "🧀 **Quesadilla express** : deux tortillas + fromage + restes au choix + poêle 5 min chaque côté.",
-        "🍳 **Mini shakshuka rapide** : tomates en dés + œufs + cumin dans une petite poêle. Un délice !",
-        "🥣 **Bowl sucré express** : fromage blanc + fruits + flocons d’avoine + miel. Parfait au petit dej.",
-        "🥕 **Bâtonnets carottes-concombre** : trempés dans du houmous ou une sauce yaourt. Frais et sain.",
-        "🍞 **Pain perdu rapide** : tranches de pain + œuf + lait + sucre, à la poêle jusqu’à dorure.",
-        "🍠 **Patate douce micro-ondes** : piquée à la fourchette, 7 min puissance max, à garnir à volonté.",
-        "🥒 **Taboulé express** : semoule, tomate, menthe, citron, huile d’olive. Hydratation 5 min à l’eau chaude.",
-        "🍌 **Banana pancakes** : 1 banane + 2 œufs, mélangés et cuits en petites galettes. Sans farine !",
-        "🧈 **Wrap beurre de cacahuète-banane** : rapide, énergétique, parfait en collation !",
-        "🍽️ **Assiette anti-gaspi** : reste de pâtes, légumes et un œuf, mélangés et poêlés façon wok !",
-        "🍜 **Nouilles instant maison** : nouilles + bouillon + œuf + légumes râpés. Prêt en 7 minutes top chrono !",
-        "🥓 **Œuf cocotte express** : œuf + crème + fromage dans un ramequin, 1 min au micro-ondes.",
-        "🌽 **Galette de maïs rapide** : maïs + œuf + farine + épices, cuit à la poêle façon pancake salé.",
-        "🍕 **Mini pizzas pain de mie** : pain de mie, sauce tomate, fromage, garniture au choix, 10 min au four.",
-        "🍄 **Poêlée champignons ail-persil** : champignons frais, ail, persil, et huile d’olive. Simple & savoureux.",
-        "🌯 **Wrap sucré pomme-cannelle** : pomme râpée, cannelle, un filet de miel, le tout roulé dans une galette.",
-        "🍳 **Tortilla minute** : œufs battus + restes de légumes + fromage, à la poêle comme une omelette épaisse.",
-        "🧀 **Boulettes express** : steak haché + chapelure + épices, façonnées et dorées en 5 min à la poêle.",
-        "🍫 **Mug cake chocolat** : 4 ingrédients, 1 mug, 1 micro-ondes. Gâteau prêt en 1 minute !",
-        "🥔 **Chips maison micro-ondes** : pommes de terre très fines + sel + micro-ondes 5 à 6 min. Ultra croustillant !",
-        "🥞 Crêpes moelleuses : farine, œufs, lait, sucre, un peu de vanille. Mélangez le tout et faites cuire !",
-        "🍝 Spaghetti Carbonara : pâtes, lardons, œufs, parmesan, poivre. Un classique savoureux.",
-        "🍛 Curry de légumes : légumes variés, lait de coco, curry, riz. Simple et délicieux.",
-        "🍕 Pizza Margherita : pâte à pizza, sauce tomate, mozzarella, basilic frais. Un classique italien.",
-        "🍜 Soupe Ramen : bouillon, nouilles, œuf, poulet ou tofu, légumes, sauce soja.",
-        "🥗 Salade César : laitue, poulet grillé, croutons, parmesan, sauce César.",
-        "🌮 Tacos au poulet : tortillas, poulet épicé, salsa, avocat, oignon rouge.",
-        "🍤 Crevettes sautées à l'ail : crevettes, ail, beurre, citron. Rapide et délicieux.",
-        "🍰 Gâteau au chocolat : farine, œufs, sucre, chocolat fondu. Parfait pour les gourmands.",
-        "🍹 Smoothie tropical : mangue, ananas, lait de coco, un peu de miel."
-    ]
-     # 1) Demande initiale de recette
-    if any(kw in question_clean for kw in [
-        "recette", "idée recette", "une recette", "qu'est-ce qu'on mange", "on mange quoi"
-    ]):
-        choix = random.choice(recettes)
-        st.session_state['derniere_recette'] = choix
-        return f"🍽️ Voici une idée de recette rapide :\n\n{choix}"
-
-    elif any(kw in question_clean for kw in ["encore une", "une autre", "autre recette"]):
-        if 'derniere_recette' in st.session_state:
-            choix = random.choice(recettes)
-            st.session_state['derniere_recette'] = choix
-            return f"🍽️ Voici une autre idée de recette :\n\n{choix}"
-        else:
-            return "⚠️ Je n'ai pas encore partagé de recette. Demandez-moi d'abord une recette !"
+    # ✅ Détection de demande de recette via GPT-3.5
+    def repondre_recette(question):
+        mots_cles_recette = [
+            "recette", "cuisine", "plat", "préparer", "dessert", "manger",
+            "entrée", "plat principal", "dîner", "déjeuner", "petit-déjeuner"
+        ]
+        question_clean = question.lower().strip()
+    
+        if any(mot in question_clean for mot in mots_cles_recette):
+            return "🍽️ Vous cherchez une recette ? Je vous propose ceci :\n\n" + repondre_openai(f"Donne-moi une recette pour {question}.")
     
     # --- Bloc remèdes naturels ---
     if any(kw in question_clean for kw in ["remède", "remedes", "remede", "soigner", "soulager", "traitement naturel"]):
@@ -1949,7 +1894,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         if "stress" in question_clean:
             message_bot = "🧘 Pour le stress : tisane de camomille ou de valériane, respiration profonde, méditation guidée ou bain tiède aux huiles essentielles de lavande."
-        elif "mal de gorge" in question_clean or "gorge" in question_clean:
+         elif "mal de gorge" in question_clean or "gorge" in question_clean:
             message_bot = "🍯 Miel et citron dans une infusion chaude, gargarisme d’eau salée tiède, ou infusion de thym. Évite de trop parler et garde ta gorge bien hydratée."
         elif "rhume" in question_clean or "nez bouché" in question_clean:
             message_bot = "🌿 Inhalation de vapeur avec huile essentielle d’eucalyptus, tisane de gingembre, et bouillon chaud. Repose-toi bien."
