@@ -1910,7 +1910,17 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         "🍳 **Tortilla minute** : œufs battus + restes de légumes + fromage, à la poêle comme une omelette épaisse.",
         "🧀 **Boulettes express** : steak haché + chapelure + épices, façonnées et dorées en 5 min à la poêle.",
         "🍫 **Mug cake chocolat** : 4 ingrédients, 1 mug, 1 micro-ondes. Gâteau prêt en 1 minute !",
-        "🥔 **Chips maison micro-ondes** : pommes de terre très fines + sel + micro-ondes 5 à 6 min. Ultra croustillant !"
+        "🥔 **Chips maison micro-ondes** : pommes de terre très fines + sel + micro-ondes 5 à 6 min. Ultra croustillant !",
+        "🥞 Crêpes moelleuses : farine, œufs, lait, sucre, un peu de vanille. Mélangez le tout et faites cuire !",
+        "🍝 Spaghetti Carbonara : pâtes, lardons, œufs, parmesan, poivre. Un classique savoureux.",
+        "🍛 Curry de légumes : légumes variés, lait de coco, curry, riz. Simple et délicieux.",
+        "🍕 Pizza Margherita : pâte à pizza, sauce tomate, mozzarella, basilic frais. Un classique italien.",
+        "🍜 Soupe Ramen : bouillon, nouilles, œuf, poulet ou tofu, légumes, sauce soja.",
+        "🥗 Salade César : laitue, poulet grillé, croutons, parmesan, sauce César.",
+        "🌮 Tacos au poulet : tortillas, poulet épicé, salsa, avocat, oignon rouge.",
+        "🍤 Crevettes sautées à l'ail : crevettes, ail, beurre, citron. Rapide et délicieux.",
+        "🍰 Gâteau au chocolat : farine, œufs, sucre, chocolat fondu. Parfait pour les gourmands.",
+        "🍹 Smoothie tropical : mangue, ananas, lait de coco, un peu de miel."
     ]
      # 1) Demande initiale de recette
     if any(kw in question_clean for kw in [
