@@ -2723,8 +2723,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     # --- Bloc météo intelligent (ultra robuste et amélioré) ---
     if any(kw in question_clean.lower() for kw in [
-        "meteo", "météo", "quel temps", "quelle est la météo", 
-        "quelle est la météo aujourd'hui", "prévision", "prévisions", 
+        "meteo", "météo", "quel temps", "prévision", "prévisions", 
         "il fait quel temps", "temps à", "temps en", "temps au", 
         "il fait beau", "il pleut", "va-t-il pleuvoir", "faut-il prendre un parapluie"
     ]):
