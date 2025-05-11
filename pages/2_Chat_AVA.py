@@ -1589,6 +1589,31 @@ openai.api_key  = OPENAI_API_KEY
 # Fonctions utilitaires
 # --------------------------
 
+PLACEHOLDER_PAS_DE_REPONSE = "🤔 Je n'ai pas trouvé de réponse précise."
+
+def obtenir_reponse_ia(question):
+    resp = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role":"system", "content": SYSTEM_PROMPT},
+            {"role":"user",   "content": question}
+        ]
+    )
+    return resp.choices[0].message.content.strip()
+
+def repondre(question):
+    ai = obtenir_reponse_ia(question)
+    if ai.startswith("🤔") or "je n'ai pas trouvé" in ai.lower():
+        recap = f"**Récap GPT-3.5** :\n{ai}\n\n"
+        google = rechercher_sur_google(question)
+        return recap + google
+    return ai
+
+# Dans ton Streamlit :
+question = st.text_input("Pose ta question")
+if question:
+    st.markdown(repondre(question))
+    
 def chercher_reponse_base_langage(question):
     question_clean = question.lower()
     correspondances = difflib.get_close_matches(question_clean, base_langage.keys(), n=1, cutoff=0.8)
