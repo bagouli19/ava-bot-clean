@@ -59,6 +59,14 @@ except KeyError as e:
     st.error(f"Les clés API Google ne sont pas correctement configurées dans les secrets Streamlit : {e}")
     raise ValueError("Les clés API Google ne sont pas correctement définies.")
 
+# Chargement des clés API depuis les secrets Streamlit
+try:
+    GOOGLE_API_KEY = st.secrets["github"]["GOOGLE_API_KEY"]
+    GOOGLE_SEARCH_ENGINE_ID = st.secrets["github"]["GOOGLE_SEARCH_ENGINE_ID"]
+except KeyError as e:
+    st.error(f"Les clés API Google ne sont pas correctement configurées dans les secrets Streamlit : {e}")
+    raise ValueError("Les clés API Google ne sont pas correctement définies.")
+
 # Fonction de recherche Google automatique
 def rechercher_sur_google(question):
     query = question.strip()
@@ -70,18 +78,18 @@ def rechercher_sur_google(question):
         resultats = data.get("items", [])
 
         if not resultats:
-            return "🔎 Hmm, je n'ai rien trouvé sur Google... mais ne vous inquiétez pas, je suis toujours là pour vous aider. 😊"
+            return "Désolé, je n'ai trouvé aucun résultat pertinent sur Google."
 
-        # Construction de la réponse avec descriptif
-        reponse = "🔎 J'ai cherché un peu pour vous, et voici ce que j'ai trouvé sur Google :\n"
+        reponse = "🔎 Voici ce que j'ai trouvé sur Google :\n"
         for item in resultats[:3]:
             titre = item.get("title", "Sans titre")
             lien = item.get("link", "Pas de lien disponible")
             reponse += f"- {titre} : {lien}\n"
 
         return reponse
+
     except Exception as e:
-        return f"⚠️ Oups, une erreur est survenue lors de la recherche Google : {e}"
+        return f"⚠️ Erreur lors de la recherche Google : {e}"
 
 # Utilisation automatique si AVA et GPT-3.5 échouent
 def obtenir_reponse(question, reponse_ava, reponse_gpt):
