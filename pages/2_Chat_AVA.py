@@ -3065,33 +3065,38 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
 
 
-    # ✅ Bloc musical (détection et réponse musicale avancée)
+    # ─── Bloc musical (détection et réponse musicale avancée) ───
+    # Liste de mots-clés qui déclenchent la musique
     mots_cles_musique = [
-        "musique", "chanson", "son", "titre", "écouter", "playlist", "mets-moi une chanson", 
-        "propose un son", "donne un son", "j'aimerais écouter", "je veux écouter", 
+        "musique", "chanson", "son", "titre", "écouter", "playlist",
+        "mets-moi une chanson", "propose un son", "donne un son",
+        "j'aimerais écouter", "je veux écouter",
         "as-tu une musique", "tu connais une chanson", "recommande une chanson"
     ]
-
+    # Prefixes à ignorer (questions factuelles « Quelle est… »)
     ignorer_prefixes = ["quel ", "quels sont", "quelles sont", "quelle est"]
 
-    theme_musique_detecte = any(
-        question_clean.lower().startswith(prefix) for prefix in mots_cles_musique
-    ) or any(
-        mot in question_clean.lower() for mot in mots_cles_musique
-    ) and not any(
-        question_clean.lower().startswith(prefix) for prefix in ignorer_prefixes
+    clean = question_clean.lower()
+
+    # On considère qu'on est dans le thème musical si :
+    # – Soit on commence par un mot-clé, soit on contient un mot-clé,
+    # – Et on ne commence PAS par un des préfixes factuels.
+    theme_musique_detecte = (
+        (any(clean.startswith(kw) for kw in mots_cles_musique) or
+         any(kw in clean for kw in mots_cles_musique))
+        and not any(clean.startswith(pref) for pref in ignorer_prefixes)
     )
 
     if theme_musique_detecte:
-        print("🟢 Bloc musical déclenché 🎵")
+        # Appel à ta fonction d'extraction des titres populaires
         tendances = obtenir_titres_populaires_france()
         if tendances:
-            message_bot += (
-                "\n🎧 Voici quelques titres populaires à découvrir :\n\n"
-                + "\n".join(tendances)
+            # Formatte le message et on renvoie directement
+            return (
+                "🟢 Here we go! Voici quelques titres populaires à découvrir :\n\n"
+                + "\n".join(f"• {titre}" for titre in tendances)
                 + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
             )
-
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
