@@ -1629,7 +1629,7 @@ def est_reponse_vide_ou_generique(reponse: str) -> bool:
         return True
     # Considérons vides ou très courtes (<3 mots)
     return len(reponse.strip().split()) < 3
-    
+
 def repondre_avec_gpt(question):
     resp = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -1716,21 +1716,20 @@ def trouver_reponse(question: str, model) -> str:
         print("✅ Réponse module spécial")
         return reponse_speciale.strip()
     
-    # 🤖 Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
+    # 🤖 Fallback GPT (OpenAI)
     print("🤖 Appel GPT (fallback)")
     reponse_openai = repondre_openai(question_clean)
 
-    # Si GPT a une vraie réponse (repondre_openai retourne None en cas d’échec)
+    # On considère aussi les apologies comme un échec
     if reponse_openai:
-        return reponse_openai.strip()
+        low = reponse_openai.lower()
+        if not any(kw in low for kw in ["je suis désolé", "je ne peux pas", "je ne suis pas en mesure"]):
+             return reponse_openai.strip()
 
-    # Sinon, on bascule automatiquement sur Google
+    # 🔎 Fallback Google
     print("🔎 Fallback Google")
     recap = "**Récap GPT-3.5 :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
     return recap + rechercher_sur_google(question)
-
-    # ❓ Réponse par défaut
-    return "🤔 Je n'ai pas trouvé de réponse précise."
 
 
 # --- Modules personnalisés (à enrichir) ---
