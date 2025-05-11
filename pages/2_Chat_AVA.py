@@ -1704,7 +1704,7 @@ def trouver_reponse(question: str, model) -> str:
     # Sinon, on bascule automatiquement sur Google
     print("🔎 Fallback Google")
     recap = "**Récap GPT-3.5 :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
-    return recap + rechercher_sur_google(question
+    return recap + rechercher_sur_google(question)
 
     # ❓ Réponse par défaut
     return "🤔 Je n'ai pas trouvé de réponse précise."
