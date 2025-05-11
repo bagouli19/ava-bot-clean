@@ -245,9 +245,9 @@ def gerer_souvenirs_utilisateur(question_raw: str):
     """
     Gère les souvenirs utilisateur en priorité absolue.
     """
-    st.write("🧠 DEBUG: appel gerer_souvenirs_utilisateur")
+    
     q_norm = normalize_text(question_raw)
-    st.write("🧠 DEBUG: q_norm =", q_norm)
+    
 
     profil = get_my_profile()
     if "souvenirs" not in profil:
