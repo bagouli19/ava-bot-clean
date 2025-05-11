@@ -1713,56 +1713,55 @@ def trouver_reponse(question: str, model) -> str:
     with st.spinner("💡 AVA réfléchit... veuillez patienter un instant."):
         time.sleep(0.5)  # Pause de 0.5 seconde pour rendre l'animation visible
 
-    # 🔍 Salutations
-    reponse_salut = repondre_salutation(question_clean)
-    if reponse_salut:
-        return reponse_salut
-    
-    # 🌐 Culture générale (Base de connaissances)
-    if question_clean in base_culture_nettoyee:
-        return base_culture_nettoyee[question_clean]
+        # 🔍 Salutations
+        reponse_salut = repondre_salutation(question_clean)
+        if reponse_salut:
+            return reponse_salut
+        
+        # 🌐 Culture générale (Base de connaissances)
+        if question_clean in base_culture_nettoyee:
+            return base_culture_nettoyee[question_clean]
 
-    # 📚 Base de langage
-    reponse_langage = chercher_reponse_base_langage(question)
-    if reponse_langage:
-        return reponse_langage
+        # 📚 Base de langage
+        reponse_langage = chercher_reponse_base_langage(question)
+        if reponse_langage:
+            return reponse_langage
 
-    # ⚡ Modules spécialisés (prioritaires)
-    reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
-    if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
-        print("✅ Réponse module spécial")
-        return reponse_speciale.strip()
-    
-    # 🤖 Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
-    reponse_openai = repondre_openai(question)
+        # ⚡ Modules spécialisés (prioritaires)
+        reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
+        if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
+            print("✅ Réponse module spécial")
+            return reponse_speciale.strip()
+        
+        # 🤖 Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
+        reponse_openai = repondre_openai(question)
 
-    # Patterns indiquant un échec ou une non-compréhension
-    fail_patterns = [
-        "je suis désolé",
-        "je vous recommande",
-        "je n'ai pas la capacité",
-        "je ne peux pas",
-        "je ne suis pas en mesure",
-        "je ne peux fournir",
-        "je n'ai pas compris",
-        "pouvez reformuler",
-        "vous pouvez reformuler",
-        "je n’ai pas compris",
-        "je n’ai pas",
-        "consultez"
-    ]
+        # Patterns indiquant un échec ou une non-compréhension
+        fail_patterns = [
+            "je suis désolé",
+            "je vous recommande",
+            "je n'ai pas la capacité",
+            "je ne peux pas",
+            "je ne suis pas en mesure",
+            "je ne peux fournir",
+            "je n'ai pas compris",
+            "pouvez reformuler",
+            "vous pouvez reformuler",
+            "je n’ai pas compris",
+            "je n’ai pas",
+            "consultez"
+        ]
 
-    if reponse_openai:
-        low = reponse_openai.lower()
-        # Si aucune des phrases d'excuse / non-compréhension n'apparaît, c’est une vraie réponse
-        if not any(pat in low for pat in fail_patterns):
-            return reponse_openai.strip()
+        if reponse_openai:
+            low = reponse_openai.lower()
+            # Si aucune des phrases d'excuse / non-compréhension n'apparaît, c’est une vraie réponse
+            if not any(pat in low for pat in fail_patterns):
+                return reponse_openai.strip()
 
-    # 🔎 Fallback Google (si aucune réponse satisfaisante)
-    print("🔎 Fallback Google")
-    recap = "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
-    return recap + rechercher_sur_google(question)
-
+        # 🔎 Fallback Google (si aucune réponse satisfaisante)
+        print("🔎 Fallback Google")
+        recap = "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
+        return recap + rechercher_sur_google(question)
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
