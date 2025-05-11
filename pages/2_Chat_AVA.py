@@ -2008,13 +2008,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             ])
         )
                 
-    # --- Bloc Actualités améliorées ---
-    if any(kw in question_clean for kw in ["actualité", "actu", "news"]):
-        try:
-            actus = get_general_news()
-            return format_actus(actus)
-        except Exception as e:
-            return f"⚠️ Impossible de récupérer les actualités : {e}"
 
     # --- Souvenirs dynamiques ---
     if any(kw in question_clean for kw in ["tu te souviens", "tu te rappelles", "qu’est-ce que je t’ai dit"]):
