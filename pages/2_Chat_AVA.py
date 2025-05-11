@@ -1716,20 +1716,33 @@ def trouver_reponse(question: str, model) -> str:
         print("✅ Réponse module spécial")
         return reponse_speciale.strip()
     
-    # 🤖 Fallback GPT (OpenAI)
+    # 🤖 Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
     print("🤖 Appel GPT (fallback)")
-    reponse_openai = repondre_openai(question_clean)
+    reponse_openai = repondre_openai(question)
 
-    # On considère aussi les apologies comme un échec
+    # Liste de fragments indiquant que GPT s'excuse ou renvoie un "non-réponse"
+    fail_patterns = [
+        "je suis désolé",
+        "je vous recommande",
+        "je n'ai pas la capacité",
+        "je ne peux pas",
+        "je ne suis pas en mesure",
+        "je ne peux fournir",
+        "je n'ai pas",
+        "consultez",
+        "je ne suis pas en mesure"
+    ]
+
+    # On considère comme "réponse valide" tout ce qui n'inclut pas ces patterns
     if reponse_openai:
         low = reponse_openai.lower()
-        if not any(kw in low for kw in ["je suis désolé", "je ne peux pas", "je ne suis pas en mesure"]):
-             return reponse_openai.strip()
+        if not any(pat in low for pat in fail_patterns):
+            # GPT a donné une vraie réponse
+            return reponse_openai.strip()
 
     # 🔎 Fallback Google
     print("🔎 Fallback Google")
-    recap = "**Récap GPT-3.5 :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
-    return recap + rechercher_sur_google(question)
+    recap = "**R
 
 
 # --- Modules personnalisés (à enrichir) ---
