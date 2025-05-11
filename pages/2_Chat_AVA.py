@@ -2007,7 +2007,34 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 "🧠 Une journée préparée commence par un coup d’œil aux prévisions."
             ])
         )
-                
+        
+    #heure
+    if any(kw in question_clean.lower() for kw in [
+        "quelle heure", "il est quelle heure", "donne-moi l'heure", 
+        "c'est quoi l'heure", "heure actuelle", 
+        "quelle date", "nous sommes quel jour", 
+        "quelle est la date d'aujourd'hui", "quel jour on est"
+    ]):
+        # Obtenir la date et l'heure actuelles
+        maintenant = datetime.now()
+        heure_actuelle = maintenant.strftime("%H:%M")
+        date_actuelle = maintenant.strftime("%A %d %B %Y")
+
+        # Réponses dynamiques en fonction de la question
+        if any(kw in question_clean.lower() for kw in [
+            "quelle heure", "il est quelle heure", "donne-moi l'heure", 
+            "c'est quoi l'heure", "heure actuelle"
+        ]):
+            return f"🕰️ Il est actuellement **{heure_actuelle}**."
+
+        if any(kw in question_clean.lower() for kw in [
+            "quelle date", "nous sommes quel jour", 
+            "quelle est la date d'aujourd'hui", "quel jour on est"
+        ]):
+            return f"📅 Nous sommes le **{date_actuelle}**."
+
+        # Si les deux (heure + date) sont demandés
+        return f"🕰️ Il est **{heure_actuelle}** et nous sommes le **{date_actuelle}**."            
 
     # --- Souvenirs dynamiques ---
     if any(kw in question_clean for kw in ["tu te souviens", "tu te rappelles", "qu’est-ce que je t’ai dit"]):
