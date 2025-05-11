@@ -17,7 +17,7 @@ sys.path.append(os.path.abspath(".."))
 from knowledge_base.base_de_langage import base_langage
 from modules.openai_utils import repondre_openai
 
-print("Nombre de questions chargées :", len(base_langage))
+
 from huggingface_hub import snapshot_download, hf_hub_download
 
 
@@ -291,7 +291,7 @@ def gerer_souvenirs_utilisateur(question_raw: str):
             st.write("✅ DEBUG rappel souvenir:", cle, contenu)
             return resp
 
-    st.write("❌ DEBUG: aucun souvenir détecté")
+    
     return None
 
 # ───────────────────────────────────────────────────────────────────────
