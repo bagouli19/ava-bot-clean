@@ -1594,35 +1594,6 @@ def get_meteo_ville(city: str) -> str:
     except ValueError:
         return "⚠️ Réponse météo invalide."
 
-# ─── Bloc musical optimisé ───
-def bloc_musical_ava(question_clean):
-
-    # 1) Liste de mots-clés à détecter
-    mots_cles = [
-        "musique", "chanson", "son", "titre", "ecouter", "playlist",
-        "mets-moi une chanson", "propose un son", "donne un son",
-        "j'aimerais ecouter", "je veux ecouter",
-        "as-tu une musique", "tu connais une chanson", "recommande une chanson"
-    ]
-
-    # 2) Préfixes factuels à ignorer
-    ignorer = ["quel ", "quels sont", "quelles sont", "quelle est"]
-
-    # 3) Détection : on cherche un mot-clé, et on ne doit pas commencer par un préfixe à ignorer
-    contains_kw = any(kw in question_clean.lower() for kw in mots_cles)
-    starts_ignore = any(question_clean.lower().startswith(pref) for pref in ignorer)
-    theme_musique = contains_kw and not starts_ignore
-
-    if theme_musique:
-        st.write("🟢 Bloc musical déclenché 🎵")
-        tendances = obtenir_titres_populaires_france()
-        if tendances:
-            return (
-                "🎵 Voici quelques titres populaires à découvrir :\n\n"
-                + "\n".join(f"• {t}" for t in tendances)
-                + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
-            )
-
 
 
 import streamlit as st
@@ -3093,6 +3064,37 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             return f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}"
 
     return message_bot if message_bot else None
+
+    # ─── Bloc musical optimisé ───
+    def bloc_musical_ava(question_clean):
+
+        # 1) Liste de mots-clés à détecter
+        mots_cles = [
+            "musique", "chanson", "son", "titre", "ecouter", "playlist",
+            "mets-moi une chanson", "propose un son", "donne un son",
+            "j'aimerais ecouter", "je veux ecouter",
+            "as-tu une musique", "tu connais une chanson", "recommande une chanson"
+        ]
+
+        # 2) Préfixes factuels à ignorer
+        ignorer = ["quel ", "quels sont", "quelles sont", "quelle est"]
+
+        # 3) Détection : on cherche un mot-clé, et on ne doit pas commencer par un préfixe à ignorer
+        contains_kw = any(kw in question_clean.lower() for kw in mots_cles)
+        starts_ignore = any(question_clean.lower().startswith(pref) for pref in ignorer)
+        theme_musique = contains_kw and not starts_ignore
+
+       if theme_musique:
+            st.write("🟢 Bloc musical déclenché 🎵")
+            tendances = obtenir_titres_populaires_france()
+            if tendances:
+                return (
+                    "🎵 Voici quelques titres populaires à découvrir :\n\n"
+                    + "\n".join(f"• {t}" for t in tendances)
+                    + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
+                )
+
+        return "❌ Désolé, je n'ai pas trouvé de titres musicaux pour le moment."
 
 
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
