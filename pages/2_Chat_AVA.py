@@ -1594,44 +1594,6 @@ def get_meteo_ville(city: str) -> str:
     except ValueError:
         return "⚠️ Réponse météo invalide."
 
-from sentence_transformers import SentenceTransformer, util
-import torch
-import importlib
-
-# Chargement dynamique de la base de langage en tant que module
-base_langage = importlib.import_module('knowledge_base.base_de_langage')
-
-# Vérification que la base de langage est bien un dictionnaire
-if not isinstance(base_langage.base_de_langage, dict):
-    raise ValueError("❌ Erreur : La base de langage doit être un dictionnaire.")
-
-# Chargement du modèle BERT pour les similarités
-modele_bert = SentenceTransformer('sentence-transformers/bert-base-nli-mean-tokens')
-
-# Extraction des questions et réponses
-questions_base = list(base_langage.base_de_langage.keys())
-reponses_base = list(base_langage.base_de_langage.values())
-
-# Pré-calcul des embeddings pour toutes les questions
-embeddings_base = modele_bert.encode(questions_base, convert_to_tensor=True, normalize_embeddings=True)
-
-# Fonction de recherche sémantique optimisée
-def trouver_reponse_semantique(question):
-    question_embedding = modele_bert.encode(question, convert_to_tensor=True, normalize_embeddings=True)
-    similarites = util.pytorch_cos_sim(question_embedding, embeddings_base)
-    scores, indices = torch.topk(similarites, k=3)
-
-    # Seuil de similarité
-    seuil = 0.65
-
-    for i in range(len(scores[0])):
-        if scores[0][i] >= seuil:
-            question_proche = questions_base[indices[0][i]]
-            return reponses_base[indices[0][i]]
-
-    return "Désolé, je n'ai pas trouvé de réponse pertinente dans ma base de connaissances."
-
-
 import streamlit as st
 import openai
 import difflib
