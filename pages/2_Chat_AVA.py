@@ -1772,9 +1772,6 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
-    
-    clean_norm = normalize(question_clean)
-    clean_final = clean_text(clean_norm)
 
      # ✅ Gestion des souvenirs utilisateur (nouvelle priorité)
     print("🧠 Appel de la fonction gerer_souvenirs_utilisateur (dans gerer_modules_speciaux)")  # ➡️ LOG TEST
