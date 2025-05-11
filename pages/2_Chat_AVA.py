@@ -1602,26 +1602,28 @@ import importlib
 base_langage = importlib.import_module('knowledge_base.base_de_langage')
 
 # Chargement du modèle BERT pour les similarités
-modele_bert = SentenceTransformer('all-MiniLM-L6-v2')
+modele_bert = SentenceTransformer('sentence-transformers/bert-base-nli-mean-tokens')
 
 # Extraction des questions et réponses
 questions_base = list(base_langage.base_de_langage.keys())
 reponses_base = list(base_langage.base_de_langage.values())
 
 # Pré-calcul des embeddings pour toutes les questions
-embeddings_base = modele_bert.encode(questions_base, convert_to_tensor=True)
+embeddings_base = modele_bert.encode(questions_base, convert_to_tensor=True, normalize_embeddings=True)
 
 # Fonction de recherche sémantique optimisée
 def trouver_reponse_semantique(question):
-    question_embedding = modele_bert.encode(question, convert_to_tensor=True)
+    question_embedding = modele_bert.encode(question, convert_to_tensor=True, normalize_embeddings=True)
     similarites = util.pytorch_cos_sim(question_embedding, embeddings_base)
-    scores, indices = torch.topk(similarites, k=1)
+    scores, indices = torch.topk(similarites, k=3)
 
     # Seuil de similarité
-    seuil = 0.75
-    if scores[0][0] >= seuil:
-        question_proche = questions_base[indices[0][0]]
-        return reponses_base[indices[0][0]]
+    seuil = 0.65
+
+    for i in range(len(scores[0])):
+        if scores[0][i] >= seuil:
+            question_proche = questions_base[indices[0][i]]
+            return reponses_base[indices[0][i]]
 
     return "Désolé, je n'ai pas trouvé de réponse pertinente dans ma base de connaissances."
 
