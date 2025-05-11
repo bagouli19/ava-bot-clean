@@ -3225,3 +3225,9 @@ if st.sidebar.button("🧹 Vider les rappels"):
     set_my_profile(profil)
     st.sidebar.success("✅ Rappels supprimés !")
 
+# Bouton pour effacer la conversation
+if st.button("🗑️ Effacer la conversation"):
+    # Réinitialiser l'historique de conversation
+    if "historique_conversation" in st.session_state:
+        st.session_state.historique_conversation = []
+    st.experimental_rerun()  # Recharge la page pour actualiser l'affichage
