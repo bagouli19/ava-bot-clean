@@ -1462,23 +1462,7 @@ def humeur_du_jour():
     else:
         return "🌙 En mode nocturne, mais toujours connectée pour vous aider !"
 
-# Accueil selon l'heure
-heure_actuelle = datetime.now().hour
-if heure_actuelle < 12:
-    accueil = "🌞 Bonjour ! Prêt(e) pour une nouvelle journée de trading ?"
-elif heure_actuelle < 18:
-    accueil = "☀️ Bon après‑midi ! Besoin d’une analyse ou d’un conseil ?"
-else:
-    accueil = "🌙 Bonsoir ! On termine la journée avec une petite analyse ?"
 
-col1, col2 = st.columns([0.15, 0.85])
-with col1:
-    st.image("assets/ava_logo.png", width=60)
-with col2:
-    st.markdown(
-        f"<h1 style='margin-top: 10px;'>AVA - Chat IA</h1><p>{accueil}</p>",
-        unsafe_allow_html=True
-    )
 
 st.markdown(
     f"<p style='font-style: italic;'>{humeur_du_jour()}</p>",
