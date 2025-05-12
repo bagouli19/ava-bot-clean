@@ -1453,14 +1453,10 @@ image_path = os.path.join("assets", "ava_logo.png")
 # Vérification que l'image existe
 if os.path.exists(image_path):
     image = Image.open(image_path)
-    st.markdown(
-        """
-        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
-            <img src="data:image/png;base64,{}" style="width: 120px; height: auto;"/>
-        </div>
-        """.format(st.image(image, use_column_width=False)),
-        unsafe_allow_html=True
-    )
+    # Affichage de l'image centrée en haut avec une taille fixe (120px)
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+    st.image(image, width=120)  # Largeur fixée à 120px
+    st.markdown("</div>", unsafe_allow_html=True)
 else:
     st.warning("L'image AVA n'a pas été trouvée. Assure-toi qu'elle est bien placée dans le dossier 'assets'.")
 
