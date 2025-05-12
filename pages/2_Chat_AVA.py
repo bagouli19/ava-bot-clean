@@ -1453,13 +1453,13 @@ image_path = os.path.join("assets", "ava_logo.png")
 # Vérification que l'image existe
 if os.path.exists(image_path):
     image = Image.open(image_path)
-    # Affichage de l'image centrée en haut avec une taille ajustée
+    # Affichage de l'image centrée en haut avec une taille ajustée (largeur 100px)
     st.markdown(
-        """
-        <div style="text-align: center;">
-            <img src="data:image/png;base64,{}" alt="Logo AVA" style="width: 150px; height: auto;">
+        f"""
+        <div style="display: flex; justify-content: center;">
+            <img src="data:image/png;base64,{st.image(image, use_column_width=False)}" alt="Logo AVA" width="100" style="max-width: 100px; height: auto;">
         </div>
-        """.format(st.image(image, use_column_width=False)),
+        """,
         unsafe_allow_html=True
     )
 else:
