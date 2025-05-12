@@ -1447,12 +1447,21 @@ def style_reponse_ava(texte: str) -> str:
     
     return texte
 
-# Chargement de l'image AVA
-image_path = "C:/Users/metis/AVA3_platform/ava-bot-clean/assets/ava_logo.png"
-image = Image.open(image_path)
+# Chemin relatif de l'image (assure-toi que l'image est dans ce dossier)
+image_path = os.path.join("assets", "ava_logo.png")
 
-# Affichage de l'image en haut de la page, centrée
-st.markdown("<div style='text-align: center;'><img src='data:image/png;base64,{}' width='200' alt='Logo AVA'></div>".format(st.image(image, use_column_width=False)), unsafe_allow_html=True)
+# Vérification que l'image existe
+if os.path.exists(image_path):
+    image = Image.open(image_path)
+    # Affichage de l'image centrée en haut
+    st.markdown(
+        "<div style='text-align: center;'><img src='data:image/png;base64,{}' width='200' alt='Logo AVA'></div>".format(
+            st.image(image, use_column_width=False)
+        ),
+        unsafe_allow_html=True
+    )
+else:
+    st.warning("L'image AVA n'a pas été trouvée. Assure-toi qu'elle est bien placée dans le dossier 'assets'.")
 
 # Fonction humeur dynamique selon l'heure
 def humeur_du_jour():
