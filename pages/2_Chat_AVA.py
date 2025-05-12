@@ -3003,3 +3003,9 @@ if st.sidebar.button("🧹 Vider les rappels"):
     set_my_profile(profil)
     st.sidebar.success("✅ Rappels supprimés !")
 
+# Chargement de l'image AVA
+image_path = "C:/Users/metis/AVA3_platform/ava-bot-clean/assets/ava_logo.png"
+image = Image.open(image_path)
+
+# Affichage de l'image en haut de la page, centrée
+st.markdown("<div style='text-align: center;'><img src='data:image/png;base64,{}' width='200' alt='Logo AVA'></div>".format(st.image(image, use_column_width=False)), unsafe_allow_html=True)
