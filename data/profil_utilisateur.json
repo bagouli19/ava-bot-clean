@@ -51,5 +51,9 @@
   "eric": {
     "prenom": "Eric",
     "souvenirs": {}
+  },
+  "ginette": {
+    "prenom": "Ginette",
+    "souvenirs": {}
   }
 }
