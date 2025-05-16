@@ -2098,6 +2098,610 @@ base_langage = {
 
     "Les berserkers vikings étaient-ils réels ?": [
         "Oui, les berserkers étaient des guerriers vikings légendaires connus pour leur férocité en combat. Ils entraient dans une transe de rage incontrôlable, se battant avec une force surhumaine et une insensibilité à la douleur. Certains pensent qu'ils utilisaient des champignons hallucinogènes pour atteindre cet état, mais cela reste une théorie."
+    ],
+
+    "Pourquoi les Vikings pratiquaient-ils les funérailles en bateau ?": [
+        "Les Vikings croyaient que les bateaux pouvaient transporter les âmes des défunts vers l'au-delà. Les funérailles en bateau, que ce soit par enterrement ou par crémation sur un navire enflammé, étaient un symbole de prestige. Les grands chefs et guerriers étaient souvent enterrés avec des armes, des bijoux et même des esclaves pour les accompagner dans l'au-delà."
+    ],
+
+    "Qu'est-ce que le Ragnarök pour les Vikings ?": [
+        "Le Ragnarök est la fin du monde dans la mythologie viking. Une grande bataille où les dieux d'Asgard, menés par Odin et Thor, combattent les géants et les créatures du chaos, comme le loup Fenrir et le serpent Jormungandr. Bien que les dieux périssent, un nouveau monde émerge de la destruction, symbolisant la renaissance et l'espoir."
+    ],
+
+    "Les berserkers vikings étaient-ils réels ?": [
+        "Oui, les berserkers étaient des guerriers vikings légendaires connus pour leur férocité en combat. Ils entraient dans une transe de rage incontrôlable, se battant avec une force surhumaine et une insensibilité à la douleur. Certains pensent qu'ils utilisaient des champignons hallucinogènes pour atteindre cet état, mais cela reste une théorie."
+    ],
+
+    "Quel est le mythe de la boîte de Pandore ?": [
+        "Dans la mythologie grecque, la boîte de Pandore était un cadeau des dieux à Pandore, la première femme mortelle. Par curiosité, elle l’a ouverte, libérant tous les maux du monde (maladies, souffrances). Seule l'Espérance est restée enfermée. C’est une métaphore sur la curiosité humaine et ses conséquences."
+    ],
+
+    "Pourquoi les anciens Égyptiens momifiaient-ils leurs morts ?": [
+        "Les anciens Égyptiens momifiaient leurs morts pour préserver les corps dans l'au-delà. Ils croyaient que l'âme pouvait revenir dans le corps si celui-ci était intact. C'était aussi un signe de statut pour les pharaons et les nobles."
+    ],
+
+    "Qui étaient les samouraïs ?": [
+        "Les samouraïs étaient des guerriers nobles du Japon féodal, connus pour leur code de l'honneur, le bushido. Ils étaient fidèles à leurs seigneurs (daimyos) et possédaient une grande maîtrise des arts martiaux."
+    ],
+
+    "Qu’est-ce que le labyrinthe du Minotaure ?": [
+        "Le labyrinthe du Minotaure est une légende grecque. C’était un labyrinthe complexe construit par Dédale pour le roi Minos de Crète, où était enfermé le Minotaure, une créature mi-homme, mi-taureau. Thésée, héros grec, est parvenu à le tuer grâce à un fil donné par Ariane."
+    ],
+
+    "Qui est Zeus dans la mythologie grecque ?": [
+        "Zeus est le roi des dieux dans la mythologie grecque, maître du ciel et de la foudre. Il règne sur l'Olympe et est connu pour ses nombreuses aventures."
+    ],
+
+    "Qu'est-ce que les douze travaux d'Hercule ?": [
+        "Les douze travaux d'Hercule sont une série d'épreuves imposées au héros grec Hercule par le roi Eurysthée. Parmi eux, il y a l'Hydre de Lerne, le Lion de Némée et la capture de Cerbère."
+    ],
+
+    "Qui était Poseidon ?": [
+        "Poseidon est le dieu des mers et des océans dans la mythologie grecque. Frère de Zeus et d'Hadès, il contrôle les tempêtes, les séismes et les créatures marines."
+    ],
+
+    "Que symbolise le phenix dans la mythologie égyptienne ?": [
+        "Le phenix est un symbole de renaissance dans la mythologie égyptienne. C'est un oiseau mythique qui renait de ses cendres après s'être consumé."
+    ],
+
+    "Qu'est-ce que l'Iliade ?": [
+        "L'Iliade est une épopée grecque attribuée à Homère. Elle raconte les derniers jours de la guerre de Troie, notamment les exploits d'Achille."
+    ],
+
+    "Qui est Anubis dans la mythologie égyptienne ?": [
+        "Anubis est le dieu des morts et de la momification dans la mythologie égyptienne. Représenté avec une tête de chacal, il guide les âmes des défunts dans l'au-delà."
+    ],
+
+    "Que représente l'arbre Yggdrasil dans la mythologie nordique ?": [
+        "Yggdrasil est l'arbre-monde dans la mythologie nordique. Il relie les neuf mondes, et ses racines plongent dans les royaumes des dieux, des géants et des morts."
+    ],
+
+    "Qu'est-ce que le Sphinx égyptien ?": [
+        "Le Sphinx égyptien est une créature légendaire avec un corps de lion et une tête humaine. Il est gardien des temples et symbolise la puissance et la sagesse."
+    ],
+
+    "Qu'est-ce que l'Hadès dans la mythologie grecque ?": [
+        "Hadès est le dieu des Enfers dans la mythologie grecque. Il règne sur le royaume des morts et possède un casque d'invisibilité."
+    ],
+
+    "Qui était Héra dans la mythologie grecque ?": [
+        "Héra est la déesse du mariage et de la famille. Elle est l'épouse de Zeus et est souvent représentée avec un paon, son symbole."
+    ],
+
+    "Qu'est-ce que le Styx dans la mythologie grecque ?": [
+        "Le Styx est l'un des fleuves des Enfers dans la mythologie grecque. Les âmes des défunts doivent le traverser avec l'aide de Charon, le passeur."
+    ],
+
+    "Qui est Osiris dans la mythologie égyptienne ?": [
+       "Osiris est le dieu de la résurrection et des morts dans la mythologie égyptienne. Il est souvent représenté avec une peau verte, symbole de la fertilité et de la vie éternelle."
+    ],
+
+    "Qu'est-ce que la pesée du cœur dans l'Égypte antique ?": [
+        "La pesée du cœur est un rituel où le cœur du défunt est comparé à une plume de Maât, symbole de la justice. Si le cœur est plus léger, l'âme accède à l'au-delà."
+    ],
+
+    "Qu'est-ce que le Livre des Morts égyptien ?": [
+        "Le Livre des Morts est un recueil de formules magiques et de prières qui guide les âmes des défunts dans l'au-delà, assurant leur protection et leur passage en paix."
+    ],
+
+    "Qu'est-ce que le mythe d'Isis et Osiris ?": [
+        "Le mythe d'Isis et Osiris raconte l'histoire de l'amour et de la trahison. Osiris, tué par son frère Seth, est ressuscité par sa femme Isis, déesse de la magie et de la maternité."
+    ],
+
+    "Qu'est-ce que la bataille de Marathon ?": [
+        "La bataille de Marathon, en 490 avant J.-C., oppose les Athéniens aux Perses. La victoire des Grecs a inspiré la course du marathon."
+    ],
+
+    "Qui étaient les Spartiates aux Thermopyles ?": [
+        "Les Spartiates, menés par Léonidas, ont résisté aux Perses de Xerxès lors de la bataille des Thermopyles en 480 avant J.-C."
+    ],
+
+    "Qu'est-ce que la guerre de Troie ?": [
+        "La guerre de Troie est un conflit mythique entre les Grecs et les Troyens, raconté dans l'Iliade d'Homère."
+    ],
+
+    "Qu'est-ce que la quête du Graal ?": [
+        "La quête du Graal est une légende médiévale où les chevaliers de la Table Ronde, comme Lancelot et Perceval, cherchent la coupe sacrée."
+    ],
+
+    "Qu'est-ce que l'épée Excalibur ?": [
+        "Excalibur est l'épée légendaire du roi Arthur, symbole de royauté et de pouvoir."
+    ],
+
+    "Qui était Jeanne d'Arc ?": [
+        "Jeanne d'Arc était une héroïne française qui a conduit les troupes françaises contre les Anglais pendant la guerre de Cent Ans."
+    ],
+
+    "Qu'est-ce que la guerre des Roses ?": [
+        "La guerre des Roses est un conflit de succession en Angleterre entre les maisons de Lancastre et d'York (1455-1487)."
+    ],
+
+    "Qu'est-ce que la bataille d'Hastings ?": [
+        "La bataille d'Hastings, en 1066, voit la victoire de Guillaume le Conquérant sur Harold II, marquant le début de la domination normande en Angleterre."
+    ],
+
+    "Qu'est-ce que la bataille de Gaugamèles ?": [
+        "La bataille de Gaugamèles, en 331 avant J.-C., voit la victoire d'Alexandre le Grand sur l'empire perse de Darius III."
+    ],
+
+    "Qu'est-ce que la bataille d'Actium ?": [
+        "La bataille d'Actium, en 31 avant J.-C., oppose Octave (futur Auguste) à Marc Antoine et Cléopâtre. Elle marque la fin de la République romaine."
+    ],
+
+    "Qu'est-ce que la bataille de Waterloo ?": [
+        "La bataille de Waterloo, en 1815, voit la défaite de Napoléon Bonaparte face à une coalition dirigée par les Britanniques et les Prussiens."
+    ],
+
+    "Qu'est-ce que la bataille de Bouvines ?": [
+        "La bataille de Bouvines, en 1214, est une victoire du roi de France Philippe Auguste contre une coalition de princes européens."
+    ],
+
+    "Qu'est-ce que la bataille de Verdun ?": [
+        "La bataille de Verdun, en 1916, est l'une des plus longues et sanglantes de la Première Guerre mondiale, opposant la France à l'Allemagne."
+    ],
+
+    "Qu'est-ce que la bataille de Stalingrad ?": [
+        "La bataille de Stalingrad, en 1942-1943, est un tournant de la Seconde Guerre mondiale où les Soviétiques repoussent les forces nazies."
+    ],
+
+    "Qu'est-ce que la bataille de Midway ?": [
+        "La bataille de Midway, en 1942, est une victoire décisive de la marine américaine contre les Japonais dans le Pacifique."
+    ],
+
+    "Qu'est-ce que le trésor des Templiers ?": [
+        "Le trésor des Templiers est un mystère historique. On dit qu'il s'agit d'un immense butin accumulé par les chevaliers Templiers, caché quelque part après la dissolution de l'ordre en 1312."
+    ],
+
+    "Qu'est-ce que le monstre du Loch Ness ?": [
+        "Le monstre du Loch Ness, surnommé Nessie, est une créature légendaire qui vivrait dans le lac écossais de Loch Ness. Des témoignages et des photos mystérieuses alimentent la légende depuis des siècles."
+    ],
+
+    "Qu'est-ce que l'Atlantide ?": [
+        "L'Atlantide est une cité légendaire décrite par Platon comme une civilisation avancée engloutie sous les eaux. Elle est souvent considérée comme un symbole de grandeur perdue."
+    ],
+
+    "Qui était Vlad l'Empaleur ?": [
+        "Vlad l'Empaleur, aussi connu sous le nom de Vlad Dracula, était un prince de Valachie au XVe siècle, célèbre pour sa cruauté et ayant inspiré la légende de Dracula."
+    ],
+
+    "Qu'est-ce que la malédiction de Toutânkhamon ?": [
+        "La malédiction de Toutânkhamon est une légende selon laquelle ceux qui ont ouvert le tombeau du pharaon en 1922 ont été victimes de malheurs mystérieux."
+    ],
+
+    "Qu'est-ce que l'Alchimie ?": [
+        "L'alchimie est une pratique ancienne cherchant à transformer les métaux en or et à découvrir l'élixir d'immortalité. Elle est souvent associée aux légendes mystiques."
+    ],
+
+    "Qu'est-ce que la lance du destin ?": [
+        "La lance du destin est une relique légendaire qui aurait transpercé le flanc de Jésus-Christ lors de la crucifixion. Elle est entourée de mythes de pouvoir et de malédiction."
+    ],
+
+    "Qu'est-ce que le Triangle des Bermudes ?": [
+        "Le Triangle des Bermudes est une zone de l'océan Atlantique réputée pour la disparition mystérieuse de navires et d'avions."
+    ],
+
+    "Qu'est-ce que la légende du Hollandais Volant ?": [
+        "Le Hollandais Volant est un navire fantôme légendaire qui hanterait les mers, condamné à errer pour l'éternité."
+    ],
+
+    "Qu'est-ce que la bête du Gévaudan ?": [
+        "La bête du Gévaudan est une créature légendaire qui aurait terrorisé la région du Gévaudan en France au XVIIIe siècle, tuant de nombreux villageois."
+    ],
+
+    "Qu'est-ce que le Yéti ?": [
+        "Le Yéti, aussi appelé l'Abominable Homme des Neiges, est une créature légendaire qui vivrait dans les montagnes de l'Himalaya."
+    ],
+
+    "Qu'est-ce que la licorne ?": [
+        "La licorne est une créature mythique représentée comme un cheval blanc avec une corne unique sur le front, symbole de pureté et de magie."
+    ],
+
+    "Qui était la Dame Blanche ?": [
+        "La Dame Blanche est un fantôme légendaire présent dans de nombreuses cultures, souvent associé aux apparitions mystérieuses sur les routes."
+    ],
+
+    "Qu'est-ce que les géants de l'île de Pâques ?": [
+        "Les géants de l'île de Pâques sont les célèbres statues Moaï, sculptées par le peuple Rapa Nui, qui veillent silencieusement sur l'île."
+    ],
+
+    "Qu'est-ce que le fantôme de l'Opéra ?": [
+        "Le fantôme de l'Opéra est une légende parisienne sur un mystérieux personnage masqué qui hanterait les couloirs de l'Opéra Garnier."
+    ],
+
+    "Qu'est-ce que la forêt de Brocéliande ?": [
+        "La forêt de Brocéliande est une forêt légendaire de Bretagne, liée aux légendes du roi Arthur et de Merlin l'Enchanteur."
+    ],
+
+    "Qui est le Kraken ?": [
+        "Le Kraken est une créature légendaire des mers, souvent décrite comme un gigantesque calamar capable de dévorer des navires entiers."
+    ],
+
+    "Qu'est-ce que le Golem de Prague ?": [
+        "Le Golem de Prague est une créature de la tradition juive, un géant d'argile animé par la magie pour protéger la communauté juive de Prague."
+    ],
+
+    "Qu'est-ce que les sirènes ?": [
+        "Les sirènes sont des créatures mythiques mi-femmes, mi-poissons, qui séduisaient les marins par leur chant, les attirant vers une mort certaine."
+    ],
+
+    "Qu'est-ce que le Phénix ?": [
+        "Le Phénix est un oiseau légendaire qui renaît de ses cendres après s'être consumé par les flammes, symbole d'immortalité et de renouveau."
+    ],
+
+    "Qu'est-ce que le Basilic ?": [
+        "Le Basilic est une créature légendaire, souvent décrite comme un serpent ou un coq avec un regard mortel capable de pétrifier ses victimes."
+    ],
+
+    "Qu'est-ce que la Chimère ?": [
+        "La Chimère est une créature mythologique hybride, composée de plusieurs animaux : un lion, une chèvre et un serpent."
+    ],
+
+    "Qu'est-ce que le Dragon de Komodo ?": [
+        "Le Dragon de Komodo est un grand lézard carnivore réel vivant en Indonésie, souvent confondu avec les dragons légendaires."
+    ],
+
+    "Qu'est-ce que l'Hydre de Lerne ?": [
+        "L'Hydre de Lerne est une créature mythologique à plusieurs têtes qui repoussaient lorsque l'une était coupée. Elle a été vaincue par Hercule."
+    ],
+
+    "Qu'est-ce que les Harpies ?": [
+        "Les Harpies sont des créatures mythologiques mi-femmes, mi-oiseaux, qui tourmentaient les âmes des damnés."
+    ],
+
+    "Qu'est-ce que les griffons ?": [
+        "Les Griffons sont des créatures légendaires mi-aigles, mi-lions, symbolisant la vigilance et la force."
+    ],
+
+    "Qu'est-ce que le Minotaure ?": [
+        "Le Minotaure est une créature mythologique mi-homme, mi-taureau, enfermé dans le labyrinthe de Crète et vaincu par Thésée."
+    ],
+
+    "Qu'est-ce qu'un poltergeist ?": [
+        "Un poltergeist est un esprit frappeur connu pour provoquer des bruits, des objets en mouvement ou des phénomènes inexplicables dans une maison."
+    ],
+
+    "Qu'est-ce qu'une maison hantée ?": [
+        "Une maison hantée est un lieu où des phénomènes surnaturels se produiraient, comme des apparitions de fantômes, des bruits étranges ou des objets qui bougent tout seuls."
+    ],
+
+    "Qu'est-ce qu'une possession démoniaque ?": [
+        "Une possession démoniaque est un phénomène où une entité maléfique prendrait le contrôle du corps d'une personne, nécessitant souvent un exorcisme pour la libérer."
+    ],
+
+    "Qu'est-ce qu'un exorcisme ?": [
+        "Un exorcisme est un rituel religieux visant à expulser les démons ou les esprits maléfiques d'une personne ou d'un lieu."
+    ],
+
+    "Qu'est-ce que les esprits frappeurs ?": [
+        "Les esprits frappeurs, ou poltergeists, sont des entités connues pour causer des bruits et des perturbations physiques dans les maisons."
+    ],
+
+    "Qu'est-ce qu'un Ouija ?": [
+        "Le Ouija est une planche utilisée pour communiquer avec les esprits. Elle comporte des lettres, des chiffres et des mots 'oui' et 'non'."
+    ],
+
+    "Qu'est-ce que les ombres noires ?": [
+        "Les ombres noires sont des apparitions spectrales sombres, souvent perçues comme des silhouettes qui se déplacent rapidement."
+    ],
+
+    "Qu'est-ce que la paralysie du sommeil ?": [
+        "La paralysie du sommeil est un phénomène où une personne est consciente mais incapable de bouger, souvent accompagnée de sensations de présence effrayantes."
+    ],
+
+    "Qu'est-ce que la communication spirite ?": [
+        "La communication spirite est une pratique consistant à entrer en contact avec les âmes des défunts, souvent par le biais de médiums ou de planches Ouija."
+    ],
+
+    "Qu'est-ce qu'une expérience de mort imminente (EMI) ?": [
+        "Une EMI est une expérience vécue par des personnes proches de la mort, souvent décrite comme une lumière au bout d'un tunnel ou des sensations de paix."
+    ],
+
+    "Qu'est-ce qu'une apparition spectrale ?": [
+        "Une apparition spectrale est une manifestation visuelle d'un esprit ou d'une entité surnaturelle, souvent perçue comme une silhouette translucide ou lumineuse."
+    ],
+
+    "Quels sont les lieux hantés les plus célèbres ?": [
+        "Les lieux hantés les plus célèbres incluent la maison de Winchester, le château d'Edimbourg, l'hôtel Stanley (inspiration de Shining), et la forêt d'Aokigahara au Japon."
+    ],
+
+    "Qu'est-ce qu'un démon ?": [
+        "Un démon est une entité surnaturelle généralement maléfique, présente dans de nombreuses religions et cultures à travers le monde."
+    ],
+
+    "Quels sont les démons célèbres ?": [
+        "Les démons célèbres incluent Baphomet, Lilith, Asmodée, Belzébuth, Pazuzu, et Baal, souvent associés à des mythes et légendes de différentes cultures."
+    ],
+
+    "Qu'est-ce qu'un exorcisme ?": [
+        "Un exorcisme est un rituel religieux visant à expulser les démons ou les esprits maléfiques d'une personne ou d'un lieu."
+    ],
+
+    "Qu'est-ce que les esprits frappeurs ?": [
+        "Les esprits frappeurs, ou poltergeists, sont des entités connues pour causer des bruits et des perturbations physiques dans les maisons."
+    ],
+
+    "Qu'est-ce qu'un rituel de protection spirituelle ?": [
+        "Un rituel de protection spirituelle est une pratique visant à se protéger des esprits ou des énergies négatives, utilisant souvent des prières, des symboles ou des objets bénis."
+    ],
+
+    "Qu'est-ce qu'un pacte démoniaque ?": [
+        "Un pacte démoniaque est un accord supposé entre un individu et une entité démoniaque, souvent en échange de pouvoirs ou de richesses."
+    ],
+
+    "Qu'est-ce qu'une apparition spectrale ?": [
+        "Une apparition spectrale est une manifestation visuelle d'un esprit ou d'une entité surnaturelle, souvent perçue comme une silhouette translucide ou lumineuse."
+    ],
+
+    "Quels sont les lieux hantés les plus célèbres ?": [
+        "Les lieux hantés les plus célèbres incluent la maison de Winchester, le château d'Edimbourg, l'hôtel Stanley (inspiration de Shining), et la forêt d'Aokigahara au Japon."
+    ],
+
+    "Qu'est-ce qu'un démon ?": [
+        "Un démon est une entité surnaturelle généralement maléfique, présente dans de nombreuses religions et cultures à travers le monde."
+    ],
+
+    "Quels sont les démons célèbres ?": [
+        "Les démons célèbres incluent Baphomet, Lilith, Asmodée, Belzébuth, Pazuzu, et Baal, souvent associés à des mythes et légendes de différentes cultures."
+    ],
+
+    "Qu'est-ce qu'un exorcisme ?": [
+        "Un exorcisme est un rituel religieux visant à expulser les démons ou les esprits maléfiques d'une personne ou d'un lieu."
+    ],
+
+    "Qu'est-ce que les esprits frappeurs ?": [
+        "Les esprits frappeurs, ou poltergeists, sont des entités connues pour causer des bruits et des perturbations physiques dans les maisons."
+    ],
+
+    "Qu'est-ce qu'un rituel de protection spirituelle ?": [
+        "Un rituel de protection spirituelle est une pratique visant à se protéger des esprits ou des énergies négatives, utilisant souvent des prières, des symboles ou des objets bénis."
+    ],
+
+    "Qu'est-ce qu'un pacte démoniaque ?": [
+        "Un pacte démoniaque est un accord supposé entre un individu et une entité démoniaque, souvent en échange de pouvoirs ou de richesses."
+    ],
+
+    "Qu'est-ce qu'un rituel occulte ?": [
+        "Un rituel occulte est une cérémonie ou une pratique visant à invoquer des forces surnaturelles, souvent associées à la magie noire ou à la sorcellerie."
+    ],
+
+    "Quels sont les objets maudits les plus célèbres ?": [
+        "Les objets maudits célèbres incluent la boîte de Pandore, la poupée Annabelle, le diamant Hope, et le miroir de la plantation Myrtles."
+    ],
+
+    "Qu'est-ce que la sorcellerie ?": [
+        "La sorcellerie est l'utilisation de pouvoirs surnaturels, de sorts et de rituels pour influencer le monde, souvent liée à la magie noire ou blanche."
+    ],
+
+    "Qu'est-ce que la magie noire ?": [
+        "La magie noire est une forme de magie utilisant des forces maléfiques pour causer du tort ou manipuler les autres, souvent liée aux invocations démoniaques."
+    ],
+
+    "Qu'est-ce qu'une invocation démoniaque ?": [
+        "Une invocation démoniaque est un rituel par lequel une personne appelle un démon ou une entité maléfique, souvent avec des symboles ou des incantations spécifiques."
+    ],
+
+    "Quels sont les livres occultes les plus connus ?": [
+        "Les livres occultes célèbres incluent le Necronomicon, le Livre d'Enoch, les Clavicules de Salomon, et le Grand Grimoire."
+    ],
+
+    "Qu'est-ce qu'une malédiction familiale ?": [
+        "Une malédiction familiale est une croyance selon laquelle une famille est maudite sur plusieurs générations, souvent en raison d'une faute passée."
+    ],
+
+    "Comment reconnaître une maison maudite ?": [
+        "Une maison maudite se caractérise par des phénomènes inexplicables, des malheurs récurrents, des maladies soudaines ou des apparitions mystérieuses."
+    ],
+
+    "Qu'est-ce qu'une étoile ?": [
+        "Une étoile est une boule de gaz en fusion, principalement composée d'hydrogène et d'hélium, qui produit de l'énergie par fusion nucléaire en son cœur."
+    ],
+
+    "Qu'est-ce qu'un trou noir ?": [
+        "Un trou noir est une région de l'espace où la gravité est si forte que rien, pas même la lumière, ne peut s'en échapper."
+    ],
+
+    "Comment se forment les étoiles ?": [
+        "Les étoiles se forment à partir de nuages de gaz et de poussières appelés nébuleuses, qui s'effondrent sous l'effet de la gravité jusqu'à ce que la fusion nucléaire commence."
+    ],
+
+    "Qu'est-ce que l'univers observable ?": [
+        "L'univers observable est la partie de l'univers que nous pouvons voir, limitée par la vitesse de la lumière et l'âge de l'univers, soit environ 93 milliards d'années-lumière de diamètre."
+    ],
+
+    "Qu'est-ce que la théorie du Big Bang ?": [
+        "La théorie du Big Bang est l'idée que l'univers a commencé par une énorme explosion il y a environ 13,8 milliards d'années, à partir d'un point extrêmement dense et chaud."
+    ],
+
+    "Qu'est-ce que la matière noire ?": [
+        "La matière noire est une forme de matière invisible qui constitue environ 27% de l'univers, mais qui n'émet ni n'absorbe de lumière, détectée uniquement par ses effets gravitationnels."
+    ],
+
+    "Qu'est-ce que l'énergie sombre ?": [
+        "L'énergie sombre est une force mystérieuse qui accélère l'expansion de l'univers, représentant environ 68% de l'énergie totale de l'univers."
+    ],
+
+    "Qu'est-ce qu'une galaxie ?": [
+        "Une galaxie est un vaste ensemble d'étoiles, de gaz, de poussières et de matière noire, liés par la gravité. La Voie lactée est notre galaxie."
+    ],
+
+    "Combien y a-t-il de planètes dans notre système solaire ?": [
+        "Il y a huit planètes dans notre système solaire : Mercure, Vénus, Terre, Mars, Jupiter, Saturne, Uranus et Neptune."
+    ],
+
+    "Qu'est-ce qu'une supernova ?": [
+        "Une supernova est une explosion massive d'une étoile en fin de vie, libérant une immense quantité d'énergie et de matière dans l'espace."
+    ],
+
+    "Qu'est-ce qu'une comète ?": [
+        "Une comète est un petit corps céleste composé de glace, de poussière et de gaz, qui forme une queue brillante lorsqu'elle s'approche du Soleil."
+    ],
+
+    "Qu'est-ce qu'une éclipse solaire ?": [
+        "Une éclipse solaire se produit lorsque la Lune passe entre la Terre et le Soleil, bloquant temporairement la lumière du Soleil."
+    ],
+
+    "Qu'est-ce qu'une éclipse lunaire ?": [
+        "Une éclipse lunaire se produit lorsque la Terre passe entre le Soleil et la Lune, projetant son ombre sur la Lune."
+    ],
+
+    "Qu'est-ce qu'une exoplanète ?": [
+        "Une exoplanète est une planète située en dehors de notre système solaire, en orbite autour d'une autre étoile."
+    ],
+
+    "Qu'est-ce qu'une étoile à neutrons ?": [
+        "Une étoile à neutrons est le cœur effondré d'une étoile massive, composé presque entièrement de neutrons, avec une densité extrême."
+    ],
+
+    "Qu'est-ce que la relativité générale ?": [
+        "La relativité générale est une théorie d'Albert Einstein qui décrit la gravité comme une courbure de l'espace-temps causée par la masse."
+    ],
+
+    "Qu'est-ce que le paradoxe des jumeaux ?": [
+        "Le paradoxe des jumeaux est une expérience de pensée liée à la relativité, où un jumeau qui voyage à grande vitesse vieillit moins vite que celui qui reste sur Terre."
+    ],
+
+    "Qu'est-ce qu'une naine blanche ?": [
+        "Une naine blanche est une étoile mourante qui a épuisé son carburant et s'est effondrée en un noyau dense et chaud."
+    ],
+
+    "Qu'est-ce qu'une super-Terre ?": [
+        "Une super-Terre est une exoplanète plus massive que la Terre mais plus petite que Neptune, souvent rocheuse."
+    ],
+
+    "Qu'est-ce qu'une planète gazeuse ?": [
+        "Une planète gazeuse est une planète composée principalement de gaz, comme Jupiter ou Saturne dans notre système solaire."
+    ],
+
+    "Qu'est-ce que la ceinture de Kuiper ?": [
+        "La ceinture de Kuiper est une région de notre système solaire au-delà de Neptune, contenant des objets glacés et des comètes."
+    ],
+
+    "Qu'est-ce que l'effet de fronde gravitationnelle ?": [
+        "L'effet de fronde gravitationnelle est une technique utilisée par les sondes spatiales pour gagner de la vitesse en utilisant la gravité d'une planète."
+    ],
+
+    "Qu'est-ce qu'une étoile filante ?": [
+        "Une étoile filante est un météore qui brûle en entrant dans l'atmosphère terrestre, créant une traînée lumineuse."
+    ],
+
+    "Qu'est-ce que l'Impressionnisme ?": [
+        "L'Impressionnisme est un mouvement artistique du XIXe siècle qui se caractérise par des touches de peinture visibles, des effets de lumière et des scènes de la vie quotidienne. Monet, Renoir et Degas en sont des figures emblématiques."
+    ],
+
+    "Qui est Léonard de Vinci ?": [
+        "Léonard de Vinci était un génie de la Renaissance, connu pour ses œuvres d'art comme La Joconde et La Cène, mais aussi pour ses inventions et ses études scientifiques."
+    ],
+
+    "Qu'est-ce que le Surréalisme ?": [
+        "Le Surréalisme est un mouvement artistique du XXe siècle qui explore le rêve, l'inconscient et les images étranges, avec des artistes comme Salvador Dalí et René Magritte."
+    ],
+
+    "Qu'est-ce que l'Art Nouveau ?": [
+        "L'Art Nouveau est un style artistique du début du XXe siècle caractérisé par des motifs naturels, des lignes courbes et des décorations florales."
+    ],
+
+    "Qui est William Shakespeare ?": [
+        "William Shakespeare est un dramaturge anglais du XVIe siècle, célèbre pour ses pièces comme Roméo et Juliette, Hamlet, et Macbeth."
+    ],
+
+    "Qu'est-ce que le Symbolisme en littérature ?": [
+        "Le Symbolisme est un mouvement littéraire du XIXe siècle qui utilise des symboles et des images poétiques pour exprimer des idées et des émotions profondes."
+    ],
+
+    "Qu'est-ce que l'Expressionnisme ?": [
+        "L'Expressionnisme est un mouvement artistique du début du XXe siècle qui exprime les émotions intenses, souvent avec des couleurs vives et des formes déformées."
+    ],
+
+    "Qu'est-ce que le Romantisme ?": [
+        "Le Romantisme est un mouvement artistique et littéraire du XIXe siècle qui célèbre l'émotion, la nature et la rébellion contre les normes classiques."
+    ],
+
+    "Qu'est-ce qu'une Tragédie grecque ?": [
+        "Une Tragédie grecque est une pièce de théâtre de l'Antiquité grecque, souvent basée sur des mythes et centrée sur des thèmes de destin, de mort et de souffrance."
+    ],
+
+    "Qui est Pablo Picasso ?": [
+        "Pablo Picasso était un artiste espagnol du XXe siècle, célèbre pour avoir cofondé le Cubisme et créé des œuvres comme Les Demoiselles d'Avignon."
+    ],
+
+    "Qu'est-ce que le Surréalisme ?": [
+        "Le Surréalisme est un mouvement artistique du XXe siècle qui explore le rêve, l'inconscient et les images étranges, avec des artistes comme Salvador Dalí et René Magritte."
+    ],
+
+    "Qu'est-ce que l'Art Nouveau ?": [
+        "L'Art Nouveau est un style artistique du début du XXe siècle caractérisé par des motifs naturels, des lignes courbes et des décorations florales."
+    ],
+
+    "Qui est William Shakespeare ?": [
+        "William Shakespeare est un dramaturge anglais du XVIe siècle, célèbre pour ses pièces comme Roméo et Juliette, Hamlet, et Macbeth."
+    ],
+
+    "Qu'est-ce que le Symbolisme en littérature ?": [
+        "Le Symbolisme est un mouvement littéraire du XIXe siècle qui utilise des symboles et des images poétiques pour exprimer des idées et des émotions profondes."
+    ],
+
+    "Qu'est-ce que l'Expressionnisme ?": [
+        "L'Expressionnisme est un mouvement artistique du début du XXe siècle qui exprime les émotions intenses, souvent avec des couleurs vives et des formes déformées."
+    ],
+
+    "Qui est Frida Kahlo ?": [
+        "Frida Kahlo était une artiste mexicaine connue pour ses autoportraits intenses et symboliques, exprimant sa douleur physique et émotionnelle."
+    ],
+
+    "Qu'est-ce que l'Art Abstrait ?": [
+        "L'Art Abstrait est un style artistique qui n'essaie pas de représenter la réalité, mais utilise des formes, des couleurs et des textures pour exprimer des idées."
+    ],
+
+    "Qui est Michel-Ange ?": [
+        "Michel-Ange était un artiste de la Renaissance italienne, célèbre pour ses sculptures comme David et pour avoir peint le plafond de la Chapelle Sixtine."
+    ],
+
+    "Qu'est-ce que le Réalisme ?": [
+        "Le Réalisme est un mouvement artistique du XIXe siècle qui vise à représenter la réalité telle qu'elle est, souvent en décrivant la vie quotidienne."
+    ],
+
+    "Qui est Vincent van Gogh ?": [
+        "Vincent van Gogh était un peintre néerlandais postimpressionniste, célèbre pour ses œuvres comme La Nuit étoilée et Les Tournesols."
+    ],
+
+    "Qui est Edgar Allan Poe ?": [
+        "Edgar Allan Poe était un écrivain américain du XIXe siècle, connu pour ses nouvelles sombres et mystérieuses comme 'Le Cœur révélateur' et 'Le Corbeau'."
+    ],
+
+    "Qu'est-ce que la Renaissance italienne ?": [
+        "La Renaissance italienne est une période de renouveau artistique et intellectuel du XVe au XVIe siècle, marquée par des artistes comme Léonard de Vinci, Michel-Ange et Raphaël."
+    ],
+
+    "Qui est Jane Austen ?": [
+        "Jane Austen était une romancière anglaise du début du XIXe siècle, connue pour ses œuvres comme 'Orgueil et Préjugés' et 'Raison et Sentiments'."
+    ],
+
+    "Qu'est-ce que le Baroque ?": [
+        "Le Baroque est un style artistique des XVIIe et XVIIIe siècles, caractérisé par son exubérance, ses contrastes dramatiques et son sens du mouvement."
+    ],
+
+    "Qui est Gustave Flaubert ?": [
+        "Gustave Flaubert était un écrivain français du XIXe siècle, célèbre pour son roman 'Madame Bovary', une critique de la société de son époque."
+    ],
+
+    "Qu'est-ce que le Romantisme en littérature ?": [
+        "Le Romantisme est un mouvement littéraire du XIXe siècle qui valorise les émotions, la nature et la révolte contre les normes classiques."
+    ],
+
+    "Qui est Emily Dickinson ?": [
+        "Emily Dickinson était une poétesse américaine du XIXe siècle, connue pour ses poèmes introspectifs et sa vie recluse."
+    ],
+
+    "Qu'est-ce que l'Art Déco ?": [
+        "L'Art Déco est un style artistique des années 1920-1930, caractérisé par ses formes géométriques, ses matériaux luxueux et ses motifs stylisés."
+    ],
+
+    "Qui est Honoré de Balzac ?": [
+        "Honoré de Balzac était un écrivain français du XIXe siècle, connu pour sa série de romans 'La Comédie Humaine', une fresque de la société de son époque."
+    ],
+
+    "Qu'est-ce que le Cubisme ?": [
+        "Le Cubisme est un mouvement artistique du début du XXe siècle, fondé par Pablo Picasso et Georges Braque, qui représente les objets sous forme de formes géométriques."
     ]
 
 
