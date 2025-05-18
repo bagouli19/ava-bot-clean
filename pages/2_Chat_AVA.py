@@ -1853,16 +1853,16 @@ def trouver_reponse(question: str, model) -> str:
         resp_langage = chercher_reponse_base_langage(question_raw)
         if resp_langage:
             return resp_langage
-            
-        # 🌐 Analyse des émotions
-        message_emotionnel = analyser_emotions(question_clean)
-        if message_emotionnel:
-            return message_emotionnel
 
         # 5) Modules spécialisés
         resp_spec = gerer_modules_speciaux(question_raw, question_clean, model)
         if isinstance(resp_spec, str) and resp_spec.strip():
             return resp_spec.strip()
+
+        # 🌐 Analyse des émotions
+        message_emotionnel = analyser_emotions(question_clean)
+        if message_emotionnel:
+            return message_emotionnel
 
         # … tout en haut de trouver_reponse()
         fail_patterns = [
