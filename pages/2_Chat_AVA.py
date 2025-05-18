@@ -297,58 +297,53 @@ def gerer_souvenirs_utilisateur(question_raw: str):
 
     
     return None
-import streamlit as st
+    
 
-# ------------
 # Fonctions utilitaires attendues:
-# get_my_profile() -> dict  : renvoie le dict profil de l'utilisateur (avec clé "souvenirs")
+# get_my_profile() -> dict  : renvoie le dict profil de l'utilisateur (avec clé "souvenirs", "rappels", "taches")
 # set_my_profile(profil: dict) : met à jour le profil
-#---------------
+# charger_memoire_ava() -> dict : renvoie la mémoire globale de l'AVA
+
 
 def normalize_text(s: str) -> str:
-    """Normalise le texte: accents, apostrophes, minuscule."""
+    """Normalise le texte: accents, apostrophes, minuscules, ascii."""
     s = s.replace("’", "'").replace("‘", "'")
     s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
     return s.lower().strip()
 
 
+# ─────────────────────────────────────────
+# ✅ Réponses personnalisées intelligentes
+# ─────────────────────────────────────────
 def repondre_personnalise(question_raw: str) -> Optional[str]:
     """
-    Retourne une réponse personnalisée à partir des souvenirs utilisateur.
-    Renvoie None si aucun cas.
+    Réponses basées sur les souvenirs utilisateur :
+    - Salutations personnalisées
+    - Préférences (plat, sport, film, couleur)
+    Retourne None si aucun cas.
     """
+    from your_profile_module import get_my_profile  # adapter l'import selon ton projet
+
     q = normalize_text(question_raw)
     profil = get_my_profile()
     souvenirs = profil.get("souvenirs", {})
     prenom = souvenirs.get("prenom", "ami")
 
-    # Salutations personnalisées
-    if re.search(r"\b(bonjour|salut|coucou)\b", q):
+    # Salutations
+    if re.search(r"(bonjour|salut|coucou)", q):
         return f"👋 Bonjour {prenom.capitalize()} ! J'espère que vous allez bien."
 
-    # Interrogations sur préférences
-    mapping = {
-        "plat prefere": ("plat_prefere", "🍽️ Votre plat préféré est {} !"),
-        "sport prefere": ("sport_prefere", "🏅 Vous adorez {} !"),
-        "film prefere": ("film_prefere", "🎥 Votre film préféré est {} !"),
-        "couleur preferee": ("couleur_preferee", "🎨 Votre couleur préférée est {} !"),
-        "musique prefere": ("musique_preferee", "🎵 Votre musique préférée est {} !"),
-        "pays de reve": ("pays_reve", "🌍 Votre pays de rêve est {} !"),
-    }
-    for question_key, (cle, template) in mapping.items():
-        if question_key in q and cle in souvenirs:
-            return template.format(souvenirs[cle])
+    # Préférences
+    if "plat prefere" in q and "plat_prefere" in souvenirs:
+        return f"🍕 Votre plat préféré est {souvenirs['plat_prefere']} !"
+    if "sport prefere" in q and "sport_prefere" in souvenirs:
+        return f"🏀 Vous adorez {souvenirs['sport_prefere']} !"
+    if "film prefere" in q and "film_prefere" in souvenirs:
+        return f"🎥 Votre film préféré est {souvenirs['film_prefere']} !"
+    if "couleur preferee" in q and "couleur_preferee" in souvenirs:
+        return f"🎨 Votre couleur préférée est {souvenirs['couleur_preferee']} !"
 
-    # Autre cas: demande d'information de profil complet
-    if re.search(r"\b(qu'?est[- ]?ce que tu sais sur moi|que sais[- ]?tu de moi)\b", q):
-        if profil:
-            infos = json.dumps(souvenirs, ensure_ascii=False, indent=2)
-            return f"📌 Voici ce que je sais sur vous :\n{infos}"
-        return "😅 Je n'ai encore rien enregistré sur vous."
-
-    # Pas de personnalisation trouvée
-    return None
-
+    return None  # pas de réponse personnalisée
 
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
