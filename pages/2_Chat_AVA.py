@@ -297,7 +297,7 @@ def gerer_souvenirs_utilisateur(question_raw: str):
             return resp
 
     
-    return None
+  
 
 
 # ─────────────────────────────────────────
