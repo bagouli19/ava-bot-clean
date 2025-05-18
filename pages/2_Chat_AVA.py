@@ -41,7 +41,6 @@ from modules.recherche_web import (
 )
 # — Modules internes
 import logging
-import logging
 logging.getLogger("transformers.tokenization_utils_base").setLevel(logging.ERROR)
 logging.getLogger("transformers.pipelines").setLevel(logging.ERROR)
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
@@ -66,36 +65,34 @@ print(ed("Je suis vraiment heureux aujourd'hui !"))
 
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
-@st.cache_resource
-def load_emotion_pipeline():
-    tokenizer = AutoTokenizer.from_pretrained("astrosbd/french_emotion_camembert")
-    model     = AutoModelForSequenceClassification.from_pretrained("astrosbd/french_emotion_camembert")
-    return pipeline("text-classification", model=model, tokenizer=tokenizer, top_k=1, device="cpu")
-
-# si vous avez un pipeline de génération, summarization, etc. :
-@st.cache_resource
-def load_text_generation_pipeline():
-    return pipeline("text-generation", model="gpt2", device="cpu")
-
-# … et ainsi de suite pour chaque appel à transformers.pipeline(…) …
-emotion_detector        = load_emotion_pipeline()
-text_generation_pipeline = load_text_generation_pipeline()
-# ── 3) Chargement du pipeline en cache (une seule fois) ───────────────────────────
+# ── 3) Chargement en cache de TOUTES vos pipelines HF ────────────────────────────
 @st.cache_resource
 def load_emotion_pipeline():
     model_name = "astrosbd/french_emotion_camembert"
-    tokenizer  = AutoTokenizer.from_pretrained(model_name)
-    model      = AutoModelForSequenceClassification.from_pretrained(model_name)
-    # top_k=1 remplace return_all_scores=False
+    tok  = AutoTokenizer.from_pretrained(model_name)
+    mdl  = AutoModelForSequenceClassification.from_pretrained(model_name)
     return pipeline(
         "text-classification",
-        model=model,
-        tokenizer=tokenizer,
-        top_k=1,
-        device="cpu",  # ou "cuda" si vous en avez une
+        model=mdl,
+        tokenizer=tok,
+        top_k=1,        # remplace return_all_scores=False
+        device="cpu",
     )
 
-emotion_detector = load_emotion_pipeline()
+@st.cache_resource
+def load_textgen_pipeline():
+    # exemple pour un pipeline de génération, s’il existe
+    from transformers import pipeline as hf_pipeline
+    return hf_pipeline(
+        "text-generation",
+        model="gpt2",
+        top_k=1,        # ou selon le type de pipeline
+        device="cpu",
+    )
+
+# Instanciation unique
+emotion_detector    = load_emotion_pipeline()
+textgen_pipeline    = load_textgen_pipeline()
 
 # Chargement des clés API depuis les secrets Streamlit
 try:
