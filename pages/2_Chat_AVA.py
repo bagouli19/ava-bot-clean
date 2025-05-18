@@ -1569,9 +1569,6 @@ openai.api_key  = OPENAI_API_KEY
 from random import choice
 
 
-# Initialisation de la clé API OpenAI
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
 # Mapping enrichi des réponses émotionnelles
 reponses_variantes = {
     "joy": [
