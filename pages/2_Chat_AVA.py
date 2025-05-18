@@ -660,23 +660,36 @@ def generer_phrase_autonome(theme: str, infos: dict) -> str:
 
 def nettoyer_texte(texte: str) -> str:
     """
-    - Normalise Unicode (décompose les accents)
-    - Enlève les caractères combinants (accents)
-    - Passe en minuscules
-    - Remplace toute ponctuation par un espace
-    - Réduit les espaces multiples à un seul
+    Nettoie et normalise le texte en supprimant les accents, les espaces superflus,
+    et en convertissant tout en minuscules.
     """
-    # 1) Décomposition Unicode pour séparer base + accent
-    t = unicodedata.normalize("NFKD", texte)
-    # 2) On retire les accents
-    t = "".join(c for c in t if not unicodedata.combining(c))
-    # 3) Minuscules
-    t = t.lower()
-    # 4) Remplace toute ponctuation (tout ce qui n'est ni lettre, ni chiffre, ni espace) par un espace
-    t = re.sub(r"[^\w\s]", " ", t)
-    # 5) Écrase les multiples espaces et supprime ceux en bordure
-    t = re.sub(r"\s+", " ", t).strip()
-    return t
+    texte = texte.strip().lower()
+    texte = re.sub(r"[’‘`´]", "'", texte)  # Normalisation des apostrophes
+    texte = re.sub(r"\s+", " ", texte)  # Réduction des espaces multiples
+    texte = unicodedata.normalize("NFKD", texte).encode("ascii", "ignore").decode("utf-8")
+    
+    # Correction des variantes communes et des fautes d'orthographe courantes
+    corrections = {
+        "je suis désoler": "je suis désolé",
+        "jaimerais": "j'aimerais",
+        "sait tu": "sais-tu",
+        "ta": "t'a",
+        "sa": "ça",
+        "ces": "ses",
+        "qu'elle": "quelle",
+        "qu'il": "quel",
+        "j'ai": "je",
+        "tkt": "t'inquiète",
+        "merciii": "merci",
+        "slt": "salut",
+        "cc": "coucou",
+        "stp": "s'il te plaît",
+    }
+    
+    for faute, correction in corrections.items():
+        texte = texte.replace(faute, correction)
+    
+    return texte
 
 # --- Bloc Salutations courantes --- 
 SALUTATIONS_COURANTES = {
