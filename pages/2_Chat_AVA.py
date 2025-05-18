@@ -280,13 +280,11 @@ def gerer_souvenirs_utilisateur(question_raw: str):
     for debut, cle in patterns.items():
         if q_norm.startswith(debut):
             valeur = q_norm[len(debut):].strip(" .!?")
-            st.write(f"✅ DEBUG détection: {debut!r} → clé {cle}, valeur brute: {valeur!r}")
             if valeur:
                 profil["souvenirs"][cle] = valeur
                 set_my_profile(profil)
                 prenom = profil["souvenirs"].get("prenom", "cher utilisateur")
                 resp = f"✨ C’est noté, {prenom.capitalize()} : **{valeur.capitalize()}** 🧠"
-                st.write("✅ DEBUG réponse enregistrement:", resp)
                 return resp
 
     # 2️⃣ Rappel
@@ -295,7 +293,6 @@ def gerer_souvenirs_utilisateur(question_raw: str):
         if mot in q_norm:
             prenom = profil["souvenirs"].get("prenom", "cher utilisateur")
             resp = f"🧠 Oui, {prenom}, je me souviens : **{contenu}**"
-            st.write("✅ DEBUG rappel souvenir:", cle, contenu)
             return resp
 
     
