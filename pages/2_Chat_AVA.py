@@ -1,5 +1,5 @@
 import os
-import re
+import re, ast, streamlit as st
 import json
 import random
 import unicodedata
@@ -1884,8 +1884,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     print("🔎 [DEBUG spec] no module matched")
     return None
 
-
-    import re, ast, streamlit as st
 
     # Récupère le texte brut que tape l’utilisateur
     raw = question_clean  # Utilise question_clean comme base
