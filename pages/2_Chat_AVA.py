@@ -988,11 +988,20 @@ SALUTATIONS_COURANTES = {
         "ava tu peux danser": "🕺 Si je pouvais bouger, je serais déjà en train de faire un moonwalk virtuel.",
 
     }
-# On normalise les clés une seule fois
-SALUTATIONS_CLEAN = {nettoyer_texte(k): v for k, v in SALUTATIONS_COURANTES.items()}
+# On garde les clés d'origine sans les altérer
+SALUTATIONS_CLEAN = {k: v for k, v in SALUTATIONS_COURANTES.items()}
 
-def repondre_salutation(question_clean: str) -> Optional[str]:
-    return SALUTATIONS_CLEAN.get(question_clean)
+# ─────────────────────────────────────────
+# ✅ Fonction de gestion des salutations courantes
+# ─────────────────────────────────────────
+def repondre_salutation(question_raw: str) -> str:
+    """
+    Détecte les salutations courantes et y répond.
+    """
+    question_clean = nettoyer_texte(question_raw)
+    if question_clean in SALUTATIONS_CLEAN:
+        return SALUTATIONS_CLEAN[question_clean]
+    return ""
 
 # Exemple de motifs d'identité (à utiliser dans un module "qui suis‑je")
 motifs_identite = ["je m'appelle", "mon prénom est", "je suis", "appelle-moi", "je me nomme"]
