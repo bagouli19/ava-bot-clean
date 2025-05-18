@@ -238,7 +238,19 @@ if user not in all_profiles:
 
 st.session_state.profil = all_profiles[user]
 
-
+# ─────────────────────────────────────────
+# ✅ Fonction de normalisation (accents, apostrophes)
+# ─────────────────────────────────────────
+def normalize_text(s: str) -> str:
+    """
+    Normalise les apostrophes et supprime les accents, retourne une chaine lowercased.
+    """
+    # Unifier les apostrophes typographiques
+    s = s.replace("’", "'").replace("‘", "'")
+    # Décomposer et enlever les accents
+    s = unicodedata.normalize("NFKD", s)
+    s = s.encode("ascii", "ignore").decode("utf-8")
+    return s.lower().strip()
 
 
 # ─────────────────────────────────────────
@@ -1833,16 +1845,14 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
-    question_clean = normaliser_intentions(question_clean)  # 🔥 Normalisation des intentions
-    
-
-    fail_patterns = [
-        "je suis désolé", "je n'ai pas la capacité", "je ne peux pas",
-        "je n'ai pas compris", "pouvez reformuler", "je recommande"
-    ]
+    question_clean = normalize_text(question_raw)
 
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
+
+        # 0) Souvenirs utilisateur (priorité absolue)
+        if (memo := gerer_souvenirs_utilisateur(question_raw)):
+            return memo
 
         # 1) Salutations
         if (sal := repondre_salutation(question_clean)):
@@ -1856,7 +1866,7 @@ def trouver_reponse(question: str, model) -> str:
         if (lang := chercher_reponse_base_langage(question_raw)):
             return lang
 
-        # 4) Modules spécialisés
+        # 4) Modules spécialisés (respiration, heure…)
         if (spec := gerer_modules_speciaux(question_raw, question_clean, model)):
             return spec
 
@@ -1865,15 +1875,14 @@ def trouver_reponse(question: str, model) -> str:
             return emo
 
         # 6) Fallback GPT
-        if (oa := repondre_openai(question_raw)) and isinstance(oa, str):
-            if not any(fp in oa.lower() for fp in fail_patterns):
-                return oa.strip()
+        reponse_oa = repondre_openai(question_raw)
+        if isinstance(reponse_oa, str) and reponse_oa.strip():
+            low = reponse_oa.lower()
+            if not any(fp in low for fp in ["je suis désolé","je ne peux pas","pouvez reformuler"]):
+                return reponse_oa.strip()
 
-        # 7) Fallback final Google
-        return (
-            "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
-            + rechercher_sur_google(question_raw)
-        )
+        # 7) Fallback Google
+        return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
