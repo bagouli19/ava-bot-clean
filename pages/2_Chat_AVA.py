@@ -2890,21 +2890,17 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     """
     Renvoie une réponse spécialisée pour :
-    - Profil utilisateur ("que sais-tu de moi")
-    - Rappels personnels ("rappelle-moi de ...")
-    - Tâches à ajouter ("ajoute ... à ma liste")
+    - Profil utilisateur ("que sais-tu de moi", "qu'est ce que tu sais sur moi")
+    - Rappels personnalisés ("rappelle-moi de ...")
+    - Ajout de tâches ("ajoute ... à ma liste")
     - Affichage des rappels ou tâches
-    - Souvenirs globaux (mémoire de l’AVA)
-    Retourne None si aucun module concerné.
+    - Souvenirs globaux de l’AVA
+    Retourne None si aucun cas.
     """
-    # Pour les dates
     date_str = datetime.now().strftime("%Y-%m-%d")
 
-    # 1) Information sur le profil
-    if any(kw in question_clean for kw in [
-        "qu'est-ce que tu sais sur moi",
-        "que sais-tu de moi"
-    ]):
+    # 1) Profil utilisateur
+    if re.search(r"qu'?est[- ]?ce que tu sais sur moi", question_clean) or "que sais-tu de moi" in question_clean:
         profil = charger_profil_utilisateur(user_id)
         if profil and user_id in profil:
             infos = json.dumps(profil[user_id], ensure_ascii=False, indent=4)
@@ -2912,38 +2908,34 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return "😅 Je n'ai encore rien enregistré sur vous."
 
     # 2) Rappels personnalisés
-    formulations_rappel = [
-        "rappelle-moi de", "rappelle moi de",
-        "n'oublie pas de",
-        "souviens-toi de", "souviens toi de"
-    ]
-    for intro in formulations_rappel:
-        if intro in question_clean:
-            contenu = question_clean.split(intro, 1)[1].strip(" .!?")
-            if len(contenu) > 5:
-                profil = get_my_profile()
-                profil.setdefault("rappels", [])
-                profil["rappels"].append({"contenu": contenu, "date": date_str})
-                set_my_profile(profil)
-                return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
+    match_rappel = re.search(
+        r"\b(?:rappelle[- ]?moi de|n'oublie pas de|souviens[- ]?toi de)\b\s*(.+)",
+        question_clean
+    )
+    if match_rappel:
+        contenu = match_rappel.group(1).strip(" .!?")
+        if len(contenu) > 3:
+            profil = get_my_profile()
+            profil.setdefault("rappels", [])
+            profil["rappels"].append({"contenu": contenu, "date": date_str})
+            set_my_profile(profil)
+            return f"🔔 C’est noté, je vous rappellerai de : **{contenu}**."
 
     # 3) Ajout de tâches
-    triggers_tache = ["ajoute", "rajoute", "note", "mets dans ma liste"]
-    for trig in triggers_tache:
-        if trig in question_clean:
-            # on coupe après le mot clé + "de"
-            parts = question_clean.split("de", 1)
-            if len(parts) == 2:
-                contenu = parts[1].strip(" .!?")
-                if contenu:
-                    profil = get_my_profile()
-                    profil.setdefault("taches", [])
-                    profil["taches"].append({"contenu": contenu, "date": date_str})
-                    set_my_profile(profil)
-                    return f"🗒️ J’ai ajouté à votre liste : **{contenu}**."
+    match_tache = re.search(
+        r"\b(?:ajoute|rajoute|note|mets)\b.*\bma liste\b\s*(?:de\s*)?(?P<contenu>.+)",
+        question_clean
+    )
+    if match_tache:
+        contenu = match_tache.group("contenu").strip(" .!?")
+        profil = get_my_profile()
+        profil.setdefault("taches", [])
+        profil["taches"].append({"contenu": contenu, "date": date_str})
+        set_my_profile(profil)
+        return f"🗒️ J’ai ajouté à votre liste : **{contenu}**."
 
     # 4) Affichage des rappels
-    if "rappels" in question_clean or "à me rappeler" in question_clean:
+    if re.search(r"\b(rappels|à me rappeler)\b", question_clean):
         profil = get_my_profile()
         rappels = profil.get("rappels", [])
         if not rappels:
@@ -2952,7 +2944,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return "🔔 Vos rappels enregistrés :\n" + "\n".join(lines)
 
     # 5) Affichage des tâches
-    if any(k in question_clean for k in ["liste", "tâches", "mes tâches"]):
+    if re.search(r"\b(liste|tâches?)\b", question_clean):
         profil = get_my_profile()
         taches = profil.get("taches", [])
         if not taches:
@@ -2961,14 +2953,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return "📝 Voici votre liste de tâches :\n" + "\n".join(lines)
 
     # 6) Souvenirs globaux de l'AVA
-    if question_clean in [
-        "montre moi tes souvenirs",
-        "qu'as tu retenu",
-        "quels souvenirs as tu",
-        "montre tes souvenirs",
-        "qu'as tu mémorisé",
-        "rappelle toi ce que tu as appris"
-    ]:
+    if re.search(r"\b(montre moi tes souvenirs|quels souvenirs as tu|qu'as tu retenu)\b", question_clean):
         memoire = charger_memoire_ava()
         souvenirs = memoire.get("souvenirs", [])
         if not souvenirs:
@@ -2977,7 +2962,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         for s in souvenirs[-5:]:
             response += f"- [{s['date']}] **{s['type']}** : {s['contenu']}\n"
         return response
-
    
     # 🧠 Bloc mémoire évolutive AVA (autonome)
     def doit_memoriser_automatiquement(phrase: str) -> bool:
