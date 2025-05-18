@@ -238,32 +238,6 @@ if user not in all_profiles:
 
 st.session_state.profil = all_profiles[user]
 
-# ─────────────────────────────────────────
-# ✅ Réponses personnalisées intelligentes
-# ─────────────────────────────────────────
-def repondre_personnalise(question_raw: str) -> str:
-    profil = charger_profil_utilisateur()
-    souvenirs = profil.get("souvenirs", {})
-    prenom = souvenirs.get("prenom", "ami")
-
-    # 🔎 Réponses personnalisées si informations disponibles
-    if "salut" in question_raw.lower() or "bonjour" in question_raw.lower():
-        return f"👋 Bonjour {prenom.capitalize()} ! J'espère que vous allez bien."
-
-    if "plat prefere" in question_raw.lower() and "plat_prefere" in souvenirs:
-        return f"🍕 Votre plat préféré est {souvenirs['plat_prefere']} !"
-
-    if "sport prefere" in question_raw.lower() and "sport_prefere" in souvenirs:
-        return f"🏀 Vous adorez le {souvenirs['sport_prefere']} !"
-
-    if "film prefere" in question_raw.lower() and "film_prefere" in souvenirs:
-        return f"🎥 Votre film préféré est {souvenirs['film_prefere']} !"
-
-    if "couleur preferee" in question_raw.lower() and "couleur_preferee" in souvenirs:
-        return f"🎨 Votre couleur préférée est {souvenirs['couleur_preferee']} !"
-
-    # Réponse par défaut si aucune info
-    return f"😊 Que puis-je faire pour vous aujourd'hui, {prenom.capitalize()} ?"
 
 def normalize_text(s: str) -> str:
     # remplace les apostrophes typographiques par l'apostrophe simple
@@ -324,6 +298,56 @@ def gerer_souvenirs_utilisateur(question_raw: str):
     
     return None
 import streamlit as st
+
+# ------------
+# Fonctions utilitaires attendues:
+# get_my_profile() -> dict  : renvoie le dict profil de l'utilisateur (avec clé "souvenirs")
+# set_my_profile(profil: dict) : met à jour le profil
+#---------------
+
+def normalize_text(s: str) -> str:
+    """Normalise le texte: accents, apostrophes, minuscule."""
+    s = s.replace("’", "'").replace("‘", "'")
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
+    return s.lower().strip()
+
+
+def repondre_personnalise(question_raw: str) -> Optional[str]:
+    """
+    Retourne une réponse personnalisée à partir des souvenirs utilisateur.
+    Renvoie None si aucun cas.
+    """
+    q = normalize_text(question_raw)
+    profil = get_my_profile()
+    souvenirs = profil.get("souvenirs", {})
+    prenom = souvenirs.get("prenom", "ami")
+
+    # Salutations personnalisées
+    if re.search(r"\b(bonjour|salut|coucou)\b", q):
+        return f"👋 Bonjour {prenom.capitalize()} ! J'espère que vous allez bien."
+
+    # Interrogations sur préférences
+    mapping = {
+        "plat prefere": ("plat_prefere", "🍽️ Votre plat préféré est {} !"),
+        "sport prefere": ("sport_prefere", "🏅 Vous adorez {} !"),
+        "film prefere": ("film_prefere", "🎥 Votre film préféré est {} !"),
+        "couleur preferee": ("couleur_preferee", "🎨 Votre couleur préférée est {} !"),
+        "musique prefere": ("musique_preferee", "🎵 Votre musique préférée est {} !"),
+        "pays de reve": ("pays_reve", "🌍 Votre pays de rêve est {} !"),
+    }
+    for question_key, (cle, template) in mapping.items():
+        if question_key in q and cle in souvenirs:
+            return template.format(souvenirs[cle])
+
+    # Autre cas: demande d'information de profil complet
+    if re.search(r"\b(qu'?est[- ]?ce que tu sais sur moi|que sais[- ]?tu de moi)\b", q):
+        if profil:
+            infos = json.dumps(souvenirs, ensure_ascii=False, indent=2)
+            return f"📌 Voici ce que je sais sur vous :\n{infos}"
+        return "😅 Je n'ai encore rien enregistré sur vous."
+
+    # Pas de personnalisation trouvée
+    return None
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -1872,6 +1896,11 @@ def trouver_reponse(question: str, model) -> str:
 
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
+        
+        # 0) Réponse personnalisée
+        resp_perso = repondre_personnalise(question_raw)
+        if isinstance(resp_perso, str):
+            return resp_perso
 
         # 0) Souvenirs utilisateur (priorité absolue)
         if (memo := gerer_souvenirs_utilisateur(question_raw)):
