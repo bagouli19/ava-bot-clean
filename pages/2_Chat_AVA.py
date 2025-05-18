@@ -1884,7 +1884,11 @@ def trouver_reponse(question: str, model) -> str:
 
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
-
+        
+        # Priorité à la personnalisation
+        if (resp := repondre_personnalise(question_raw)):
+            return resp
+            
         # 1) Souvenirs utilisateur (priorité absolue)
         if (memo := gerer_souvenirs_utilisateur(question_raw)):
             return memo
@@ -2934,9 +2938,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     5) Souvenirs globaux de l'AVA
     Retourne None si aucun module déclenché.
     """
-    # Priorité à la personnalisation
-    if (resp := repondre_personnalise(question_raw)):
-        return resp
+    
 
     date_str = datetime.now().strftime("%Y-%m-%d")
     # 1) Profil utilisateur
