@@ -47,7 +47,7 @@ from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
 import traceback
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-
+from random import choice
 
 
 
@@ -243,20 +243,25 @@ st.session_state.profil = all_profiles[user]
 # ✅ Fonction de normalisation (accents, apostrophes)
 # ─────────────────────────────────────────
 def normalize_text(s: str) -> str:
-    # 1) Unifier les apostrophes typographiques
+    """
+    Normalise les apostrophes et supprime les accents, retourne une chaine lowercased.
+    """
+    # Unifier les apostrophes typographiques
     s = s.replace("’", "'").replace("‘", "'")
-    # 2) Décomposer + supprimer accents, garder ascii
+    # Décomposer et enlever les accents
     s = unicodedata.normalize("NFKD", s)
     s = s.encode("ascii", "ignore").decode("utf-8")
     return s.lower().strip()
 
 # ─────────────────────────────────────────
-# ✅ Gérer les souvenirs utilisateur (Ultra-robuste)
+# ✅ Gestion des souvenirs utilisateur
 # ─────────────────────────────────────────
 def gerer_souvenirs_utilisateur(question_raw: str) -> str:
     """
-    Gère les souvenirs utilisateur en priorité absolue.
+    Enregistre ou rappelle les souvenirs utilisateurs.
+    Priorité absolue : si un souvenir est détecté ou demandé, retourne immédiatement la réponse.
     """
+    print(f"🔍 [DEBUG memory] input raw = {question_raw!r}")
     q_norm = normalize_text(question_raw)
 
     # Initialisation du profil
@@ -264,29 +269,40 @@ def gerer_souvenirs_utilisateur(question_raw: str) -> str:
         st.session_state.profil = {"souvenirs": {}}
     profil = st.session_state.profil
 
-    # Phrases clés → clefs de profil
+    # Motifs pour extraction de souvenirs
     patterns = {
-        r"\bje\s+m['’]appelle\s+(.+)":      "prenom",
-        r"\bmon\s+prenom\s+est\s+(.+)":     "prenom",
+        r"\bje\s+m['’]appelle\s+(.+)": "prenom",
+        r"\bmon\s+prenom\s+est\s+(.+)": "prenom",
         r"\bmon\s+chien\s+s['’]appelle\s+(.+)": "chien",
         r"\bmon\s+plat\s+prefere\s+est\s+(.+)": "plat_prefere",
-        # … ajoutez vos autres motifs ici …
+        r"\bmon\s+film\s+prefere\s+est\s+(.+)": "film_prefere",
+        r"\bmon\s+sport\s+prefere\s+est\s+(.+)": "sport_prefere",
+        r"\bma\s+couleur\s+preferee\s+est\s+(.+)": "couleur_preferee",
+        r"\bj'adore\s+la\s+musique\s+(.+)": "musique_preferee",
+        r"\bj'aime\s+boire\s+(.+)": "boisson_preferee",
+        r"\bmon\s+passe-temps\s+favori\s+est\s+(.+)": "passe_temps",
+        r"\bmon\s+animal\s+prefere\s+est\s+(.+)": "animal_prefere",
+        r"\ble\s+pays\s+de\s+mes\s+reves\s+est\s+(.+)": "pays_reve",
     }
 
-    # Détection et enregistrement
+    # Enregistrement des souvenirs
     for motif, cle in patterns.items():
         match = re.search(motif, q_norm, re.IGNORECASE)
         if match:
             valeur = match.group(1).strip(" .!?")
             profil["souvenirs"][cle] = valeur
             st.session_state.profil = profil
+            print(f"✅ [DEBUG memory] saved {cle} = {valeur}")
             return f"✨ C’est noté : **{valeur.capitalize()}** enregistré comme {cle}."
 
     # Rappel des souvenirs existants
     for cle, contenu in profil.get("souvenirs", {}).items():
-        if cle.replace("_", " ") in q_norm:
+        mot_cle = cle.replace("_", " ")
+        if mot_cle in q_norm:
+            print(f"✅ [DEBUG memory] recall {cle} = {contenu}")
             return f"🧠 Oui, je me souviens : **{contenu}**."
 
+    print("🔎 [DEBUG memory] no memory matched")
     return ""
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
@@ -1830,6 +1846,7 @@ def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
     question_clean = normaliser_intentions(question_clean)  # 🔥 Normalisation des intentions
+    question_clean = normalize_text(question_raw)
 
     fail_patterns = [
         "je suis désolé", "je n'ai pas la capacité", "je ne peux pas",
