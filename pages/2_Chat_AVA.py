@@ -40,9 +40,7 @@ from modules.recherche_web import (
     recherche_web_universelle
 )
 # — Modules internes
-import logging
-logging.getLogger("transformers.tokenization_utils_base").setLevel(logging.ERROR)
-logging.getLogger("transformers.pipelines").setLevel(logging.ERROR)
+
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
 from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
@@ -65,34 +63,6 @@ print(ed("Je suis vraiment heureux aujourd'hui !"))
 
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
-# ── 3) Chargement en cache de TOUTES vos pipelines HF ────────────────────────────
-@st.cache_resource
-def load_emotion_pipeline():
-    model_name = "astrosbd/french_emotion_camembert"
-    tok  = AutoTokenizer.from_pretrained(model_name)
-    mdl  = AutoModelForSequenceClassification.from_pretrained(model_name)
-    return pipeline(
-        "text-classification",
-        model=mdl,
-        tokenizer=tok,
-        top_k=1,        # remplace return_all_scores=False
-        device="cpu",
-    )
-
-@st.cache_resource
-def load_textgen_pipeline():
-    # exemple pour un pipeline de génération, s’il existe
-    from transformers import pipeline as hf_pipeline
-    return hf_pipeline(
-        "text-generation",
-        model="gpt2",
-        top_k=1,        # ou selon le type de pipeline
-        device="cpu",
-    )
-
-# Instanciation unique
-emotion_detector    = load_emotion_pipeline()
-textgen_pipeline    = load_textgen_pipeline()
 
 # Chargement des clés API depuis les secrets Streamlit
 try:
@@ -1590,7 +1560,15 @@ def rechercher_horoscope(filepath):
 import re
 from random import choice
 
-# 1) Définition du mapping en amont
+import os
+import re
+from random import choice
+import openai
+
+# 1) Initialisez votre clé API OpenAI  
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# 2) Votre mapping enrichi
 reponses_variantes = {
     "joy": [
         (
@@ -1681,54 +1659,38 @@ reponses_variantes = {
 
 def analyser_emotions(question: str) -> str:
     """
-    Analyse les émotions d'une phrase (hors questions factuelles) et retourne
-    une réponse adaptée, ou "" si pas d'émotion reconnue.
+    Classe l'émotion via l'API OpenAI et retourne une réponse adaptée, 
+    ou "" si pas d'émotion reconnue ou question factuelle.
     """
-    q = question or ""
+    q = (question or "").strip()
     print("▶️ DEBUG analyser_emotions input:", repr(q))
-    q = q.strip()
-    if not q:
+    if not q or q.endswith("?"):
+        # On ne traite **pas** les questions factuelles
         return ""
-
-    # Normalisation des apostrophes typographiques → ASCII
-    q = q.replace("’", "'").replace("‘", "'")
-
-    # Guard : si c'est une question factuelle (phrase terminée par '?'), on skip
-    if q.endswith("?"):
-        print("▶️ DEBUG question factuelle détectée, skip émotion")
-        return ""
-
-    try:
-        # Appel du pipeline HF
-        raw = emotion_detector(q)
-        print("▶️ DEBUG raw output:", repr(raw))
-
-        # Unifier raw en liste de dicts
-        if isinstance(raw, list):
-            if raw and isinstance(raw[0], list):
-                emotions = raw[0]
-            else:
-                emotions = raw
-        else:
-            print("▶️ DEBUG format inattendu de raw, skip émotion")
-            return ""
-
-        if not emotions or not isinstance(emotions[0], dict):
-            print("▶️ DEBUG émotions vides ou mal formées, skip émotion")
-            return ""
-
-        # Récupérer l'étiquette
-        label = emotions[0].get("label", "").lower()
-        print(f"▶️ DEBUG label détecté: {label!r}")
-
-        # Sélectionner une variante
-        texte = choice(reponses_variantes.get(label, [""]))
-        print(f"▶️ DEBUG réponse sélectionnée: {texte!r}")
-        return texte
-
-    except Exception as e:
-        print(f"❌ Erreur détection émotions : {e}")
-        return f"😕 Oups, je n'ai pas pu analyser vos émotions ({e})"
+    
+    # Prompt pour classifier l'émotion
+    prompt = (
+        "Vous êtes un classificateur d'émotion pour du texte en français.\n"
+        "Catégories possibles : joy, optimism, sadness, anger, fear, love, disgust.\n\n"
+        f"Phrase : « {q} »\n"
+        "Répondez **uniquement** par l'une de ces étiquettes, en minuscules."
+    )
+    resp = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system",  "content": "Tu es un classificateur d'émotions."},
+            {"role": "user",    "content": prompt},
+        ],
+        temperature=0.0,
+        max_tokens=1
+    )
+    label = resp.choices[0].message.content.strip().lower()
+    print(f"▶️ DEBUG label détecté via OpenAI: {label!r}")
+    
+    # Sélection aléatoire d'une variante si étiquette valide
+    texte = choice(reponses_variantes.get(label, [""]))
+    print(f"▶️ DEBUG réponse sélectionnée: {texte!r}")
+    return texte
 
 
 import streamlit as st
