@@ -1881,9 +1881,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         print("✅ [DEBUG spec] matched time")
         return f"🕰️ Il est actuellement {datetime.now().strftime('%H:%M')}"
 
-    print("🔎 [DEBUG spec] no module matched")
-    return None
-
 
     # Récupère le texte brut que tape l’utilisateur
     raw = question_clean  # Utilise question_clean comme base
