@@ -1834,7 +1834,7 @@ def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
     question_clean = normaliser_intentions(question_clean)  # 🔥 Normalisation des intentions
-    question_clean = normalize_text(question_raw)
+    
 
     fail_patterns = [
         "je suis désolé", "je n'ai pas la capacité", "je ne peux pas",
