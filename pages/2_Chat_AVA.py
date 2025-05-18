@@ -1668,36 +1668,33 @@ author_alias = {
 
 def analyser_emotions(question: str) -> str:
     """
-    Classe l'émotion via l'API OpenAI et retourne une réponse adaptée,
-    ou "" si pas d'émotion reconnue ou question factuelle.
+    Retourne une réponse émotionnelle ou "" si question factuelle / pas d'émotion.
     """
     q = (question or "").strip()
     if not q or q.endswith("?"):
         return ""
     prompt = (
-        "Vous êtes un classificateur d'émotion pour du texte en français. "
-        "Catégories : joy, optimism, sadness, anger, fear, love, disgust. "
+        "Vous êtes un classificateur d'émotions pour du texte en français. "
+        "Catégories : joy, optimism, sadness, anger, fear, love, disgust." \
         f"Phrase : «{q}»\nRépondez uniquement par l'étiquette."
     )
     try:
         resp = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Tu es un classificateur d'émotions."},
-                {"role": "user",   "content": prompt},
+                {"role": "system",  "content": "Tu es un classificateur d'émotions."},
+                {"role": "user",    "content": prompt},
             ],
             temperature=0.0,
             max_tokens=3
         )
+        raw_label = resp.choices[0].message.content
     except Exception:
         return ""
-    raw_label = resp.choices[0].message.content
     label = re.sub(r"[^a-zA-Z]", "", raw_label).lower()
     label = author_alias.get(label, label)
     variantes = reponses_variantes.get(label)
-    if not variantes:
-        return ""
-    return choice(variantes)
+    return choice(variantes) if variantes else ""
 
 
 PLACEHOLDER_PAS_DE_REPONSE = "🤔 Je n'ai pas trouvé de réponse précise."
@@ -1798,54 +1795,44 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 # Pipeline de réponse
 # --------------------------
 
-def trouver_reponse(question: str, model) -> str:
+ef trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
 
     fail_patterns = [
-        "je suis désolé",
-        "je n'ai pas la capacité",
-        "je ne peux pas",
-        "je n'ai pas compris",
-        "pouvez reformuler",
-        "je recommande"
+        "je suis désolé", "je n'ai pas la capacité", "je ne peux pas",
+        "je n'ai pas compris", "pouvez reformuler", "je recommande"
     ]
 
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
 
         # 1) Salutations
-        resp_salut = repondre_salutation(question_clean)
-        if resp_salut:
-            return resp_salut
+        if (sal := repondre_salutation(question_clean)):
+            return sal
 
         # 2) Base de connaissances
         if question_clean in base_culture_nettoyee:
             return base_culture_nettoyee[question_clean]
 
         # 3) Base de langage
-        resp_langage = chercher_reponse_base_langage(question_raw)
-        if resp_langage:
-            return resp_langage
+        if (lang := chercher_reponse_base_langage(question_raw)):
+            return lang
 
-        # 4) Analyse émotionnelle (avant modules spéciaux)
-        resp_emotion = analyser_emotions(question_raw)
-        if resp_emotion:
-            return resp_emotion
+        # 4) Analyse émotionnelle (avant spécialisation)
+        if (emo := analyser_emotions(question_raw)):
+            return emo
 
         # 5) Modules spécialisés
-        resp_spec = gerer_modules_speciaux(question_raw, question_clean, model)
-        if resp_spec:
-            return resp_spec
+        if (spec := gerer_modules_speciaux(question_raw, question_clean, model)):
+            return spec
 
         # 6) Fallback GPT
-        resp_oa = repondre_openai(question_raw)
-        if isinstance(resp_oa, str) and resp_oa.strip():
-            low = resp_oa.lower()
-            if not any(fp in low for fp in fail_patterns):
-                return resp_oa.strip()
+        if (oa := repondre_openai(question_raw)) and isinstance(oa, str):
+            if not any(fp in oa.lower() for fp in fail_patterns):
+                return oa.strip()
 
-        # 7) Fallback final via Google
+        # 7) Fallback final (Google)
         return (
             "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
             + rechercher_sur_google(question_raw)
@@ -1858,32 +1845,31 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
     
     #conseil bien-être
-    """
+     """
     Répond aux demandes spécialisées :
       - exercices de respiration (requête explicite)
-      - demande de l'heure (strict)
+      - demande de l'heure (format strict)
     Retourne None si aucun module n'est déclenché.
     """
-    # Exercice de respiration sur demande explicite
-    pattern_resp = re.compile(
-        r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(respiration|respirer|exercice)s?\b",
+    # 1) Respiration sur demande explicite
+    pattern_respiration = re.compile(
+        r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercice)s?\b",
         re.IGNORECASE
     )
-    if pattern_resp.search(question_clean):
+    if pattern_respiration.search(question_clean):
         return (
             "🧘‍♀️ Techniques de respiration :\n"
-            "1. Respiration carrée : inspirez 4 s, retenez 4 s, expirez 4 s, retenez 4 s (5 cycles).\n"
-            "2. Respiration abdominale : mains sur le ventre, inspirez en gonflant le bas du ventre, expirez lentement (10 cycles)."
+            "1. Respiration carrée : inspirez 4s, retenez 4s, expirez 4s, retenez 4s (5 cycles).\n"
+            "2. Respiration abdominale : mains sur le ventre, inspirez profondément, expirez lentement (10 cycles)."
         )
 
-    # Demande d'heure stricte
+    # 2) Heure courante
     pattern_heure = re.compile(
         r"^quelle\s+heure\s+est[-\s]?il\s*\?*?$",
         re.IGNORECASE
     )
     if pattern_heure.match(question_clean):
-        now = datetime.now().strftime("%H:%M")
-        return f"🕰️ Il est actuellement {now}."
+        return f"🕰️ Il est {datetime.now().strftime('%H:%M')} maintenant."
 
 
 
