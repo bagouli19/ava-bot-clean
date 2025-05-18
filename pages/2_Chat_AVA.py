@@ -2886,17 +2886,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return message_bot
 
 
-    """
-    Réponses spécialisées pour :
-    1) Profil utilisateur ("que sais-tu de moi", "qu'est ce que tu sais sur moi")
-    2) Rappels personnalisés ("rappelle-moi de ...")
-    3) Ajout de tâches ("ajoute ... à ma liste")
-    4) Affichage des rappels
-    5) Affichage des tâches
-    6) Souvenirs globaux de l'AVA
-    Retourne None si aucun module concerné.
-    """
-    date_str = datetime.now().strftime("%Y-%m-%d")
+ 
 
     # 1) Profil utilisateur
     if re.search(r"qu'?est[- ]?ce que tu sais sur moi", question_clean) or "que sais-tu de moi" in question_clean:
