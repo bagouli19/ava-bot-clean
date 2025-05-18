@@ -1928,8 +1928,8 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
-    
-      """
+
+    """
     Modules spécialisés **après** la personnalisation :
     0) Salutations courantes
     1) Exercices de respiration
