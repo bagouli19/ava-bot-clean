@@ -2888,22 +2888,23 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return message_bot
 
 
-    """
-    Renvoie une réponse spécialisée pour :
-    - Profil utilisateur ("que sais-tu de moi", "qu'est ce que tu sais sur moi")
-    - Rappels personnalisés ("rappelle-moi de ...")
-    - Ajout de tâches ("ajoute ... à ma liste")
-    - Affichage des rappels ou tâches
-    - Souvenirs globaux de l’AVA
-    Retourne None si aucun cas.
+   """
+    Réponses spécialisées pour :
+    1) Profil utilisateur ("que sais-tu de moi", "qu'est ce que tu sais sur moi")
+    2) Rappels personnalisés ("rappelle-moi de ...")
+    3) Ajout de tâches ("ajoute ... à ma liste")
+    4) Affichage des rappels
+    5) Affichage des tâches
+    6) Souvenirs globaux de l'AVA
+    Retourne None si aucun module concerné.
     """
     date_str = datetime.now().strftime("%Y-%m-%d")
 
     # 1) Profil utilisateur
     if re.search(r"qu'?est[- ]?ce que tu sais sur moi", question_clean) or "que sais-tu de moi" in question_clean:
-        profil = charger_profil_utilisateur(user_id)
-        if profil and user_id in profil:
-            infos = json.dumps(profil[user_id], ensure_ascii=False, indent=4)
+        profil = get_my_profile()  # Profil complet de l'utilisateur
+        if profil:
+            infos = json.dumps(profil, ensure_ascii=False, indent=4)
             return f"📌 Voici ce que je sais sur vous :\n{infos}"
         return "😅 Je n'ai encore rien enregistré sur vous."
 
