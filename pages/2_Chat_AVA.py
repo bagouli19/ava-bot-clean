@@ -1896,6 +1896,21 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
+    
+    #conseil bien-être
+    if re.search(r"\b(donne|propose|je veux|montre|apprends)\b.*\b(respiration|respirer|exercices?)\b", question_clean, re.IGNORECASE):
+        return (
+            "🧘‍♀️ Voici deux techniques simples de respiration pour vous détendre :\n"
+            "1. **Respiration carrée** : inspirez 4 s, retenez 4 s, expirez 4 s, retenez 4 s. Répétez 5 fois.\n"
+            "2. **Respiration abdominale** : mains sur le ventre, inspirez en gonflant le bas du ventre, expirez lentement en le vidant. 10 cycles.\n"
+            "Essayez ça, vous devriez sentir la tension redescendre en quelques minutes !"
+        )
+
+    # Exemple plus strict pour une définition
+    if re.match(r"^(qu(?:elle|\'est)\s+heure\??)$", question_clean, re.IGNORECASE):
+        from datetime import datetime
+        now = datetime.now().strftime("%H:%M")
+        return f"🕰️ Il est actuellement {now}."
 
      # ✅ Gestion des souvenirs utilisateur (nouvelle priorité)
     reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
