@@ -322,9 +322,9 @@ GITHUB_TOKEN = st.secrets["github"]["GITHUB_TOKEN"]
 # ─────────────────────────────────────────
 # ✅ Charger la mémoire AVA (générale)
 # ─────────────────────────────────────────
-def charger_memoire_ava():
+def charger_memoire_ava(): 
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_AVA}"
-    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
     try:
         response = requests.get(url, headers=headers)
@@ -360,11 +360,11 @@ def charger_memoire_utilisateurs():
         return {}
 
 # ─────────────────────────────────────────
-# ✅ Sauvegarder la mémoire AVA (générale)
+# 💾 Sauvegarder la mémoire AVA (générale)
 # ─────────────────────────────────────────
 def sauvegarder_memoire_ava(memoire: dict):
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_AVA}"
-    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
     try:
         response = requests.get(url, headers=headers)
@@ -382,6 +382,7 @@ def sauvegarder_memoire_ava(memoire: dict):
             print(f"❌ Erreur lors de la sauvegarde : {response.status_code} - {response.text}")
     except Exception as e:
         print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
+
 
 # ─────────────────────────────────────────
 # 💾 Sauvegarder la mémoire des utilisateurs
@@ -406,7 +407,6 @@ def sauvegarder_memoire_utilisateurs(memoire: dict):
             print(f"❌ Erreur lors de la sauvegarde : {response.status_code} - {response.text}")
     except Exception as e:
         print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
-
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -2902,19 +2902,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
        
         return message_bot
 
-    # 🔎 Détection automatique des informations personnelles
-    motifs = {
-        r"j'aime (les|la|le|l')\s+(.+)": "plat_prefere",
-        r"mon sport prefere est\s+(.+)": "sport_prefere",
-        r"mon film prefere est\s+(.+)": "film_prefere",
-        r"ma couleur preferee est\s+(.+)": "souvenirs.couleur_preferee"
-    }
-
-    for motif, cle in motifs.items():
-        match = re.search(motif, question_clean)
-        if match:
-            valeur = match.group(2).strip()
-            return mettre_a_jour_profil_utilisateur(user_id, cle, valeur)
 
     # Commande de rappel d'information
     if any(kw in question_clean for kw in ["qu'est-ce que tu sais sur moi", "que sais-tu de moi"]):
