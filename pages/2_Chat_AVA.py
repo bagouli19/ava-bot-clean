@@ -320,11 +320,11 @@ BRANCHE = "main"
 GITHUB_TOKEN = st.secrets["github"]["GITHUB_TOKEN"]
 
 # ─────────────────────────────────────────
-# 🔄 Charger la mémoire AVA (générale) depuis GitHub
+# ✅ Charger la mémoire AVA (générale)
 # ─────────────────────────────────────────
 def charger_memoire_ava():
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_AVA}"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
     try:
         response = requests.get(url, headers=headers)
@@ -360,11 +360,11 @@ def charger_memoire_utilisateurs():
         return {}
 
 # ─────────────────────────────────────────
-# 💾 Sauvegarder la mémoire AVA (générale)
+# ✅ Sauvegarder la mémoire AVA (générale)
 # ─────────────────────────────────────────
 def sauvegarder_memoire_ava(memoire: dict):
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_AVA}"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
     try:
         response = requests.get(url, headers=headers)
@@ -382,7 +382,6 @@ def sauvegarder_memoire_ava(memoire: dict):
             print(f"❌ Erreur lors de la sauvegarde : {response.status_code} - {response.text}")
     except Exception as e:
         print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
-
 
 # ─────────────────────────────────────────
 # 💾 Sauvegarder la mémoire des utilisateurs
@@ -1844,7 +1843,7 @@ def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
     question_clean = normaliser_intentions(question_clean)  # 🔥 Normalisation des intentions
-    
+
     fail_patterns = [
         "je suis désolé", "je n'ai pas la capacité", "je ne peux pas",
         "je n'ai pas compris", "pouvez reformuler", "je recommande"
