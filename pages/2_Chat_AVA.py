@@ -41,6 +41,9 @@ from modules.recherche_web import (
 )
 # — Modules internes
 import logging
+import logging
+logging.getLogger("transformers.tokenization_utils_base").setLevel(logging.ERROR)
+logging.getLogger("transformers.pipelines").setLevel(logging.ERROR)
 from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_techniques
 from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
@@ -62,14 +65,6 @@ print(ed("Je suis vraiment heureux aujourd'hui !"))
 # ───────────────────────────────────────────────────────────────────────
 
 st.set_page_config(page_title="Chat AVA", layout="centered")
-
-
-@st.cache_resource
-# ── 1) Silence des warnings inutiles de Transformers ──────────────────────────────
-
-logging.getLogger("transformers.tokenization_utils_base").setLevel(logging.ERROR)
-logging.getLogger("transformers.pipelines").setLevel(logging.ERROR)
-
 
 
 # ── 3) Chargement du pipeline en cache (une seule fois) ───────────────────────────
