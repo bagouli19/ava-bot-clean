@@ -689,19 +689,38 @@ def generer_phrase_autonome(theme: str, infos: dict) -> str:
 # ───────────────────────────────────────────────────────────────────────
 
 
-# ─────────────────────────────────────────
-# ✅ Nettoyage de texte optimisé (préserve les accents)
-# ─────────────────────────────────────────
 def nettoyer_texte(texte: str) -> str:
     """
-    Nettoie et normalise le texte sans supprimer les accents
-    et sans modifier les caractères essentiels.
+    Nettoie et normalise le texte en supprimant les accents, les espaces superflus,
+    et en convertissant tout en minuscules.
     """
-    texte = texte.strip()
-    texte = re.sub(r"[’‘`´]", "'", texte)  # Normalisation des apostrophes
+    texte = texte.strip().lower()
+    texte = re.sub(r"[’‘´]", "'", texte)  # Normalisation des apostrophes
     texte = re.sub(r"\s+", " ", texte)  # Réduction des espaces multiples
-    return texte
+    texte = unicodedata.normalize("NFKD", texte).encode("ascii", "ignore").decode("utf-8")
     
+    # Correction des variantes communes et des fautes d'orthographe courantes
+    corrections = {
+        "je suis désoler": "je suis désolé",
+        "jaimerais": "j'aimerais",
+        "sait tu": "sais-tu",
+        "ta": "t'a",
+        "sa": "ça",
+        "ces": "ses",
+        "qu'elle": "quelle",
+        "qu'il": "quel",
+        "j'ai": "je",
+        "tkt": "t'inquiète",
+        "merciii": "merci",
+        "slt": "salut",
+        "cc": "coucou",
+        "stp": "s'il te plaît",
+    }
+    
+    for faute, correction in corrections.items():
+        texte = texte.replace(faute, correction)
+    
+    return texte
     
 # --- Bloc Salutations courantes --- 
 SALUTATIONS_COURANTES = {
