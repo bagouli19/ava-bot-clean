@@ -171,6 +171,9 @@ import base64
 import json
 from datetime import datetime
 
+# ─────────────────────────────────────────
+# ✅ Charger les profils utilisateurs
+# ─────────────────────────────────────────
 def charger_profils() -> dict:
     url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/{BRANCHE}/{FICHIER_PROFIL}"
     try:
@@ -178,24 +181,26 @@ def charger_profils() -> dict:
         if response.status_code == 200:
             return response.json()
         else:
-            st.sidebar.warning("⚠️ Impossible de charger le profil utilisateur.")
+            print("⚠️ Impossible de charger le profil utilisateur.")
             return {}
     except Exception as e:
-        st.sidebar.error(f"❌ Erreur chargement profil : {e}")
+        print(f"❌ Erreur chargement profil : {e}")
         return {}
 
+
+# ─────────────────────────────────────────
+# ✅ Sauvegarder les profils utilisateurs
+# ─────────────────────────────────────────
 def sauvegarder_profils(profils: dict):
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_PROFIL}"
     headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
         "Accept": "application/vnd.github.v3+json"
     }
+
     try:
-        get_res = requests.get(url, headers=headers)
-        sha = get_res.json().get("sha", "")
-        if not sha:
-            st.sidebar.error("❌ SHA introuvable : impossible de sauvegarder le profil.")
-            return
+        response = requests.get(url, headers=headers)
+        sha = response.json().get("sha", "") if response.status_code == 200 else ""
 
         content_encoded = base64.b64encode(
             json.dumps(profils, ensure_ascii=False, indent=2).encode("utf-8")
@@ -207,15 +212,14 @@ def sauvegarder_profils(profils: dict):
             "sha": sha
         }
 
-        put_res = requests.put(url, headers=headers, json=payload)
-        if put_res.status_code in [200, 201]:
-            st.sidebar.success("✅ Profil utilisateur mis à jour sur GitHub")
+        response = requests.put(url, headers=headers, json=payload)
+        if response.status_code in [200, 201]:
+            print("✅ Profil utilisateur mis à jour sur GitHub.")
         else:
-            st.sidebar.error(f"❌ Échec sauvegarde : {put_res.status_code}")
-            st.sidebar.error(put_res.text)
+            print(f"❌ Échec sauvegarde : {response.status_code}")
 
     except Exception as e:
-        st.sidebar.error(f"❌ Erreur API GitHub : {e}")
+        print(f"❌ Erreur API GitHub : {e}")
 
 # ✅ Gestion du profil utilisateur
 def get_my_profile() -> dict:
