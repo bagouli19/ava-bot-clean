@@ -1845,14 +1845,6 @@ def trouver_reponse(question: str, model) -> str:
         if resp_salut:
             return resp_salut
 
-        
-        # 2) Emotion (sur raw, pour conserver “?”)
-        print("▶️ DEBUG appel analyser_emotions")
-        message_emotionnel = analyser_emotions(question_raw)
-        if message_emotionnel:
-            print("✅ DEBUG réponse émotionnelle:", message_emotionnel)
-            return message_emotionnel
-
         # 3) Base de connaissances
         if question_clean in base_culture_nettoyee:
             return base_culture_nettoyee[question_clean]
@@ -1861,6 +1853,11 @@ def trouver_reponse(question: str, model) -> str:
         resp_langage = chercher_reponse_base_langage(question_raw)
         if resp_langage:
             return resp_langage
+            
+        # 🌐 Analyse des émotions
+        message_emotionnel = analyser_emotions(question_clean)
+        if message_emotionnel:
+            return message_emotionnel
 
         # 5) Modules spécialisés
         resp_spec = gerer_modules_speciaux(question_raw, question_clean, model)
