@@ -1899,11 +1899,11 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
     
     #conseil bien-être
-    """
+     """
     Renvoie une réponse spécialisée pour :
-     - les exercices de respiration
-     - la demande de l'heure
-     - (ajoutez d'autres cas ici)
+      - les exercices de respiration,
+      - la demande de l'heure,
+      - (ajoutez d'autres cas ici)
     Retourne None si aucun module n'est déclenché.
     """
     # 1) Exercice de respiration : on ne capte que si c'est une vraie demande
@@ -1920,16 +1920,15 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "Essayez ces exercices, vous devriez sentir la tension redescendre rapidement !"
         )
 
-    # 2) Heure courante
-    # On veut capter uniquement "Quelle heure est-il ?" ou variantes très proches
+    # 2) Heure courante (strict)
     pattern_heure = re.compile(
-        r"^(?:quelle\s+heure\s+est[- ]?il)\s*\??$",
+        r"^(?:quelle\s+heure\s+est[-\s]?il)\s*\??$",
         re.IGNORECASE
     )
     if pattern_heure.match(question_clean):
         now = datetime.now().strftime("%H:%M")
         return f"🕰️ Il est actuellement {now}."
-  
+
 
     import re, ast, streamlit as st
 
