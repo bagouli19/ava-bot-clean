@@ -1552,18 +1552,18 @@ def rechercher_horoscope(filepath):
     else:
         print("❌ Aucune occurrence trouvée.")
 
-import re
-from random import choice
 
+
+```python
 import os
 import re
 from random import choice
 import openai
 
-# 1) Initialisez votre clé API OpenAI  
+# Initialisation de la clé API OpenAI
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# 2) Votre mapping enrichi
+# Mapping enrichi des réponses émotionnelles
 reponses_variantes = {
     "joy": [
         (
@@ -1652,40 +1652,74 @@ reponses_variantes = {
     ],
 }
 
+# Alias pour normaliser certaines variantes d’étiquettes
+alias_labels = {
+    "happiness": "joy",
+    "happy": "joy",
+    "angry": "anger",
+    "fearful": "fear",
+}
+
 def analyser_emotions(question: str) -> str:
     """
-    Classe l'émotion via l'API OpenAI et retourne une réponse adaptée, 
+    Classe l'émotion via l'API OpenAI et retourne une réponse adaptée,
     ou "" si pas d'émotion reconnue ou question factuelle.
     """
     q = (question or "").strip()
-    print("▶️ DEBUG analyser_emotions input:", repr(q))
+    print("▶️ DEBUG input brute:", repr(q))
+    # Ne pas traiter les questions factuelles ni les chaînes vides
     if not q or q.endswith("?"):
-        # On ne traite **pas** les questions factuelles
+        print("▶️ DEBUG skip emotion (question ou vide)")
         return ""
-    
-    # Prompt pour classifier l'émotion
+
+    # Construction du prompt
     prompt = (
         "Vous êtes un classificateur d'émotion pour du texte en français.\n"
         "Catégories possibles : joy, optimism, sadness, anger, fear, love, disgust.\n\n"
         f"Phrase : « {q} »\n"
-        "Répondez **uniquement** par l'une de ces étiquettes, en minuscules."
+        "Répondez uniquement par l'étiquette (sans ponctuation)."
     )
     resp = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system",  "content": "Tu es un classificateur d'émotions."},
-            {"role": "user",    "content": prompt},
+            {"role": "system", "content": "Tu es un classificateur d'émotions."},
+            {"role": "user",   "content": prompt},
         ],
         temperature=0.0,
-        max_tokens=1
+        max_tokens=3
     )
-    label = resp.choices[0].message.content.strip().lower()
-    print(f"▶️ DEBUG label détecté via OpenAI: {label!r}")
-    
-    # Sélection aléatoire d'une variante si étiquette valide
-    texte = choice(reponses_variantes.get(label, [""]))
-    print(f"▶️ DEBUG réponse sélectionnée: {texte!r}")
-    return texte
+
+    raw_label = resp.choices[0].message.content
+    print("▶️ DEBUG raw label:", repr(raw_label))
+
+    # Normalisation du label
+    label = re.sub(r"[^a-zA-Z]", "", raw_label).lower()
+    label = alias_labels.get(label, label)
+    print("▶️ DEBUG label normalisé:", repr(label))
+
+    # Sélection de la réponse
+    variantes = reponses_variantes.get(label)
+    if not variantes:
+        print("▶️ DEBUG aucune variante trouvée, skip emotion")
+        return ""
+
+    reponse = choice(variantes)
+    print("▶️ DEBUG réponse choisie:", repr(reponse))
+    return reponse
+
+# Test harness pour exécuter des cas locaux
+if __name__ == "__main__":
+    tests = [
+        "Je suis très heureux aujourd’hui !",
+        "Je me sens triste...",
+        "Je suis en colère contre mon patron",
+        "J’ai peur de l’orage",
+        "J’adore parler avec toi"
+    ]
+    for t in tests:
+        print(f"\n>>> Phrase: {t}")
+        print(analyser_emotions(t))
+
 
 
 import streamlit as st
