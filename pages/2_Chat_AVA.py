@@ -2888,7 +2888,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return message_bot
 
 
-     """
+    """
     Renvoie une réponse spécialisée pour :
     - Profil utilisateur ("que sais-tu de moi")
     - Rappels personnels ("rappelle-moi de ...")
