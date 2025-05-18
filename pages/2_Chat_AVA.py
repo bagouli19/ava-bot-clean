@@ -1906,12 +1906,11 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     #conseil bien-être
     """
     Renvoie une réponse spécialisée pour :
-      - les exercices de respiration,
-      - la demande de l'heure,
-      - (ajoutez d'autres cas ici)
+      - exercices de respiration (sur vraie demande)
+      - demande de l'heure (strict)
     Retourne None si aucun module n'est déclenché.
     """
-    # 1) Exercice de respiration : on ne capte que si c'est une vraie demande
+    # (1) Exercice de respiration : capture uniquement une vraie demande
     pattern_resp = re.compile(
         r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercices?)\b",
         re.IGNORECASE
@@ -1925,7 +1924,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "Essayez ces exercices, vous devriez sentir la tension redescendre rapidement !"
         )
 
-    # 2) Heure courante (strict)
+    # (2) Heure courante : capte exclusivement « Quelle heure est-il ? »
     pattern_heure = re.compile(
         r"^(?:quelle\s+heure\s+est[-\s]?il)\s*\??$",
         re.IGNORECASE
@@ -1933,6 +1932,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if pattern_heure.match(question_clean):
         now = datetime.now().strftime("%H:%M")
         return f"🕰️ Il est actuellement {now}."
+
 
 
     import re, ast, streamlit as st
