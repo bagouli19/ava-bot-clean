@@ -1902,38 +1902,38 @@ def trouver_reponse(question: str, model) -> str:
         if isinstance(resp_perso, str):
             return resp_perso
 
-        # 0) Souvenirs utilisateur (priorité absolue)
+        # 1) Souvenirs utilisateur (priorité absolue)
         if (memo := gerer_souvenirs_utilisateur(question_raw)):
             return memo
 
-        # 1) Salutations
+        # 2) Salutations
         if (sal := repondre_salutation(question_clean)):
             return sal
 
-        # 2) Base de connaissances
+        # 3) Base de connaissances
         if question_clean in base_culture_nettoyee:
             return base_culture_nettoyee[question_clean]
 
-        # 3) Base de langage
+        # 4) Base de langage
         if (lang := chercher_reponse_base_langage(question_raw)):
             return lang
 
-        # 4) Modules spécialisés (respiration, heure…)
+        # 5) Modules spécialisés (respiration, heure…)
         if (spec := gerer_modules_speciaux(question_raw, question_clean, model)):
             return spec
 
-        # 5) Analyse émotionnelle
+        # 6) Analyse émotionnelle
         if (emo := analyser_emotions(question_raw)):
             return emo
 
-        # 6) Fallback GPT
+        # 7) Fallback GPT
         reponse_oa = repondre_openai(question_raw)
         if isinstance(reponse_oa, str) and reponse_oa.strip():
             low = reponse_oa.lower()
             if not any(fp in low for fp in ["je suis désolé","je ne peux pas","pouvez reformuler"]):
                 return reponse_oa.strip()
 
-        # 7) Fallback Google
+        # 8) Fallback Google
         return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
 
 # --- Modules personnalisés (à enrichir) ---
