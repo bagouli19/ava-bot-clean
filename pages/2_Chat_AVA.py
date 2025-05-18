@@ -297,7 +297,13 @@ def gerer_souvenirs_utilisateur(question_raw: str):
 
     
     return None
-    
+
+
+# Fonctions utilitaires attendues:
+# get_my_profile() -> dict  : renvoie le dict profil de l'utilisateur (avec clé "souvenirs", "rappels", "taches")
+# set_my_profile(profil: dict) : met à jour le profil
+# charger_memoire_ava() -> dict : renvoie la mémoire globale de l'AVA
+
 
 # Fonctions utilitaires attendues:
 # get_my_profile() -> dict  : renvoie le dict profil de l'utilisateur (avec clé "souvenirs", "rappels", "taches")
@@ -322,18 +328,19 @@ def repondre_personnalise(question_raw: str) -> Optional[str]:
     - Préférences (plat, sport, film, couleur)
     Retourne None si aucun cas.
     """
-    from your_profile_module import get_my_profile  # adapter l'import selon ton projet
-
-    q = normalize_text(question_raw)
-    profil = get_my_profile()
+    # Utiliser la fonction existante de chargement de profil
+    profil = charger_profil_utilisateur()
     souvenirs = profil.get("souvenirs", {})
     prenom = souvenirs.get("prenom", "ami")
 
+    # Normaliser la question
+    q = normalize_text(question_raw)
+
     # Salutations
-    if re.search(r"(bonjour|salut|coucou)", q):
+    if re.search(r"(?:bonjour|salut|coucou)", q):
         return f"👋 Bonjour {prenom.capitalize()} ! J'espère que vous allez bien."
 
-    # Préférences
+    # Préférences enregistrées
     if "plat prefere" in q and "plat_prefere" in souvenirs:
         return f"🍕 Votre plat préféré est {souvenirs['plat_prefere']} !"
     if "sport prefere" in q and "sport_prefere" in souvenirs:
@@ -343,7 +350,8 @@ def repondre_personnalise(question_raw: str) -> Optional[str]:
     if "couleur preferee" in q and "couleur_preferee" in souvenirs:
         return f"🎨 Votre couleur préférée est {souvenirs['couleur_preferee']} !"
 
-    return None  # pas de réponse personnalisée
+    # Aucun cas spécial
+    return None
 
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
