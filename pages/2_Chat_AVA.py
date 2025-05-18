@@ -1844,9 +1844,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-     # 1) Exercices de respiration (demande explicite)
+    # 1) Exercices de respiration (demande explicite)
     pattern_resp = re.compile(
-        r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercices?)\b",
+        r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercice)s?\b",
         re.IGNORECASE
     )
     if pattern_resp.search(question_clean):
