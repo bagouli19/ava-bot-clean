@@ -1565,7 +1565,25 @@ def rechercher_horoscope(filepath):
     else:
         print("❌ Aucune occurrence trouvée.")
 
+synonymes_intentions = {
+    "aider": ["assister", "soutenir", "donner un coup de main", "accompagner"],
+    "comprendre": ["saisir", "apprendre", "découvrir", "cerner"],
+    "expliquer": ["décrire", "clarifier", "préciser", "détailler"],
+    "souvenir": ["mémoriser", "retenir", "rappeler", "garder en mémoire"],
+    "calmer": ["apaiser", "détendre", "tranquilliser", "rassurer"],
+    "conseil": ["recommandation", "suggestion", "astuce", "idée"],
+    "inquiet": ["anxieux", "angoissé", "stressé", "préoccupé"],
+    "heureux": ["joyeux", "content", "épanoui", "satisfait"],
+}
 
+def normaliser_intentions(texte: str) -> str:
+    """
+    Remplace les synonymes par une version normalisée pour améliorer la compréhension.
+    """
+    for mot, synonymes in synonymes_intentions.items():
+        for syn in synonymes:
+            texte = texte.replace(syn, mot)
+    return texte
 
 import streamlit as st
 import openai
@@ -1825,6 +1843,8 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
+    question_clean = normaliser_intentions(question_clean)  # 🔥 Normalisation des intentions
+    
     fail_patterns = [
         "je suis désolé", "je n'ai pas la capacité", "je ne peux pas",
         "je n'ai pas compris", "pouvez reformuler", "je recommande"
