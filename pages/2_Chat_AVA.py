@@ -2179,20 +2179,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         # Si les deux (heure + date) sont demandés
         return f"🕰️ Il est **{heure_actuelle}** et nous sommes le **{date_actuelle}**."            
 
-    # --- Souvenirs dynamiques ---
-    if any(kw in question_clean for kw in ["tu te souviens", "tu te rappelles", "qu’est-ce que je t’ai dit"]):
-        # on extrait la clé recherchée après 'de', 'du', 'des' ou 'sur'
-        frag = re.search(r"(?:de|du|des|sur)\s+(.+)", question_clean)
-        if frag:
-            key = frag.group(1).strip().rstrip(" ?.!;").replace(" ", "_")
-            # recherche exacte
-            if key in st.session_state["souvenirs"]:
-                return st.session_state["souvenirs"][key]
-            # fallback sur inclusion partielle
-            for k, v in st.session_state["souvenirs"].items():
-                if key in k:
-                    return v
-        return "❓ Je n'ai pas de souvenir pour ça… Peux‑tu me le redire ?"
+    
 
     # --- Initialisation des variables de contrôle ---
     message_bot       = ""
