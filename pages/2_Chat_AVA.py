@@ -1,4 +1,3 @@
-
 import os
 import re
 import json
@@ -16,6 +15,8 @@ import sys
 sys.path.append(os.path.abspath(".."))
 from knowledge_base.base_de_langage import base_langage
 from modules.openai_utils import repondre_openai
+import torch._classes
+torch._classes.__path__ = []
 
 
 from huggingface_hub import snapshot_download, hf_hub_download
@@ -43,6 +44,16 @@ from analyse_technique import ajouter_indicateurs_techniques, analyser_signaux_t
 from fonctions_chat   import obtenir_reponse_ava
 from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
+import traceback
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+from transformers import pipeline
+ed = pipeline(
+  "text-classification",
+  model="astrosbd/french_emotion_camembert",
+  return_all_scores=False
+)
+print(ed("Je suis vraiment heureux aujourd'hui !"))
+
 
 
 # ───────────────────────────────────────────────────────────────────────
@@ -50,6 +61,22 @@ from dotenv import load_dotenv
 # ───────────────────────────────────────────────────────────────────────
 
 st.set_page_config(page_title="Chat AVA", layout="centered")
+
+
+@st.cache_resource
+def load_emotion_pipeline():
+    model_name = "astrosbd/french_emotion_camembert"
+    tokenizer  = AutoTokenizer.from_pretrained(model_name)
+    model      = AutoModelForSequenceClassification.from_pretrained(model_name)
+    return pipeline(
+        "text-classification",
+        model=model,
+        tokenizer=tokenizer,
+        return_all_scores=False
+    )
+
+# plus bas, dans le code global, une seule fois :
+emotion_detector = load_emotion_pipeline()
 
 
 # Chargement des clés API depuis les secrets Streamlit
@@ -1545,6 +1572,148 @@ def rechercher_horoscope(filepath):
     else:
         print("❌ Aucune occurrence trouvée.")
 
+import re
+from random import choice
+
+# 1) Définition du mapping en amont
+reponses_variantes = {
+    "joy": [
+        (
+            "😊 Vous semblez rayonnant aujourd’hui ! "
+            "Qu’est-ce qui vous met dans cet état de joie ? "
+            "J’aimerais beaucoup savoir ce qui vous enthousiasme et comment vous comptez prolonger ce bonheur."
+        ),
+        (
+            "😄 Quel bonheur de vous sentir si heureux ! "
+            "Partagez-m’en un peu plus : est-ce un événement particulier ou simplement une belle énergie du jour ? "
+            "Parfois, raconter ces moments multiplie la joie !"
+        ),
+    ],
+    "optimism": [
+        (
+            "🌱 Votre optimisme est contagieux ! "
+            "Quels projets ou idées vous inspirent ces jours-ci ? "
+            "On peut en discuter ensemble pour leur donner un petit coup de pouce !"
+        ),
+        (
+            "😃 Je sens beaucoup d’espoir dans vos mots. "
+            "Quelles belles choses imaginez-vous pour l’avenir ? "
+            "Si vous voulez, je peux vous aider à formaliser ces idées en objectifs concrets !"
+        ),
+    ],
+    "sadness": [
+        (
+            "😢 Je suis désolé que vous ressentiez de la tristesse. "
+            "Si vous le souhaitez, parlez-m’en un peu plus : qu’est-ce qui pèse sur votre cœur en ce moment ? "
+            "Je peux aussi vous suggérer des petites actions pour vous remonter le moral."
+        ),
+        (
+            "💧 La tristesse peut être très lourde… "
+            "Vous n’êtes pas seul : si vous voulez partager ce qui vous attriste, je suis là pour vous écouter. "
+            "On peut explorer ensemble des façons de vous apporter un peu de réconfort."
+        ),
+    ],
+    "anger": [
+        (
+            "😡 Je perçois de la colère dans vos mots. "
+            "C’est une réaction légitime : souhaitez-vous en parler pour libérer cette tension ? "
+            "Je peux vous proposer des techniques de respiration ou de visualisation pour vous apaiser."
+        ),
+        (
+            "🔥 La colère peut être comme une énergie puissante ! "
+            "Dites-moi ce qui vous met autant en colère : parfois, l’exprimer permet déjà de se sentir mieux. "
+            "Ensuite, je peux vous guider vers des stratégies pour canaliser cette colère positivement."
+        ),
+    ],
+    "fear": [
+        (
+            "😨 Vous semblez inquiet ou anxieux. "
+            "Quel est le sujet principal de votre inquiétude ? "
+            "Nous pouvons détailler vos craintes et voir ensemble comment les apaiser, par exemple avec des exercices de respiration."
+        ),
+        (
+            "🌩️ La peur peut parfois nous paralyser… "
+            "Parlez-m’en : qu’est-ce qui vous fait peur exactement ? "
+            "Je peux vous proposer des astuces pour réduire votre niveau de stress et reprendre confiance."
+        ),
+    ],
+    "love": [
+        (
+            "❤️ Je sens beaucoup d’affection dans vos mots. "
+            "À qui pensez-vous ? "
+            "Parfois, partager un souvenir ou un message gentil peut renforcer ce lien. "
+            "Si vous le souhaitez, je peux vous aider à formuler ces pensées."
+        ),
+        (
+            "😍 L’amour est un sentiment merveilleux ! "
+            "Voulez-vous en parler : qu’est-ce qui vous touche particulièrement chez cette personne ? "
+            "Je suis là pour vous écouter et vous soutenir."
+        ),
+    ],
+    "disgust": [
+        (
+            "🤢 Je perçois du dégoût ou de la répulsion. "
+            "Qu’est-ce qui suscite cette réaction chez vous ? "
+            "En comprendre l’origine peut aider à apaiser ce sentiment, si vous voulez en discuter plus en détail."
+        ),
+        (
+            "⚠️ Le dégoût est parfois un signal d’alarme important. "
+            "Pouvez-vous m’en dire plus sur ce qui vous choque ou vous dérange tant ? "
+            "En parler est souvent la première étape pour retrouver un sentiment d’équilibre."
+        ),
+    ],
+}
+
+def analyser_emotions(question: str) -> str:
+    """
+    Analyse les émotions d'une phrase (hors questions factuelles) et retourne
+    une réponse adaptée, ou "" si pas d'émotion reconnue.
+    """
+    q = question or ""
+    print("▶️ DEBUG analyser_emotions input:", repr(q))
+    q = q.strip()
+    if not q:
+        return ""
+
+    # Normalisation des apostrophes typographiques → ASCII
+    q = q.replace("’", "'").replace("‘", "'")
+
+    # Guard : si c'est une question factuelle (phrase terminée par '?'), on skip
+    if q.endswith("?"):
+        print("▶️ DEBUG question factuelle détectée, skip émotion")
+        return ""
+
+    try:
+        # Appel du pipeline HF
+        raw = emotion_detector(q)
+        print("▶️ DEBUG raw output:", repr(raw))
+
+        # Unifier raw en liste de dicts
+        if isinstance(raw, list):
+            if raw and isinstance(raw[0], list):
+                emotions = raw[0]
+            else:
+                emotions = raw
+        else:
+            print("▶️ DEBUG format inattendu de raw, skip émotion")
+            return ""
+
+        if not emotions or not isinstance(emotions[0], dict):
+            print("▶️ DEBUG émotions vides ou mal formées, skip émotion")
+            return ""
+
+        # Récupérer l'étiquette
+        label = emotions[0].get("label", "").lower()
+        print(f"▶️ DEBUG label détecté: {label!r}")
+
+        # Sélectionner une variante
+        texte = choice(reponses_variantes.get(label, [""]))
+        print(f"▶️ DEBUG réponse sélectionnée: {texte!r}")
+        return texte
+
+    except Exception as e:
+        print(f"❌ Erreur détection émotions : {e}")
+        return f"😕 Oups, je n'ai pas pu analyser vos émotions ({e})"
 
 
 import streamlit as st
@@ -1659,37 +1828,40 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 # --------------------------
 
 def trouver_reponse(question: str, model) -> str:
-    question_raw = question or ""
+    question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
-    
-    # 🟢 Animation de chargement discrète
-    with st.spinner("💡 AVA réfléchit... veuillez patienter un instant."):
-        time.sleep(0.5)  # Pause de 0.5 seconde pour rendre l'animation visible
 
-        # 🔍 Salutations
-        reponse_salut = repondre_salutation(question_clean)
-        if reponse_salut:
-            return reponse_salut
+    with st.spinner("💡 AVA réfléchit…"):
+        time.sleep(0.5)
+
+        # 1) Salutations
+        resp_salut = repondre_salutation(question_clean)
+        if resp_salut:
+            return resp_salut
+
         
-        # 🌐 Culture générale (Base de connaissances)
+        # 2) Emotion (sur raw, pour conserver “?”)
+        print("▶️ DEBUG appel analyser_emotions")
+        message_emotionnel = analyser_emotions(question_raw)
+        if message_emotionnel:
+            print("✅ DEBUG réponse émotionnelle:", message_emotionnel)
+            return message_emotionnel
+
+        # 3) Base de connaissances
         if question_clean in base_culture_nettoyee:
             return base_culture_nettoyee[question_clean]
 
-        # 📚 Base de langage
-        reponse_langage = chercher_reponse_base_langage(question)
-        if reponse_langage:
-            return reponse_langage
+        # 4) Base de langage
+        resp_langage = chercher_reponse_base_langage(question_raw)
+        if resp_langage:
+            return resp_langage
 
-        # ⚡ Modules spécialisés (prioritaires)
-        reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
-        if reponse_speciale and isinstance(reponse_speciale, str) and reponse_speciale.strip():
-            print("✅ Réponse module spécial")
-            return reponse_speciale.strip()
-        
-        # 🤖 Fallback GPT (OpenAI) (SEULEMENT SI AUCUN MODULE N'A RÉPONDU)
-        reponse_openai = repondre_openai(question)
+        # 5) Modules spécialisés
+        resp_spec = gerer_modules_speciaux(question_raw, question_clean, model)
+        if isinstance(resp_spec, str) and resp_spec.strip():
+            return resp_spec.strip()
 
-        # Patterns indiquant un échec ou une non-compréhension
+        # … tout en haut de trouver_reponse()
         fail_patterns = [
             "je suis désolé",
             "je vous recommande",
@@ -1700,21 +1872,22 @@ def trouver_reponse(question: str, model) -> str:
             "je n'ai pas compris",
             "pouvez reformuler",
             "vous pouvez reformuler",
-            "je n’ai pas compris",
-            "je n’ai pas",
             "consultez"
         ]
 
-        if reponse_openai:
-            low = reponse_openai.lower()
-            # Si aucune des phrases d'excuse / non-compréhension n'apparaît, c’est une vraie réponse
-            if not any(pat in low for pat in fail_patterns):
-                return reponse_openai.strip()
+        # … après modules spécialisés …
+        resp_oa = repondre_openai(question_raw)
+        print("▶️ DEBUG reponse_openai:", repr(resp_oa), type(resp_oa))
 
-        # 🔎 Fallback Google (si aucune réponse satisfaisante)
+        if isinstance(resp_oa, str) and resp_oa.strip():
+            low = resp_oa.lower()
+            if not any(fp in low for fp in fail_patterns):
+                print("✅ Réponse OpenAI retenue")
+                return resp_oa.strip()
+
+        # sinon, on tombe sur le fallback Google
         print("🔎 Fallback Google")
-        recap = "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
-        return recap + rechercher_sur_google(question)
+        return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
