@@ -1554,11 +1554,20 @@ def rechercher_horoscope(filepath):
 
 
 
-
-import os
-import re
-from random import choice
+import streamlit as st
 import openai
+import difflib
+from sklearn.metrics.pairwise import cosine_similarity
+
+
+OPENAI_API_KEY = st.secrets["OpenAI"]["OPENAI_API_KEY"]
+openai.api_key  = OPENAI_API_KEY
+
+# --------------------------
+# Fonctions utilitaires
+# --------------------------
+from random import choice
+
 
 # Initialisation de la clé API OpenAI
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -1719,21 +1728,6 @@ if __name__ == "__main__":
     for t in tests:
         print(f"\n>>> Phrase: {t}")
         print(analyser_emotions(t))
-
-
-
-import streamlit as st
-import openai
-import difflib
-from sklearn.metrics.pairwise import cosine_similarity
-
-
-OPENAI_API_KEY = st.secrets["OpenAI"]["OPENAI_API_KEY"]
-openai.api_key  = OPENAI_API_KEY
-
-# --------------------------
-# Fonctions utilitaires
-# --------------------------
 
 PLACEHOLDER_PAS_DE_REPONSE = "🤔 Je n'ai pas trouvé de réponse précise."
 
