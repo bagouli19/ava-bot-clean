@@ -66,6 +66,8 @@
   },
   "papaya": {
     "prenom": "Papaya",
-    "souvenirs": {}
+    "souvenirs": {
+      "plat_prefere": "les lasagne"
+    }
   }
 }
