@@ -63,5 +63,9 @@
   "makeup": {
     "prenom": "Makeup",
     "souvenirs": {}
+  },
+  "papaya": {
+    "prenom": "Papaya",
+    "souvenirs": {}
   }
 }
