@@ -1857,10 +1857,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-   # DEBUG
-    print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
+   print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
 
-    # Exercices de respiration (demande explicite)
+    # 1) Exercices de respiration (demande explicite)
     pattern_resp = re.compile(
         r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercice)s?\b",
         re.IGNORECASE
@@ -1873,7 +1872,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "2. Respiration abdominale : mains sur le ventre, inspirez profondément, expirez lentement (10 cycles)."
         )
 
-    # Demande stricte de l'heure
+    # 2) Demande stricte de l'heure
     pattern_time = re.compile(
         r"^quelle\s+heure\s+est[-\s]?il\s*\?*?$",
         re.IGNORECASE
