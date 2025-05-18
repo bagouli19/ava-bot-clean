@@ -1711,7 +1711,6 @@ def analyser_emotions(question: str) -> str:
     print("🔎 [DEBUG emo] no matching emotion")
     return ""
 
-
 PLACEHOLDER_PAS_DE_REPONSE = "🤔 Je n'ai pas trouvé de réponse précise."
 
 def obtenir_reponse_ia(question):
@@ -1857,6 +1856,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
+    # DEBUG: afficher la forme nettoyée de la question
     print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
 
     # 1) Exercices de respiration (demande explicite)
@@ -1880,6 +1880,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if pattern_time.match(question_clean):
         print("✅ [DEBUG spec] matched time")
         return f"🕰️ Il est actuellement {datetime.now().strftime('%H:%M')}"
+
+    print("🔎 [DEBUG spec] no module matched")
+    return None
 
 
     import re, ast, streamlit as st
