@@ -1795,7 +1795,7 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 # Pipeline de réponse
 # --------------------------
 
-ef trouver_reponse(question: str, model) -> str:
+def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
 
