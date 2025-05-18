@@ -298,55 +298,6 @@ def gerer_souvenirs_utilisateur(question_raw: str):
     
     return None
 
-
-# Fonctions utilitaires attendues:
-# get_my_profile() -> dict  : renvoie le dict profil de l'utilisateur (avec clé "souvenirs", "rappels", "taches")
-# set_my_profile(profil: dict) : met à jour le profil
-# charger_memoire_ava() -> dict : renvoie la mémoire globale de l'AVA
-
-
-def normalize_text(s: str) -> str:
-    """Normalise le texte: accents, apostrophes, minuscules, ascii."""
-    s = s.replace("’", "'").replace("‘", "'")
-    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
-    return s.lower().strip()
-
-
-# ─────────────────────────────────────────
-# ✅ Réponses personnalisées intelligentes
-# ─────────────────────────────────────────
-def repondre_personnalise(question_raw: str) -> Optional[str]:
-    """
-    Réponses basées sur les souvenirs utilisateur :
-    - Salutations personnalisées
-    - Préférences (plat, sport, film, couleur)
-    Retourne None si aucun cas.
-    """
-    # Assurez-vous que `charger_profil_utilisateur` est importé en haut du fichier
-    profil = get_my_profile()
-    souvenirs = profil.get("souvenirs", {})
-    prenom = souvenirs.get("prenom", "ami")
-
-    # Normaliser la question
-    q = normalize_text(question_raw)
-
-    # Salutations personnalisées
-    if re.search(r"(?:bonjour|salut|coucou)", q):
-        return f"👋 Bonjour {prenom.capitalize()} ! J'espère que vous allez bien."
-
-    # Réponses aux préférences si enregistrées
-    if "plat prefere" in q and "plat_prefere" in souvenirs:
-        return f"🍕 Votre plat préféré est {souvenirs['plat_prefere']} !"
-    if "sport prefere" in q and "sport_prefere" in souvenirs:
-        return f"🏀 Vous adorez {souvenirs['sport_prefere']} !"
-    if "film prefere" in q and "film_prefere" in souvenirs:
-        return f"🎥 Votre film préféré est {souvenirs['film_prefere']} !"
-    if "couleur preferee" in q and "couleur_preferee" in souvenirs:
-        return f"🎨 Votre couleur préférée est {souvenirs['couleur_preferee']} !"
-
-    # Aucun cas détecté
-    return None
-
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
@@ -1893,11 +1844,6 @@ def trouver_reponse(question: str, model) -> str:
 
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
-        
-        # 0) Réponse personnalisée
-        resp_perso = repondre_personnalise(question_raw)
-        if isinstance(resp_perso, str):
-            return resp_perso
 
         # 1) Souvenirs utilisateur (priorité absolue)
         if (memo := gerer_souvenirs_utilisateur(question_raw)):
