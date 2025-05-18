@@ -239,19 +239,7 @@ if user not in all_profiles:
 st.session_state.profil = all_profiles[user]
 
 
-# ─────────────────────────────────────────
-# ✅ Fonction de normalisation (accents, apostrophes)
-# ─────────────────────────────────────────
-def normalize_text(s: str) -> str:
-    """
-    Normalise les apostrophes et supprime les accents, retourne une chaine lowercased.
-    """
-    # Unifier les apostrophes typographiques
-    s = s.replace("’", "'").replace("‘", "'")
-    # Décomposer et enlever les accents
-    s = unicodedata.normalize("NFKD", s)
-    s = s.encode("ascii", "ignore").decode("utf-8")
-    return s.lower().strip()
+
 
 # ─────────────────────────────────────────
 # ✅ Gestion des souvenirs utilisateur
