@@ -1658,33 +1658,25 @@ reponses_variantes = {
     ],
 }
 
-# Alias pour normaliser certaines variantes d’étiquettes
-alias_labels = {
+author_alias = {
     "happiness": "joy",
-    "happy": "joy",
-    "angry": "anger",
-    "fearful": "fear",
+    "happy":     "joy",
+    "angry":     "anger",
+    "fearful":   "fear",
 }
 
 def analyser_emotions(question: str) -> str:
     """
     Classe l'émotion via l'API OpenAI et retourne une réponse adaptée,
-    ou "" si pas d'émotion reconnue, question factuelle, ou erreur API.
+    ou "" si pas d'émotion reconnue ou question factuelle.
     """
     q = (question or "").strip()
-    print("▶️ DEBUG input brute:", repr(q))
-
-    # Ne pas traiter les questions factuelles ni les chaînes vides
     if not q or q.endswith("?"):
-        print("▶️ DEBUG skip emotion (question ou vide)")
         return ""
-
-    # Construction du prompt
     prompt = (
-        "Vous êtes un classificateur d'émotion pour du texte en français.\n"
-        "Catégories possibles : joy, optimism, sadness, anger, fear, love, disgust.\n\n"
-        f"Phrase : « {q} »\n"
-        "Répondez uniquement par l'étiquette (sans ponctuation)."
+        "Vous êtes un classificateur d'émotion pour du texte en français."
+        "Catégories : joy, optimism, sadness, anger, fear, love, disgust."
+        f"Phrase : {q}\nRépondez uniquement par l'étiquette."
     )
     try:
         resp = openai.ChatCompletion.create(
@@ -1696,44 +1688,15 @@ def analyser_emotions(question: str) -> str:
             temperature=0.0,
             max_tokens=3
         )
-    except ServiceUnavailableError as e:
-        print(f"❌ ServiceUnavailableError lors de l'appel OpenAI: {e}")
-        # fallback: ne pas bloquer l'app, retourner vide
+    except Exception:
         return ""
-    except OpenAIError as e:
-        print(f"❌ Erreur OpenAI lors de l'analyse d'émotion: {e}")
-        return ""
-
     raw_label = resp.choices[0].message.content
-    print("▶️ DEBUG raw label:", repr(raw_label))
-
-    # Normalisation du label
     label = re.sub(r"[^a-zA-Z]", "", raw_label).lower()
-    label = alias_labels.get(label, label)
-    print("▶️ DEBUG label normalisé:", repr(label))
-
-    # Sélection de la réponse
+    label = author_alias.get(label, label)
     variantes = reponses_variantes.get(label)
     if not variantes:
-        print("▶️ DEBUG aucune variante trouvée, skip emotion")
         return ""
-
-    reponse = choice(variantes)
-    print("▶️ DEBUG réponse choisie:", repr(reponse))
-    return reponse
-
-# Test harness pour exécuter des cas locaux
-if __name__ == "__main__":
-    tests = [
-        "Je suis très heureux aujourd’hui !",
-        "Je me sens triste...",
-        "Je suis en colère contre mon patron",
-        "J’ai peur de l’orage",
-        "J’adore parler avec toi"
-    ]
-    for t in tests:
-        print(f"\n>>> Phrase: {t}")
-        print(analyser_emotions(t))
+    return choice(variantes)
 
 PLACEHOLDER_PAS_DE_REPONSE = "🤔 Je n'ai pas trouvé de réponse précise."
 
@@ -1905,30 +1868,23 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     
     #conseil bien-être
     """
-    Renvoie une réponse spécialisée pour :
-      - exercices de respiration (sur vraie demande)
-      - demande de l'heure (strict)
-    Retourne None si aucun module n'est déclenché.
+    Répond aux demandes spécialisées : exercices de respiration, heure.
+    Retourne None si pas applicable.
     """
-    # (1) Exercice de respiration : capture uniquement une vraie demande
+    # Exercice de respiration sur demande explicite
     pattern_resp = re.compile(
         r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercices?)\b",
         re.IGNORECASE
     )
     if pattern_resp.search(question_clean):
         return (
-            "🧘‍♀️ Voici deux techniques simples de respiration pour vous détendre :\n"
-            "1. **Respiration carrée** : inspirez 4 s, retenez 4 s, expirez 4 s, retenez 4 s. Répétez 5 fois.\n"
-            "2. **Respiration abdominale** : mains sur le ventre, inspirez en gonflant le bas du ventre, "
-            "expirez lentement en le vidant. 10 cycles.\n"
-            "Essayez ces exercices, vous devriez sentir la tension redescendre rapidement !"
+            "🧘‍♀️ Techniques de respiration :\n"
+            "1. Respiration carrée : inspirez 4 s, retenez 4 s, expirez 4 s, retenez 4 s (5 cycles).\n"
+            "2. Respiration abdominale : mains sur le ventre, inspirez en gonflant le bas du ventre, expirez lentement (10 cycles)."
         )
 
-    # (2) Heure courante : capte exclusivement « Quelle heure est-il ? »
-    pattern_heure = re.compile(
-        r"^(?:quelle\s+heure\s+est[-\s]?il)\s*\??$",
-        re.IGNORECASE
-    )
+    # Demande d'heure stricte
+    pattern_heure = re.compile(r"^(?:quelle\s+heure\s+est[-\s]?il)\s*\?*$", re.IGNORECASE)
     if pattern_heure.match(question_clean):
         now = datetime.now().strftime("%H:%M")
         return f"🕰️ Il est actuellement {now}."
