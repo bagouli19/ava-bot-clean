@@ -1800,8 +1800,12 @@ def trouver_reponse(question: str, model) -> str:
     question_clean = nettoyer_texte(question_raw)
 
     fail_patterns = [
-        "je suis désolé", "je n'ai pas la capacité", "je ne peux pas",
-        "je n'ai pas compris", "pouvez reformuler", "je recommande"
+        "je suis désolé",
+        "je n'ai pas la capacité",
+        "je ne peux pas",
+        "je n'ai pas compris",
+        "pouvez reformuler",
+        "je recommande"
     ]
 
     with st.spinner("💡 AVA réfléchit…"):
@@ -1819,13 +1823,13 @@ def trouver_reponse(question: str, model) -> str:
         if (lang := chercher_reponse_base_langage(question_raw)):
             return lang
 
-        # 4) Analyse émotionnelle (avant spécialisation)
-        if (emo := analyser_emotions(question_raw)):
-            return emo
-
-        # 5) Modules spécialisés
+        # 4) Modules spécialisés (exercices de respiration, heure…)
         if (spec := gerer_modules_speciaux(question_raw, question_clean, model)):
             return spec
+
+        # 5) Analyse émotionnelle (dernier recours avant GPT)
+        if (emo := analyser_emotions(question_raw)):
+            return emo
 
         # 6) Fallback GPT
         if (oa := repondre_openai(question_raw)) and isinstance(oa, str):
@@ -1834,9 +1838,11 @@ def trouver_reponse(question: str, model) -> str:
 
         # 7) Fallback final (Google)
         return (
-            "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
+            "**Récap :**\n"
+            "🤔 Je n'ai pas trouvé de réponse précise.\n\n"
             + rechercher_sur_google(question_raw)
         )
+
 
 
 # --- Modules personnalisés (à enrichir) ---
