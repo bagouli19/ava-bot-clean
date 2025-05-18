@@ -47,13 +47,8 @@ from fonctions_meteo   import obtenir_meteo, get_meteo_ville
 from dotenv import load_dotenv
 import traceback
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-from transformers import pipeline
-ed = pipeline(
-  "text-classification",
-  model="astrosbd/french_emotion_camembert",
-  return_all_scores=False
-)
-print(ed("Je suis vraiment heureux aujourd'hui !"))
+
+
 
 
 
