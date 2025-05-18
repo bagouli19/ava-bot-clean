@@ -69,7 +69,8 @@
     "souvenirs": {
       "plat_prefere": "les lasagne",
       "sport_prefere": "la boxe",
-      "boisson_preferee": "de la biere"
+      "boisson_preferee": "de la biere",
+      "animal_prefere": "le chiens"
     },
     "taches": [
       {
