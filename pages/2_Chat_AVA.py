@@ -1888,7 +1888,7 @@ def trouver_reponse(question: str, model) -> str:
         # Priorité à la personnalisation
         if (resp := repondre_personnalise(question_raw)):
             return resp
-            
+
         # 1) Souvenirs utilisateur (priorité absolue)
         if (memo := gerer_souvenirs_utilisateur(question_raw)):
             return memo
@@ -1927,6 +1927,18 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
+    """
+    Modules spécialisés **après** la personnalisation :
+    1) Exercices de respiration
+    2) Demande de l'heure
+    3) Rappels personnalisés
+    4) Tâches
+    5) Souvenirs globaux de l'AVA
+    Retourne None si aucun module déclenché.
+    """
+    
+
+    date_str = datetime.now().strftime("%Y-%m-%d")
     
     # DEBUG: afficher la forme nettoyée de la question
     print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
@@ -2929,18 +2941,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
        
         return message_bot
 
-    """
-    Modules spécialisés **après** la personnalisation :
-    1) Exercices de respiration
-    2) Demande de l'heure
-    3) Rappels personnalisés
-    4) Tâches
-    5) Souvenirs globaux de l'AVA
-    Retourne None si aucun module déclenché.
-    """
     
-
-    date_str = datetime.now().strftime("%Y-%m-%d")
     # 1) Profil utilisateur
     if re.search(r"qu'?est[- ]?ce que tu sais sur moi", question_clean) or "que sais-tu de moi" in question_clean:
         profil = get_my_profile()  # Profil complet de l'utilisateur
