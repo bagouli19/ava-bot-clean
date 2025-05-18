@@ -295,12 +295,15 @@ def gerer_souvenirs_utilisateur(question_raw: str) -> str:
             print(f"✅ [DEBUG memory] saved {cle} = {valeur}")
             return f"✨ C’est noté : **{valeur.capitalize()}** enregistré comme {cle}."
 
-    # Rappel des souvenirs existants
+    # Rappel via reconnaissance de question (ex. 'quelle est...')
     for cle, contenu in profil.get("souvenirs", {}).items():
         mot_cle = cle.replace("_", " ")
-        if mot_cle in q_norm:
+        recall_pattern = re.compile(
+            rf"\bquelle\b.*\b{re.escape(mot_cle)}\b", re.IGNORECASE
+        )
+        if recall_pattern.search(question_raw):
             print(f"✅ [DEBUG memory] recall {cle} = {contenu}")
-            return f"🧠 Oui, je me souviens : **{contenu}**."
+            return f"🧠 Votre {mot_cle} est **{contenu}**."
 
     print("🔎 [DEBUG memory] no memory matched")
     return ""
