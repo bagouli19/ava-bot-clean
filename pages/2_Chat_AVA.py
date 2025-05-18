@@ -1666,30 +1666,22 @@ author_alias = {
 }
 
 
-
 def analyser_emotions(question: str) -> str:
-    # 1) Affichage de l'entrée brute
     print(f"🔍 [DEBUG emo] input raw = {question!r}")
-
-    # 2) Nettoyage & filtre questions factuelles
     q = (question or "").strip()
     if not q:
         print("🔎 [DEBUG emo] skipped: question vide")
         return ""
     if q.endswith("?"):
-        print("🔎 [DEBUG emo] skipped: question factuelle (se termine par '?')")
+        print("🔎 [DEBUG emo] skipped: question factuelle")
         return ""
 
-    # 3) Construction du prompt pour OpenAI
     prompt = (
         "Vous êtes un classificateur d'émotions pour du texte en français.\n"
         "Catégories : joy, optimism, sadness, anger, fear, love, disgust.\n"
-        f"Phrase : «{q}»\n"
-        "Répondez **uniquement** par l'étiquette, en minuscules."
+        f"Phrase : «{q}»\nRépondez uniquement par l'étiquette en minuscules."
     )
     print(f"▶️ [DEBUG emo] prompt = {prompt!r}")
-
-    # 4) Appel de l'API
     try:
         resp = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -1701,28 +1693,22 @@ def analyser_emotions(question: str) -> str:
             max_tokens=3
         )
         raw_label = resp.choices[0].message.content
-        print(f"✅ [DEBUG emo] raw_label from API = {raw_label!r}")
+        print(f"✅ [DEBUG emo] raw_label = {raw_label!r}")
     except Exception as e:
         print(f"❌ [DEBUG emo] API error: {e}")
         return ""
 
-    # 5) Nettoyage de l'étiquette
     label = re.sub(r"[^a-zA-Z]", "", raw_label).lower()
     print(f"▶️ [DEBUG emo] cleaned label = {label!r}")
-
-    # 6) Application des alias
     label = author_alias.get(label, label)
     print(f"▶️ [DEBUG emo] aliased label = {label!r}")
-
-    # 7) Sélection de la réponse
     variantes = reponses_variantes.get(label)
     if variantes:
         response = choice(variantes)
         print(f"✅ [DEBUG emo] matched emotion '{label}', response = {response!r}")
         return response
 
-    # 8) Aucun label reconnu
-    print("🔎 [DEBUG emo] no matching emotion — returning empty string")
+    print("🔎 [DEBUG emo] no matching emotion")
     return ""
 
 
@@ -1827,14 +1813,9 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
-
     fail_patterns = [
-        "je suis désolé",
-        "je n'ai pas la capacité",
-        "je ne peux pas",
-        "je n'ai pas compris",
-        "pouvez reformuler",
-        "je recommande"
+        "je suis désolé", "je n'ai pas la capacité", "je ne peux pas",
+        "je n'ai pas compris", "pouvez reformuler", "je recommande"
     ]
 
     with st.spinner("💡 AVA réfléchit…"):
@@ -1852,11 +1833,11 @@ def trouver_reponse(question: str, model) -> str:
         if (lang := chercher_reponse_base_langage(question_raw)):
             return lang
 
-        # 4) Modules spécialisés (exercices de respiration, heure…)
+        # 4) Modules spécialisés
         if (spec := gerer_modules_speciaux(question_raw, question_clean, model)):
             return spec
 
-        # 5) Analyse émotionnelle (dernier recours avant GPT)
+        # 5) Analyse émotionnelle
         if (emo := analyser_emotions(question_raw)):
             return emo
 
@@ -1865,10 +1846,9 @@ def trouver_reponse(question: str, model) -> str:
             if not any(fp in oa.lower() for fp in fail_patterns):
                 return oa.strip()
 
-        # 7) Fallback final (Google)
+        # 7) Fallback final Google
         return (
-            "**Récap :**\n"
-            "🤔 Je n'ai pas trouvé de réponse précise.\n\n"
+            "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n"
             + rechercher_sur_google(question_raw)
         )
 
@@ -1879,8 +1859,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-    print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
-    # 1) Exercices de respiration (demande explicite)
+    # Exercices de respiration (demande explicite)
     pattern_resp = re.compile(
         r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercice)s?\b",
         re.IGNORECASE
@@ -1893,15 +1872,18 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "2. Respiration abdominale : mains sur le ventre, inspirez profondément, expirez lentement (10 cycles)."
         )
 
-    # 2) Demande stricte de l'heure
+    # Demande stricte de l'heure
     pattern_time = re.compile(
-        r"^quelle\s+heure\s+est[-\s]?il\s*\?*$",
+        r"^quelle\s+heure\s+est[-\s]?il\s*\?*?$",
         re.IGNORECASE
     )
     if pattern_time.match(question_clean):
         print("✅ [DEBUG spec] matched time")
-        return f"🕰️ Il est actuellement {datetime.now():%H:%M}"
+        return f"🕰️ Il est actuellement {datetime.now().strftime('%H:%M')}"
+
     print("🔎 [DEBUG spec] no module matched")
+    return None
+
 
 
 
