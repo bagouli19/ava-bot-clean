@@ -2902,7 +2902,31 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
        
         return message_bot
 
-                                                                        
+    # 🔎 Détection automatique des informations personnelles
+    motifs = {
+        r"j'aime (les|la|le|l')\s+(.+)": "plat_prefere",
+        r"mon sport prefere est\s+(.+)": "sport_prefere",
+        r"mon film prefere est\s+(.+)": "film_prefere",
+        r"ma couleur preferee est\s+(.+)": "souvenirs.couleur_preferee"
+    }
+
+    for motif, cle in motifs.items():
+        match = re.search(motif, question_clean)
+        if match:
+            valeur = match.group(2).strip()
+            return mettre_a_jour_profil_utilisateur(user_id, cle, valeur)
+
+    # Commande de rappel d'information
+    if any(kw in question_clean for kw in ["qu'est-ce que tu sais sur moi", "que sais-tu de moi"]):
+        profil = charger_profil_utilisateur(user_id)
+        if profil:
+            infos = json.dumps(profil[user_id], ensure_ascii=False, indent=4)
+            return f"📌 Voici ce que je sais sur vous :\n{infos}."
+        else:
+            return "😅 Je n'ai encore rien enregistré à votre sujet."
+
+    return ""
+                                                                       
     # --- 💡 Bloc amélioré : Détection des rappels personnalisés ---
     formulations_rappel = [
         "rappelle-moi de",
