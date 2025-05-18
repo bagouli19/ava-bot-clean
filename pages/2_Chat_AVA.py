@@ -239,12 +239,15 @@ if user not in all_profiles:
 st.session_state.profil = all_profiles[user]
 
 
-# ─────────────────────────────────────────
+ ─────────────────────────────────────────
 # ✅ Fonction de normalisation (accents, apostrophes)
 # ─────────────────────────────────────────
 def normalize_text(s: str) -> str:
+    # 1) Unifier les apostrophes typographiques
     s = s.replace("’", "'").replace("‘", "'")
-    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("utf-8")
+    # 2) Décomposer + supprimer accents, garder ascii
+    s = unicodedata.normalize("NFKD", s)
+    s = s.encode("ascii", "ignore").decode("utf-8")
     return s.lower().strip()
 
 # ─────────────────────────────────────────
@@ -255,49 +258,36 @@ def gerer_souvenirs_utilisateur(question_raw: str) -> str:
     Gère les souvenirs utilisateur en priorité absolue.
     """
     q_norm = normalize_text(question_raw)
-    
-    # Charger ou initialiser le profil utilisateur
+
+    # Initialisation du profil
     if "profil" not in st.session_state:
         st.session_state.profil = {"souvenirs": {}}
-    
     profil = st.session_state.profil
 
-    # Phrases clés → nom de champ dans profil
+    # Phrases clés → clefs de profil
     patterns = {
-        r"\bje m'appelle\s+(.+)": "prenom",
-        r"\bmon prenom est\s+(.+)": "prenom",
-        r"\bmon chien s'appelle\s+(.+)": "chien",
-        r"\bmon plat prefere est\s+(.+)": "plat_prefere",
-        r"\bmon film prefere est\s+(.+)": "film_prefere",
-        r"\bmon sport prefere est\s+(.+)": "sport_prefere",
-        r"\bma couleur preferee est\s+(.+)": "couleur_preferee",
-        r"\bj'adore la musique\s+(.+)": "musique_preferee",
-        r"\bj'aime boire\s+(.+)": "boisson_preferee",
-        r"\bmon passe-temps favori est\s+(.+)": "passe_temps",
-        r"\bmon animal prefere est\s+(.+)": "animal_prefere",
-        r"\ble pays de mes reves est\s+(.+)": "pays_reve"
+        r"\bje\s+m['’]appelle\s+(.+)":      "prenom",
+        r"\bmon\s+prenom\s+est\s+(.+)":     "prenom",
+        r"\bmon\s+chien\s+s['’]appelle\s+(.+)": "chien",
+        r"\bmon\s+plat\s+prefere\s+est\s+(.+)": "plat_prefere",
+        # … ajoutez vos autres motifs ici …
     }
 
-    # 🔎 Détection et enregistrement automatique
+    # Détection et enregistrement
     for motif, cle in patterns.items():
-        match = re.search(motif, q_norm)
+        match = re.search(motif, q_norm, re.IGNORECASE)
         if match:
             valeur = match.group(1).strip(" .!?")
             profil["souvenirs"][cle] = valeur
-            st.session_state.profil = profil  # Mise à jour immédiate dans la session
-            
-            # Confirmation de l'enregistrement
-            return f"✨ C’est noté : **{valeur.capitalize()}** a bien été enregistré comme {cle}."
+            st.session_state.profil = profil
+            return f"✨ C’est noté : **{valeur.capitalize()}** enregistré comme {cle}."
 
-    # 🔎 Rappel des souvenirs existants
-    if "souvenirs" in profil:
-        for cle, contenu in profil["souvenirs"].items():
-            mot_cle = cle.replace("_", " ")
-            if mot_cle in q_norm:
-                return f"🧠 Oui, je me souviens : **{contenu}**"
+    # Rappel des souvenirs existants
+    for cle, contenu in profil.get("souvenirs", {}).items():
+        if cle.replace("_", " ") in q_norm:
+            return f"🧠 Oui, je me souviens : **{contenu}**."
 
     return ""
-
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
