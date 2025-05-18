@@ -298,6 +298,46 @@ def gerer_souvenirs_utilisateur(question_raw: str):
     
     return None
 
+def normalize_text(s: str) -> str:
+    """Normalise le texte (accents, apostrophes, minuscules, ascii)."""
+    s = s.replace("’", "'").replace("‘", "'")
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
+    return s.lower().strip()
+
+
+# ─────────────────────────────────────────
+# ✅ Réponses personnalisées intelligentes
+# ─────────────────────────────────────────
+def repondre_personnalise(question_raw: str) -> Optional[str]:
+    """
+    Réponses personnalisées basées sur les souvenirs utilisateur :
+    - Salutations (bonjour, salut)
+    - Préférences (plat, sport, film, couleur)
+    Retourne None si pas de cas.
+    """
+    # Récupération du profil utilisateur
+    profil = get_my_profile()
+    souvenirs = profil.get("souvenirs", {})
+    prenom = souvenirs.get("prenom", "ami")
+
+    # Normaliser la question
+    q = normalize_text(question_raw)
+
+    # Salutations personnalisées
+    if re.search(r"\b(?:bonjour|salut|coucou)\b", q):
+        return f"👋 Bonjour {prenom.capitalize()} ! J'espère que vous allez bien."
+
+    # Réponses aux préférences
+    if 'plat prefere' in q and 'plat_prefere' in souvenirs:
+        return f"🍕 Votre plat préféré est {souvenirs['plat_prefere']} !"
+    if 'sport prefere' in q and 'sport_prefere' in souvenirs:
+        return f"🏀 Vous adorez {souvenirs['sport_prefere']} !"
+    if 'film prefere' in q and 'film_prefere' in souvenirs:
+        return f"🎥 Votre film préféré est {souvenirs['film_prefere']} !"
+    if 'couleur preferee' in q and 'couleur_preferee' in souvenirs:
+        return f"🎨 Votre couleur préférée est {souvenirs['couleur_preferee']} !"
+
+    return None
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
@@ -2886,15 +2926,18 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return message_bot
 
     """
-    Réponses spécialisées pour :
-    1) Profil utilisateur ("que sais-tu de moi", "qu'est ce que tu sais sur moi")
-    2) Rappels personnalisés ("rappelle-moi de ...")
-    3) Ajout de tâches ("ajoute ... à ma liste")
-    4) Affichage des rappels
-    5) Affichage des tâches
-    6) Souvenirs globaux de l'AVA
-    Retourne None si aucun module concerné.
+    Modules spécialisés **après** la personnalisation :
+    1) Exercices de respiration
+    2) Demande de l'heure
+    3) Rappels personnalisés
+    4) Tâches
+    5) Souvenirs globaux de l'AVA
+    Retourne None si aucun module déclenché.
     """
+    # Priorité à la personnalisation
+    if (resp := repondre_personnalise(question_raw)):
+        return resp
+
     date_str = datetime.now().strftime("%Y-%m-%d")
     # 1) Profil utilisateur
     if re.search(r"qu'?est[- ]?ce que tu sais sur moi", question_clean) or "que sais-tu de moi" in question_clean:
