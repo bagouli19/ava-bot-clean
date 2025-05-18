@@ -323,7 +323,7 @@ def repondre_personnalise(question_raw: str) -> Optional[str]:
     Retourne None si aucun cas.
     """
     # Assurez-vous que `charger_profil_utilisateur` est importé en haut du fichier
-    profil = charger_profil_utilisateur()
+    profil = get_my_profile()
     souvenirs = profil.get("souvenirs", {})
     prenom = souvenirs.get("prenom", "ami")
 
