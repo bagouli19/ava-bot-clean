@@ -66,7 +66,20 @@ print(ed("Je suis vraiment heureux aujourd'hui !"))
 
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
+@st.cache_resource
+def load_emotion_pipeline():
+    tokenizer = AutoTokenizer.from_pretrained("astrosbd/french_emotion_camembert")
+    model     = AutoModelForSequenceClassification.from_pretrained("astrosbd/french_emotion_camembert")
+    return pipeline("text-classification", model=model, tokenizer=tokenizer, top_k=1, device="cpu")
 
+# si vous avez un pipeline de génération, summarization, etc. :
+@st.cache_resource
+def load_text_generation_pipeline():
+    return pipeline("text-generation", model="gpt2", device="cpu")
+
+# … et ainsi de suite pour chaque appel à transformers.pipeline(…) …
+emotion_detector        = load_emotion_pipeline()
+text_generation_pipeline = load_text_generation_pipeline()
 # ── 3) Chargement du pipeline en cache (une seule fois) ───────────────────────────
 @st.cache_resource
 def load_emotion_pipeline():

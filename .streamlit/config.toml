@@ -1,0 +1,4 @@
+[server]
+enableHealthCheck   = false
+healthCheckPeriod   = 300000   # 5 minutes entre chaque ping (en ms)
+healthCheckTimeout  = 600000   # 10 minutes avant timeout (en ms)
