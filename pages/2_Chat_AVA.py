@@ -299,12 +299,6 @@ def gerer_souvenirs_utilisateur(question_raw: str):
     
     return None
 
-def normalize_text(s: str) -> str:
-    """Normalise le texte (accents, apostrophes, minuscules, ascii)."""
-    s = s.replace("’", "'").replace("‘", "'")
-    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
-    return s.lower().strip()
-
 
 # ─────────────────────────────────────────
 # ✅ Réponses personnalisées intelligentes
