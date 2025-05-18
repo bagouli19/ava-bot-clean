@@ -1932,19 +1932,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    """
-    Modules spécialisés **après** la personnalisation :
-    0) Salutations courantes
-    1) Exercices de respiration
-    2) Demande de l'heure
-    3) Rappels personnalisés
-    4) Tâches
-    5) Souvenirs globaux de l'AVA
-    Retourne None si aucun module déclenché.
-    """
-    
-
-    date_str = datetime.now().strftime("%Y-%m-%d")
 
     # DEBUG: afficher la forme nettoyée de la question
     print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
