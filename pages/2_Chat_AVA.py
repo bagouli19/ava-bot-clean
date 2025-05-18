@@ -239,7 +239,7 @@ if user not in all_profiles:
 st.session_state.profil = all_profiles[user]
 
 
- ─────────────────────────────────────────
+# ─────────────────────────────────────────
 # ✅ Fonction de normalisation (accents, apostrophes)
 # ─────────────────────────────────────────
 def normalize_text(s: str) -> str:
