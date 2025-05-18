@@ -68,7 +68,8 @@
     "prenom": "Papaya",
     "souvenirs": {
       "plat_prefere": "les lasagne",
-      "sport_prefere": "la boxe"
+      "sport_prefere": "la boxe",
+      "boisson_preferee": "de la biere"
     },
     "taches": [
       {
