@@ -1561,6 +1561,36 @@ def rechercher_horoscope(filepath):
     else:
         print("❌ Aucune occurrence trouvée.")
 
+# ─────────────────────────────────────────
+# ✅ Gérer les réponses personnalisées intelligentes
+# ─────────────────────────────────────────
+def repondre_personnalise(question_raw: str) -> str:
+    """
+    Génère une réponse personnalisée en fonction du profil utilisateur.
+    """
+    if "profil" not in st.session_state:
+        return "😅 Je ne connais pas encore assez de choses sur vous."
+
+    profil = st.session_state.profil
+    souvenirs = profil.get("souvenirs", {})
+    prenom = souvenirs.get("prenom", "ami")
+
+    # Exemples de réponses personnalisées intelligentes
+    if "salut" in question_raw.lower() or "bonjour" in question_raw.lower():
+        return f"👋 Bonjour {prenom.capitalize()} ! Ravi de vous revoir."
+
+    if "plat prefere" in question_raw.lower() and "plat_prefere" in souvenirs:
+        return f"🍕 Votre plat préféré est {souvenirs['plat_prefere']} ! Une belle gourmandise."
+
+    if "sport prefere" in question_raw.lower() and "sport_prefere" in souvenirs:
+        return f"🏀 Vous adorez le {souvenirs['sport_prefere']} ! Vous jouez souvent ?"
+
+    if "film prefere" in question_raw.lower() and "film_prefere" in souvenirs:
+        return f"🎥 Votre film préféré est {souvenirs['film_prefere']} ! Un classique."
+
+    # Réponse par défaut (si aucune information spécifique)
+    return f"😊 Que puis-je faire pour vous aujourd'hui, {prenom.capitalize()} ?"
+    
 synonymes_intentions = {
     "aider": ["assister", "soutenir", "donner un coup de main", "accompagner"],
     "comprendre": ["saisir", "apprendre", "découvrir", "cerner"],
