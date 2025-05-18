@@ -247,6 +247,33 @@ def normalize_text(s: str) -> str:
     s = unicodedata.normalize("NFKD", s)
     s = "".join(c for c in s if not unicodedata.combining(c))
     return s.lower().strip()
+    
+# ─────────────────────────────────────────
+# ✅ Réponses personnalisées intelligentes
+# ─────────────────────────────────────────
+def repondre_personnalise(question_raw: str) -> str:
+    profil = charger_profil_utilisateur()
+    souvenirs = profil.get("souvenirs", {})
+    prenom = souvenirs.get("prenom", "ami")
+
+    # 🔎 Réponses personnalisées si informations disponibles
+    if "salut" in question_raw.lower() or "bonjour" in question_raw.lower():
+        return f"👋 Bonjour {prenom.capitalize()} ! J'espère que vous allez bien."
+
+    if "plat prefere" in question_raw.lower() and "plat_prefere" in souvenirs:
+        return f"🍕 Votre plat préféré est {souvenirs['plat_prefere']} !"
+
+    if "sport prefere" in question_raw.lower() and "sport_prefere" in souvenirs:
+        return f"🏀 Vous adorez le {souvenirs['sport_prefere']} !"
+
+    if "film prefere" in question_raw.lower() and "film_prefere" in souvenirs:
+        return f"🎥 Votre film préféré est {souvenirs['film_prefere']} !"
+
+    if "couleur preferee" in question_raw.lower() and "couleur_preferee" in souvenirs:
+        return f"🎨 Votre couleur préférée est {souvenirs['couleur_preferee']} !"
+
+    # Réponse par défaut si aucune info
+    return f"😊 Que puis-je faire pour vous aujourd'hui, {prenom.capitalize()} ?"
 
 def gerer_souvenirs_utilisateur(question_raw: str):
     """
@@ -299,45 +326,6 @@ def gerer_souvenirs_utilisateur(question_raw: str):
     return None
 import streamlit as st
 
-# ─────────────────────────────────────────
-# ✅ Gérer les réponses personnalisées intelligentes
-# ─────────────────────────────────────────
-def repondre_personnalise(question_raw: str) -> str:
-    """
-    Génère une réponse personnalisée en fonction du profil utilisateur.
-    """
-    if "profil" not in st.session_state:
-        return "😅 Je ne connais pas encore assez de choses sur vous."
-
-    profil = st.session_state.profil
-    souvenirs = profil.get("souvenirs", {})
-    prenom = souvenirs.get("prenom", "ami")
-
-    # Détection intelligente de personnalisation
-    question_lower = question_raw.lower()
-
-    # 🔎 Salutations personnalisées
-    if any(kw in question_lower for kw in ["salut", "bonjour", "bonsoir", "coucou"]):
-        return f"👋 Bonjour {prenom.capitalize()} ! J'espère que vous allez bien."
-
-    # 🔎 Réponses personnalisées (si les souvenirs existent)
-    if "plat prefere" in question_lower and "plat_prefere" in souvenirs:
-        return f"🍕 Votre plat préféré est {souvenirs['plat_prefere']} ! Une belle gourmandise."
-
-    if "sport prefere" in question_lower and "sport_prefere" in souvenirs:
-        return f"🏀 Vous adorez le {souvenirs['sport_prefere']} ! Vous jouez souvent ?"
-
-    if "film prefere" in question_lower and "film_prefere" in souvenirs:
-        return f"🎥 Votre film préféré est {souvenirs['film_prefere']} ! Un classique."
-
-    if "couleur preferee" in question_lower and "couleur_preferee" in souvenirs:
-        return f"🎨 Votre couleur préférée est {souvenirs['couleur_preferee']} !"
-
-    if "animal prefere" in question_lower and "animal_prefere" in souvenirs:
-        return f"🐾 Vous aimez les {souvenirs['animal_prefere']} ! Une belle passion."
-
-    # 🔎 Réponse par défaut (sans personnalisation)
-    return f"😊 Que puis-je faire pour vous aujourd'hui, {prenom.capitalize()} ?"
 
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
