@@ -1899,7 +1899,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
     
     #conseil bien-être
-     """
+    """
     Renvoie une réponse spécialisée pour :
       - les exercices de respiration,
       - la demande de l'heure,
