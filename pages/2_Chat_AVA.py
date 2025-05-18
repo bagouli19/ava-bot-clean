@@ -1837,61 +1837,66 @@ def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
 
+    # 1) Patterns d'échec pour détecter les réponses OpenAI "non satisfaisantes"
+    fail_patterns = [
+        "je suis désolé",
+        "je vous recommande",
+        "je n'ai pas la capacité",
+        "je ne peux pas",
+        "je ne suis pas en mesure",
+        "je ne peux fournir",
+        "je n'ai pas compris",
+        "pouvez reformuler",
+        "vous pouvez reformuler",
+        "consultez"
+    ]
+
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
 
-        # 1) Salutations
+        # 2) Salutations
         resp_salut = repondre_salutation(question_clean)
         if resp_salut:
             return resp_salut
 
-        # 2) Base de connaissances
+        # 3) Base de connaissances
         if question_clean in base_culture_nettoyee:
             return base_culture_nettoyee[question_clean]
 
-        # 3) Base de langage
+        # 4) Base de langage
         resp_langage = chercher_reponse_base_langage(question_raw)
         if resp_langage:
             return resp_langage
 
-        # 4) Modules spécialisés
+        # 5) Modules spécialisés (respiration, heure, etc.)
         resp_spec = gerer_modules_speciaux(question_raw, question_clean, model)
         if isinstance(resp_spec, str) and resp_spec.strip():
+            print("✅ Réponse module spécial")
             return resp_spec.strip()
 
-
-        # … tout en haut de trouver_reponse()
-        fail_patterns = [
-            "je suis désolé",
-            "je vous recommande",
-            "je n'ai pas la capacité",
-            "je ne peux pas",
-            "je ne suis pas en mesure",
-            "je ne peux fournir",
-            "je n'ai pas compris",
-            "pouvez reformuler",
-            "vous pouvez reformuler",
-            "consultez"
-        ]
-
-        # … après modules spécialisés …
+        # 6) Fallback GPT (OpenAI)
         resp_oa = repondre_openai(question_raw)
         print("▶️ DEBUG reponse_openai:", repr(resp_oa), type(resp_oa))
-
         if isinstance(resp_oa, str) and resp_oa.strip():
             low = resp_oa.lower()
             if not any(fp in low for fp in fail_patterns):
                 print("✅ Réponse OpenAI retenue")
                 return resp_oa.strip()
-        # 5) Analyse émotionnelle (dernier recours)
+
+        # 7) Analyse émotionnelle (dernier recours)
         reponse_emotion = analyser_emotions(question_raw)
         if reponse_emotion:
             print("✅ Réponse émotionnelle détectée")
             return reponse_emotion
 
-        # sinon, on tombe sur le fallback Google
+        # 8) Fallback Google
         print("🔎 Fallback Google")
-        return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
+        return (
+            "**Récap :**\n"
+            "🤔 Je n'ai pas trouvé de réponse précise.\n\n"
+            + rechercher_sur_google(question_raw)
+        )
+
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
