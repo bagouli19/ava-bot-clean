@@ -1554,7 +1554,7 @@ def rechercher_horoscope(filepath):
 
 
 
-```python
+
 import os
 import re
 from random import choice
