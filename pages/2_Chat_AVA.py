@@ -48,6 +48,7 @@ from dotenv import load_dotenv
 import traceback
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from random import choice
+from your_profile_module import get_my_profile, set_my_profile
 
 
 
@@ -1927,8 +1928,10 @@ def trouver_reponse(question: str, model) -> str:
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
     message_bot = ""
-    """
+    
+      """
     Modules spécialisés **après** la personnalisation :
+    0) Salutations courantes
     1) Exercices de respiration
     2) Demande de l'heure
     3) Rappels personnalisés
@@ -1939,7 +1942,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     
 
     date_str = datetime.now().strftime("%Y-%m-%d")
-    
+
     # DEBUG: afficher la forme nettoyée de la question
     print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
 
