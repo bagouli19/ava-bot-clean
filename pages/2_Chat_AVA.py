@@ -1857,7 +1857,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-   print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
+    print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
 
     # 1) Exercices de respiration (demande explicite)
     pattern_resp = re.compile(
@@ -1883,7 +1883,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     print("🔎 [DEBUG spec] no module matched")
     return None
-    
+
     import re, ast, streamlit as st
 
     # Récupère le texte brut que tape l’utilisateur
