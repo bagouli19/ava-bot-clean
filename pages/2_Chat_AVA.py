@@ -1852,8 +1852,6 @@ def trouver_reponse(question: str, model) -> str:
             + rechercher_sur_google(question_raw)
         )
 
-
-
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
@@ -1862,9 +1860,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
    # DEBUG
     print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
 
-    # 1) Exercices de respiration (demande explicite)
+    # Exercices de respiration (demande explicite)
     pattern_resp = re.compile(
-        r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercices?)\b",
+        r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercice)s?\b",
         re.IGNORECASE
     )
     if pattern_resp.search(question_clean):
@@ -1875,9 +1873,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             "2. Respiration abdominale : mains sur le ventre, inspirez profondément, expirez lentement (10 cycles)."
         )
 
-    # 2) Demande stricte de l'heure
+    # Demande stricte de l'heure
     pattern_time = re.compile(
-        r"^quelle\s+heure\s+est[-\s]?il\s*\?*$",
+        r"^quelle\s+heure\s+est[-\s]?il\s*\?*?$",
         re.IGNORECASE
     )
     if pattern_time.match(question_clean):
@@ -1886,6 +1884,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     print("🔎 [DEBUG spec] no module matched")
     return None
+    
     import re, ast, streamlit as st
 
     # Récupère le texte brut que tape l’utilisateur
