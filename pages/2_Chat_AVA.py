@@ -240,36 +240,32 @@ st.session_state.profil = all_profiles[user]
 
 
 
+import re
+import streamlit as st
+import unicodedata
+
+# ─────────────────────────────────────────
+# ✅ Fonction de normalisation (accents, apostrophes)
+# ─────────────────────────────────────────
 def normalize_text(s: str) -> str:
-    # remplace les apostrophes typographiques par l'apostrophe simple
     s = s.replace("’", "'").replace("‘", "'")
-    # met en ASCII (strip accents)
-    s = unicodedata.normalize("NFKD", s)
-    s = "".join(c for c in s if not unicodedata.combining(c))
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("utf-8")
     return s.lower().strip()
 
-def gerer_souvenirs_utilisateur(question_raw: str):
-    """
-    Gère les souvenirs utilisateur en priorité absolue.
-    """
-    
-    q_norm = normalize_text(question_raw)
-    
-
-    profil = get_my_profile()
-    if "souvenirs" not in profil:
-        profil["souvenirs"] = {}
-
-    # ─────────────────────────────────────────
-# ✅ Gérer les souvenirs utilisateur (Optimisé)
+# ─────────────────────────────────────────
+# ✅ Gérer les souvenirs utilisateur (100% fonctionnel)
 # ─────────────────────────────────────────
 def gerer_souvenirs_utilisateur(question_raw: str) -> str:
     """
     Gère les souvenirs utilisateur en priorité absolue.
     """
-    q_norm = question_raw.lower().strip()
+    q_norm = normalize_text(question_raw)
+    
+    # Charger le profil utilisateur
+    if "profil" not in st.session_state:
+        st.session_state.profil = {"souvenirs": {}}
 
-    profil = st.session_state.get("profil", {})
+    profil = st.session_state.profil
     if "souvenirs" not in profil:
         profil["souvenirs"] = {}
 
@@ -289,7 +285,7 @@ def gerer_souvenirs_utilisateur(question_raw: str) -> str:
         r"le pays de mes reves est\s+(.+)": "pays_reve"
     }
 
-    # 🔎 Détection et enregistrement
+    # 🔎 Détection et enregistrement automatique
     for motif, cle in patterns.items():
         match = re.search(motif, q_norm)
         if match:
@@ -297,14 +293,15 @@ def gerer_souvenirs_utilisateur(question_raw: str) -> str:
             profil["souvenirs"][cle] = valeur
             st.session_state.profil = profil
 
-            return f"✨ C’est noté : **{valeur.capitalize()}** a bien été enregistré sous {cle}."
+            return f"✨ C’est noté : **{valeur.capitalize()}** a bien été enregistré comme {cle}."
 
-    # 🔎 Rappel d'information
+    # 🔎 Rappel des souvenirs existants
     for cle, contenu in profil.get("souvenirs", {}).items():
-        if cle in q_norm:
+        if cle.replace("_", " ") in q_norm:
             return f"🧠 Oui, je me souviens : **{contenu}**"
 
     return ""
+
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
