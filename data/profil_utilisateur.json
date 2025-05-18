@@ -68,6 +68,12 @@
     "prenom": "Papaya",
     "souvenirs": {
       "plat_prefere": "les lasagne"
-    }
+    },
+    "taches": [
+      {
+        "contenu": "acheter du riz",
+        "date": "2025-05-18"
+      }
+    ]
   }
 }
