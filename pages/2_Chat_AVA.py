@@ -238,16 +238,6 @@ if user not in all_profiles:
 
 st.session_state.profil = all_profiles[user]
 
-
-
-def normalize_text(s: str) -> str:
-    # remplace les apostrophes typographiques par l'apostrophe simple
-    s = s.replace("’", "'").replace("‘", "'")
-    # met en ASCII (strip accents)
-    s = unicodedata.normalize("NFKD", s)
-    s = "".join(c for c in s if not unicodedata.combining(c))
-    return s.lower().strip()
-    
 # ─────────────────────────────────────────
 # ✅ Réponses personnalisées intelligentes
 # ─────────────────────────────────────────
@@ -274,6 +264,15 @@ def repondre_personnalise(question_raw: str) -> str:
 
     # Réponse par défaut si aucune info
     return f"😊 Que puis-je faire pour vous aujourd'hui, {prenom.capitalize()} ?"
+
+def normalize_text(s: str) -> str:
+    # remplace les apostrophes typographiques par l'apostrophe simple
+    s = s.replace("’", "'").replace("‘", "'")
+    # met en ASCII (strip accents)
+    s = unicodedata.normalize("NFKD", s)
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return s.lower().strip()
+
 
 def gerer_souvenirs_utilisateur(question_raw: str):
     """
