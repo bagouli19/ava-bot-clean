@@ -165,7 +165,7 @@ FICHIER_MEMOIRE = os.path.join(DATA_DIR, "memoire_ava.json" )
 GITHUB_REPO = "bagouli19/ava-bot-ultimate"
 FICHIER_PROFIL = "data/profil_utilisateur.json"
 BRANCHE = "main"
-GITHUB_TOKEN = st.secrets["github"]["GITHUB_TOKEN"]
+GITHUB_TOKEN = st.secrets["general"]["GITHUB_TOKEN"]
 
 import base64
 import json
@@ -238,62 +238,56 @@ if user not in all_profiles:
 
 st.session_state.profil = all_profiles[user]
 
-# ─────────────────────────────────────────
-# ✅ Fonction de normalisation (accents, apostrophes)
-# ─────────────────────────────────────────
+
+
 def normalize_text(s: str) -> str:
-    """
-    Normalise les apostrophes et supprime les accents, retourne une chaine lowercased.
-    """
-    # Unifier les apostrophes typographiques
+    # remplace les apostrophes typographiques par l'apostrophe simple
     s = s.replace("’", "'").replace("‘", "'")
-    # Décomposer et enlever les accents
+    # met en ASCII (strip accents)
     s = unicodedata.normalize("NFKD", s)
-    s = s.encode("ascii", "ignore").decode("utf-8")
+    s = "".join(c for c in s if not unicodedata.combining(c))
     return s.lower().strip()
 
-
-# ─────────────────────────────────────────
-# ✅ Gestion des souvenirs utilisateur
-# ─────────────────────────────────────────
-def gerer_souvenirs_utilisateur(question_raw: str) -> str:
+def gerer_souvenirs_utilisateur(question_raw: str):
     """
-    Enregistre ou rappelle les souvenirs utilisateurs.
-    Priorité absolue : si un souvenir est détecté ou demandé, retourne immédiatement la réponse.
+    Gère les souvenirs utilisateur en priorité absolue.
     """
-    print(f"🔍 [DEBUG memory] input raw = {question_raw!r}")
+    
     q_norm = normalize_text(question_raw)
+    
 
-    # Initialisation du profil
-    if "profil" not in st.session_state:
-        st.session_state.profil = {"souvenirs": {}}
-    profil = st.session_state.profil
+    profil = get_my_profile()
+    if "souvenirs" not in profil:
+        profil["souvenirs"] = {}
 
-    # Motifs pour extraction de souvenirs
+    # Phrases clés → nom de champ dans profil
     patterns = {
-        r"\bje\s+m['’]appelle\s+(.+)": "prenom",
-        r"\bmon\s+prenom\s+est\s+(.+)": "prenom",
-        r"\bmon\s+chien\s+s['’]appelle\s+(.+)": "chien",
-        r"\bmon\s+plat\s+prefere\s+est\s+(.+)": "plat_prefere",
-        r"\bmon\s+film\s+prefere\s+est\s+(.+)": "film_prefere",
-        r"\bmon\s+sport\s+prefere\s+est\s+(.+)": "sport_prefere",
-        r"\bma\s+couleur\s+preferee\s+est\s+(.+)": "couleur_preferee",
-        r"\bj'adore\s+la\s+musique\s+(.+)": "musique_preferee",
-        r"\bj'aime\s+boire\s+(.+)": "boisson_preferee",
-        r"\bmon\s+passe-temps\s+favori\s+est\s+(.+)": "passe_temps",
-        r"\bmon\s+animal\s+prefere\s+est\s+(.+)": "animal_prefere",
-        r"\ble\s+pays\s+de\s+mes\s+reves\s+est\s+(.+)": "pays_reve",
+        "je m'appelle": "prenom",
+        "mon prenom est": "prenom",
+        "mon chien s'appelle": "chien",
+        "mon plat prefere est": "plat_prefere",
+        "mon film prefere est": "film_prefere",
+        "mon sport prefere est": "sport_prefere",
+        "ma couleur prefere est": "couleur_preferee",
+        "j'adore la musique": "musique_preferee",
+        "j'aime boire": "boisson_preferee",
+        "mon passe-temps favori est": "passe_temps",
+        "mon animal prefere est": "animal_prefere",
+        "le pays de mes reves est": "pays_reve"
     }
 
-    # Enregistrement des souvenirs
-    for motif, cle in patterns.items():
-        match = re.search(motif, q_norm, re.IGNORECASE)
-        if match:
-            valeur = match.group(1).strip(" .!?")
-            profil["souvenirs"][cle] = valeur
-            st.session_state.profil = profil
-            print(f"✅ [DEBUG memory] saved {cle} = {valeur}")
-            return f"✨ C’est noté : **{valeur.capitalize()}** enregistré comme {cle}."
+    # 1️⃣ Enregistrement
+    for debut, cle in patterns.items():
+        if q_norm.startswith(debut):
+            valeur = q_norm[len(debut):].strip(" .!?")
+            st.write(f"✅ DEBUG détection: {debut!r} → clé {cle}, valeur brute: {valeur!r}")
+            if valeur:
+                profil["souvenirs"][cle] = valeur
+                set_my_profile(profil)
+                prenom = profil["souvenirs"].get("prenom", "cher utilisateur")
+                resp = f"✨ C’est noté, {prenom.capitalize()} : **{valeur.capitalize()}** 🧠"
+                st.write("✅ DEBUG réponse enregistrement:", resp)
+                return resp
 
     # 2️⃣ Rappel
     for cle, contenu in profil.get("souvenirs", {}).items():
@@ -306,6 +300,7 @@ def gerer_souvenirs_utilisateur(question_raw: str) -> str:
 
     
     return None
+
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
