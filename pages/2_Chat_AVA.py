@@ -1844,32 +1844,26 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
     
-    #conseil bien-être
-    """
-    Répond aux demandes spécialisées :
-      - exercices de respiration (requête explicite)
-      - demande de l'heure (format strict)
-    Retourne None si aucun module n'est déclenché.
-    """
-    # 1) Respiration sur demande explicite
-    pattern_respiration = re.compile(
-        r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercice)s?\b",
+     # 1) Exercices de respiration (demande explicite)
+    pattern_resp = re.compile(
+        r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercices?)\b",
         re.IGNORECASE
     )
-    if pattern_respiration.search(question_clean):
+    if pattern_resp.search(question_clean):
         return (
             "🧘‍♀️ Techniques de respiration :\n"
             "1. Respiration carrée : inspirez 4s, retenez 4s, expirez 4s, retenez 4s (5 cycles).\n"
             "2. Respiration abdominale : mains sur le ventre, inspirez profondément, expirez lentement (10 cycles)."
         )
 
-    # 2) Heure courante
-    pattern_heure = re.compile(
-        r"^quelle\s+heure\s+est[-\s]?il\s*\?*?$",
+    # 2) Demande stricte de l'heure
+    pattern_time = re.compile(
+        r"^quelle\s+heure\s+est[-\s]?il\s*\?*$",
         re.IGNORECASE
     )
-    if pattern_heure.match(question_clean):
-        return f"🕰️ Il est {datetime.now().strftime('%H:%M')} maintenant."
+    if pattern_time.match(question_clean):
+        return f"🕰️ Il est actuellement {datetime.now():%H:%M}"
+
 
 
 
