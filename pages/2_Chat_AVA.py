@@ -295,18 +295,17 @@ def gerer_souvenirs_utilisateur(question_raw: str) -> str:
             print(f"✅ [DEBUG memory] saved {cle} = {valeur}")
             return f"✨ C’est noté : **{valeur.capitalize()}** enregistré comme {cle}."
 
-    # Rappel via reconnaissance de question (ex. 'quelle est...')
+    # 2️⃣ Rappel
     for cle, contenu in profil.get("souvenirs", {}).items():
-        mot_cle = cle.replace("_", " ")
-        recall_pattern = re.compile(
-            rf"\bquelle\b.*\b{re.escape(mot_cle)}\b", re.IGNORECASE
-        )
-        if recall_pattern.search(question_raw):
-            print(f"✅ [DEBUG memory] recall {cle} = {contenu}")
-            return f"🧠 Votre {mot_cle} est **{contenu}**."
+        mot = cle.replace("_", " ")
+        if mot in q_norm:
+            prenom = profil["souvenirs"].get("prenom", "cher utilisateur")
+            resp = f"🧠 Oui, {prenom}, je me souviens : **{contenu}**"
+            st.write("✅ DEBUG rappel souvenir:", cle, contenu)
+            return resp
 
-    print("🔎 [DEBUG memory] no memory matched")
-    return ""
+    
+    return None
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
