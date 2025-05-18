@@ -1845,24 +1845,20 @@ def trouver_reponse(question: str, model) -> str:
         if resp_salut:
             return resp_salut
 
-        # 3) Base de connaissances
+        # 2) Base de connaissances
         if question_clean in base_culture_nettoyee:
             return base_culture_nettoyee[question_clean]
 
-        # 4) Base de langage
+        # 3) Base de langage
         resp_langage = chercher_reponse_base_langage(question_raw)
         if resp_langage:
             return resp_langage
 
-        # 5) Modules spécialisés
+        # 4) Modules spécialisés
         resp_spec = gerer_modules_speciaux(question_raw, question_clean, model)
         if isinstance(resp_spec, str) and resp_spec.strip():
             return resp_spec.strip()
 
-        # 🌐 Analyse des émotions
-        message_emotionnel = analyser_emotions(question_clean)
-        if message_emotionnel:
-            return message_emotionnel
 
         # … tout en haut de trouver_reponse()
         fail_patterns = [
@@ -1887,6 +1883,11 @@ def trouver_reponse(question: str, model) -> str:
             if not any(fp in low for fp in fail_patterns):
                 print("✅ Réponse OpenAI retenue")
                 return resp_oa.strip()
+        # 5) Analyse émotionnelle (dernier recours)
+        reponse_emotion = analyser_emotions(question_raw)
+        if reponse_emotion:
+            print("✅ Réponse émotionnelle détectée")
+            return reponse_emotion
 
         # sinon, on tombe sur le fallback Google
         print("🔎 Fallback Google")
@@ -1898,25 +1899,36 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
     
     #conseil bien-être
-    if re.search(r"\b(donne|propose|je veux|montre|apprends)\b.*\b(respiration|respirer|exercices?)\b", question_clean, re.IGNORECASE):
+    """
+    Renvoie une réponse spécialisée pour :
+     - les exercices de respiration
+     - la demande de l'heure
+     - (ajoutez d'autres cas ici)
+    Retourne None si aucun module n'est déclenché.
+    """
+    # 1) Exercice de respiration : on ne capte que si c'est une vraie demande
+    pattern_resp = re.compile(
+        r"\b(?:donne|propose|je\s+veux|montre|apprends)\b.*\b(?:respiration|respirer|exercices?)\b",
+        re.IGNORECASE
+    )
+    if pattern_resp.search(question_clean):
         return (
             "🧘‍♀️ Voici deux techniques simples de respiration pour vous détendre :\n"
             "1. **Respiration carrée** : inspirez 4 s, retenez 4 s, expirez 4 s, retenez 4 s. Répétez 5 fois.\n"
-            "2. **Respiration abdominale** : mains sur le ventre, inspirez en gonflant le bas du ventre, expirez lentement en le vidant. 10 cycles.\n"
-            "Essayez ça, vous devriez sentir la tension redescendre en quelques minutes !"
+            "2. **Respiration abdominale** : mains sur le ventre, inspirez en gonflant le bas du ventre, "
+            "expirez lentement en le vidant. 10 cycles.\n"
+            "Essayez ces exercices, vous devriez sentir la tension redescendre rapidement !"
         )
 
-    # Exemple plus strict pour une définition
-    if re.match(r"^(qu(?:elle|\'est)\s+heure\??)$", question_clean, re.IGNORECASE):
-        from datetime import datetime
+    # 2) Heure courante
+    # On veut capter uniquement "Quelle heure est-il ?" ou variantes très proches
+    pattern_heure = re.compile(
+        r"^(?:quelle\s+heure\s+est[- ]?il)\s*\??$",
+        re.IGNORECASE
+    )
+    if pattern_heure.match(question_clean):
         now = datetime.now().strftime("%H:%M")
         return f"🕰️ Il est actuellement {now}."
-
-     # ✅ Gestion des souvenirs utilisateur (nouvelle priorité)
-    reponse_souvenir = gerer_souvenirs_utilisateur(question_clean)
-    if reponse_souvenir:
-        print("✅ Souvenir utilisateur détecté :", reponse_souvenir)  # ➡️ LOG TEST
-        return reponse_souvenir  # Priorité absolue sur les souvenirs
   
 
     import re, ast, streamlit as st
