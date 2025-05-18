@@ -73,17 +73,16 @@ def load_emotion_pipeline():
     model_name = "astrosbd/french_emotion_camembert"
     tokenizer  = AutoTokenizer.from_pretrained(model_name)
     model      = AutoModelForSequenceClassification.from_pretrained(model_name)
+    # top_k=1 remplace return_all_scores=False
     return pipeline(
         "text-classification",
         model=model,
         tokenizer=tokenizer,
-        top_k=1,               # remplace return_all_scores=False
-        device="cpu"           # ou “cuda” si dispo
+        top_k=1,
+        device="cpu",  # ou "cuda" si vous en avez une
     )
 
-# Initialisation unique
 emotion_detector = load_emotion_pipeline()
-
 
 # Chargement des clés API depuis les secrets Streamlit
 try:
