@@ -48,7 +48,7 @@ from dotenv import load_dotenv
 import traceback
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from random import choice
-from your_profile_module import get_my_profile, set_my_profile
+
 
 
 
