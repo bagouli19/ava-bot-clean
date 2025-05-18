@@ -1669,10 +1669,11 @@ alias_labels = {
 def analyser_emotions(question: str) -> str:
     """
     Classe l'émotion via l'API OpenAI et retourne une réponse adaptée,
-    ou "" si pas d'émotion reconnue ou question factuelle.
+    ou "" si pas d'émotion reconnue, question factuelle, ou erreur API.
     """
     q = (question or "").strip()
     print("▶️ DEBUG input brute:", repr(q))
+
     # Ne pas traiter les questions factuelles ni les chaînes vides
     if not q or q.endswith("?"):
         print("▶️ DEBUG skip emotion (question ou vide)")
@@ -1685,15 +1686,23 @@ def analyser_emotions(question: str) -> str:
         f"Phrase : « {q} »\n"
         "Répondez uniquement par l'étiquette (sans ponctuation)."
     )
-    resp = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "Tu es un classificateur d'émotions."},
-            {"role": "user",   "content": prompt},
-        ],
-        temperature=0.0,
-        max_tokens=3
-    )
+    try:
+        resp = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Tu es un classificateur d'émotions."},
+                {"role": "user",   "content": prompt},
+            ],
+            temperature=0.0,
+            max_tokens=3
+        )
+    except ServiceUnavailableError as e:
+        print(f"❌ ServiceUnavailableError lors de l'appel OpenAI: {e}")
+        # fallback: ne pas bloquer l'app, retourner vide
+        return ""
+    except OpenAIError as e:
+        print(f"❌ Erreur OpenAI lors de l'analyse d'émotion: {e}")
+        return ""
 
     raw_label = resp.choices[0].message.content
     print("▶️ DEBUG raw label:", repr(raw_label))
