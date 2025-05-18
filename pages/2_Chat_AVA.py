@@ -260,47 +260,51 @@ def gerer_souvenirs_utilisateur(question_raw: str):
     if "souvenirs" not in profil:
         profil["souvenirs"] = {}
 
+    # ─────────────────────────────────────────
+# ✅ Gérer les souvenirs utilisateur (Optimisé)
+# ─────────────────────────────────────────
+def gerer_souvenirs_utilisateur(question_raw: str) -> str:
+    """
+    Gère les souvenirs utilisateur en priorité absolue.
+    """
+    q_norm = question_raw.lower().strip()
+
+    profil = st.session_state.get("profil", {})
+    if "souvenirs" not in profil:
+        profil["souvenirs"] = {}
+
     # Phrases clés → nom de champ dans profil
     patterns = {
-        "je m'appelle": "prenom",
-        "mon prenom est": "prenom",
-        "mon chien s'appelle": "chien",
-        "mon plat prefere est": "plat_prefere",
-        "mon film prefere est": "film_prefere",
-        "mon sport prefere est": "sport_prefere",
-        "ma couleur prefere est": "couleur_preferee",
-        "j'adore la musique": "musique_preferee",
-        "j'aime boire": "boisson_preferee",
-        "mon passe-temps favori est": "passe_temps",
-        "mon animal prefere est": "animal_prefere",
-        "le pays de mes reves est": "pays_reve"
+        r"je m'appelle\s+(.+)": "prenom",
+        r"mon prenom est\s+(.+)": "prenom",
+        r"mon chien s'appelle\s+(.+)": "chien",
+        r"mon plat prefere est\s+(.+)": "plat_prefere",
+        r"mon film prefere est\s+(.+)": "film_prefere",
+        r"mon sport prefere est\s+(.+)": "sport_prefere",
+        r"ma couleur preferee est\s+(.+)": "couleur_preferee",
+        r"j'adore la musique\s+(.+)": "musique_preferee",
+        r"j'aime boire\s+(.+)": "boisson_preferee",
+        r"mon passe-temps favori est\s+(.+)": "passe_temps",
+        r"mon animal prefere est\s+(.+)": "animal_prefere",
+        r"le pays de mes reves est\s+(.+)": "pays_reve"
     }
 
-    # 1️⃣ Enregistrement
-    for debut, cle in patterns.items():
-        if q_norm.startswith(debut):
-            valeur = q_norm[len(debut):].strip(" .!?")
-            st.write(f"✅ DEBUG détection: {debut!r} → clé {cle}, valeur brute: {valeur!r}")
-            if valeur:
-                profil["souvenirs"][cle] = valeur
-                set_my_profile(profil)
-                prenom = profil["souvenirs"].get("prenom", "cher utilisateur")
-                resp = f"✨ C’est noté, {prenom.capitalize()} : **{valeur.capitalize()}** 🧠"
-                st.write("✅ DEBUG réponse enregistrement:", resp)
-                return resp
+    # 🔎 Détection et enregistrement
+    for motif, cle in patterns.items():
+        match = re.search(motif, q_norm)
+        if match:
+            valeur = match.group(1).strip(" .!?")
+            profil["souvenirs"][cle] = valeur
+            st.session_state.profil = profil
 
-    # 2️⃣ Rappel
+            return f"✨ C’est noté : **{valeur.capitalize()}** a bien été enregistré sous {cle}."
+
+    # 🔎 Rappel d'information
     for cle, contenu in profil.get("souvenirs", {}).items():
-        mot = cle.replace("_", " ")
-        if mot in q_norm:
-            prenom = profil["souvenirs"].get("prenom", "cher utilisateur")
-            resp = f"🧠 Oui, {prenom}, je me souviens : **{contenu}**"
-            st.write("✅ DEBUG rappel souvenir:", cle, contenu)
-            return resp
+        if cle in q_norm:
+            return f"🧠 Oui, je me souviens : **{contenu}**"
 
-    
-    return None
-
+    return ""
 # ───────────────────────────────────────────────────────────────────────
 # 4️⃣ Gestion de la mémoire globale (commune à tous les utilisateurs)
 # ───────────────────────────────────────────────────────────────────────
