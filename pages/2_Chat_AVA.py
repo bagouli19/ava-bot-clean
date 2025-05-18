@@ -64,6 +64,15 @@ st.set_page_config(page_title="Chat AVA", layout="centered")
 
 
 @st.cache_resource
+# ── 1) Silence des warnings inutiles de Transformers ──────────────────────────────
+import logging
+logging.getLogger("transformers.tokenization_utils_base").setLevel(logging.ERROR)
+logging.getLogger("transformers.pipelines").setLevel(logging.ERROR)
+
+
+
+# ── 3) Chargement du pipeline en cache (une seule fois) ───────────────────────────
+@st.cache_resource
 def load_emotion_pipeline():
     model_name = "astrosbd/french_emotion_camembert"
     tokenizer  = AutoTokenizer.from_pretrained(model_name)
@@ -72,10 +81,11 @@ def load_emotion_pipeline():
         "text-classification",
         model=model,
         tokenizer=tokenizer,
-        return_all_scores=False
+        top_k=1,               # remplace return_all_scores=False
+        device="cpu"           # ou “cuda” si dispo
     )
 
-# plus bas, dans le code global, une seule fois :
+# Initialisation unique
 emotion_detector = load_emotion_pipeline()
 
 
