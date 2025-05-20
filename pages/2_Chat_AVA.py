@@ -1641,149 +1641,65 @@ openai.api_key  = OPENAI_API_KEY
 from random import choice
 
 
-# Mapping enrichi des réponses émotionnelles
-reponses_variantes = {
-    "joy": [
-        (
-            "😊 Vous semblez rayonnant aujourd’hui ! "
-            "Qu’est-ce qui vous met dans cet état de joie ? "
-            "J’aimerais beaucoup savoir ce qui vous enthousiasme et comment vous comptez prolonger ce bonheur."
-        ),
-        (
-            "😄 Quel bonheur de vous sentir si heureux ! "
-            "Partagez-m’en un peu plus : est-ce un événement particulier ou simplement une belle énergie du jour ? "
-            "Parfois, raconter ces moments multiplie la joie !"
-        ),
-    ],
-    "optimism": [
-        (
-            "🌱 Votre optimisme est contagieux ! "
-            "Quels projets ou idées vous inspirent ces jours-ci ? "
-            "On peut en discuter ensemble pour leur donner un petit coup de pouce !"
-        ),
-        (
-            "😃 Je sens beaucoup d’espoir dans vos mots. "
-            "Quelles belles choses imaginez-vous pour l’avenir ? "
-            "Si vous voulez, je peux vous aider à formaliser ces idées en objectifs concrets !"
-        ),
-    ],
-    "sadness": [
-        (
-            "😢 Je suis désolé que vous ressentiez de la tristesse. "
-            "Si vous le souhaitez, parlez-m’en un peu plus : qu’est-ce qui pèse sur votre cœur en ce moment ? "
-            "Je peux aussi vous suggérer des petites actions pour vous remonter le moral."
-        ),
-        (
-            "💧 La tristesse peut être très lourde… "
-            "Vous n’êtes pas seul : si vous voulez partager ce qui vous attriste, je suis là pour vous écouter. "
-            "On peut explorer ensemble des façons de vous apporter un peu de réconfort."
-        ),
-    ],
-    "anger": [
-        (
-            "😡 Je perçois de la colère dans vos mots. "
-            "C’est une réaction légitime : souhaitez-vous en parler pour libérer cette tension ? "
-            "Je peux vous proposer des techniques de respiration ou de visualisation pour vous apaiser."
-        ),
-        (
-            "🔥 La colère peut être comme une énergie puissante ! "
-            "Dites-moi ce qui vous met autant en colère : parfois, l’exprimer permet déjà de se sentir mieux. "
-            "Ensuite, je peux vous guider vers des stratégies pour canaliser cette colère positivement."
-        ),
-    ],
-    "fear": [
-        (
-            "😨 Vous semblez inquiet ou anxieux. "
-            "Quel est le sujet principal de votre inquiétude ? "
-            "Nous pouvons détailler vos craintes et voir ensemble comment les apaiser, par exemple avec des exercices de respiration."
-        ),
-        (
-            "🌩️ La peur peut parfois nous paralyser… "
-            "Parlez-m’en : qu’est-ce qui vous fait peur exactement ? "
-            "Je peux vous proposer des astuces pour réduire votre niveau de stress et reprendre confiance."
-        ),
-    ],
-    "love": [
-        (
-            "❤️ Je sens beaucoup d’affection dans vos mots. "
-            "À qui pensez-vous ? "
-            "Parfois, partager un souvenir ou un message gentil peut renforcer ce lien. "
-            "Si vous le souhaitez, je peux vous aider à formuler ces pensées."
-        ),
-        (
-            "😍 L’amour est un sentiment merveilleux ! "
-            "Voulez-vous en parler : qu’est-ce qui vous touche particulièrement chez cette personne ? "
-            "Je suis là pour vous écouter et vous soutenir."
-        ),
-    ],
-    "disgust": [
-        (
-            "🤢 Je perçois du dégoût ou de la répulsion. "
-            "Qu’est-ce qui suscite cette réaction chez vous ? "
-            "En comprendre l’origine peut aider à apaiser ce sentiment, si vous voulez en discuter plus en détail."
-        ),
-        (
-            "⚠️ Le dégoût est parfois un signal d’alarme important. "
-            "Pouvez-vous m’en dire plus sur ce qui vous choque ou vous dérange tant ? "
-            "En parler est souvent la première étape pour retrouver un sentiment d’équilibre."
-        ),
-    ],
-}
-
-author_alias = {
-    "happiness": "joy",
-    "happy":     "joy",
-    "angry":     "anger",
-    "fearful":   "fear",
-}
-
-
 def analyser_emotions(question: str) -> str:
     print(f"🔍 [DEBUG emo] input raw = {question!r}")
     q = (question or "").strip()
-    if not q:
-        print("🔎 [DEBUG emo] skipped: question vide")
-        return ""
-    if q.endswith("?"):
-        print("🔎 [DEBUG emo] skipped: question factuelle")
+    if not q or q.endswith("?"):
+        print("🔎 [DEBUG emo] skipped: question vide ou factuelle")
         return ""
 
-    prompt = (
-        "Vous êtes un classificateur d'émotions pour du texte en français.\n"
+    # Étape 1 : Détection d’émotion
+    prompt_emo = (
+        "Tu es un classificateur d'émotions pour du texte en français.\n"
         "Catégories : joy, optimism, sadness, anger, fear, love, disgust.\n"
-        f"Phrase : «{q}»\nRépondez uniquement par l'étiquette en minuscules."
+        f"Phrase : «{q}»\nRéponds uniquement par une étiquette parmi ces mots, en minuscules."
     )
-    print(f"▶️ [DEBUG emo] prompt = {prompt!r}")
     try:
-        resp = openai.ChatCompletion.create(
+        resp_emo = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "Tu es un classificateur d'émotions."},
-                {"role": "user",   "content": prompt},
+                {"role": "user", "content": prompt_emo},
             ],
             temperature=0.0,
             max_tokens=3
         )
-        raw_label = resp.choices[0].message.content
-        print(f"✅ [DEBUG emo] raw_label = {raw_label!r}")
+        raw_label = resp_emo.choices[0].message.content.strip().lower()
+        label = re.sub(r"[^a-z]", "", raw_label)
+        label = author_alias.get(label, label)
+        print(f"✅ [DEBUG emo] Emotion détectée : {label}")
     except Exception as e:
-        print(f"❌ [DEBUG emo] API error: {e}")
+        print(f"❌ [DEBUG emo] Erreur API détection émotion : {e}")
         return ""
 
-    label = re.sub(r"[^a-zA-Z]", "", raw_label).lower()
-    print(f"▶️ [DEBUG emo] cleaned label = {label!r}")
-    label = author_alias.get(label, label)
-    print(f"▶️ [DEBUG emo] aliased label = {label!r}")
-    variantes = reponses_variantes.get(label)
-    if variantes:
-        response = choice(variantes)
-        print(f"✅ [DEBUG emo] matched emotion '{label}', response = {response!r}")
-        return response
+    if label not in ["joy", "optimism", "sadness", "anger", "fear", "love", "disgust"]:
+        print("🔎 [DEBUG emo] Émotion non reconnue")
+        return ""
 
-    print("🔎 [DEBUG emo] no matching emotion")
-    return ""
+    # Étape 2 : Génération de réponse empathique selon émotion détectée
+    prompt_reponse = (
+        f"Tu es une intelligence artificielle empathique. Un utilisateur vient d’exprimer une émotion de type **{label}** "
+        f"dans la phrase suivante : «{q}».\n"
+        "Rédige une réponse naturelle, bienveillante, émotionnelle et cohérente, en une ou deux phrases maximum, "
+        "comme si tu étais une IA chaleureuse, à l’écoute, et humaine dans son expression. Utilise éventuellement un emoji en début ou fin."
+    )
+    try:
+        resp_reponse = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Tu es une IA empathique et bienveillante."},
+                {"role": "user", "content": prompt_reponse},
+            ],
+            temperature=0.7,
+            max_tokens=100
+        )
+        message = resp_reponse.choices[0].message.content.strip()
+        print(f"✅ [DEBUG emo] Réponse générée : {message!r}")
+        return message
+    except Exception as e:
+        print(f"❌ [DEBUG emo] Erreur API génération réponse : {e}")
+        return ""
 
-PLACEHOLDER_PAS_DE_REPONSE = "🤔 Je n'ai pas trouvé de réponse précise."
 
 def obtenir_reponse_ia(question):
     resp = openai.ChatCompletion.create(
