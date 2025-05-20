@@ -3039,7 +3039,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             print("🤖 AVA :", reponse)
 
     elif any(kw in question_clean for kw in ["qu'as tu appris", "qu’as tu appris", "dis moi ce que tu as appris", "que retiens tu", "qu’as tu retenu", "montre moi ce que tu as retenu"]):
-    message_bot = afficher_derniers_apprentissages()
+        message_bot = afficher_derniers_apprentissages()
 
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
