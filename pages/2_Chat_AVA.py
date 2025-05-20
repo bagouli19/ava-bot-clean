@@ -545,53 +545,48 @@ def utilisateur_a_repondu(question_clean: str) -> bool:
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
 
-def charger_style_ava() -> dict:
-    """
-    Charge les paramètres de style d'AVA depuis GitHub.
-    """
-    url = " https://raw.githubusercontent.com/bagouli19/ava-bot-ultimate/main/data/style_ava.json"
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print(f"Erreur chargement style AVA : {response.status_code}")
-            return {
-                "ton": "neutre",
-                "langage": "classique",
-                "niveau_humour": 0.3,
-                "niveau_spontane": 0.3,
-                "niveau_libre_arbitre": 0.3,
-                "compteur_interactions": 0,
-                "niveau_affection": 0.5
-            }
-    except Exception as e:
-        print("Exception lors du chargement style AVA :", e)
-        return {
-            "ton": "neutre",
-            "langage": "classique",
-            "niveau_humour": 0.3,
-            "niveau_spontane": 0.3,
-            "niveau_libre_arbitre": 0.3,
-            "compteur_interactions": 0,
-            "niveau_affection": 0.5
-        }
 def sauvegarder_style_ava(style: dict) -> None:
     """
-    Sauvegarde en local uniquement si l'application est en mode local.
+    Sauvegarde le style d'AVA, soit localement (si MODE_LOCAL), soit sur GitHub.
     """
-    if MODE_LOCAL:  # à définir selon ton usage
+    if MODE_LOCAL:
         os.makedirs(os.path.dirname(STYLE_FILE), exist_ok=True)
         with open(STYLE_FILE, "w", encoding="utf-8") as f:
             json.dump(style, f, ensure_ascii=False, indent=4)
-def reponse_malicieuse_possible(contexte: str) -> bool:
+    else:
+        sauvegarder_style_ava_sur_github(style)
+        
+def sauvegarder_style_ava_sur_github(style: dict):
     """
-    Détermine si AVA peut se permettre une touche de malice dans sa réponse.
+    Sauvegarde le fichier style_ava.json sur GitHub.
     """
-    style = charger_style_ava()
-    niveau_malice = style.get("niveau_malice", 0.0)
-    mots_clés = ["jeu", "taquine", "devine", "secret", "plaisanter", "drôle", "humour"]
-    return niveau_malice > 0.3 and any(m in contexte.lower() for m in mots_clés)
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/data/style_ava.json"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        sha = response.json().get("sha", "") if response.status_code == 200 else ""
+
+        contenu_json = json.dumps(style, ensure_ascii=False, indent=4).encode("utf-8")
+        contenu_base64 = base64.b64encode(contenu_json).decode("utf-8")
+
+        data = {
+            "message": "🔄 Mise à jour du style d’AVA",
+            "content": contenu_base64,
+            "sha": sha
+        }
+
+        response = requests.put(url, headers=headers, json=data)
+        if response.status_code in [200, 201]:
+            print("✅ Style d'AVA sauvegardé sur GitHub.")
+        else:
+            print(f"❌ Erreur sauvegarde style : {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"⚠️ Erreur sauvegarde style GitHub : {e}")
+
 
 # --- MÉMOIRE À COURT TERME ---
 memoire_court_terme = {
