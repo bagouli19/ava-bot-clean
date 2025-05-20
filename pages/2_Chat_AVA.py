@@ -446,7 +446,11 @@ def auto_apprentissage(phrase: str, source: str = "utilisateur"):
     if not phrase or len(phrase.strip()) < 10:
         return
 
-    memoire = charger_memoire()  # doit correspondre à la version qui lit depuis GitHub
+    memoire = charger_memoire_utilisateurs()  # ✅ Correction ici !
+    if not isinstance(memoire, list):
+        print("❌ La mémoire utilisateur n'est pas au format liste. Annulation de l'apprentissage.")
+        return
+
     for entree in memoire:
         if phrase.strip().lower() == entree.get("contenu", "").strip().lower():
             return  # déjà appris
@@ -462,10 +466,11 @@ def auto_apprentissage(phrase: str, source: str = "utilisateur"):
     memoire.append(nouvelle_entree)
 
     try:
-        sauvegarder_memoire_utilisateurs(memoire)  # ⚠️ Fonction GitHub
+        sauvegarder_memoire_utilisateurs(memoire)
         print(f"🧠 [AUTO-APPRENTISSAGE] Enregistré (GitHub) : {phrase.strip()}")
     except Exception as e:
         print(f"❌ [AUTO-APPRENTISSAGE] Erreur lors de la sauvegarde GitHub : {e}")
+
 
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
