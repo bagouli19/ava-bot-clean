@@ -1850,21 +1850,21 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
     
     if __name__ == "__main__":
-    # Test d'expressions émotionnelles
-    exemples = [
-        "Je me sens vraiment perdu ces derniers jours...",
-        "Aujourd’hui, j’ai envie de conquérir le monde !",
-        "J’ai peur de l’avenir, tout m’inquiète.",
-        "J’ai rencontré quelqu’un de spécial…",
-        "Tout m’énerve en ce moment, j’en ai marre.",
-        "Je suis heureux comme jamais 😄",
-        "Ce truc me dégoûte complètement..."
-    ]
+        # Test d'expressions émotionnelles
+        exemples = [
+            "Je me sens vraiment perdu ces derniers jours...",
+            "Aujourd’hui, j’ai envie de conquérir le monde !",
+            "J’ai peur de l’avenir, tout m’inquiète.",
+            "J’ai rencontré quelqu’un de spécial…",
+            "Tout m’énerve en ce moment, j’en ai marre.",
+            "Je suis heureux comme jamais 😄",
+            "Ce truc me dégoûte complètement..."
+        ]
 
-    for phrase in exemples:
-        print("\n🗣️ Utilisateur :", phrase)
-        reponse = analyser_emotions(phrase)
-        print("🤖 AVA :", reponse)
+        for phrase in exemples:
+            print("\n🗣️ Utilisateur :", phrase)
+            reponse = analyser_emotions(phrase)
+            print("🤖 AVA :", reponse)
 
     # DEBUG: afficher la forme nettoyée de la question
     print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
