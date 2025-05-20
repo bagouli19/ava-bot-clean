@@ -555,7 +555,7 @@ def sauvegarder_style_ava(style: dict) -> None:
             json.dump(style, f, ensure_ascii=False, indent=4)
     else:
         sauvegarder_style_ava_sur_github(style)
-        
+
 def sauvegarder_style_ava_sur_github(style: dict):
     """
     Sauvegarde le fichier style_ava.json sur GitHub.
@@ -587,6 +587,18 @@ def sauvegarder_style_ava_sur_github(style: dict):
     except Exception as e:
         print(f"⚠️ Erreur sauvegarde style GitHub : {e}")
 
+def ajuster_style_ava(param: str, variation: float) -> None:
+    """
+    Ajuste dynamiquement un paramètre du style d’AVA (ex : affection, humour, etc.).
+    """
+    style = charger_style_ava()
+    
+    if param in style:
+        style[param] = min(max(style[param] + variation, 0.0), 1.0)  # garde entre 0.0 et 1.0
+        print(f"🎨 Ajustement : {param} → {round(style[param], 2)}")
+        sauvegarder_style_ava(style)
+    else:
+        print(f"⚠️ Le paramètre '{param}' n’existe pas dans le style d’AVA.")
 
 # --- MÉMOIRE À COURT TERME ---
 memoire_court_terme = {
@@ -3090,7 +3102,12 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         suggestion = proposition_spontanee_depuis_memoire()
         if suggestion:
             message_bot += f"\n\n{suggestion}"
-
+    
+    if "merci" in question_clean:
+        ajuster_style_ava("niveau_affection", +0.05)
+    if "tu es géniale" in question_clean:
+        ajuster_style_ava("niveau_libre_arbitre", +0.1)
+        
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
 
