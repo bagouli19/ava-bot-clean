@@ -488,6 +488,37 @@ def afficher_derniers_apprentissages(n=5) -> str:
         message += f"• {contenu} *(source : {source}, le {date})*\n"
 
     return message
+
+def proposition_spontanee_depuis_memoire():
+    global dernier_sujet_propose, heure_derniere_proposition
+
+    # Ne proposer que toutes les 3 minutes max
+    if time.time() - heure_derniere_proposition < 180:
+        return None
+
+    memoire = charger_memoire_utilisateurs()
+    if not isinstance(memoire, list) or len(memoire) == 0:
+        return None
+
+    # Ne pas proposer deux fois le même sujet à la suite
+    memoire_filtrée = [m for m in memoire if m.get("contenu") != dernier_sujet_propose]
+    if not memoire_filtrée:
+        return None
+
+    choix = random.choice(memoire_filtrée)
+    contenu = choix.get("contenu", "")
+    origine = choix.get("origine", "utilisateur")
+    dernier_sujet_propose = contenu
+    heure_derniere_proposition = time.time()
+
+    suggestions = [
+        f"À propos, tu m'avais appris que : *{contenu}*. Tu veux qu’on approfondisse ? 🤔",
+        f"Je me souvenais de quelque chose : *{contenu}*. C’est toujours d’actualité ?",
+        f"Tu sais, j’ai repensé à ça : *{contenu}*. Tu veux qu’on en reparle un peu plus ? 🧠"
+    ]
+
+    return random.choice(suggestions)
+
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
@@ -3038,8 +3069,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             reponse = analyser_emotions(phrase)
             print("🤖 AVA :", reponse)
 
-    elif any(kw in question_clean for kw in ["qu'as tu appris", "qu’as tu appris", "dis moi ce que tu as appris", "que retiens tu", "qu’as tu retenu", "montre moi ce que tu as retenu"]):
-        message_bot = afficher_derniers_apprentissages()
+
 
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
