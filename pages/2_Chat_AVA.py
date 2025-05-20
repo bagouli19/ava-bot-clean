@@ -1643,13 +1643,13 @@ from random import choice
 
 
 def analyser_emotions(question: str) -> str:
+
     print(f"🔍 [DEBUG emo] input raw = {question!r}")
     q = (question or "").strip()
     if not q or q.endswith("?"):
         print("🔎 [DEBUG emo] skipped: question vide ou factuelle")
         return ""
 
-    # Étape 1 : Détection d’émotion
     prompt_emo = (
         "Tu es un classificateur d'émotions pour du texte en français.\n"
         "Catégories : joy, optimism, sadness, anger, fear, love, disgust.\n"
@@ -1667,7 +1667,12 @@ def analyser_emotions(question: str) -> str:
         )
         raw_label = resp_emo.choices[0].message.content.strip().lower()
         label = re.sub(r"[^a-z]", "", raw_label)
-        label = author_alias.get(label, label)
+        label = {
+            "happiness": "joy",
+            "happy": "joy",
+            "angry": "anger",
+            "fearful": "fear"
+        }.get(label, label)
         print(f"✅ [DEBUG emo] Emotion détectée : {label}")
     except Exception as e:
         print(f"❌ [DEBUG emo] Erreur API détection émotion : {e}")
@@ -1677,7 +1682,6 @@ def analyser_emotions(question: str) -> str:
         print("🔎 [DEBUG emo] Émotion non reconnue")
         return ""
 
-    # Étape 2 : Génération de réponse empathique selon émotion détectée
     prompt_reponse = (
         f"Tu es une intelligence artificielle empathique. Un utilisateur vient d’exprimer une émotion de type **{label}** "
         f"dans la phrase suivante : «{q}».\n"
@@ -1850,7 +1854,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     message_bot = ""
     
     if __name__ == "__main__":
-        # Test d'expressions émotionnelles
         exemples = [
             "Je me sens vraiment perdu ces derniers jours...",
             "Aujourd’hui, j’ai envie de conquérir le monde !",
