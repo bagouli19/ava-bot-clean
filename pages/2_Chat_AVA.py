@@ -471,7 +471,23 @@ def auto_apprentissage(phrase: str, source: str = "utilisateur"):
     except Exception as e:
         print(f"❌ [AUTO-APPRENTISSAGE] Erreur lors de la sauvegarde GitHub : {e}")
 
+def afficher_derniers_apprentissages(n=5) -> str:
+    memoire = charger_memoire_utilisateurs()
+    if not isinstance(memoire, list) or len(memoire) == 0:
+        return "🤔 Je n'ai encore rien appris pour l’instant..."
 
+    # On trie les apprentissages du plus récent au plus ancien
+    memoire_triee = sorted(memoire, key=lambda x: x.get("ajoute_le", ""), reverse=True)
+    derniers = memoire_triee[:n]
+
+    message = "🧠 Voici ce que j’ai appris récemment :\n\n"
+    for entree in derniers:
+        date = entree.get("ajoute_le", "")[:10]
+        source = entree.get("origine", "inconnu")
+        contenu = entree.get("contenu", "").strip()
+        message += f"• {contenu} *(source : {source}, le {date})*\n"
+
+    return message
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
@@ -3021,6 +3037,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             print("\n🗣️ Utilisateur :", phrase)
             reponse = analyser_emotions(phrase)
             print("🤖 AVA :", reponse)
+
+    elif any(kw in question_clean for kw in ["qu'as tu appris", "qu’as tu appris", "dis moi ce que tu as appris", "que retiens tu", "qu’as tu retenu", "montre moi ce que tu as retenu"]):
+    message_bot = afficher_derniers_apprentissages()
 
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
