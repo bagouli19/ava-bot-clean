@@ -3092,9 +3092,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             print("🤖 AVA :", reponse)
 
     if not utilisateur_a_repondu(question_clean):
-    suggestion = proposition_spontanee_depuis_memoire()
-    if suggestion:
-        message_bot += f"\n\n{suggestion}"
+        suggestion = proposition_spontanee_depuis_memoire()
+        if suggestion:
+            message_bot += f"\n\n{suggestion}"
 
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
