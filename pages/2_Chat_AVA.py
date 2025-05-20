@@ -440,7 +440,7 @@ def sauvegarder_memoire_utilisateurs(memoire: dict):
     except Exception as e:
         print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
 
-MEMOIRE_PATH = "data/memoire_ava.json"
+
 
 def auto_apprentissage(phrase: str, source: str = "utilisateur"):
     if not phrase or len(phrase.strip()) < 10:
