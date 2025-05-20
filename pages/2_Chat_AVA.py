@@ -2832,13 +2832,22 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     if "recherche" in question_clean.lower() or "google" in question_clean.lower():
         requete = question_clean.replace("recherche", "").replace("google", "").strip()
         if len(requete) > 0:
-            message_bot = rechercher_sur_google(requete)
+            reponse_google = rechercher_sur_google(requete)
+
+            # Appel de l'auto-apprentissage si la réponse est pertinente
+            if len(reponse_google) > 30:
+                auto_apprentissage(reponse_google, source="google")
+
+            # Réponse fluide à l'utilisateur
+            message_bot = f"🔎 Résultat trouvé pour **{requete}** :\n\n{reponse_google}\n\n💡 (Je garde ça en mémoire pour plus tard 🧠)"
+            # 🔸 Pour un apprentissage silencieux, commente la ligne ci-dessus et remplace par :
+            # message_bot = f"🔎 Résultat trouvé pour **{requete}** :\n\n{reponse_google}"
         else:
             message_bot = "🔎 Dites-moi ce que vous souhaitez que je recherche sur Google."
 
-    # ✅ Automatisation de la recherche Google pour les questions sans réponse
-    if message_bot in ["Je ne sais pas.", "Désolé, je n'ai pas la réponse.", "Pouvez-vous reformuler ?"]:
-        message_bot = rechercher_sur_google(question_clean)
+        # ✅ Automatisation de la recherche Google pour les questions sans réponse
+        if message_bot in ["Je ne sais pas.", "Désolé, je n'ai pas la réponse.", "Pouvez-vous reformuler ?"]:
+            message_bot = rechercher_sur_google(question_clean)
 
     # Détection de requête ouverte ou généraliste
     print("✅ gerer_modules_speciaux appelée :", question_clean)   
