@@ -519,6 +519,28 @@ def proposition_spontanee_depuis_memoire():
 
     return random.choice(suggestions)
 
+def utilisateur_a_repondu(question_clean: str) -> bool:
+    """
+    Détermine si l'utilisateur a vraiment relancé la conversation avec une nouvelle demande claire.
+    """
+    if not question_clean or len(question_clean.strip()) < 5:
+        return False  # trop court pour être une vraie relance
+
+    expressions_passives = [
+        "ok", "merci", "parfait", "super", "cool", "d'accord", "je vois", "ça marche", "nickel",
+        "parce que", "je comprends", "parfait merci", "top"
+    ]
+
+    if any(expr in question_clean.lower() for expr in expressions_passives):
+        return False
+
+    # Si ça se termine par une question ou contient une demande, c’est une vraie relance
+    if "?" in question_clean or any(mot in question_clean.lower() for mot in ["peux-tu", "est-ce que", "donne moi", "montre moi", "explique", "cherche", "analyse"]):
+        return True
+
+    # Longueur raisonnable = probable nouvelle question
+    return len(question_clean.split()) > 3
+
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
@@ -3069,7 +3091,10 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             reponse = analyser_emotions(phrase)
             print("🤖 AVA :", reponse)
 
-
+    if not utilisateur_a_repondu(question_clean):
+    suggestion = proposition_spontanee_depuis_memoire()
+    if suggestion:
+        message_bot += f"\n\n{suggestion}"
 
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
