@@ -440,6 +440,27 @@ def sauvegarder_memoire_utilisateurs(memoire: dict):
     except Exception as e:
         print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
 
+def auto_apprentissage(phrase: str, source: str = "utilisateur"):
+    if not phrase or len(phrase.strip()) < 10:
+        return
+
+    memoire = charger_memoire()
+    for entree in memoire:
+        if phrase.strip().lower() == entree.get("contenu", "").strip().lower():
+            return
+
+    type_info = "définition" if " est " in phrase else "inconnu"
+    nouvelle_entree = {
+        "contenu": phrase.strip(),
+        "type": type_info,
+        "origine": source,
+        "ajoute_le": datetime.now().isoformat()
+    }
+
+    memoire.append(nouvelle_entree)
+    sauvegarder_memoire(memoire)
+
+    print(f"🧠 [AUTO-APPRENTISSAGE] Enregistré : {phrase.strip()}")
 
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
@@ -2981,7 +3002,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             print("\n🗣️ Utilisateur :", phrase)
             reponse = analyser_emotions(phrase)
             print("🤖 AVA :", reponse)
-            
+
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
 
