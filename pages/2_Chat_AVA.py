@@ -441,125 +441,6 @@ def sauvegarder_memoire_utilisateurs(memoire: dict):
         print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
 
 
-print("✅ SCRIPT CHARGÉ")
-
-def auto_apprentissage(phrase: str, source: str = "utilisateur"):
-    print("✅ auto_apprentissage appelée avec :", phrase)
-    """
-    Enregistre une phrase importante dans la mémoire globale (memoire_ava.json)
-    si elle n'y est pas déjà, avec typage automatique (définition/inconnu).
-    """
-
-    # 🔒 Filtrage de contenu vide ou trop court
-    if not phrase or len(phrase.strip()) < 10:
-        print("❌ Phrase trop courte ou vide, apprentissage ignoré.")
-        return
-
-    # 📂 Chargement mémoire existante
-    memoire = charger_memoire_utilisateurs()
-
-    # 🔁 Sécurité : forcer le bon format si corrompu
-    if not isinstance(memoire, list):
-        print("⚠️ Mémoire corrompue ou vide, réinitialisation sous forme de liste.")
-        memoire = []
-
-    # 🔎 Vérifie si la phrase existe déjà
-    for entree in memoire:
-        if phrase.strip().lower() == entree.get("contenu", "").strip().lower():
-            print("🔁 Phrase déjà apprise, rien à faire.")
-            return
-
-    # 🧠 Création d’une nouvelle entrée
-    type_info = "définition" if " est " in phrase else "inconnu"
-    nouvelle_entree = {
-        "contenu": phrase.strip(),
-        "type": type_info,
-        "origine": source,
-        "ajoute_le": datetime.now().isoformat()
-    }
-
-    # ➕ Ajout et sauvegarde
-    memoire.append(nouvelle_entree)
-
-    try:
-        sauvegarder_memoire_utilisateurs(memoire)
-        print(f"✅ [AUTO-APPRENTISSAGE] Enregistré dans memoire_ava.json : {phrase.strip()}")
-    except Exception as e:
-        print(f"❌ [AUTO-APPRENTISSAGE] Échec de la sauvegarde : {e}")
-
-
-
-def afficher_derniers_apprentissages(n=5) -> str:
-    memoire = charger_memoire_utilisateurs()
-    if not isinstance(memoire, list) or len(memoire) == 0:
-        return "🤔 Je n'ai encore rien appris pour l’instant..."
-
-    # On trie les apprentissages du plus récent au plus ancien
-    memoire_triee = sorted(memoire, key=lambda x: x.get("ajoute_le", ""), reverse=True)
-    derniers = memoire_triee[:n]
-
-    message = "🧠 Voici ce que j’ai appris récemment :\n\n"
-    for entree in derniers:
-        date = entree.get("ajoute_le", "")[:10]
-        source = entree.get("origine", "inconnu")
-        contenu = entree.get("contenu", "").strip()
-        message += f"• {contenu} *(source : {source}, le {date})*\n"
-
-    return message
-
-def proposition_spontanee_depuis_memoire():
-    global dernier_sujet_propose, heure_derniere_proposition
-
-    # Ne proposer que toutes les 3 minutes max
-    if time.time() - heure_derniere_proposition < 180:
-        return None
-
-    memoire = charger_memoire_utilisateurs()
-    if not isinstance(memoire, list) or len(memoire) == 0:
-        return None
-
-    # Ne pas proposer deux fois le même sujet à la suite
-    memoire_filtrée = [m for m in memoire if m.get("contenu") != dernier_sujet_propose]
-    if not memoire_filtrée:
-        return None
-
-    choix = random.choice(memoire_filtrée)
-    contenu = choix.get("contenu", "")
-    origine = choix.get("origine", "utilisateur")
-    dernier_sujet_propose = contenu
-    heure_derniere_proposition = time.time()
-
-    suggestions = [
-        f"À propos, tu m'avais appris que : *{contenu}*. Tu veux qu’on approfondisse ? 🤔",
-        f"Je me souvenais de quelque chose : *{contenu}*. C’est toujours d’actualité ?",
-        f"Tu sais, j’ai repensé à ça : *{contenu}*. Tu veux qu’on en reparle un peu plus ? 🧠"
-    ]
-
-    return random.choice(suggestions)
-
-def utilisateur_a_repondu(question_clean: str) -> bool:
-    """
-    Détermine si l'utilisateur a vraiment relancé la conversation avec une nouvelle demande claire.
-    """
-    if not question_clean or len(question_clean.strip()) < 5:
-        return False  # trop court pour être une vraie relance
-
-    expressions_passives = [
-        "ok", "merci", "parfait", "super", "cool", "d'accord", "je vois", "ça marche", "nickel",
-        "parce que", "je comprends", "parfait merci", "top"
-    ]
-
-    if any(expr in question_clean.lower() for expr in expressions_passives):
-        return False
-
-    # Si ça se termine par une question ou contient une demande, c’est une vraie relance
-    if "?" in question_clean or any(mot in question_clean.lower() for mot in ["peux-tu", "est-ce que", "donne moi", "montre moi", "explique", "cherche", "analyse"]):
-        return True
-
-    # Longueur raisonnable = probable nouvelle question
-    return len(question_clean.split()) > 3
-
-
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
 # ───────────────────────────────────────────────────────────────────────
@@ -1730,6 +1611,124 @@ def rechercher_horoscope(filepath):
             print(f"...{contenu[start:end]}...")
     else:
         print("❌ Aucune occurrence trouvée.")
+        
+print("✅ SCRIPT CHARGÉ")
+
+def auto_apprentissage(phrase: str, source: str = "utilisateur"):
+    print("✅ auto_apprentissage appelée avec :", phrase)
+    """
+    Enregistre une phrase importante dans la mémoire globale (memoire_ava.json)
+    si elle n'y est pas déjà, avec typage automatique (définition/inconnu).
+    """
+
+    # 🔒 Filtrage de contenu vide ou trop court
+    if not phrase or len(phrase.strip()) < 10:
+        print("❌ Phrase trop courte ou vide, apprentissage ignoré.")
+        return
+
+    # 📂 Chargement mémoire existante
+    memoire = charger_memoire_utilisateurs()
+
+    # 🔁 Sécurité : forcer le bon format si corrompu
+    if not isinstance(memoire, list):
+        print("⚠️ Mémoire corrompue ou vide, réinitialisation sous forme de liste.")
+        memoire = []
+
+    # 🔎 Vérifie si la phrase existe déjà
+    for entree in memoire:
+        if phrase.strip().lower() == entree.get("contenu", "").strip().lower():
+            print("🔁 Phrase déjà apprise, rien à faire.")
+            return
+
+    # 🧠 Création d’une nouvelle entrée
+    type_info = "définition" if " est " in phrase else "inconnu"
+    nouvelle_entree = {
+        "contenu": phrase.strip(),
+        "type": type_info,
+        "origine": source,
+        "ajoute_le": datetime.now().isoformat()
+    }
+
+    # ➕ Ajout et sauvegarde
+    memoire.append(nouvelle_entree)
+
+    try:
+        sauvegarder_memoire_utilisateurs(memoire)
+        print(f"✅ [AUTO-APPRENTISSAGE] Enregistré dans memoire_ava.json : {phrase.strip()}")
+    except Exception as e:
+        print(f"❌ [AUTO-APPRENTISSAGE] Échec de la sauvegarde : {e}")
+
+
+
+def afficher_derniers_apprentissages(n=5) -> str:
+    memoire = charger_memoire_utilisateurs()
+    if not isinstance(memoire, list) or len(memoire) == 0:
+        return "🤔 Je n'ai encore rien appris pour l’instant..."
+
+    # On trie les apprentissages du plus récent au plus ancien
+    memoire_triee = sorted(memoire, key=lambda x: x.get("ajoute_le", ""), reverse=True)
+    derniers = memoire_triee[:n]
+
+    message = "🧠 Voici ce que j’ai appris récemment :\n\n"
+    for entree in derniers:
+        date = entree.get("ajoute_le", "")[:10]
+        source = entree.get("origine", "inconnu")
+        contenu = entree.get("contenu", "").strip()
+        message += f"• {contenu} *(source : {source}, le {date})*\n"
+
+    return message
+
+def proposition_spontanee_depuis_memoire():
+    global dernier_sujet_propose, heure_derniere_proposition
+
+    # Ne proposer que toutes les 3 minutes max
+    if time.time() - heure_derniere_proposition < 180:
+        return None
+
+    memoire = charger_memoire_utilisateurs()
+    if not isinstance(memoire, list) or len(memoire) == 0:
+        return None
+
+    # Ne pas proposer deux fois le même sujet à la suite
+    memoire_filtrée = [m for m in memoire if m.get("contenu") != dernier_sujet_propose]
+    if not memoire_filtrée:
+        return None
+
+    choix = random.choice(memoire_filtrée)
+    contenu = choix.get("contenu", "")
+    origine = choix.get("origine", "utilisateur")
+    dernier_sujet_propose = contenu
+    heure_derniere_proposition = time.time()
+
+    suggestions = [
+        f"À propos, tu m'avais appris que : *{contenu}*. Tu veux qu’on approfondisse ? 🤔",
+        f"Je me souvenais de quelque chose : *{contenu}*. C’est toujours d’actualité ?",
+        f"Tu sais, j’ai repensé à ça : *{contenu}*. Tu veux qu’on en reparle un peu plus ? 🧠"
+    ]
+
+    return random.choice(suggestions)
+
+def utilisateur_a_repondu(question_clean: str) -> bool:
+    """
+    Détermine si l'utilisateur a vraiment relancé la conversation avec une nouvelle demande claire.
+    """
+    if not question_clean or len(question_clean.strip()) < 5:
+        return False  # trop court pour être une vraie relance
+
+    expressions_passives = [
+        "ok", "merci", "parfait", "super", "cool", "d'accord", "je vois", "ça marche", "nickel",
+        "parce que", "je comprends", "parfait merci", "top"
+    ]
+
+    if any(expr in question_clean.lower() for expr in expressions_passives):
+        return False
+
+    # Si ça se termine par une question ou contient une demande, c’est une vraie relance
+    if "?" in question_clean or any(mot in question_clean.lower() for mot in ["peux-tu", "est-ce que", "donne moi", "montre moi", "explique", "cherche", "analyse"]):
+        return True
+
+    # Longueur raisonnable = probable nouvelle question
+    return len(question_clean.split()) > 3
 
 
 synonymes_intentions = {
