@@ -48,7 +48,7 @@ from dotenv import load_dotenv
 import traceback
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from random import choice
-from outils.memoire import auto_apprentissage
+
 
 
 
@@ -441,6 +441,8 @@ def sauvegarder_memoire_utilisateurs(memoire: dict):
     except Exception as e:
         print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
 
+auto_apprentissage("TEST manuel")
+
 print("✅ SCRIPT CHARGÉ")
 
 def auto_apprentissage(phrase: str, source: str = "utilisateur"):
@@ -487,7 +489,7 @@ def auto_apprentissage(phrase: str, source: str = "utilisateur"):
     except Exception as e:
         print(f"❌ [AUTO-APPRENTISSAGE] Échec de la sauvegarde : {e}")
 
-auto_apprentissage("TEST manuel")
+
 
 def afficher_derniers_apprentissages(n=5) -> str:
     memoire = charger_memoire_utilisateurs()
