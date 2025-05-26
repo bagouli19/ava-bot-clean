@@ -60,7 +60,6 @@ from random import choice
 
 st.set_page_config(page_title="Chat AVA", layout="centered")
 
-auto_apprentissage("✅ TEST mémoire directe", source="debug")
 
 # Chargement des clés API depuis les secrets Streamlit
 try:
