@@ -415,33 +415,6 @@ def sauvegarder_memoire_ava(memoire: dict):
     except Exception as e:
         print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
 
-
-# ─────────────────────────────────────────
-# 💾 Sauvegarder la mémoire des utilisateurs
-# ─────────────────────────────────────────
-def sauvegarder_memoire_utilisateurs(memoire: dict):
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_UTILISATEURS}"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
-
-    try:
-        response = requests.get(url, headers=headers)
-        sha = response.json().get("sha", "") if response.status_code == 200 else ""
-
-        contenu_json = json.dumps(memoire, ensure_ascii=False, indent=4).encode("utf-8")
-        contenu_base64 = base64.b64encode(contenu_json).decode("utf-8")
-
-        data = {"message": "🔄 Mise à jour de la mémoire des utilisateurs", "content": contenu_base64, "sha": sha}
-        response = requests.put(url, headers=headers, json=data)
-
-        if response.status_code in [200, 201]:
-            print("✅ Mémoire utilisateurs sauvegardée sur GitHub.")
-        else:
-            print(f"❌ Erreur lors de la sauvegarde : {response.status_code} - {response.text}")
-    except Exception as e:
-        print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
-
-
-
 def auto_apprentissage(phrase: str, source: str = "utilisateur"):
     """
     Enregistre une phrase importante dans la mémoire globale (memoire_ava.json)
@@ -555,6 +528,33 @@ def utilisateur_a_repondu(question_clean: str) -> bool:
 
     # Longueur raisonnable = probable nouvelle question
     return len(question_clean.split()) > 3
+
+# ─────────────────────────────────────────
+# 💾 Sauvegarder la mémoire des utilisateurs
+# ─────────────────────────────────────────
+def sauvegarder_memoire_utilisateurs(memoire: dict):
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{FICHIER_MEMOIRE_UTILISATEURS}"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+
+    try:
+        response = requests.get(url, headers=headers)
+        sha = response.json().get("sha", "") if response.status_code == 200 else ""
+
+        contenu_json = json.dumps(memoire, ensure_ascii=False, indent=4).encode("utf-8")
+        contenu_base64 = base64.b64encode(contenu_json).decode("utf-8")
+
+        data = {"message": "🔄 Mise à jour de la mémoire des utilisateurs", "content": contenu_base64, "sha": sha}
+        response = requests.put(url, headers=headers, json=data)
+
+        if response.status_code in [200, 201]:
+            print("✅ Mémoire utilisateurs sauvegardée sur GitHub.")
+        else:
+            print(f"❌ Erreur lors de la sauvegarde : {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
+
+
+
 
 # ───────────────────────────────────────────────────────────────────────
 # 5️⃣ Style et affection d'AVA
