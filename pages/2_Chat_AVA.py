@@ -48,6 +48,7 @@ from dotenv import load_dotenv
 import traceback
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from random import choice
+from outils.memoire import auto_apprentissage
 
 
 
