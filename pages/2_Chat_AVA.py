@@ -443,18 +443,31 @@ def sauvegarder_memoire_utilisateurs(memoire: dict):
 
 
 def auto_apprentissage(phrase: str, source: str = "utilisateur"):
+    """
+    Enregistre une phrase importante dans la mémoire globale (memoire_ava.json)
+    si elle n'y est pas déjà, avec typage automatique (définition/inconnu).
+    """
+
+    # 🔒 Filtrage de contenu vide ou trop court
     if not phrase or len(phrase.strip()) < 10:
+        print("❌ Phrase trop courte ou vide, apprentissage ignoré.")
         return
 
-    memoire = charger_memoire_utilisateurs()  # ✅ Correction ici !
+    # 📂 Chargement mémoire existante
+    memoire = charger_memoire_utilisateurs()
+
+    # 🔁 Sécurité : forcer le bon format si corrompu
     if not isinstance(memoire, list):
-        print("❌ La mémoire utilisateur n'est pas au format liste. Annulation de l'apprentissage.")
-        return
+        print("⚠️ Mémoire corrompue ou vide, réinitialisation sous forme de liste.")
+        memoire = []
 
+    # 🔎 Vérifie si la phrase existe déjà
     for entree in memoire:
         if phrase.strip().lower() == entree.get("contenu", "").strip().lower():
-            return  # déjà appris
+            print("🔁 Phrase déjà apprise, rien à faire.")
+            return
 
+    # 🧠 Création d’une nouvelle entrée
     type_info = "définition" if " est " in phrase else "inconnu"
     nouvelle_entree = {
         "contenu": phrase.strip(),
@@ -463,13 +476,15 @@ def auto_apprentissage(phrase: str, source: str = "utilisateur"):
         "ajoute_le": datetime.now().isoformat()
     }
 
+    # ➕ Ajout et sauvegarde
     memoire.append(nouvelle_entree)
 
     try:
         sauvegarder_memoire_utilisateurs(memoire)
-        print(f"🧠 [AUTO-APPRENTISSAGE] Enregistré (GitHub) : {phrase.strip()}")
+        print(f"✅ [AUTO-APPRENTISSAGE] Enregistré dans memoire_ava.json : {phrase.strip()}")
     except Exception as e:
-        print(f"❌ [AUTO-APPRENTISSAGE] Erreur lors de la sauvegarde GitHub : {e}")
+        print(f"❌ [AUTO-APPRENTISSAGE] Échec de la sauvegarde : {e}")
+
 
 def afficher_derniers_apprentissages(n=5) -> str:
     memoire = charger_memoire_utilisateurs()
