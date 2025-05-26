@@ -389,7 +389,7 @@ def auto_apprentissage(phrase: str, source: str = "utilisateur"):
         return
 
     # 📂 Chargement mémoire existante
-    memoire = charger_memoire_utilisateurs()
+    memoire = charger_memoire_ava()
 
     # 🔁 Sécurité : forcer le bon format si corrompu
     if not isinstance(memoire, list):
