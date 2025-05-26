@@ -381,8 +381,7 @@ def auto_apprentissage(phrase: str, source: str = "utilisateur"):
     Enregistre une phrase importante dans la mémoire globale (memoire_ava.json)
     si elle n'y est pas déjà, avec typage automatique (définition/inconnu).
     """
-    
-    auto_apprentissage("Test direct")
+      
 
     # 🔒 Filtrage de contenu vide ou trop court
     if not phrase or len(phrase.strip()) < 10:
@@ -421,7 +420,7 @@ def auto_apprentissage(phrase: str, source: str = "utilisateur"):
     except Exception as e:
         print(f"❌ [AUTO-APPRENTISSAGE] Échec de la sauvegarde : {e}")
 
-auto_apprentissage("✅ TEST mémoire directe", source="debug")
+
 
 def afficher_derniers_apprentissages(n=5) -> str:
     memoire = charger_memoire_utilisateurs()
