@@ -441,7 +441,6 @@ def sauvegarder_memoire_utilisateurs(memoire: dict):
     except Exception as e:
         print(f"⚠️ Erreur de sauvegarde sur GitHub : {e}")
 
-auto_apprentissage("TEST manuel")
 
 print("✅ SCRIPT CHARGÉ")
 
