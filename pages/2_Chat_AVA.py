@@ -3047,26 +3047,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
             rep += f"- [{s['date']}] {s['type']} : {s['contenu']}\n"
         return rep
 
-   
-    # 🧠 Bloc mémoire évolutive AVA (autonome)
-    def doit_memoriser_automatiquement(phrase: str) -> bool:
-        """Détermine si la phrase est pertinente pour la mémoire."""
-        contenu = phrase.lower().strip(" .!?")
-        if len(contenu) < 15:
-            return False
-
-        mots_importants = [
-            "je pense", "je crois", "selon moi", "j’ai compris", "j’ai appris",
-            "je ressens", "je réalise", "j’ai remarqué", "j’ai vécu", "ça m’inspire"
-        ]
-        mots_emotionnels = [
-            "incroyable", "triste", "beau", "puissant", "touchant", "difficile", "mémorable", "impressionnant"
-        ]
-
-        if any(m in contenu for m in mots_importants) or any(m in contenu for m in mots_emotionnels):
-            return True
-
-        return False
 
     # 🔄 Enregistrement optimisé des souvenirs
     if doit_memoriser_automatiquement(question_clean):
