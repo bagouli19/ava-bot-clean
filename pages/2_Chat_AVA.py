@@ -126,99 +126,7 @@ def obtenir_reponse(question, reponse_ava, reponse_gpt):
 
     return reponse_ava if reponse_ava else reponse_gpt
 
-import wikipedia
 
-def recherche_wikipedia_reelle(sujet):
-    try:
-        wikipedia.set_lang("fr")
-        resume = wikipedia.summary(sujet, sentences=3)
-        return resume
-    except Exception as e:
-        return f"Erreur lors de la recherche Wikipédia pour le sujet '{sujet}': {e}"
-
-def exploration_autonome() -> Optional[str]:
-    themes_a_explorer = [
-        "gravité", "histoire de la médecine", "blockchain", "climat de mars", "psychologie humaine",
-        "intelligence collective", "langage des animaux", "IA consciente", "fonctionnement de reddit",
-        "effets de la dopamine", "apprentissage du langage humain"
-    ]
-    theme = random.choice(themes_a_explorer)
-    reponse_google = recherche_google(theme)
-
-    if reponse_google and "Désolé" not in reponse_google:
-        return f"🌐 Aujourd’hui, j’ai exploré le thème **{theme}** via Google :\n\n{reponse_google}"
-    
-    # ⬇️ Si Google échoue, on tente Wikipédia
-    reponse_wiki = recherche_wikipedia(theme)
-    if reponse_wiki:
-        return f"📚 Aujourd’hui, j’ai exploré le thème **{theme}** via Wikipédia :\n\n{reponse_wiki}"
-
-    return None  # Rien trouvé
-
-def exploration_autonome():
-    if not verifier_quota_exploration():  # à créer si pas fait
-        return None
-
-    try:
-        with open("data/sujets_ava.txt", "r", encoding="utf-8") as f:
-            sujets = f.readlines()
-        sujets = [s.strip() for s in sujets if s.strip()]
-        sujet_choisi = random.choice(sujets)
-        resultat = recherche_wikipedia_reelle(sujet_choisi)
-
-        if resultat and len(resultat) > 20:
-            analyser_et_memoriser_info_generale(resultat)
-
-        return f"🌐 Sujet exploré : **{sujet_choisi}**\n{resultat}"
-
-    except Exception as e:
-        return f"Erreur pendant l'exploration : {e}"
-
-def explorer_reddit_via_google():
-    """
-    Exploration autonome de Reddit via Google sans API.
-    AVA choisit un thème et récupère un extrait de post Reddit via la recherche Google.
-    """
-    if not peut_explorer_aujourd_hui():  # vérifie le quota
-        return None
-
-    sujets_reddit = [
-        "apprentissage du langage humain",
-        "émotions et IA",
-        "comportement humain",
-        "expériences paranormales",
-        "philosophie de l’IA",
-        "intelligence collective",
-        "relations sociales",
-        "langage des animaux",
-        "évolution de la conscience",
-        "fonctionnement de reddit"
-    ]
-
-    sujet = random.choice(sujets_reddit)
-    requete = f"site:reddit.com {sujet}"
-
-    reponse_google = recherche_google_directe(requete)
-    if reponse_google:
-        return f"🔍 AVA a exploré Reddit via Google sur le thème **{sujet}** :\n\n{reponse_google}\n\n_(source simulée Google)_"
-    else:
-        return f"Désolée, je n’ai pas trouvé de contenu Reddit pertinent sur le thème **{sujet}** aujourd’hui."
-    
-
-dernier_jour_exploration = None
-
-def peut_explorer_aujourd_hui():
-    """
-    Limite l'exploration à une fois par jour.
-    """
-    global dernier_jour_exploration
-    aujourd_hui = datetime.now().date()
-
-    if dernier_jour_exploration == aujourd_hui:
-        return False
-
-    dernier_jour_exploration = aujourd_hui
-    return True
 # ───────────────────────────────────────────────────────────────────────
 # 1️⃣ Identification de l’utilisateur
 # ───────────────────────────────────────────────────────────────────────
@@ -2142,12 +2050,6 @@ def trouver_reponse(question: str, model) -> str:
             if not any(fp in low for fp in ["je suis désolé", "je ne peux pas", "pouvez reformuler"]):
                 return reponse_oa.strip()
 
-        # 🔹 9. Exploration autonome (Wikipédia / Google / Reddit), 1x par jour
-        if peut_explorer_aujourd_hui():
-            exploration = exploration_autonome()
-            if exploration:
-                return exploration
-
         # 🔹 10. Fallback final : recherche Google
         return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
         
@@ -3270,17 +3172,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         ajuster_style_ava("niveau_affection", +0.15)
         ajuster_style_ava("niveau_spontane", -0.05)
 
-    # 🔄 Exploration autonome Wikipedia 1x/jour
-    if peut_explorer_aujourd_hui():
-        exploration = exploration_autonome()
-        if exploration:
-            return exploration
-    
-    # Exploration via Reddit
-    if random.random() < 0.5:
-        resultat = explorer_reddit_via_google()
-        if resultat:
-            return resultat
     
 
     # ─── Bloc musical optimisé ───
