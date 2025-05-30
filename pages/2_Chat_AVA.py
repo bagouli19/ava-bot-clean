@@ -125,7 +125,7 @@ def obtenir_reponse(question, reponse_ava, reponse_gpt):
         return rechercher_sur_google(question)
 
     return reponse_ava if reponse_ava else reponse_gpt
-    
+
 import wikipedia
 
 def recherche_wikipedia_reelle(sujet):
@@ -204,30 +204,6 @@ def explorer_reddit_via_google():
     else:
         return f"Désolée, je n’ai pas trouvé de contenu Reddit pertinent sur le thème **{sujet}** aujourd’hui."
     
-def exploration_autonome():
-    """
-    Permet à AVA d'explorer automatiquement un thème via Google, Reddit ou Wikipedia.
-    """
-    themes = [
-        "gravité",
-        "blockchain",
-        "langage humain",
-        "psychologie humaine",
-        "climat de mars",
-        "histoire de la médecine",
-        "intelligence collective",
-        "IA consciente",
-        "fonctionnement de reddit",
-        "langage des animaux"
-    ]
-    sujet = random.choice(themes)
-
-    # Recherche Google standard (tu appelles ta propre fonction déjà prête ici)
-    resultat_google = recherche_google_directe(sujet)
-    if resultat_google:
-        return f"🌐 J'ai exploré le sujet **{sujet}** sur Google :\n\n{resultat_google}"
-
-    return None
 
 dernier_jour_exploration = None
 
