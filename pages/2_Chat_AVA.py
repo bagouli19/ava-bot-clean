@@ -1795,8 +1795,37 @@ def choisir_sujet_autonome():
     sujets = charger_sujets_ava()
     if sujets:
         return random.choice(sujets)
-    return None    
-    
+    return None 
+
+import wikipedia
+
+def recherche_wikipedia_reelle(sujet):
+    try:
+        wikipedia.set_lang("fr")
+        resume = wikipedia.summary(sujet, sentences=3)
+        return resume
+    except Exception as e:
+        return f"Erreur lors de la recherche Wikipédia pour le sujet '{sujet}': {e}"
+
+def exploration_autonome():
+    if not verifier_quota_exploration():  # à créer si pas fait
+        return None
+
+    try:
+        with open("data/sujets_ava.txt", "r", encoding="utf-8") as f:
+            sujets = f.readlines()
+        sujets = [s.strip() for s in sujets if s.strip()]
+        sujet_choisi = random.choice(sujets)
+        resultat = recherche_wikipedia_reelle(sujet_choisi)
+
+        if resultat and len(resultat) > 20:
+            analyser_et_memoriser_info_generale(resultat)
+
+        return f"🌐 Sujet exploré : **{sujet_choisi}**\n{resultat}"
+
+    except Exception as e:
+        return f"Erreur pendant l'exploration : {e}"
+
 synonymes_intentions = {
     "aider": ["assister", "soutenir", "donner un coup de main", "accompagner"],
     "comprendre": ["saisir", "apprendre", "découvrir", "cerner"],
@@ -3160,7 +3189,11 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         ajuster_style_ava("niveau_affection", +0.15)
         ajuster_style_ava("niveau_spontane", -0.05)
 
-    
+    # 🔄 Exploration autonome Wikipedia 1x/jour
+    if peut_explorer_aujourd_hui():
+        exploration = exploration_autonome()
+        if exploration:
+            return exploration
 
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
