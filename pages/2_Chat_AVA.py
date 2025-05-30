@@ -3112,7 +3112,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
 
     # 🔄 Enregistrement optimisé des souvenirs
-    if doit_memoriser_automatiquement(question_clean):
+    if reponse and isinstance(reponse, str) and len(reponse) > 20:
+        analyser_et_memoriser_info_generale(reponse)
         contenu = question_clean.strip(" .!?").lower()
 
         try:
@@ -3193,8 +3194,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         ajuster_style_ava("niveau_affection", +0.15)
         ajuster_style_ava("niveau_spontane", -0.05)
 
-    if reponse and isinstance(reponse, str) and len(reponse) > 20:
-        analyser_et_memoriser_info_generale(reponse)
+    
 
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
