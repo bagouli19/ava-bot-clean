@@ -1806,6 +1806,17 @@ def choisir_sujet_autonome():
     if sujets:
         return random.choice(sujets)
     return None 
+    
+def recherche_google_directe(requete: str) -> Optional[str]:
+    """
+    Simule une recherche Google (avec API ou fallback si indisponible).
+    Tu peux ici appeler ton module de recherche existant.
+    """
+    try:
+        from modules.recherche import rechercher_google  # remplace selon ton arborescence réelle
+        return rechercher_google(requete)
+    except Exception:
+        return f"Désolé, je n’ai pas pu interroger Google sur « {requete} »."
 
 import wikipedia
 
