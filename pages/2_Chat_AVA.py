@@ -525,7 +525,7 @@ def analyser_et_memoriser_info_generale(reponse: str, chemin_fichier='data/memoi
 
         with open(chemin_fichier, 'w', encoding='utf-8') as f:
             json.dump(memoire, f, indent=4, ensure_ascii=False)
-            
+
 # ─────────────────────────────────────────
 # 🔄 Charger la mémoire des utilisateurs
 # ─────────────────────────────────────────
@@ -1998,8 +1998,6 @@ def trouver_reponse(question: str, model) -> str:
     question_clean = nettoyer_texte(question_raw)
     question_clean = normalize_text(question_raw)
 
-    analyser_et_memoriser_info_generale(reponse)
-
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
         
@@ -3195,7 +3193,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         ajuster_style_ava("niveau_affection", +0.15)
         ajuster_style_ava("niveau_spontane", -0.05)
 
-
+    if reponse and isinstance(reponse, str) and len(reponse) > 20:
+       analyser_et_memoriser_info_generale(reponse)
+       
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
 
