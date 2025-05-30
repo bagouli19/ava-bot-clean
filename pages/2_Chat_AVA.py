@@ -2102,52 +2102,54 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
-    question_clean = normalize_text(question_raw)
+    question_clean = normalize_text(question_clean)
 
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
-        
-        if reponse and isinstance(reponse, str) and len(reponse) > 20:
-            analyser_et_memoriser_info_generale(reponse)
-            
-        # Priorité à la personnalisation
+
+        # 🔹 1. Réponse ultra personnalisée
         if (resp := repondre_personnalise(question_raw)):
             return resp
 
-        # 1) Souvenirs utilisateur (priorité absolue)
+        # 🔹 2. Souvenirs utilisateur (mémoire utilisateur)
         if (memo := gerer_souvenirs_utilisateur(question_raw)):
             return memo
 
-        # 2) Salutations
+        # 🔹 3. Salutations ou langage courant
         if (sal := repondre_salutation(question_clean)):
             return sal
 
-        # 3) Base de connaissances
+        # 🔹 4. Base de connaissances culturelles
         if question_clean in base_culture_nettoyee:
             return base_culture_nettoyee[question_clean]
 
-        # 4) Base de langage
+        # 🔹 5. Base de langage enrichie (phrases, expressions)
         if (lang := chercher_reponse_base_langage(question_raw)):
             return lang
 
-        # 5) Modules spécialisés (respiration, heure…)
+        # 🔹 6. Modules spécialisés (météo, médecine, conversion, etc.)
         if (spec := gerer_modules_speciaux(question_raw, question_clean, model)):
             return spec
 
-        # 6) Analyse émotionnelle
+        # 🔹 7. Analyse émotionnelle
         if (emo := analyser_emotions(question_raw)):
             return emo
 
-        # 7) Fallback GPT
+        # 🔹 8. Fallback GPT (OpenAI)
         reponse_oa = repondre_openai(question_raw)
         if isinstance(reponse_oa, str) and reponse_oa.strip():
             low = reponse_oa.lower()
-            if not any(fp in low for fp in ["je suis désolé","je ne peux pas","pouvez reformuler"]):
+            if not any(fp in low for fp in ["je suis désolé", "je ne peux pas", "pouvez reformuler"]):
                 return reponse_oa.strip()
 
-        # 8) Fallback Google
+        # 🔹 9. Exploration autonome (Wikipédia / Google / Reddit), 1x par jour
+        if peut_explorer_aujourd_hui():
+            exploration = exploration_autonome()
+            if exploration:
+                return exploration
+
+        # 🔹 10. Fallback final : recherche Google
         return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
-        
         
 
 # --- Modules personnalisés (à enrichir) ---
