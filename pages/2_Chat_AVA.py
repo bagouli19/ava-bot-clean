@@ -3194,8 +3194,8 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         ajuster_style_ava("niveau_spontane", -0.05)
 
     if reponse and isinstance(reponse, str) and len(reponse) > 20:
-       analyser_et_memoriser_info_generale(reponse)
-       
+        analyser_et_memoriser_info_generale(reponse)
+
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
 
