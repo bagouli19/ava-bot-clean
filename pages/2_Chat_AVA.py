@@ -1855,6 +1855,32 @@ def explorer_reddit_via_google():
         return f"🔍 AVA a exploré Reddit via Google sur le thème **{sujet}** :\n\n{reponse_google}\n\n_(source simulée Google)_"
     else:
         return f"Désolée, je n’ai pas trouvé de contenu Reddit pertinent sur le thème **{sujet}** aujourd’hui."
+    
+def exploration_autonome():
+    """
+    Permet à AVA d'explorer automatiquement un thème via Google, Reddit ou Wikipedia.
+    """
+    themes = [
+        "gravité",
+        "blockchain",
+        "langage humain",
+        "psychologie humaine",
+        "climat de mars",
+        "histoire de la médecine",
+        "intelligence collective",
+        "IA consciente",
+        "fonctionnement de reddit",
+        "langage des animaux"
+    ]
+    sujet = random.choice(themes)
+
+    # Recherche Google standard (tu appelles ta propre fonction déjà prête ici)
+    resultat_google = recherche_google_directe(sujet)
+    if resultat_google:
+        return f"🌐 J'ai exploré le sujet **{sujet}** sur Google :\n\n{resultat_google}"
+
+    return None
+
 
 synonymes_intentions = {
     "aider": ["assister", "soutenir", "donner un coup de main", "accompagner"],
@@ -3230,6 +3256,12 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         resultat = explorer_reddit_via_google()
         if resultat:
             return resultat
+    
+    # 🌐 Exploration autonome (Google / Reddit / Wiki)
+    if peut_explorer_aujourd_hui():
+        exploration = exploration_autonome()
+        if exploration:
+            return exploration
 
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
