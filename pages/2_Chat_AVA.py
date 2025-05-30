@@ -2157,6 +2157,9 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
+    if reponse and isinstance(reponse, str) and len(reponse) > 20:
+        analyser_et_memoriser_info_generale(reponse)
+
     # DEBUG: afficher la forme nettoyée de la question
     print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
 
