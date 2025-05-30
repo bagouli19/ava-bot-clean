@@ -1733,6 +1733,39 @@ def rechercher_horoscope(filepath):
     else:
         print("❌ Aucune occurrence trouvée.")
 
+def analyser_et_memoriser_info_generale(reponse: str, chemin_fichier='data/memoire_ava.json'):
+    """
+    Analyse une réponse générée par AVA et enregistre automatiquement les connaissances générales détectées
+    dans la mémoire globale, de manière discrète et invisible pour l'utilisateur.
+    """
+    mots_interdits = ['je suis', 'j\'habite', 'mon prénom', 'mon plat', 'je m\'appelle', 'je vis']  # pour ne pas mémoriser des infos perso
+
+    # Sécurité : ne rien enregistrer si réponse vide ou trop courte
+    if not reponse or len(reponse) < 20:
+        return
+
+    # Ne pas enregistrer d'infos personnelles
+    if any(mot in reponse.lower() for mot in mots_interdits):
+        return
+
+    try:
+        with open(chemin_fichier, 'r', encoding='utf-8') as f:
+            memoire = json.load(f)
+    except FileNotFoundError:
+        memoire = {}
+
+    # Génère une clé basée sur la réponse compressée
+    cle = reponse.strip().lower()[:80].replace(" ", "_").replace(".", "")
+
+    if cle not in memoire:
+        memoire[cle] = {
+            "contenu": reponse.strip(),
+            "source": "chat" if "https://" not in reponse else "web",
+            "date": datetime.now().strftime('%Y-%m-%d')
+        }
+
+        with open(chemin_fichier, 'w', encoding='utf-8') as f:
+            json.dump(memoire, f, indent=4, ensure_ascii=False)
 
 synonymes_intentions = {
     "aider": ["assister", "soutenir", "donner un coup de main", "accompagner"],
@@ -1934,6 +1967,8 @@ def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
     question_clean = normalize_text(question_raw)
+
+    analyser_et_memoriser_info_generale(reponse)
 
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
