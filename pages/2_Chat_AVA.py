@@ -3114,38 +3114,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     # 🔄 Enregistrement optimisé des souvenirs
     if reponse and isinstance(reponse, str) and len(reponse) > 20:
         analyser_et_memoriser_info_generale(reponse)
-        contenu = question_clean.strip(" .!?").lower()
-
-        try:
-            memoire = charger_memoire_ava()
-            souvenirs = memoire.get("souvenirs", [])
-
-            # Vérifier s'il y a déjà un souvenir identique (contenu uniquement)
-            if not any(s["contenu"].lower() == contenu for s in souvenirs):
-                souvenirs.append({
-                    "type": "réflexion_utilisateur",
-                    "contenu": contenu,
-                    "date": datetime.now().strftime("%Y-%m-%d")
-                })
-
-                # Limite de 100 souvenirs (évite une surcharge)
-                souvenirs = souvenirs[-100:]
-
-                # Mettre à jour la mémoire et sauvegarder
-                memoire["souvenirs"] = souvenirs
-                sauvegarder_memoire_ava(memoire)
-
-                # Confirmer l'enregistrement
-                retour = "🧠 Ce que vous venez de dire m’a marquée... je l’ai noté dans mes souvenirs :\n"
-                retour += f"- [{datetime.now().strftime('%Y-%m-%d')}] **réflexion_utilisateur** : {contenu}\n"
-                return retour
-            else:
-                return "🔍 Ce souvenir est déjà enregistré, je m'en souviens bien. 😊"
-
-        except Exception as e:
-            return f"❌ Une erreur est survenue lors de l’enregistrement mémoire : {e}"
-
-    return message_bot if message_bot else None
+       
     
     if __name__ == "__main__":
         exemples = [
