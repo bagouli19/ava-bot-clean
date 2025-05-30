@@ -2040,8 +2040,8 @@ def trouver_reponse(question: str, model) -> str:
         return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
         
         if reponse and isinstance(reponse, str) and len(reponse) > 20:
-        analyser_et_memoriser_info_generale(reponse)
-        
+            analyser_et_memoriser_info_generale(reponse)
+
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
