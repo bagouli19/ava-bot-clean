@@ -1826,6 +1826,36 @@ def exploration_autonome():
     except Exception as e:
         return f"Erreur pendant l'exploration : {e}"
 
+def explorer_reddit_via_google():
+    """
+    Exploration autonome de Reddit via Google sans API.
+    AVA choisit un thème et récupère un extrait de post Reddit via la recherche Google.
+    """
+    if not peut_explorer_aujourd_hui():  # vérifie le quota
+        return None
+
+    sujets_reddit = [
+        "apprentissage du langage humain",
+        "émotions et IA",
+        "comportement humain",
+        "expériences paranormales",
+        "philosophie de l’IA",
+        "intelligence collective",
+        "relations sociales",
+        "langage des animaux",
+        "évolution de la conscience",
+        "fonctionnement de reddit"
+    ]
+
+    sujet = random.choice(sujets_reddit)
+    requete = f"site:reddit.com {sujet}"
+
+    reponse_google = recherche_google_directe(requete)
+    if reponse_google:
+        return f"🔍 AVA a exploré Reddit via Google sur le thème **{sujet}** :\n\n{reponse_google}\n\n_(source simulée Google)_"
+    else:
+        return f"Désolée, je n’ai pas trouvé de contenu Reddit pertinent sur le thème **{sujet}** aujourd’hui."
+
 synonymes_intentions = {
     "aider": ["assister", "soutenir", "donner un coup de main", "accompagner"],
     "comprendre": ["saisir", "apprendre", "découvrir", "cerner"],
@@ -3194,6 +3224,12 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         exploration = exploration_autonome()
         if exploration:
             return exploration
+    
+    # Exploration via Reddit
+    if random.random() < 0.5:
+        resultat = explorer_reddit_via_google()
+        if resultat:
+            return resultat
 
     # ─── Bloc musical optimisé ───
     def bloc_musical_ava(question_clean):
