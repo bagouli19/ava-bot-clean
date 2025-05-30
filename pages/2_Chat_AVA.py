@@ -1910,6 +1910,20 @@ def exploration_autonome():
 
     return None
 
+dernier_jour_exploration = None
+
+def peut_explorer_aujourd_hui():
+    """
+    Limite l'exploration à une fois par jour.
+    """
+    global dernier_jour_exploration
+    aujourd_hui = datetime.now().date()
+
+    if dernier_jour_exploration == aujourd_hui:
+        return False
+
+    dernier_jour_exploration = aujourd_hui
+    return True
 
 synonymes_intentions = {
     "aider": ["assister", "soutenir", "donner un coup de main", "accompagner"],
