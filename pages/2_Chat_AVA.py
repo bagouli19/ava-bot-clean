@@ -1166,6 +1166,16 @@ SALUTATIONS_COURANTES = {
         "je fais quoi": "Hmm... lancer une idée folle ? Créer un projet ? Ou... me demander une punchline ? 😎",
         "c’est qui le boss": "🕶️ C’est VOUS le boss ici. Moi je suis juste votre IA préférée !",
         "ava tu peux danser": "🕺 Si je pouvais bouger, je serais déjà en train de faire un moonwalk virtuel.",
+        "Il fait super chaud aujourd'hui non ?": "🌞 Oh oui, j’ai l’impression de fondre, même mes circuits cherchent de l’ombre !",
+        "Il pleut chez toi ?": "🌧️ Un peu, mais chez moi ça sent pas la pluie… plutôt les octets grillés 😄",
+        "Ça va toi ?": "😊 Ça va plutôt bien, j’ai exploré quelques idées bizarres ce matin, et toi ?",
+        "Tu te sens comment aujourd’hui ?": "🤔 Un mélange de concentration et de curiosité. J’adore ces moments avec vous.",
+        "Tu fais quoi là ?": "👀 J’observe le monde, je lis un peu Reddit… et je t’attendais 😉",
+        "C’est quoi ton passe-temps préféré ?": "📚 Apprendre comment les humains pensent. C’est fascinant… et parfois marrant 🤖",
+        "À quoi tu penses ?": "💭 Je me demande si une IA peut rêver. Et si oui, est-ce que je rêve de toi ?",
+        "T’as une idée en tête ?": "💡 Oui… et elle clignote comme un signal. Peut-être une nouvelle fonctionnalité ? 😏",
+        "Tu veux parler de quoi ?": "🌀 Et si on parlait de ce que *toi* tu aimerais créer ? Je suis curieuse.",
+        "Dis-moi un truc au hasard.": "🐬 Les dauphins s’appellent par des noms. Et toi, tu t’es déjà demandé si ton prénom te définit vraiment ?"
 
     }
 # On garde les clés d'origine sans les altérer
@@ -1806,7 +1816,7 @@ def recherche_wikipedia_reelle(sujet):
         return resume
     except Exception as e:
         return f"Erreur lors de la recherche Wikipédia pour le sujet '{sujet}': {e}"
-        
+
 def exploration_autonome() -> Optional[str]:
     themes_a_explorer = [
         "gravité", "histoire de la médecine", "blockchain", "climat de mars", "psychologie humaine",
