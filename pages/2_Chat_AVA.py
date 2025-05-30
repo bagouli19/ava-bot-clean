@@ -2038,7 +2038,10 @@ def trouver_reponse(question: str, model) -> str:
 
         # 8) Fallback Google
         return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
-
+        
+        if reponse and isinstance(reponse, str) and len(reponse) > 20:
+        analyser_et_memoriser_info_generale(reponse)
+        
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
     import random
@@ -3109,13 +3112,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         for s in svs[-5:]:
             rep += f"- [{s['date']}] {s['type']} : {s['contenu']}\n"
         return rep
-
-
-    # 🔄 Enregistrement optimisé des souvenirs
-    if reponse and isinstance(reponse, str) and len(reponse) > 20:
-        analyser_et_memoriser_info_generale(reponse)
-       
-    
+   
     if __name__ == "__main__":
         exemples = [
             "Je me sens vraiment perdu ces derniers jours...",
