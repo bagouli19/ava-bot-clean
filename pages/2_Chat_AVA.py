@@ -1806,6 +1806,25 @@ def recherche_wikipedia_reelle(sujet):
         return resume
     except Exception as e:
         return f"Erreur lors de la recherche Wikipédia pour le sujet '{sujet}': {e}"
+        
+def exploration_autonome() -> Optional[str]:
+    themes_a_explorer = [
+        "gravité", "histoire de la médecine", "blockchain", "climat de mars", "psychologie humaine",
+        "intelligence collective", "langage des animaux", "IA consciente", "fonctionnement de reddit",
+        "effets de la dopamine", "apprentissage du langage humain"
+    ]
+    theme = random.choice(themes_a_explorer)
+    reponse_google = recherche_google(theme)
+
+    if reponse_google and "Désolé" not in reponse_google:
+        return f"🌐 Aujourd’hui, j’ai exploré le thème **{theme}** via Google :\n\n{reponse_google}"
+    
+    # ⬇️ Si Google échoue, on tente Wikipédia
+    reponse_wiki = recherche_wikipedia(theme)
+    if reponse_wiki:
+        return f"📚 Aujourd’hui, j’ai exploré le thème **{theme}** via Wikipédia :\n\n{reponse_wiki}"
+
+    return None  # Rien trouvé
 
 def exploration_autonome():
     if not verifier_quota_exploration():  # à créer si pas fait
