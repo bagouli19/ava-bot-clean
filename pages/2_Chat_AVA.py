@@ -1778,30 +1778,6 @@ def rechercher_horoscope(filepath):
         print("❌ Aucune occurrence trouvée.")
 
 
-
-def verifier_quota_exploration(max_par_jour=3, chemin_fichier='data/quota_exploration.json'):
-    from datetime import datetime
-    import json
-
-    aujourd_hui = datetime.now().strftime('%Y-%m-%d')
-
-    try:
-        with open(chemin_fichier, 'r', encoding='utf-8') as f:
-            quota = json.load(f)
-    except FileNotFoundError:
-        quota = {}
-
-    if aujourd_hui not in quota:
-        quota[aujourd_hui] = 0
-
-    if quota[aujourd_hui] < max_par_jour:
-        quota[aujourd_hui] += 1
-        with open(chemin_fichier, 'w', encoding='utf-8') as f:
-            json.dump(quota, f, indent=4)
-        return True
-    else:
-        return False
-
 def choisir_sujet_autonome():
     sujets = charger_sujets_ava()
     if sujets:
@@ -2010,47 +1986,47 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
-    question_clean = normalize_text(question_clean)
+    question_clean = normalize_text(question_raw)
 
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
 
-        # 🔹 1. Réponse ultra personnalisée
+        # Priorité à la personnalisation
         if (resp := repondre_personnalise(question_raw)):
             return resp
 
-        # 🔹 2. Souvenirs utilisateur (mémoire utilisateur)
+        # 1) Souvenirs utilisateur (priorité absolue)
         if (memo := gerer_souvenirs_utilisateur(question_raw)):
             return memo
 
-        # 🔹 3. Salutations ou langage courant
+        # 2) Salutations
         if (sal := repondre_salutation(question_clean)):
             return sal
 
-        # 🔹 4. Base de connaissances culturelles
+        # 3) Base de connaissances
         if question_clean in base_culture_nettoyee:
             return base_culture_nettoyee[question_clean]
 
-        # 🔹 5. Base de langage enrichie (phrases, expressions)
+        # 4) Base de langage
         if (lang := chercher_reponse_base_langage(question_raw)):
             return lang
 
-        # 🔹 6. Modules spécialisés (météo, médecine, conversion, etc.)
+        # 5) Modules spécialisés (respiration, heure…)
         if (spec := gerer_modules_speciaux(question_raw, question_clean, model)):
             return spec
 
-        # 🔹 7. Analyse émotionnelle
+        # 6) Analyse émotionnelle
         if (emo := analyser_emotions(question_raw)):
             return emo
 
-        # 🔹 8. Fallback GPT (OpenAI)
+        # 7) Fallback GPT
         reponse_oa = repondre_openai(question_raw)
         if isinstance(reponse_oa, str) and reponse_oa.strip():
             low = reponse_oa.lower()
-            if not any(fp in low for fp in ["je suis désolé", "je ne peux pas", "pouvez reformuler"]):
+            if not any(fp in low for fp in ["je suis désolé","je ne peux pas","pouvez reformuler"]):
                 return reponse_oa.strip()
 
-        # 🔹 10. Fallback final : recherche Google
+        # 8) Fallback Google
         return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
         
 
