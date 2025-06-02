@@ -3055,11 +3055,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     
    # 3️⃣ Recherche sémantique avec BERT
     try:
-        # on utilise bien la base déjà nettoyée pour la similarité
-        reponse_semantique = trouver_reponse_semantique(question_clean,
-                                                        base_culture_nettoyee,
-                                                        model)
-        # on rejette si trop générique ou vide
+        reponse_semantique = trouver_reponse_semantique(question_clean, base_culture_nettoyee, model)
         if reponse_semantique and not est_reponse_vide_ou_generique(reponse_semantique):
             return reponse_semantique.strip()
     except Exception as e:
@@ -3074,7 +3070,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return "🤔 Je n’ai pas trouvé de réponse précise via OpenAI."
     except Exception as e:
         return f"❌ Je suis désolée, une erreur est survenue avec OpenAI : {e}"
-        
+
     # --- 5️⃣ Bloc catch-all (dernière chance) ---
     if not message_bot:
         if any(phrase in question_clean for phrase in ["hello", "hi", "good morning", "good evening", "good afternoon"]):
