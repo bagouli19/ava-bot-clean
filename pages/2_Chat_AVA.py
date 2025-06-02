@@ -1951,10 +1951,12 @@ def trouver_reponse(question: str, model) -> str:
             return emo
 
         # 7) Fallback GPT
+        print("🧠 Tentative de réponse GPT-3.5...")
         reponse_oa = repondre_openai(question_raw)
+        print("↪️ GPT a répondu :", reponse_oa)
         if isinstance(reponse_oa, str) and reponse_oa.strip():
-           return reponse_oa.strip()
-           
+            return reponse_oa.strip()
+
         # 8) Fallback Google
         return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
         
