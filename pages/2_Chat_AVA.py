@@ -1917,7 +1917,6 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
 # --------------------------
 # Pipeline de réponse
 # --------------------------
-
 def trouver_reponse(question: str, model) -> str:
     question_raw   = question or ""
     question_clean = nettoyer_texte(question_raw)
@@ -1926,39 +1925,39 @@ def trouver_reponse(question: str, model) -> str:
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
 
-        # 1) Souvenirs utilisateur (priorité absolue)
-        if (memo := gerer_souvenirs_utilisateur(question_raw)):
-            return memo
+    # 1) Réponse salutation
+    reponse_salut = repondre_salutation(question_clean)
+    if reponse_salut:
+        return reponse_salut
 
-        # 2) Salutations
-        if (sal := repondre_salutation(question_clean)):
-            return sal
+    # 2) Réponse via base culturelle
+    if question_clean in base_culture_nettoyee:
+        return base_culture_nettoyee[question_clean]
 
-        # 3) Base de connaissances
-        if question_clean in base_culture_nettoyee:
-            return base_culture_nettoyee[question_clean]
+    # 3) Réponse via base de langage enrichie
+    reponse_langage = chercher_reponse_base_langage(question)
+    if reponse_langage:
+        return reponse_langage
 
-        # 4) Base de langage
-        if (lang := chercher_reponse_base_langage(question_raw)):
-            return lang
+    # 4) Réponse via GPT ou BERT
+    reponse_semantique = reponse_bert_ou_gpt(question_clean)
+    if reponse_semantique:
+        return reponse_semantique
 
-        # 5) Modules spécialisés (respiration, heure…)
-        if (spec := gerer_modules_speciaux(question_raw, question_clean, model)):
-            return spec
-
-        # 6) Analyse émotionnelle
-        if (emo := analyser_emotions(question_raw)):
-            return emo
-
-        # 7) Fallback GPT
-        print("🧠 Tentative de réponse GPT-3.5...")
-        reponse_oa = repondre_openai(question_raw)
-        print("↪️ GPT a répondu :", reponse_oa)
-        if isinstance(reponse_oa, str) and reponse_oa.strip():
+    # 5) Modules spécialisés (météo, médecine…)
+    reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
+    if reponse_speciale:
+        return reponse_speciale
+        
+    # 7) Fallback GPT
+    reponse_oa = repondre_openai(question_raw)
+    if isinstance(reponse_oa, str) and reponse_oa.strip():
+        low = reponse_oa.lower()
+        if not any(fp in low for fp in ["je suis désolé","je ne peux pas","pouvez reformuler"]):
             return reponse_oa.strip()
 
-        # 8) Fallback Google
-        return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
+    # 8) Fallback Google
+    return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
         
 
 # --- Modules personnalisés (à enrichir) ---
