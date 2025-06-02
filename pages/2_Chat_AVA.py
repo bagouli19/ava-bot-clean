@@ -48,7 +48,7 @@ from dotenv import load_dotenv
 import traceback
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from random import choice
-from utils_semantique import trouver_reponse_semantique
+
 
 
 
@@ -3053,7 +3053,7 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
                 )
 
         return "❌ Désolé, je n'ai pas trouvé de titres musicaux pour le moment."
-        
+
     # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
     if not message_bot:
         # détection de salutations en anglais
