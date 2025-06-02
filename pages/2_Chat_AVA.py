@@ -3055,29 +3055,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
         return "❌ Désolé, je n'ai pas trouvé de titres musicaux pour le moment."
 
 
-    # --- Bloc catch-all pour l'analyse technique ou réponse par défaut ---
-    if not message_bot:
-        # détection de salutations en anglais
-        if any(phrase in question_clean for phrase in [
-            "hello", "hi", "good morning", "good afternoon", "good evening"
-        ]):
-            message_bot = (
-                "Bonjour ! Je suis là et prêt à vous aider. "
-                "Comment puis-je vous assister aujourd'hui ?"
-            )
-        else:
-            reponses_ava = [
-                "Je suis là pour vous aider, mais j'ai besoin d'un peu plus de détails 🤖",
-                "Je n'ai pas bien compris. Pouvez-vous reformuler, s'il vous plaît ?",
-                "Ce sujet est encore un peu flou pour moi... Je peux parler d'analyse technique, "
-                "de météo, d'actualités, et bien plus encore !",
-                "Hmm... Ce n'est pas encore dans ma base de données. Essayez une autre "
-                "formulation ou tapez 'analyse complète' pour un aperçu du marché 📊"
-            ]
-            message_bot = random.choice(reponses_ava)
-
-    return message_bot if message_bot else None
-
    # 3️⃣ Recherche sémantique avec BERT
     try:
         # on utilise bien la base déjà nettoyée pour la similarité
