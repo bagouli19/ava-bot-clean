@@ -1867,6 +1867,7 @@ def repondre_avec_gpt(question):
 
 def repondre_openai(prompt: str) -> str:
     try:
+        print(f"📲 [DEBUG TEL] prompt reçu : {prompt[:100]!r}")  # limite à 100 caractères
         resp = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -1874,11 +1875,14 @@ def repondre_openai(prompt: str) -> str:
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=900
+            max_tokens=500
         )
-        return resp.choices[0].message["content"].strip()
+        texte = resp.choices[0].message["content"].strip()
+        print(f"✅ [DEBUG TEL] Réponse générée (début) : {texte[:100]!r}")
+        return texte
     except Exception as e:
         st.error(f"❌ Erreur OpenAI : {e}")
+        print(f"❌ [DEBUG TEL] Erreur OpenAI mobile : {e}")
         return ""
 
 
