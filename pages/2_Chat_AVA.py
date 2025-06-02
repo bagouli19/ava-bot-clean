@@ -1906,7 +1906,7 @@ def trouver_reponse(question: str, model) -> str:
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
 
-        # 1) Souvenirs utilisateur (priorité absolue)
+        # 1) Souvenirs utilisateur
         if (memo := gerer_souvenirs_utilisateur(question_raw)):
             return memo
 
@@ -1918,29 +1918,38 @@ def trouver_reponse(question: str, model) -> str:
         if question_clean in base_culture_nettoyee:
             return base_culture_nettoyee[question_clean]
 
-        # 4) Base de langage
-        if (lang := chercher_reponse_base_langage(question_raw)):
+        # 4) Base de langage (filtrée)
+        lang = chercher_reponse_base_langage(question_raw)
+        if lang and not any(x in lang.lower() for x in [
+            "je n’ai pas trouvé", "essayez une autre formulation", 
+            "hmm", "ce n’est pas dans ma base", "analyse complète"
+        ]):
             return lang
 
-        # 5) Modules spécialisés (respiration, heure…)
-        if (spec := gerer_modules_speciaux(question_raw, question_clean, model)):
+        # 5) Modules spéciaux (filtrés)
+        spec = gerer_modules_speciaux(question_raw, question_clean, model)
+        if spec and not any(x in spec.lower() for x in [
+            "hmm", "ce n’est pas dans ma base", "analyse complète"
+        ]):
             return spec
 
         # 6) Analyse émotionnelle
-        if (emo := analyser_emotions(question_raw)):
+        emo = analyser_emotions(question_raw)
+        if emo:
             return emo
 
-        # 7) Fallback GPT
+        # 7) GPT
         reponse_oa = repondre_openai(question_raw)
         if isinstance(reponse_oa, str) and reponse_oa.strip():
             low = reponse_oa.lower()
-            if not any(fp in low for fp in ["je suis désolé","je ne peux pas","pouvez reformuler"]):
+            if not any(fp in low for fp in [
+                "je suis désolé", "je ne peux pas", "pouvez reformuler"
+            ]):
                 return reponse_oa.strip()
 
         # 8) Fallback Google
         return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
-
-        
+       
 
 # --- Modules personnalisés (à enrichir) ---
 def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optional[str]:
