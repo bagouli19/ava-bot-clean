@@ -441,26 +441,7 @@ def afficher_derniers_apprentissages(n=5) -> str:
 
     return message
 
-def utilisateur_a_repondu(question: str) -> bool:
-    """Retourne True si la question semble être une réponse utilisateur simple."""
-    reponses_connues = [
-        "oui", "non", "je sais pas", "peut-être", "pas sûr", "d’accord", "ok", "vas-y", "allez", "go"
-    ]
-    return any(rep in question.lower() for rep in reponses_connues)
 
-def proposition_spontanee_depuis_memoire() -> str:
-    """Retourne une phrase spontanée d’AVA si l’utilisateur ne pose pas de vraie question."""
-    idees_spontanees = [
-        "🧠 Vous saviez que je peux apprendre de chaque mot que vous m’envoyez ? Essayez de me surprendre.",
-        "🌌 Et si on parlait de quelque chose d’insolite ? Tapez juste un mot, et je vous emmène ailleurs.",
-        "🔍 Envie que j’explore un sujet pour vous ? Donnez-moi un thème, je peux fouiller Reddit ou Wikipédia.",
-        "🎭 Je peux aussi jouer un rôle ou improviser une histoire... vous me donnez un point de départ ?",
-        "🛠️ J’ai plein d’outils cachés. Une question au hasard, et je vous montre ce que je peux faire.",
-        "📜 Je peux aussi vous raconter un fait historique, scientifique ou complètement insolite. Un thème ?",
-        "🤖 Je peux même deviner votre humeur... sauf si c’est vous qui devinez la mienne 🌀",
-        "🎲 On lance un jeu rapide ? Devinez un nombre, ou posez-moi une devinette !"
-    ]
-    return random.choice(idees_spontanees)
 
 # ─────────────────────────────────────────
 # 🔄 Charger la mémoire des utilisateurs
