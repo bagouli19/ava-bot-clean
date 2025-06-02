@@ -1925,60 +1925,39 @@ def trouver_reponse(question: str, model) -> str:
     with st.spinner("💡 AVA réfléchit…"):
         time.sleep(0.5)
 
-    # 1) Salutations
-        resp_salut = repondre_salutation(question_clean)
-        if resp_salut:
-            return resp_salut
+        # 1) Souvenirs utilisateur (priorité absolue)
+        if (memo := gerer_souvenirs_utilisateur(question_raw)):
+            return memo
 
-        
-    # 2) Emotion (sur raw, pour conserver “?”)
-    print("▶️ DEBUG appel analyser_emotions")
-    message_emotionnel = analyser_emotions(question_raw)
-    if message_emotionnel:
-        print("✅ DEBUG réponse émotionnelle:", message_emotionnel)
-        return message_emotionnel
+        # 2) Salutations
+        if (sal := repondre_salutation(question_clean)):
+            return sal
 
-    # 3) Base de connaissances
-    if question_clean in base_culture_nettoyee:
-        return base_culture_nettoyee[question_clean]
+        # 3) Base de connaissances
+        if question_clean in base_culture_nettoyee:
+            return base_culture_nettoyee[question_clean]
 
-    # 4) Base de langage
-    resp_langage = chercher_reponse_base_langage(question_raw)
-    if resp_langage:
-        return resp_langage
+        # 4) Base de langage
+        if (lang := chercher_reponse_base_langage(question_raw)):
+            return lang
 
-    # 5) Modules spécialisés
-    resp_spec = gerer_modules_speciaux(question_raw, question_clean, model)
-    if isinstance(resp_spec, str) and resp_spec.strip():
-        return resp_spec.strip()
+        # 5) Modules spécialisés (respiration, heure…)
+        if (spec := gerer_modules_speciaux(question_raw, question_clean, model)):
+            return spec
 
-    # … tout en haut de trouver_reponse()
-    fail_patterns = [
-        "je suis désolé",
-        "je vous recommande",
-        "je n'ai pas la capacité",
-        "je ne peux pas",
-        "je ne suis pas en mesure",
-        "je ne peux fournir",
-        "je n'ai pas compris",
-        "pouvez reformuler",
-        "vous pouvez reformuler",
-        "consultez"
-    ]
+        # 6) Analyse émotionnelle
+        if (emo := analyser_emotions(question_raw)):
+            return emo
 
-    # … après modules spécialisés …
-    resp_oa = repondre_openai(question_raw)
-    print("▶️ DEBUG reponse_openai:", repr(resp_oa), type(resp_oa))
+        # 7) Fallback GPT
+        reponse_oa = repondre_openai(question_raw)
+        if isinstance(reponse_oa, str) and reponse_oa.strip():
+            low = reponse_oa.lower()
+            if not any(fp in low for fp in ["je suis désolé","je ne peux pas","pouvez reformuler"]):
+                return reponse_oa.strip()
 
-    if isinstance(resp_oa, str) and resp_oa.strip():
-        low = resp_oa.lower()
-        if not any(fp in low for fp in fail_patterns):
-            print("✅ Réponse OpenAI retenue")
-            return resp_oa.strip()
-
-    # sinon, on tombe sur le fallback Google
-    print("🔎 Fallback Google")
-    return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
+        # 8) Fallback Google
+        return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
 
         
 
