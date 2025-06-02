@@ -1953,10 +1953,8 @@ def trouver_reponse(question: str, model) -> str:
         # 7) Fallback GPT
         reponse_oa = repondre_openai(question_raw)
         if isinstance(reponse_oa, str) and reponse_oa.strip():
-            low = reponse_oa.lower()
-            if not any(fp in low for fp in ["je suis désolé","je ne peux pas","pouvez reformuler"]):
-                return reponse_oa.strip()
-
+           return reponse_oa.strip()
+           
         # 8) Fallback Google
         return "**Récap :**\n🤔 Je n'ai pas trouvé de réponse précise.\n\n" + rechercher_sur_google(question_raw)
         
