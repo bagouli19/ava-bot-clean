@@ -1881,8 +1881,6 @@ def repondre_openai(prompt: str) -> str:
         st.error(f"❌ Erreur OpenAI : {e}")
         return ""
 
-
-
 def repondre_bert(question_clean: str, base: dict, model) -> str:
     try:
         keys = list(base.keys())
