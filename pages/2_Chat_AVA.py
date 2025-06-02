@@ -3053,14 +3053,16 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
         return "❌ Désolé, je n'ai pas trouvé de titres musicaux pour le moment."
     
-   # 3️⃣ Recherche sémantique avec BERT
+   # 3️⃣ Recherche sémantique avec BERT (silencieuse si erreur)
     try:
-        reponse_semantique = trouver_reponse_semantique(question_clean, base_culture_nettoyee, model)
+        reponse_semantique = trouver_reponse_semantique(question_clean,
+                                                        base_culture_nettoyee,
+                                                        model)
         if reponse_semantique and not est_reponse_vide_ou_generique(reponse_semantique):
             return reponse_semantique.strip()
-    except Exception as e:
-        st.warning(f"⚠️ Erreur BERT (fallback OpenAI) : {e}")
-
+    except:
+        pass
+     
     # 4️⃣ Fallback automatique vers OpenAI
     try:
         reponse_openai = repondre_openai(question_clean)
