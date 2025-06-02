@@ -1939,16 +1939,12 @@ def trouver_reponse(question: str, model) -> str:
     if reponse_langage:
         return reponse_langage
 
-    # 4) Réponse via GPT ou BERT
-    reponse_semantique = reponse_bert_ou_gpt(question_clean)
-    if reponse_semantique:
-        return reponse_semantique
 
     # 5) Modules spécialisés (météo, médecine…)
     reponse_speciale = gerer_modules_speciaux(question_raw, question_clean, model)
     if reponse_speciale:
         return reponse_speciale
-        
+
     # 7) Fallback GPT
     reponse_oa = repondre_openai(question_raw)
     if isinstance(reponse_oa, str) and reponse_oa.strip():
