@@ -1947,55 +1947,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
     import random
     message_bot = ""
 
-    if __name__ == "__main__":
-        exemples = [
-            "Je me sens vraiment perdu ces derniers jours...",
-            "Aujourd’hui, j’ai envie de conquérir le monde !",
-            "J’ai peur de l’avenir, tout m’inquiète.",
-            "J’ai rencontré quelqu’un de spécial…",
-            "Tout m’énerve en ce moment, j’en ai marre.",
-            "Je suis heureux comme jamais 😄",
-            "Ce truc me dégoûte complètement..."
-        ]
-
-        for phrase in exemples:
-            print("\n🗣️ Utilisateur :", phrase)
-            reponse = analyser_emotions(phrase)
-            print("🤖 AVA :", reponse)
-
-    if not utilisateur_a_repondu(question_clean):
-        suggestion = proposition_spontanee_depuis_memoire()
-        if suggestion:
-            message_bot += f"\n\n{suggestion}"
-    
-    # 🔁 Ajustement dynamique du style selon les propos de l’utilisateur
-    question_lower = question_clean.lower()
-
-    # 💖 Affection (reconnaissance, gentillesse)
-    if any(m in question_lower for m in ["merci", "c’est gentil", "tu es adorable", "merci beaucoup", "je t’aime bien"]):
-        ajuster_style_ava("niveau_affection", +0.05)
-
-    # 🎉 Estime / admiration
-    if any(m in question_lower for m in ["tu es géniale", "tu es incroyable", "bravo", "je suis impressionné", "trop forte", "tu assures"]):
-        ajuster_style_ava("niveau_libre_arbitre", +0.1)
-        ajuster_style_ava("niveau_spontane", +0.05)
-    
-    # 😂 Humour et détente
-    if any(m in question_lower for m in ["c’est drôle", "mdr", "haha", "rigolo", "blague", "ça m’a fait rire"]):
-        ajuster_style_ava("niveau_humour", +0.1)
-    
-    # 😡 Tension ou critique
-    if any(m in question_lower for m in ["tu sers à rien", "nul", "t’es bête", "ça ne marche pas", "ça bug"]):
-        ajuster_style_ava("niveau_affection", -0.2)
-        ajuster_style_ava("niveau_libre_arbitre", -0.1)
-    
-    # 😢 Si l’utilisateur semble triste ou vulnérable (AVA devient plus douce)
-    if any(m in question_lower for m in ["je suis triste", "j’ai besoin de réconfort", "je vais mal", "déprimé", "j’ai peur"]):
-        ajuster_style_ava("niveau_affection", +0.15)
-        ajuster_style_ava("niveau_spontane", -0.05)
-
-    # DEBUG: afficher la forme nettoyée de la question
-    print(f"🔍 [DEBUG spec] question_clean = {question_clean!r}")
 
     # 1) Exercices de respiration (demande explicite)
     pattern_resp = re.compile(
