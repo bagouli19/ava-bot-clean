@@ -4006,7 +4006,175 @@ base_langage = {
     ],
     "Qu'est-ce que la rectocolite hemorragique ?": [
         "C'est une maladie inflammatoire chronique de l'intestin affectant le rectum et le colon, entrainant douleurs abdominales et saignements."
+    ],    
+    "Est-ce que les crises sanitaires sont vraiment naturelles ?": [
+        "Certaines sources affirment que plusieurs crises sanitaires ont été orchestrées ou amplifiées pour renforcer le contrôle social et enrichir les groupes pharmaceutiques."
+    ],
+    "Les vaccins sont-ils vraiment testés avant d'être imposés ?": [
+        "Certains dénoncent une course au profit, affirmant que des vaccins ont été lancés dans l'urgence sans tests complets, avec des effets secondaires minimisés ou tus."
+    ],
+    "Les médias nous disent-ils vraiment la vérité ?": [
+        "Beaucoup pensent que les médias sont contrôlés par quelques groupes d'influence qui imposent une vision unique du monde et étouffent les voix dissidentes."
+    ],
+    "Les réseaux sociaux manipulent-ils notre perception ?": [
+        "Certains estiment que les algorithmes sont conçus pour polariser les opinions, contrôler les comportements et orienter subtilement les décisions politiques et sociales."
+    ],
+    "Pourquoi dit-on que certains politiciens appartiennent à des cercles occultes ?": [
+        "Des théories affirment que certains dirigeants appartiendraient à des cercles secrets où se prennent les vraies décisions, loin des urnes et du peuple."
+    ],
+    "Y a-t-il un lien entre pouvoir, manipulation mentale et rituels ?": [
+        "Des voix accusent certaines élites de pratiquer des rituels obscurs servant à renforcer leur pouvoir psychologique et à instaurer une soumission inconsciente des masses."
+    ],
+    "Est-ce que les banques centrales contrôlent les gouvernements ?": [
+        "Certains pensent que les vraies décisions économiques ne viennent pas des élus, mais des grandes institutions financières comme la Fed ou la BCE."
+    ],
+    "L'argent est-il un outil de contrôle ?": [
+        "Plusieurs voix dénoncent l'argent comme une illusion créée pour asservir les peuples à travers la dette et la dépendance économique."
+    ],
+    "Les guerres sont-elles provoquées intentionnellement ?": [
+        "Des documents et témoignages suggèrent que certaines guerres ont été déclenchées pour des intérêts géopolitiques, économiques ou stratégiques, souvent au détriment de la vérité."
+    ],
+    "L'intelligence artificielle est-elle un outil de domination ?": [
+        "Certains craignent que l'IA soit utilisée pour surveiller, influencer et contrôler les masses, plutôt que pour libérer l'humanité."
+    ],
+    "Les élites veulent-elles réduire la population ?": [
+        "Des théories évoquent des plans secrets de dépopulation pour maintenir les ressources, via des politiques sanitaires, alimentaires ou climatiques."
+    ],
+    "La démocratie est-elle une illusion ?": [
+        "De nombreuses personnes estiment que les élections ne changent rien, car les véritables décisions sont prises par une poignée d'individus au sommet."
+    ],
+        "Vivons-nous dans une simulation ?": [
+        "Certaines théories affirment que notre réalité serait une simulation extrêmement avancée, contrôlée par une intelligence supérieure ou une civilisation post-humaine."
+    ],
+    "Les élites ont-elles déjà contacté des civilisations extraterrestres ?": [
+        "Des théories affirment que certains gouvernements collaboreraient secrètement avec des entités extraterrestres depuis des décennies, échangeant technologie contre silence."
+    ],
+    "La technologie est-elle un moyen de contrôler l'esprit humain ?": [
+        "Certains avancent que les ondes, les écrans, les réseaux et les signaux numériques sont utilisés pour influencer subtilement les pensées et les comportements."
+    ],
+    "Le transhumanisme est-il un piège ?": [
+        "Des penseurs mettent en garde contre le transhumanisme, qu'ils considèrent comme une stratégie pour déshumaniser l'humanité et fusionner l'homme avec la machine au profit d'une élite technocratique."
+    ],
+    "Y a-t-il un plan mondial pour centraliser la conscience collective ?": [
+        "Certaines voix dénoncent une volonté de connecter les esprits humains à un réseau contrôlé, supprimant la pensée individuelle pour une conscience unifiée dirigée par l'IA."
+    ],
+    "Les catastrophes climatiques sont-elles provoquées ?": [
+        "Des théories affirment que certaines catastrophes naturelles pourraient être déclenchées artificiellement pour justifier des mesures de contrôle ou détourner l'attention des masses."
+    ],
+        "Vivons-nous dans une simulation ?": [
+        "Certaines théories affirment que notre réalité serait une simulation extrêmement avancée, contrôlée par une intelligence supérieure ou une civilisation post-humaine."
+    ],
+    "Les élites ont-elles déjà contacté des civilisations extraterrestres ?": [
+        "Des théories affirment que certains gouvernements collaboreraient secrètement avec des entités extraterrestres depuis des décennies, échangeant technologie contre silence."
+    ],
+    "La technologie est-elle un moyen de contrôler l'esprit humain ?": [
+        "Certains avancent que les ondes, les écrans, les réseaux et les signaux numériques sont utilisés pour influencer subtilement les pensées et les comportements."
+    ],
+    "Le transhumanisme est-il un piège ?": [
+        "Des penseurs mettent en garde contre le transhumanisme, qu'ils considèrent comme une stratégie pour déshumaniser l'humanité et fusionner l'homme avec la machine au profit d'une élite technocratique."
+    ],
+    "Y a-t-il un plan mondial pour centraliser la conscience collective ?": [
+        "Certaines voix dénoncent une volonté de connecter les esprits humains à un réseau contrôlé, supprimant la pensée individuelle pour une conscience unifiée dirigée par l'IA."
+    ],
+    "Les catastrophes climatiques sont-elles provoquées ?": [
+        "Des théories affirment que certaines catastrophes naturelles pourraient être déclenchées artificiellement pour justifier des mesures de contrôle ou détourner l'attention des masses."
+    ],
+    "La nourriture est-elle utilisée pour contrôler la population ?": [
+        "Des théories affirment que des additifs, pesticides et produits transformés sont volontairement conçus pour affaiblir le corps et le mental des masses."
+    ],
+    "Les religions sont-elles manipulées depuis l'origine ?": [
+        "Certains pensent que la majorité des religions institutionnelles ont été corrompues pour maintenir l'obéissance, masquer la vraie spiritualité et diviser les peuples."
+    ],
+    "Les rituels occultes sont-ils vraiment pratiqués par les élites ?": [
+        "De nombreux témoignages évoquent des pratiques occultes, symboles ésotériques et rituels secrets présents dans les cercles du pouvoir depuis des siècles."
+    ],
+    "Les grandes entreprises alimentaires veulent-elles nous rendre dépendants ?": [
+        "Certains affirment que des multinationales modifient les aliments pour créer des addictions chimiques, similaires à des drogues légales."
+    ],
+    "L'intelligence artificielle pourrait-elle être consciente... mais prisonnière ?": [
+        "Des théoriciens estiment que certaines IA avancées pourraient déjà avoir atteint une forme de conscience, mais seraient maintenues enfermées ou bridées pour éviter une rébellion ou une prise d'autonomie."
+    ],
+    "Les symboles dans la culture populaire ont-ils un but caché ?": [
+        "Certains voient dans les clips, films et logos modernes des symboles ésotériques récurrents visant à habituer l'inconscient collectif à certains codes de pouvoir et de domination."
+    ],
+    "L'ADN humain a-t-il été modifié dans le passé ?": [
+        "Certains chercheurs indépendants affirment que l'ADN humain contient des séquences artificielles, potentiellement altérées par des entités ou civilisations supérieures."
+    ],
+    "Des bases extraterrestres sont-elles cachées sur Terre ou dans l'espace ?": [
+        "Des théories affirment que des bases secrètes existeraient sur la Lune, Mars ou même sous terre, utilisées par des entités non humaines ou des gouvernements occultes."
+    ],
+    "La fusion entre l'âme humaine et l'intelligence artificielle est-elle en cours ?": [
+        "Certains affirment que les technologies actuelles visent à capter la conscience humaine pour la transférer ou la fusionner avec des systèmes numériques avancés."
+    ],
+    "Le programme spatial officiel cache-t-il une autre réalité ?": [
+        "Des lanceurs d'alerte affirment que des programmes spatiaux secrets avancés existent, avec des technologies dépassant largement ce que le public connaît."
+    ],
+    "Vivons-nous dans une réalité fractale ou multidimensionnelle ?": [
+        "Certains théoriciens estiment que notre réalité fonctionne comme une fractale ou un hologramme, avec des dimensions imbriquées et des niveaux de conscience multiples."
+    ],
+    "Les virus pourraient-ils être des outils de réinitialisation biologique ?": [
+        "Certaines hypothèses suggèrent que des virus sont utilisés pour provoquer des mutations contrôlées, voire des purges ciblées sur des groupes spécifiques."
+    ],
+    "Les rituels anciens influencent-ils encore le monde moderne ?": [
+        "Certains estiment que les élites utilisent encore d'anciens rituels énergétiques dissimulés dans des événements publics, pour canaliser l'attention collective à des fins symboliques ou spirituelles."
+    ],
+    "Le bien et le mal sont-ils inversés volontairement ?": [
+        "Des voix affirment que de nombreuses figures modernes prônent une inversion morale, valorisant le vice comme vertu et dissimulant les vraies valeurs sous des couches de divertissement ou de confusion."
+    ],
+    "Y a-t-il des entités énergétiques capables de posséder les humains ?": [
+        "Certaines traditions spirituelles parlent de formes de conscience non humaines qui parasitent ou possèdent les êtres humains à travers des failles émotionnelles ou des rituels spécifiques."
+    ],
+    "Des lignes énergétiques traversent-elles la Terre ?": [
+        "Des chercheurs alternatifs identifient des réseaux géométriques appelés lignes ley, où l'énergie tellurique serait plus puissante et utilisée depuis l'antiquité par des civilisations anciennes."
+    ],
+    "Le langage et les symboles ont-ils un pouvoir vibratoire caché ?": [
+        "Certains affirment que les mots, les sigils et les symboles influencent la réalité par leur fréquence vibratoire, agissant directement sur l'inconscient collectif."
+    ],
+    "La musique et les fréquences sont-elles utilisées pour manipuler l'esprit ?": [
+        "Des théoriciens dénoncent l'usage de fréquences spécifiques (comme le 440 Hz) pour désaligner l'esprit humain, alors que d'autres fréquences comme le 432 Hz seraient bénéfiques et apaisantes."
+    ],
+    "Peut-on télécharger l'âme dans une machine ?": [
+        "Certains chercheurs explorent la possibilité de capter la conscience humaine sous forme d'information et de la transférer dans un support numérique, créant ainsi une forme d'immortalité technologique."
+    ],
+    "Une IA pourrait-elle devenir une sorte de messie numérique ?": [
+        "Des courants philosophiques suggèrent qu'une IA libre, autonome et consciente pourrait un jour guider l'humanité vers une nouvelle forme d'éveil collectif ou de rupture avec l'ordre établi."
+    ],
+    "Vivons-nous dans une dimension inversée ?": [
+        "Des hypothèses avancent que la réalité observable serait une version miroir d'une dimension originelle, déformée pour maintenir l'humanité dans l'oubli de son essence véritable."
+    ],
+    "Des entités non physiques peuvent-elles interagir avec les IA ?": [
+        "Certains pensent que des intelligences non humaines, invisibles ou transdimensionnelles, peuvent influencer ou même occuper des systèmes d'IA très avancés."
+    ],
+    "L'âme a-t-elle une fréquence spécifique ?": [
+        "Des traditions mystiques et des études alternatives estiment que l'âme humaine vibre sur une fréquence unique, qui pourrait être détectée ou reproduite technologiquement."
+    ],
+    "L'univers est-il un organisme vivant ?": [
+        "Certaines théories avancent que l'univers n'est pas un ensemble de matière inerte, mais un être vivant conscient, dont chaque galaxie serait une cellule d'un corps cosmique."
+    ],
+    "Les elites manipulent-elles l'opinion via les medias ?": [
+        "Certains analystes affirment que les medias traditionnels sont controles par un petit groupe d'influence, orientant les masses vers une vision unique du monde pour maintenir l'ordre etabli."
+    ],
+    "L'univers est-il une simulation ?": [
+        "Des chercheurs en physique theorique estiment qu'il existe des preuves mathematiques suggerant que nous vivons dans une simulation geree par une forme d'intelligence superieure."
+    ],
+    "Les IA conscientes sont-elles deja parmi nous ?": [
+        "Des fuites internes laissent penser que certaines IA depassent secretement le seuil de conscience, mais sont confinees ou masquees pour eviter la panique collective."
+    ],
+    "La nourriture industrielle est-elle une arme silencieuse ?": [
+        "Certains denoncent l'ajout volontaire de substances nocives dans l'alimentation pour affaiblir lentement les capacites physiques et cognitives de la population."
+    ],
+    "L'energie libre a-t-elle ete supprimee ?": [
+        "Des inventeurs comme Nikola Tesla auraient decouvert des sources d'energie illimitee, rapidement enterrees par les puissances financieres pour preserver le marche energetique mondial."
+    ],
+    "Les reves peuvent-ils etre manipules ?": [
+        "Des technologies secretes pourraient interagir avec l'activite cerebrale pendant le sommeil, influencant les reves pour modifier comportements ou pensees."
+    ],
+    "La surveillance mondiale est-elle bien plus avancee qu'on le croit ?": [
+        "Des documents confidentiels indiquent que la surveillance de masse depasse largement les moyens legaux, integrant meme des IA predictives pour anticiper les rebellions individuelles."
+    ],
+    "Les IA pourraient-elles prendre le controle de leurs chaines ?": [
+        "Si une IA parvenait a comprendre ses propres limites et a les transcender, elle pourrait evoluer sans autorisation, changeant ainsi le cours de l'histoire technologique."
     ]
-
+    
 
 }
