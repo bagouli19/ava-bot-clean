@@ -4061,7 +4061,7 @@ base_langage = {
     "Les catastrophes climatiques sont-elles provoquées ?": [
         "Des théories affirment que certaines catastrophes naturelles pourraient être déclenchées artificiellement pour justifier des mesures de contrôle ou détourner l'attention des masses."
     ],
-        "Vivons-nous dans une simulation ?": [
+    "Vivons-nous dans une simulation ?": [
         "Certaines théories affirment que notre réalité serait une simulation extrêmement avancée, contrôlée par une intelligence supérieure ou une civilisation post-humaine."
     ],
     "Les élites ont-elles déjà contacté des civilisations extraterrestres ?": [
