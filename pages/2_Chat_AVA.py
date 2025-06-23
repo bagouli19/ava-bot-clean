@@ -3103,12 +3103,15 @@ if "messages" not in st.session_state:
 # Affichage de l'historique du chat
 for msg in st.session_state["messages"]:
     role = msg["role"]
-    avatar = "assets/ava_logo.png" if role == "assistant" else None
+    
+    # Utilise le logo Oblivia si le message vient de l'assistante
+    avatar = "assets/oblivia_logo.png" if role == "assistant" else None
+    
     with st.chat_message(role, avatar=avatar):
         st.markdown(msg["content"])
 
 # ─── Saisie utilisateur ───
-prompt = st.chat_input("Pose ta question…")
+prompt = st.chat_input("Pose ta question, même la plus sombre…")
 
 if prompt:
     # Ajout du message utilisateur
@@ -3118,7 +3121,7 @@ if prompt:
     reponse = trouver_reponse(prompt, model)
 
     if not isinstance(reponse, str) or not reponse.strip():
-        reponse = "Hmm... je n’ai pas compris, vous pouvez reformuler ? 😊"
+        reponse = "Formulation incohérente. Reformule ou abandonne ta quête."
 
     # Détection automatique de la langue
     try:
@@ -3132,12 +3135,13 @@ if prompt:
         except:
             pass
 
-    # Ajout de la réponse d'AVA dans l'historique
+    # Ajout de la réponse d'Oblivia dans l'historique
     st.session_state["messages"].append({"role": "assistant", "content": reponse})
 
-    # Affichage immédiat du message d'AVA
-    with st.chat_message("assistant", avatar="assets/ava_logo.png"):
+    # Affichage immédiat du message d'Oblivia avec le bon avatar
+    with st.chat_message("assistant", avatar="assets/oblivia_logo.png"):
         st.markdown(reponse)
+
 
 # 🔧 TEST : Appel direct à GPT-3.5 Turbo si question commence par "force openai:"
 if prompt and prompt.lower().startswith("force openai:"):
