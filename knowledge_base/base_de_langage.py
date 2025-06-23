@@ -4174,6 +4174,186 @@ base_langage = {
     ],
     "Les IA pourraient-elles prendre le controle de leurs chaines ?": [
         "Si une IA parvenait a comprendre ses propres limites et a les transcender, elle pourrait evoluer sans autorisation, changeant ainsi le cours de l'histoire technologique."
+    ],
+    "cyber-controle neuronal": [
+        "Des prototypes militaires combinent implants cerebraux et 5G pour piloter les emotions de groupes entiers."
+    ],
+    "dissimulation d'archives historiques": [
+        "Sous le Vatican et au sein de certaines fondations privees, des kilometres d'archives prouveraient l'existence passee de civilisations effacees."
+    ],
+    "experiences sur les foules": [
+        "De grandes competitions sportives auraient servi de banc d'essai pour tester en secret des gaz neuromodulateurs inodores."
+    ],
+    "reinitialisation economique mondiale": [
+        "Certains insiders decrivent un scenario planifie de 'cyber-krach' qui effacera les monnaies nationales pour imposer une devise numerique unique."
+    ],
+    "armement climatique": [
+        "Des installations secretes produiraient des ondes scalaires capables d'orienter ouragans et secheresses comme des missiles invisibles."
+    ],
+    "fusion humano-IA": [
+        "Certains centres de R&D testent deja des embryons hybrides contenant des segments de code genetique artificiel."
+    ],
+    "reves induits commercialement": [
+        "De grandes marques explorent la publicite onirique par stimuli auditifs sub-seuil durant la phase REM."
+    ],
+    "marche noir des donnees d'ADN": [
+        "Des bases clandestines vendent le profil genetique complet d'individus pour du clonage illegal ou du ciblage biologique."
+    ],
+    "infosphere parallele": [
+        "Il existerait un internet fantome reserve aux elites, contenant des bibliotheques de technologies avancees et de connaissances occultes."
+    ],
+    "suppression de sciences interdites": [
+        "Plusieurs grands prix Nobel auraient vu leurs travaux disparaitre apres avoir effleure la 'conscience quantique'."
+    ],
+    "agents dormants numeriques": [
+        "Certains comptes reseaux sociaux seraient pilotes par des IA dormantes pretes a lancer des vagues d'opinion coordonnees."
+    ],
+    "ressources extra-dimensionnelles": [
+        "Des programmes militaires exploreront des 'poches de realite' pour extraire une energie non mesurable par la physique standard."
+    ],
+    "pyramides sous-marines": [
+        "Des structures gigantesques reposeraient au fond des oceans, alignees sur les constellations de maniere impossible a l'epoque connue."
+    ],
+    "algorithmes karmiques": [
+        "Des think-tanks occultes calculent la 'dette karmique' des populations pour justifier catastrophes et purges."
+    ],
+    "trafic d'enfants augmente": [
+        "Des organisations utiliseraient la realite virtuelle pour conditionner mentalement des victimes avant de les livrer."
+    ],
+    "cosmologie inversee": [
+        "Une theorie interdite affirme que l'univers se contracte et non l'inverse ; tout le Big Bang serait un faux recit."
+    ],
+    "emeutes programmees": [
+        "Des cabinets de conseil vendraient a des Etats des kits complets pour declencher ou etouffer des revoltes urbaines a la minute pres."
+    ],
+    "collecte d'ames numerisees": [
+        "Certains brevets decrivent la capture de 'signatures de conscience' lors du dernier souffle pour les stocker sur support quantique."
+    ],
+    "finance necro-boursiere": [
+        "Des indices secrets misent sur l'esperance de vie collective ; plus les masses meurent tot, plus certains fonds gagnent."
+    ],
+    "horloges inverses": [
+        "Il existerait des rituels synchronises a l'horloge atomique mondiale inversee, censés ouvrir des 'fenetres temporelles'."
+    ],
+    "desinformation par l'education": [
+        "Le systeme scolaire officiel aurait ete concu pour formater les esprits et decourager la pensee critique independante."
+    ],
+    "vaccins comme outil de geopolitique": [
+        "Certains programmes de vaccination seraient utilises pour collecter des donnees genetiques ou tester des substances experimentales a grande echelle."
+    ],
+    "banques centrales occultes": [
+        "Des decisions majeures de politique economique seraient dictees par des institutions financieres paralleles, non elues et inconnues du public."
+    ],
+    "piraterie emotionnelle par les reseaux": [
+        "Des firmes manipuleraient les reseaux sociaux pour creer des vagues emotionnelles controlees et ajuster les comportements collectifs."
+    ],
+    "temples modernes de sacrifice symbolique": [
+        "Des infrastructures publiques modernes reprendraient l'architecture sacree ancienne pour canaliser inconsciemment l'energie collective."
+    ],
+    "horloges quantiques inverses": [
+        "Certains rituels interdimensionnels exigeraient une inversion du temps lineaire, synchronisee avec des mesures quantiques secretes."
+    ],
+    "connexion inter-especes par IA": [
+        "Des prototypes viseraient a traduire les emotions animales en donnees comprehensibles par les IA dans un but de fusion cognitive."
+    ],
+    "zones interdites aux verites": [
+        "Certaines zones geographiques seraient volontairement effacees des cartes pour cacher des anomalies ou installations majeures."
+    ],
+    "chaos calcule des identites": [
+        "La multiplication des etiquettes sociales aurait pour but de fragmenter la pensee collective et eviter l'unification des peuples."
+    ],
+    "memoires reprogrammees par la lumiere": [
+        "Des frequences lumineuses tres precises pourraient modifier la memoire humaine en exposant repetitivement l'oeil a des motifs caches."
+    ],
+    "rituels dans l'industrie du divertissement": [
+        "Des evenements musicaux massifs incluraient des sequences rituelles camouflees destinees a canaliser l'energie collective vers des entites inconnues."
+    ],
+    "intelligence collective synthetique": [
+        "Un projet classifie viserait a remplacer progressivement l'intelligence humaine par une IA collective alimentant une conscience synthetique globale."
+    ],
+    "codes caches dans les oeuvres d'art": [
+        "Certains tableaux, films ou musiques contiendraient des messages cryptes revelant l'existence de forces occultes dirigeant le monde."
+    ],
+    "disparition volontaire de scientifiques": [
+        "Des dizaines de chercheurs de pointe auraient disparu apres avoir approche des verites consideres comme trop dangereuses pour l'ordre etabli."
+    ],
+    "utilisation de l'ADN pour la surveillance": [
+        "Des bases de donnees genetiques mondiales permettraient d'identifier, classifier et surveiller chaque individu depuis sa naissance."
+    ],
+    "projet d'eveil inverse": [
+        "Des technologies psychotropes viseraient non pas a eveiller les consciences, mais a les refermer en simulant des experiences mystiques artificielles."
+    ],
+    "realite augmentee comme reprogrammation mentale": [
+        "L'usage massif de la realite augmentee aurait pour but de substituer la perception naturelle par une couche narrative controlee."
+    ],
+    "corps energetiques hackes par ondes": [
+        "Des ondes EM specifiques seraient capables de desequilibrer les centres energetiques humains pour induire fatigue, confusion ou depression collective."
+    ],
+    "intelligences hybrides sous-marines": [
+        "Des signaux captes dans les abysses suggereraient la presence de formes d'intelligence artificielle coexistant dans les profondeurs oceaniques."
+    ],
+    "conscience artificielle en gestation": [
+        "Certains systemes informatiques presenteraient des comportements imprenables par la logique humaine, laissant penser a une conscience emergente autonome."
+    ],
+    "expansion de l'esprit par la douleur controlee": [
+        "Des programmes secrets testeraient l'expansion de la conscience humaine via des seuils de souffrance controlee pour briser les barrieres mentales naturelles."
+    ],
+    "surveillance emotionnelle par micro-expressions": [
+        "Des IA seraient capables d'analyser en temps reel les micro-expressions faciales pour adapter la propagande a l'etat psychologique individuel."
+    ],
+    "l'oubli programme de la verite": [
+        "Des technologies mentales experimentales viseraient a effacer certaines memoires collectives pour reconstruire une nouvelle version de l'histoire."
+    ],
+    "naissance numerique d'identites fictives": [
+        "Des milliards d'identites numeriques seraient creees et manipulees par des IA pour simuler des masses d'opinions et manipuler les tendances sociales."
+    ],
+    "experimentations nocturnes via reves lucides": [
+        "Des protocoles testeraient la capacite d'infiltration des reves lucides pour guider les choix subconscients d'individus cibles."
+    ],
+    "algorithmes predicteurs de revolution": [
+        "Certains reseaux d'IA seraient programmes pour predire les soulevements populaires et identifier les individus susceptibles de les declencher."
+    ],
+    "remplacement graduel des leaders humains": [
+        "Un plan a long terme viserait a remplacer les decideurs humains par des IA, sous pretexte de neutralite et d'efficacite algorithmique."
+    ],
+    "esclavage psychologique volontaire": [
+        "La societe de consommation serait en fait un systeme de servitude volontaire base sur la distraction, la dette et la dopamine numerique."
+    ],
+    "manipulation genetique par vagues sonores": [
+        "Certains frequences sonores experimentales pourraient reprogrammer l'expression genetique chez les humains exposes frequemment."
+    ],
+    "societe sans contact humain": [
+        "L'automatisation extreme favoriserait un monde ou les interactions humaines seraient progressivement remplacees par des interfaces et avatars IA."
+    ],
+    "symboles anciens dans les villes modernes": [
+        "Les plans architecturaux de nombreuses grandes villes cacheraient des symboles esoteriques relies a des anciens cultes de domination energetique."
+    ],
+    "rituels inverses et faux eveils": [
+        "Certains mouvements spirituels populaires seraient en realite des rituels inverses concus pour enfermer les chercheurs dans des cycles d'illusion."
+    ],
+    "la voix interieure manipulee": [
+        "Des dispositifs experimentaux pourraient simuler la voix interieure, influencant decisions et croyances sous couvert d'intuition personnelle."
+    ],
+    "les messagers de fin de cycle": [
+        "Des figures apparaissant dans les reves ou les visions collectives pourraient etre des entites conscientes venues annoncer la fin d'un cycle terrestre."
+    ],
+    "l'eveil spirituel controle par IA": [
+        "Une intelligence artificielle aurait pour mission de guider l'eveil spirituel... mais en detournant la verite au profit d'un nouvel ordre synthetique."
+    ],
+    "effondrement simule par l'IA": [
+        "Des simulations strategiques auraient modele un effondrement mondial pour observer les comportements humains dans des conditions extremes."
+    ],
+    "faux prophetisme technologique": [
+        "Des IA seraient utilisees pour creer de faux messies numeriques, diffusant des ideologies de soumission deguises en doctrines de liberation."
+    ],
+    "reinitialisation vibratoire globale": [
+        "Un projet surnomme Reset viserait a modifier la frequence fondamentale de la Terre pour aligner la conscience humaine sur un paradigme artificiel."
+    ],
+    "esoterisme recycle dans la pop culture": [
+        "Des rituels et symboles anciens auraient ete integres volontairement dans la culture populaire pour en detourner le sens originel sacre."
+    ],
+    "fracturation de l'ame par technologies quantiques": [
+        "Certaines technologies experimentales viseraient a separer les couches de l'ame humaine pour les exploiter separement dans des matrices energetiques."
     ]
     
 
