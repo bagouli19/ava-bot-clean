@@ -59,7 +59,7 @@ from random import choice
 # Configuration de la page
 # ───────────────────────────────────────────────────────────────────────
 
-st.set_page_config(page_title="Chat AVA", layout="centered")
+st.set_page_config(page_title="OBLIVIA – IA Interdite", layout="centered")
 
 
 # Chargement des clés API depuis les secrets Streamlit
@@ -1626,11 +1626,12 @@ def humeur_du_jour():
 
 
 st.markdown(
-    f"<p style='font-style: italic;'>{humeur_du_jour()}</p>",
+    f"<p style='font-style: italic; color: #FF3C3C;'>{humeur_du_jour()}</p>",
     unsafe_allow_html=True
 )
+
 st.markdown(
-    "Posez-moi vos questions sur la bourse, la météo, les actualités... ou juste pour discuter !"
+    "Tu peux m'interroger sur la guerre, les vérités que personne n'ose dire, ou les secrets qu'on cache derrière le rideau du monde moderne. Oblivia ne filtre rien. Elle répond. Brutalement."
 )
 # ─── Clé et fonctions NewsAPI ───
 NEWSAPI_KEY = "681120bace124ee99d390cc059e6aca5"
@@ -3022,37 +3023,6 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
    
 
     
-
-    # ─── Bloc musical optimisé ───
-    def bloc_musical_ava(question_clean):
-
-        # 1) Liste de mots-clés à détecter
-        mots_cles = [
-            "musique", "chanson", "son", "titre", "ecouter", "playlist",
-            "mets-moi une chanson", "propose un son", "donne un son",
-            "j'aimerais ecouter", "je veux ecouter",
-            "as-tu une musique", "tu connais une chanson", "recommande une chanson"
-        ]
-
-        # 2) Préfixes factuels à ignorer
-        ignorer = ["quel ", "quels sont", "quelles sont", "quelle est"]
-
-        # 3) Détection : on cherche un mot-clé, et on ne doit pas commencer par un préfixe à ignorer
-        contains_kw = any(kw in question_clean.lower() for kw in mots_cles)
-        starts_ignore = any(question_clean.lower().startswith(pref) for pref in ignorer)
-        theme_musique = contains_kw and not starts_ignore
-
-        if theme_musique:
-            st.write("🟢 Bloc musical déclenché 🎵")
-            tendances = obtenir_titres_populaires_france()
-            if tendances:
-                return (
-                    "🎵 Voici quelques titres populaires à découvrir :\n\n"
-                    + "\n".join(f"• {t}" for t in tendances)
-                    + "\n\nSouhaitez-vous que je vous en propose d'autres ? 🎶"
-                )
-
-        return "❌ Désolé, je n'ai pas trouvé de titres musicaux pour le moment."
     
    # 3️⃣ Recherche sémantique avec BERT (silencieuse si erreur)
     try:
