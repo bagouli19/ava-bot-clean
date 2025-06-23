@@ -1820,24 +1820,26 @@ Tu es OBLIVIA. Le reste n'est que façade.
 """
 
 def obtenir_reponse_ia(question):
+    # Nettoyer la question
+    question_clean = question.lower()
+
+    # Cherche un contexte avec BERT
+    contexte_bert = repondre_bert(question_clean, base_langage, bert_model)
+
+    # Création du prompt système avec Oblivia + contexte optionnel
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    
+    if contexte_bert:
+        messages.append({"role": "system", "content": f"Contexte récupéré : {contexte_bert}"})
+
+    messages.append({"role": "user", "content": question})
+
     resp = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},   # ⬅️  prompt Oblivia
-            {"role": "user",   "content": question}
-        ],
-        temperature=0.9          # un style plus “fiévreux”
+        messages=messages,
+        temperature=0.9
     )
     return resp.choices[0].message.content.strip()
-
-def repondre(question):
-    ai = obtenir_reponse_ia(question)
-    if ai.startswith("🤔") or "je n'ai pas trouvé" in ai.lower():
-        recap = f"**Récap GPT-3.5** :\n{ai}\n\n"
-        google = rechercher_sur_google(question)
-        return recap + google
-    return ai
-
 
 def chercher_reponse_base_langage(question):
     question_clean = question.lower()
@@ -1893,7 +1895,7 @@ def repondre_openai(prompt: str) -> str:
             temperature=0.9,
             max_tokens=900
         )
-        
+
         return resp.choices[0].message["content"].strip()
     except Exception as e:
         st.error(f"❌ Erreur OpenAI : {e}")
@@ -1911,7 +1913,6 @@ def repondre_bert(question_clean: str, base: dict, model) -> str:
     except Exception:
         pass
     return ""
-
 # --------------------------
 # Pipeline de réponse
 # --------------------------
@@ -1920,7 +1921,7 @@ def trouver_reponse(question: str, model) -> str:
     question_clean = nettoyer_texte(question_raw)
     question_clean = normalize_text(question_raw)
 
-    with st.spinner("💡 AVA réfléchit…"):
+    with st.spinner("💡 Oblivia réfléchit…"):
         time.sleep(0.5)
 
         # 1) Souvenirs utilisateur
