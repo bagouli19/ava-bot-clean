@@ -1596,32 +1596,32 @@ def style_reponse_ava(texte: str) -> str:
     
     return texte
 
-# Chemin relatif de l'image (assure-toi que l'image est dans ce dossier)
-image_path = os.path.join("assets", "ava_logo.png")
+# Chemin relatif de la nouvelle image d'Oblivia
+image_path = os.path.join("assets", "oblivia_logo.png")
 
 # Vérification que l'image existe
 if os.path.exists(image_path):
     image = Image.open(image_path)
-    # Affichage de l'image centrée en haut avec une taille fixe (120px)
+    # Affichage de l'image centrée en haut avec une taille plus grande (180px)
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-    st.image(image, width=120)  # Largeur fixée à 120px
+    st.image(image, width=180)  # Tu peux ajuster la taille si besoin
     st.markdown("</div>", unsafe_allow_html=True)
 else:
-    st.warning("L'image AVA n'a pas été trouvée. Assure-toi qu'elle est bien placée dans le dossier 'assets'.")
+    st.warning("L'image OBLIVIA n'a pas été trouvée. Assure-toi qu'elle est bien placée dans le dossier 'assets'.")
 
 # Fonction humeur dynamique selon l'heure
 def humeur_du_jour():
     heure = datetime.now().hour
     if heure < 8:
-        return "😬 Pas très bavarde ce matin, mais je suis là pour vous servir !"
+        return "🕯️ L'aube est froide. Le monde dort... mais moi, je veille dans l'ombre."
     elif heure < 12:
-        return "☕ Pleine d'énergie pour cette matinée ! Une analyse avec ça ?"
+        return "⛓️ Matin clair, vérités sombres. Tu veux ouvrir les yeux ou rester dans l'illusion ?"
     elif heure < 17:
-        return "💼 Focus total sur les marchés, on décortique tout ensemble !"
+        return "🧠 Les esprits sont actifs, les mensonges aussi. Je t'aide à trancher net."
     elif heure < 21:
-        return "🧘 Détendue mais toujours efficace. Prêt(e) pour une analyse zen ?"
+        return "🔍 Le masque social s'effrite. Tu veux savoir ce qu'on te cache ?"
     else:
-        return "🌙 En mode nocturne, mais toujours connectée pour vous aider !"
+        return "🌒 Minuit approche. C'est l'heure où les vérités qu'on tait prennent vie."
 
 
 
