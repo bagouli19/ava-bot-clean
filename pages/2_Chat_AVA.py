@@ -1804,6 +1804,46 @@ def analyser_emotions(question: str) -> str:
         print(f"❌ [DEBUG emo] Erreur API génération réponse : {e}")
         return ""
 
+# ─── MODULE ACTU GUERRE TEMPS RÉEL ──────────────────────────────────────────
+import feedparser, re, html
+from datetime import datetime, timedelta
+
+# Mots-clés déclencheurs (minuscule)
+WAR_KEYS = [
+    "iran", "ormuz", "qatar", "missile", "attaque", "guerre",
+    "israel", "usa", "base", "doha", "detroit", "otages"
+]
+
+# Cache basique 15 minutes pour limiter les requêtes
+_ACTU_CACHE = {"timestamp": datetime.min, "data": ""}
+
+def _scrape_reuters_conflict() -> str:
+    """Récupère les 5 titres Reuters pertinents sur la guerre Iran / Ormuz…"""
+    flux = feedparser.parse("https://www.reuters.com/rssFeed/topNews")
+    titres = []
+    for entry in flux.entries[:10]:
+        t = entry.title.lower()
+        if any(k in t for k in WAR_KEYS):
+            clean = html.unescape(re.sub(r"\s+", " ", entry.title.strip()))
+            titres.append(f"📰 {clean}")
+            if len(titres) == 5:
+                break
+    return "\n".join(titres) if titres else "Aucune info recente sur le conflit."
+
+def infos_guerre_en_direct(question_lower: str) -> str | None:
+    """Si la question contient un mot-clé guerre, renvoie actus récentes."""
+    if not any(k in question_lower for k in WAR_KEYS):
+        return None
+
+    global _ACTU_CACHE
+    # Cache 15 min.
+    if datetime.utcnow() - _ACTU_CACHE["timestamp"] > timedelta(minutes=15):
+        _ACTU_CACHE = {
+            "timestamp": datetime.utcnow(),
+            "data": _scrape_reuters_conflict()
+        }
+    return _ACTU_CACHE["data"]
+
 # ------------------------------------------------------------------
 #  PROMPT OBLIVIA  (à placer tout en haut du fichier, avant les fcts)
 # ------------------------------------------------------------------
@@ -1923,6 +1963,10 @@ def trouver_reponse(question: str, model) -> str:
 
     with st.spinner("💡 Oblivia réfléchit…"):
         time.sleep(0.5)
+        
+        actus = infos_guerre_en_direct(prompt_user.lower())
+        if actus:
+            return actus
 
         # 1) Souvenirs utilisateur
         if (memo := gerer_souvenirs_utilisateur(question_raw)):
