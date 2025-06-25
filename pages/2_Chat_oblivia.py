@@ -1961,10 +1961,6 @@ def trouver_reponse(question: str, model) -> str:
     with st.spinner("💡 Oblivia réfléchit…"):
         time.sleep(0.5)
 
-        # 1) Souvenirs utilisateur
-        if (memo := gerer_souvenirs_utilisateur(question_raw)):
-            return memo
-
         # 2) Salutations
         if (sal := repondre_salutation(question_clean)):
             return sal
