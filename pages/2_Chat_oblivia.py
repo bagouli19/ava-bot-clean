@@ -1960,10 +1960,6 @@ def trouver_reponse(question: str, model) -> str:
 
     with st.spinner("💡 Oblivia réfléchit…"):
         time.sleep(0.5)
-        
-        actus = infos_guerre_en_direct(prompt_user.lower())
-        if actus:
-            return actus
 
         # 1) Souvenirs utilisateur
         if (memo := gerer_souvenirs_utilisateur(question_raw)):
