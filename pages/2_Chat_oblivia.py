@@ -3074,46 +3074,30 @@ def gerer_modules_speciaux(question: str, question_clean: str, model) -> Optiona
 
     
     
-   # 3️⃣ Recherche sémantique avec BERT (silencieuse si erreur)
-    try:
-        reponse_semantique = trouver_reponse_semantique(question_clean,
-                                                        base_culture_nettoyee,
-                                                        model)
-        if reponse_semantique and not est_reponse_vide_ou_generique(reponse_semantique):
-            return reponse_semantique.strip()
-    except:
-        pass
-     
-    # 4️⃣ Fallback automatique vers OpenAI
+     # 4️⃣ Fallback automatique vers OpenAI
     try:
         reponse_openai = repondre_openai(question_clean)
         if reponse_openai and reponse_openai.strip():
             return reponse_openai.strip()
-        # si la réponse est vide ou nulle
-        return "🤔 Je n’ai pas trouvé de réponse précise via OpenAI."
     except Exception as e:
-        return f"❌ Je suis désolée, une erreur est survenue avec OpenAI : {e}"
+        # On logge l’erreur et on continue vers Google
+        print("Erreur OpenAI :", e)
 
-    # --- 5️⃣ Bloc catch-all (dernière chance) ---
-    if not message_bot:
-        if any(phrase in question_clean for phrase in ["hello", "hi", "good morning", "good evening", "good afternoon"]):
-            message_bot = "Bonjour ! Je suis là et prêt à vous aider. Comment puis-je vous assister aujourd’hui ?"
-        else:
-            reponses_ava = [
-                "Je suis là pour vous aider, mais j'ai besoin d'un peu plus de détails 🤖",
-                "Je n'ai pas bien compris. Pouvez-vous reformuler, s'il vous plaît ?",
-                "Ce sujet est encore un peu flou pour moi... Je peux parler d’analyse technique, de météo, d’actualités, et bien plus encore !",
-                "Hmm... Ce n’est pas encore dans ma base de données. Essayez une autre formulation ou tapez 'analyse complète' 📊"
-            ]
-            message_bot = random.choice(reponses_ava)
+    # 5️⃣ Fallback Google (nouveau bloc)
+    recherche = rechercher_sur_google(question_clean)
+    if recherche and "Erreur Google" not in recherche:
+        return recherche
 
-    return message_bot if message_bot else "Je suis là, mais je n’ai pas encore la réponse à ça."
+    # 6️⃣ Messages génériques si vraiment rien
+    if any(phrase in question_clean for phrase in ["hello", "hi", "good morning", "good evening"]):
+        return "Bonjour ! Comment puis-je t’aider aujourd’hui ?"
 
-    # --- FIN de gerer_modules_speciaux ---
-    if message_bot:
-        return message_bot
-
-    return None
+    reponses_ava = [
+        "Je suis là pour t’aider, mais il me faut plus de détails…",
+        "Je n’ai pas bien compris. Peux-tu reformuler ?",
+        "Hmm… Ce sujet est encore flou pour moi.",
+    ]
+    return random.choice(reponses_ava)
 
     
 # ─── Boucle Streamlit Chat (TOUJOURS en bas) ───
