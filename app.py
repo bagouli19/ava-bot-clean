@@ -1,7 +1,6 @@
 import streamlit as st
 from PIL import Image
-from auth import verifier_acces
-verifier_acces()
+
 
 # --- Config page ---------------------------------------------------
 st.set_page_config(page_title="OBLIVIA – L’IA de l’Ombre", layout="centered")
