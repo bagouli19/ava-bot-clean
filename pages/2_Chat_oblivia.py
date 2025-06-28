@@ -1825,6 +1825,7 @@ def module_survivalisme(question: str) -> str:
 
     return None
 
+
 import streamlit as st
 import openai
 import difflib
