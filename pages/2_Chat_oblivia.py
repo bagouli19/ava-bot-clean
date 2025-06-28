@@ -48,6 +48,8 @@ from dotenv import load_dotenv
 import traceback
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from random import choice
+from auth import verifier_acces
+verifier_acces()
 
 
 
