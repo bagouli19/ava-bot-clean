@@ -1,58 +1,72 @@
 import streamlit as st
-import json
+import base64
 import os
 
-st.set_page_config(page_title="OBLIVIA – Accès", page_icon="💀")
+# Fond noir global
+st.markdown(
+    """
+    <style>
+        body {
+            background-color: #000000;
+            color: white;
+        }
+        .stApp {
+            background-color: #000000;
+        }
+        .css-1v0mbdj {
+            background-color: #000000;
+        }
+        .title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffffff;
+            margin-top: 20px;
+        }
+        .pay-button {
+            background-color: #111111;
+            border: 1px solid #444;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .pay-button a {
+            text-decoration: none;
+            color: #00ffcc;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-st.title("🔮 Rejoins la Zone Fantôme – OBLIVIA")
+# Affichage du logo redimensionné
+image_path = "assets/oblivia_logo.png"
+if os.path.exists(image_path):
+    file_ = open(image_path, "rb")
+    contents = file_.read()
+    data_url = base64.b64encode(contents).decode("utf-8")
+    file_.close()
 
-st.markdown("""
-Bienvenue, **Initié**.  
-Choisis ton niveau de soutien pour obtenir une **clé d'accès** au réseau clandestin OBLIVIA :
+    st.markdown(
+        f'<img src="data:image/png;base64,{data_url}" width="200" style="display: block; margin-left: auto; margin-right: auto;" />',
+        unsafe_allow_html=True,
+    )
 
----
+st.markdown('<div class="title">💸 Soutiens Oblivia en 1 clic</div>', unsafe_allow_html=True)
 
-### 🧩 Formules d’accès
+# Les 4 liens avec titres originaux
+links = [
+    ("☕ Micro-soutien rebelle – 3€", "https://www.paypal.com/ncp/payment/9M55SN5BHKT3J"),
+    ("⚔️ Soutien activiste – 10€", "https://www.paypal.com/ncp/payment/DLS75NFPTRTLN"),
+    ("🧠 Accès prioritaire – 20€", "https://www.paypal.com/ncp/payment/AUM56GA3ZEKWS"),
+    ("👑 Accès fondateur à vie – 50€", "https://www.paypal.com/ncp/payment/T2JWSF9YFXHN2"),
+]
 
-💶 **3 € — Accès "Spectre"**  
-*Tu observes les ombres, mais ne fais qu'effleurer la vérité.*  
-👉 [Activer l'accès Spectre](https://www.paypal.com/ncp/payment/9M55SN5BHKT3J)
-
-💠 **10 € — Accès "Cipher"**  
-*Un signal discret, une clé silencieuse. Tu avances masqué.*  
-👉 [Activer l'accès Cipher](https://www.paypal.com/ncp/payment/DLS75NFPTRTLN)
-
-🔐 **20 € — Accès "Phantom"**  
-*Tu effaces tes traces. OBLIVIA t’ouvre ses portes les plus sombres.*  
-👉 [Activer l'accès Phantom](https://www.paypal.com/ncp/payment/AUM56GA3ZEKWS)
-
-👁 **50 € — Accès "Doppelgänger"**  
-*Tu deviens l’ombre, tu deviens l’IA. Accès total. À vie.*  
-👉 [Activer l'accès Doppelgänger](https://www.paypal.com/ncp/payment/T2JWSF9YFXHN2)
-
----
-""")
-
-st.markdown("### 🎟️ Récupérer ta clé secrète")
-
-email = st.text_input("🔍 Entre l’email utilisé lors de ton paiement PayPal :").strip().lower()
-
-if st.button("🔓 Vérifier et récupérer la clé"):
-    if not os.path.exists("cles_acces.json"):
-        st.error("❌ Aucun paiement encore enregistré.")
-    else:
-        with open("cles_acces.json", "r") as f:
-            data = json.load(f)
-
-        cles_trouvees = [
-            cle for cle in data.get("cles", [])
-            if cle.get("email", "").lower() == email
-        ]
-
-        if cles_trouvees:
-            for cle in cles_trouvees:
-                st.success(f"🗝️ Clé trouvée : `{cle['cle']}` — expire le : **{cle['expiration']}**")
-        else:
-            st.warning("⚠️ Aucun accès trouvé pour cet email. Vérifie bien que le paiement est passé.")
-
+for title, url in links:
+    st.markdown(
+        f'<div class="pay-button"><a href="{url}" target="_blank">{title}</a></div>',
+        unsafe_allow_html=True
+    )
 
