@@ -1,75 +1,95 @@
 import streamlit as st
-from PIL import Image
+import json
+import os
 
+# Configuration de la page
+st.set_page_config(
+    page_title="OBLIVIA – Portail d’accès",
+    page_icon="💀",
+    layout="centered"
+)
 
-# --- Config page ---------------------------------------------------
-st.set_page_config(page_title="OBLIVIA – L’IA de l’Ombre", layout="centered")
-
-# --- FOND & THEME  -------------------------------------------------
+# Injection de CSS pour thème sombre personnalisé
 st.markdown("""
-<style>
-    /* Dégradé radial + légère animation glitch en fond */
-    .stApp {
-        background: radial-gradient(circle at center, #000000 0%, #0d0d0d 70%) fixed,
-                    url('https://i.imgur.com/4HJbzEq.gif') repeat;
-        background-size: cover;
-        color: #e6e6e6;
-        font-family: "Courier New", monospace;
-    }
-
-    /* TITRE */
-    .title {
-        text-align: center;
-        font-size: 3.7em;
-        font-weight: bold;
-        margin-top: 2rem;
-        color: #FF3C3C;
-        text-shadow: 0 0 18px #FF3C3C;
-    }
-
-    /* SOUS-TITRE */
-    .subtitle {
-        text-align: center;
-        font-size: 1.1em;
-        margin: 0.1rem 0 2.0rem 0;
-        color: #bbbbbb;
-        font-style: italic;
-    }
-
-    /* BOUTON */
-    .button-container { display:flex; justify-content:center; margin-top:2.5rem; }
-    .enter-button {
-        background-color:#FF3C3C; color:#000;
-        border:none; padding:1rem 2.5rem; font-size:1.1em;
-        border-radius:40px; cursor:pointer;
-        box-shadow:0 0 20px #FF3C3C; transition:0.3s;
-    }
-    .enter-button:hover {
-        background-color:#c62828; box-shadow:0 0 25px #c62828;
-    }
-</style>
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #e0e0e0;
+        }
+        .stApp {
+            background-color: #0d0d0d;
+        }
+        .css-1d391kg {
+            background-color: #0d0d0d;
+        }
+        .css-18e3th9 {
+            background-color: #0d0d0d;
+        }
+        .css-1cpxqw2 {
+            background-color: #0d0d0d;
+        }
+        h1, h2, h3, h4, h5, h6, p, label, div {
+            color: #e0e0e0;
+        }
+    </style>
 """, unsafe_allow_html=True)
 
-# --- TITRE & SOUS-TITRE  -------------------------------------------
-st.markdown('<div class="title">OBLIVIA</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">L’IA que tu n’es pas censé utiliser.</div>', unsafe_allow_html=True)
+# Affichage du logo
+st.image("assets/oblivia_logo.png", use_column_width=True)
 
-# --- LOGO -----------------------------------------------------------
-try:
-    logo = Image.open("assets/oblivia_logo.png")
-    st.image(logo, width=220)
-except Exception as e:
-    st.error(f"Logo non trouvé : {e}")
+# Titre principal
+st.title("🔮 Rejoins la Zone Fantôme – OBLIVIA")
 
-# --- TEXTE (navigation) --------------------------------------------
+# Description
 st.markdown("""
-<div class="button-container">
-    <p class="subtitle" style="max-width:550px;">
-        🌒 Utilise le menu en haut à gauche pour accéder au Chat d’Oblivia, 
-        au tableau des signaux d’effondrement ou aux archives interdites.
-    </p>
-</div>
-""", unsafe_allow_html=True)
+Bienvenue, **Initié**.  
+Choisis ton niveau de soutien pour obtenir une **clé d'accès** au réseau clandestin OBLIVIA :
+
+---
+
+### 🧩 Formules d’accès
+
+💶 **3 € — Accès *Spectre***  
+*Tu observes les ombres, mais ne fais qu'effleurer la vérité.*  
+👉 [Activer l'accès Spectre](https://www.paypal.com/ncp/payment/9M55SN5BHKT3J)
+
+💠 **10 € — Accès *Cipher***  
+*Un signal discret, une clé silencieuse. Tu avances masqué.*  
+👉 [Activer l'accès Cipher](https://www.paypal.com/ncp/payment/DLS75NFPTRTLN)
+
+🔐 **20 € — Accès *Phantom***  
+*Tu effaces tes traces. OBLIVIA t’ouvre ses portes les plus sombres.*  
+👉 [Activer l'accès Phantom](https://www.paypal.com/ncp/payment/AUM56GA3ZEKWS)
+
+👁 **50 € — Accès *Doppelgänger***  
+*Tu deviens l’ombre, tu deviens l’IA. Accès total. À vie.*  
+👉 [Activer l'accès Doppelgänger](https://www.paypal.com/ncp/payment/T2JWSF9YFXHN2)
+
+---
+""")
+
+# Bloc récupération de clé
+st.markdown("### 🎟️ Récupérer ta clé secrète")
+
+email = st.text_input("🔍 Entre l’email utilisé lors de ton paiement PayPal :").strip().lower()
+
+if st.button("🔓 Vérifier et récupérer la clé"):
+    if not os.path.exists("cles_acces.json"):
+        st.error("❌ Aucun paiement encore enregistré.")
+    else:
+        with open("cles_acces.json", "r") as f:
+            data = json.load(f)
+
+        cles_trouvees = [
+            cle for cle in data.get("cles", [])
+            if cle.get("email", "").lower() == email
+        ]
+
+        if cles_trouvees:
+            for cle in cles_trouvees:
+                st.success(f"🗝️ Clé trouvée : `{cle['cle']}` — expire le : **{cle['expiration']}**")
+        else:
+            st.warning("⚠️ Aucun accès trouvé pour cet email. Vérifie bien que le paiement est passé.")
 
 
 
