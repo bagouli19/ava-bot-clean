@@ -1,13 +1,43 @@
 import streamlit as st
 from PIL import Image
+import json
 
-# --- Config page ---------------------------------------------------
+# --- CONFIGURATION CLÉS D'ACCÈS ---------------------------------------
+
+@st.cache_data
+def charger_cles():
+    with open("cles_acces.json", "r") as f:
+        data = json.load(f)
+    return data["cles_valides"], data["admin_key"]
+
+cles_valides, admin_key = charger_cles()
+
+# Initialisation de session
+if "cle_validee" not in st.session_state:
+    st.session_state.cle_validee = False
+    st.session_state.est_admin = False
+
+# Interface de saisie de la clé
+if not st.session_state.cle_validee:
+    st.title("🔐 Accès sécurisé Oblivia")
+    cle = st.text_input("Entrez votre clé d'accès :", type="password")
+
+    if st.button("Valider la clé"):
+        if cle in cles_valides or cle == admin_key:
+            st.session_state.cle_validee = True
+            st.session_state.est_admin = (cle == admin_key)
+            st.success("✅ Clé valide. Accès accordé.")
+            st.experimental_rerun()
+        else:
+            st.error("❌ Clé invalide. Merci d'obtenir une clé via le système de paiement.")
+    st.stop()
+
+# --- CONFIG PAGE ---------------------------------------------------
 st.set_page_config(page_title="OBLIVIA – L’IA de l’Ombre", layout="centered")
 
 # --- FOND & THEME  -------------------------------------------------
 st.markdown("""
 <style>
-    /* Dégradé radial + légère animation glitch en fond */
     .stApp {
         background: radial-gradient(circle at center, #000000 0%, #0d0d0d 70%) fixed,
                     url('https://i.imgur.com/4HJbzEq.gif') repeat;
@@ -15,8 +45,6 @@ st.markdown("""
         color: #e6e6e6;
         font-family: "Courier New", monospace;
     }
-
-    /* TITRE */
     .title {
         text-align: center;
         font-size: 3.7em;
@@ -25,8 +53,6 @@ st.markdown("""
         color: #FF3C3C;
         text-shadow: 0 0 18px #FF3C3C;
     }
-
-    /* SOUS-TITRE */
     .subtitle {
         text-align: center;
         font-size: 1.1em;
@@ -34,8 +60,6 @@ st.markdown("""
         color: #bbbbbb;
         font-style: italic;
     }
-
-    /* BOUTON */
     .button-container { display:flex; justify-content:center; margin-top:2.5rem; }
     .enter-button {
         background-color:#FF3C3C; color:#000;
@@ -69,6 +93,11 @@ st.markdown("""
     </p>
 </div>
 """, unsafe_allow_html=True)
+
+# --- ADMIN INFO ----------------------------------------------------
+if st.session_state.est_admin:
+    st.sidebar.markdown("👑 **Mode Admin activé**")
+
 
 
 
